@@ -20,6 +20,11 @@ BaselineOfFASTFortran2k >> baseline: spec [
 BaselineOfFASTFortran2k >> defineDependencies: spec [
 
 	spec
+		baseline: 'FAST'
+		with: [ spec
+				loads: #('tools');
+				repository: 'github://moosetechnology/FAST:v2/src' ] ;
+
 		baseline: 'FASTFortranCore'
 		with: [ spec
 				loads: #('core');
