@@ -123,28 +123,11 @@ FASTFortranModelTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToDer
 	end segment
 	"
 
-	| stmt res f2ksegment varDim |
+	| stmt res f2ksegment |
 	
-	varDim := self scalarVariable: #N.
-	"varDim famixDeclaration: (FamixF77Variable new 
-			name: 'N'; 
-			declaredType: (FamixF77TypeIntrinsic new name: 'real');
-			yourself
-			);
-		yourself."
-	
-	stmt := (FASTEsopeSegment new name: 'foo')
-		statements: { 
-			FASTFortranVariableDeclarationStatement new
-				declaredType: (FASTFortranIntegerType new); 
-				declarators: { 
-					FASTFortranVariableDeclarator new
-						name: 'bar';
-						dimensions: { FASTFortranArrayRange new upperBound: varDim } 
-				} 
-		} ;
-		"famix: (FamixEsopeSegment new attributes: () )"
-		yourself.
+	stmt := self fooSegment.
+	stmt statements anyOne declarators anyOne
+		dimensions: { FASTFortranArrayRange new upperBound: (self scalarVariable: #N) }.
 	
 	res := stmt accept: visitor.
 
@@ -509,7 +492,7 @@ FASTFortranModelTransformationVisitorTest >> testProgramMainWithCppInclude [
 		famix: famixIncludedFile;
 		yourself.
 	
-	cppInclude := FASTEsopeCppIncludeStatement new filename: 'inc.obj'.
+	cppInclude := FASTFortran2kIncludeStatement new filename: 'inc.obj'.
 
 	programMain := FASTFortranProgramMain new 
 		name: 'main';
