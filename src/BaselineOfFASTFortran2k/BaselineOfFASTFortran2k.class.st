@@ -25,12 +25,7 @@ BaselineOfFASTFortran2k >> defineDependencies: spec [
 				loads: #('tools');
 				repository: 'github://moosetechnology/FAST:v2/src' ] ;
 
-		baseline: 'FASTFortranCore'
-		with: [ spec
-				loads: #('core');
-				repository: 'github://moosetechnology/FAST-Fortran' ] ;
-
-		baseline: 'FASTFortranAll'
+		baseline: 'FASTFortran'
 		with: [ spec
 				loads: #('all');
 				repository: 'github://moosetechnology/FAST-Fortran' ]
@@ -50,8 +45,8 @@ BaselineOfFASTFortran2k >> defineGroups: spec [
 BaselineOfFASTFortran2k >> definePackages: spec [
 	spec
 		repository: 'https://github.com/moosetechnology/FAST-Fortran-2K';
-		package: 'FAST-Fortran2k-Generator' with: [ spec requires: #(FASTFortranAll) ] ;
-		package: 'FAST-Fortran2k-Entities' with: [ spec requires: #(FAST FASTFortranCore) ];
-		package: 'FAST-Fortran2k-Visitors' with: [ spec requires: #(FASTFortranCore 'FAST-Fortran2k-Entities') ];
-		package: 'FAST-Fortran2k-Visitors-Tests' with: [ spec requires: #(FASTFortranAll 'FAST-Fortran2k-Visitors') ]
+		package: 'FAST-Fortran2k-Generator' with: [ spec requires: #(FASTFortran) ] ;
+		package: 'FAST-Fortran2k-Entities' with: [ spec requires: #(FAST FASTFortran) ];
+		package: 'FAST-Fortran2k-Visitors' with: [ spec requires: #(FASTFortran 'FAST-Fortran2k-Entities') ];
+		package: 'FAST-Fortran2k-Visitors-Tests' with: [ spec requires: #(FASTFortran 'FAST-Fortran2k-Visitors') ]
 ]
