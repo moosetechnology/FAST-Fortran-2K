@@ -1,3 +1,8 @@
+"
+An exporter for FASTFortran2k models
+
+Note: Inherits from FASTFortranExporterVisitor and not FASTFortran2kAbstractVisitor to reuse the export logic of statements/expressions
+"
 Class {
 	#name : 'FASTFortran2kExporterVisitor',
 	#superclass : 'FASTFortranExporterVisitor',
@@ -299,7 +304,6 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedType: aFASTFortran2kDer
 { #category : 'precedence' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponent: aFASTFortran2kDerivedTypeComponent [
 
-	1 halt
 ]
 
 { #category : 'visiting' }
@@ -340,6 +344,31 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramMain: aFASTFortran2kPro
 FASTFortran2kExporterVisitor >> visitFASTFortran2kSourceCodeString: aFASTFortran2kSourceCodeString [
 
 	self << aFASTFortran2kSourceCodeString content
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUseStatement [
+
+	self << 'use'.
+	aFASTFortran2kUseStatement isIntrinsic ifTrue: [
+		self << ', intrinsic' ].
+	self
+		<< ' :: ';
+		<< aFASTFortran2kUseStatement moduleName.
+
+	aFASTFortran2kUseStatement useRenamedStatements 
+		ifNotNil: [:useRenamedStatement | 
+			self << ', '.
+			self visitNodeListSeparatedByCommas: useRenamedStatement
+		].
+
+	aFASTFortran2kUseStatement useNoRenamedStatements 
+		ifNotNil: [ :onlyList |
+			self << ', only: '.
+			self visitNodeListSeparatedByCommas: onlyList.
+		].
+
+	self newLine
 ]
 
 { #category : 'visiting' }
@@ -424,31 +453,6 @@ FASTFortran2kExporterVisitor >> visitFASTFortranTypeDeclarationStatement: aFASTF
 
 	aFASTFortran2kTypeDeclarationStatement declarators 
 		ifNotNil: [ :declarators | self visitNodeListSeparatedByCommas: declarators ].
-	self newLine
-]
-
-{ #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortranUseStatement: aFASTFortran2kUseStatement [
-
-	self << 'use'.
-	aFASTFortran2kUseStatement isIntrinsic ifTrue: [
-		self << ', intrinsic' ].
-	self
-		<< ' :: ';
-		<< aFASTFortran2kUseStatement moduleName.
-
-	aFASTFortran2kUseStatement useRenamedStatements 
-		ifNotNil: [:useRenamedStatement | 
-			self << ', '.
-			self visitNodeListSeparatedByCommas: useRenamedStatement
-		].
-
-	aFASTFortran2kUseStatement useNoRenamedStatements 
-		ifNotNil: [ :onlyList |
-			self << ', only: '.
-			self visitNodeListSeparatedByCommas: onlyList.
-		].
-
 	self newLine
 ]
 

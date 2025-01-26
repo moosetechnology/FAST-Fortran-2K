@@ -28,12 +28,6 @@ FASTFortran2kSourceCodeString class >> annotation [
 ]
 
 { #category : 'accessing' }
-FASTFortran2kSourceCodeString >> accept: visitor [
-
-	^ visitor visitFASTFortran2kSourceCodeString: self
-]
-
-{ #category : 'accessing' }
 FASTFortran2kSourceCodeString >> content [
 
 	<FMProperty: #content type: #String>
