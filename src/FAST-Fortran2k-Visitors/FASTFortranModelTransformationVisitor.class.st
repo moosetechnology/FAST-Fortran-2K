@@ -11,19 +11,6 @@ Class {
 	#package : 'FAST-Fortran2k-Visitors'
 }
 
-{ #category : 'helpers' }
-FASTFortranModelTransformationVisitor >> addUsesIn: puMain file: mainfile and: puModule [
-
-	useNeeded do: [ :assoc || source target |
-		source := assoc key.
-		target := assoc value.
-
-		(source = mainfile)
-		ifTrue: [ self addUse: target in: puMain ]
-		ifFalse:  [ self addUse: target in: puModule ]
-	]
-]
-
 { #category : 'visiting - helpers' }
 FASTFortranModelTransformationVisitor >> computeAllocateSegmentAttributes: aFASTFortranSegment [
 
@@ -1110,30 +1097,10 @@ FASTFortranModelTransformationVisitor >> model [
 	^ model
 ]
 
-{ #category : 'helpers' }
-FASTFortranModelTransformationVisitor >> programFile: programFile in: filename modules: programUnits [
+{ #category : 'accessing' }
+FASTFortranModelTransformationVisitor >> useNeeded [
 
-	| puModule puMain |
-
-	puModule := OrderedCollection new.
-	puMain := nil.
-
-	programUnits do: [ :progUnit |
-		(progUnit class = FASTFortran2kProgramMain)
-			ifTrue: [ puMain := progUnit  ]
-			ifFalse: [ puModule add: progUnit ]
-	].
-
-	puModule ifNotEmpty: [
-		programFile addProgramUnit: 
-			((self makePuModule: programFile)
-					procedures: programUnits;
-					yourself)
-	].
-
-	puMain ifNotNil: [ programFile addProgramUnit: puMain ].
-
-	self addUsesIn: puMain file: filename and: puModule
+	^ useNeeded
 ]
 
 { #category : 'visiting' }
@@ -1235,9 +1202,8 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranBooleanLiteral: aBoolea
 
 { #category : 'visiting statement' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranCallStatement: aFASTFortranCallStatement [
-
 	
-	| callStatement callerProgramFile calledProgramFile |
+	| callStatement callerProgramUnit calledProgramFile |
 
 	callStatement := FASTFortran2kCallStatement new
 		name: aFASTFortranCallStatement name;
@@ -1247,10 +1213,10 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranCallStatement: aFASTFor
 		mooseModel: model;
 		yourself.
 
-	callerProgramFile := aFASTFortranCallStatement famix sender programFile.
+	callerProgramUnit := aFASTFortranCallStatement famix sender.
 	calledProgramFile := aFASTFortranCallStatement famix candidates anyOne programFile.
-	(callerProgramFile filename = calledProgramFile filename)
-	ifFalse: [ useNeeded add: callerProgramFile -> calledProgramFile ].
+	(callerProgramUnit programFile = calledProgramFile)
+	ifFalse: [ useNeeded add: callerProgramUnit -> calledProgramFile filename ].
 
 	^ callStatement
 	
@@ -1397,36 +1363,6 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranPrintStatement: aFASTFo
 					   arg accept: self ]);
 		  mooseModel: model;
 		  yourself
-]
-
-{ #category : 'visiting - programUnits' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranProgramFile: aFASTFortranProgramFile [
-
-	| programFile  programUnits |
-
-	programUnits := OrderedCollection new.
-	useNeeded := OrderedCollection new: 2.
-
-	programFile := FASTFortran2kProgramFile new 
-		"filename: (filename, '90');"
-		mooseModel: model;
-		comments: (
-			aFASTFortranProgramFile comments collect: [ :comment | comment accept: self  ]
-		);
-		yourself.
-
-	aFASTFortranProgramFile programUnit do: [ :progUnit |
-			programUnits add: (progUnit accept: self)
-	].
-
-	self
-		programFile: programFile
-		in: aFASTFortranProgramFile famix filename
-		modules: programUnits.
-
-	^programFile 
-	
- 
 ]
 
 { #category : 'visiting - programUnits' }
