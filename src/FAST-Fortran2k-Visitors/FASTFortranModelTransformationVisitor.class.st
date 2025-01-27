@@ -1194,13 +1194,11 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranBooleanLiteral: aBoolea
 		  yourself
 ]
 
-{ #category : 'visiting - expressions' }
+{ #category : 'visiting statement' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranCallStatement: aFASTFortranCallStatement [
 
 	
-	| famixProgFile callStatement |
-	self flag: #FIXME. "how to correctly handle the use statement ? "
-	famixProgFile := aFASTFortranCallStatement famix "candidates anyOne parentProgramFile".
+	| callStatement callerProgramFile calledProgramFile |
 
 	callStatement := FASTFortran2kCallStatement new
 		name: aFASTFortranCallStatement name;
@@ -1209,8 +1207,12 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranCallStatement: aFASTFor
 		);
 		mooseModel: model;
 		yourself.
-		
-		
+
+	callerProgramFile := aFASTFortranCallStatement famix sender programFile.
+	calledProgramFile := aFASTFortranCallStatement famix candidates anyOne programFile.
+	(callerProgramFile filename = calledProgramFile filename)
+	ifFalse: [ useNeeded add: callerProgramFile -> calledProgramFile ].
+
 	^ callStatement
 	
 	
@@ -1363,15 +1365,9 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranProgramFile: aFASTFortr
 
 	| programFile puMain puModules |
 
-	
 	puModules := OrderedCollection new.
-
-	aFASTFortranProgramFile programUnit do: [ :progUnit | | f2kProgUnit | 
-		f2kProgUnit := progUnit accept: self.
-		progUnit class = FASTFortranProgramMain 
-			ifTrue:  [ puMain := f2kProgUnit ] 
-			ifFalse: [ puModules add: f2kProgUnit ]
-	].
+	puMain := nil.
+	useNeeded := OrderedCollection new: 2.
 
 	programFile := FASTFortran2kProgramFile new 
 		"filename: (filename, '90');"
@@ -1380,6 +1376,12 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranProgramFile: aFASTFortr
 			aFASTFortranProgramFile comments collect: [ :comment | comment accept: self  ]
 		);
 		yourself.
+
+	aFASTFortranProgramFile programUnit do: [ :progUnit |
+		progUnit class = FASTFortranProgramMain 
+			ifTrue:  [ puMain := progUnit accept: self ] 
+			ifFalse: [ puModules add: (progUnit accept: self) ]
+	].
 
 	puModules 
 		ifNotEmpty: [  
