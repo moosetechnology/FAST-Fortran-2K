@@ -18,7 +18,7 @@ FASTFortranModelTransformationVisitor >> computeAllocateSegmentAttributes: aFAST
 '
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> computeDimensionalExpressions: aFASTFortranSegment [
 
 	| visitor parameters |
@@ -42,7 +42,7 @@ FASTFortranModelTransformationVisitor >> computeLocalParamsDims: segmentDimensio
 	^ aStream contents.
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> computeProcedureInitialisationAndAllocation: aFASTFortranSegment [
 
 	| aStream dimensions |
@@ -109,7 +109,7 @@ FASTFortranModelTransformationVisitor >> computeProcedureInitialisationAndAlloca
 	^ FASTFortran2kSourceCodeString new content: aStream contents
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> computeProcedureLocalVariablesDimensions: aFASTFortranSegment [
 
 	| maxDim aStream |
@@ -127,7 +127,7 @@ FASTFortranModelTransformationVisitor >> computeProcedureLocalVariablesDimension
 	^ FASTFortran2kSourceCodeString new content: aStream contents
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> computeProcedureParameters: aFASTFortranSegment [
 
 	| parameters |
@@ -140,7 +140,7 @@ FASTFortranModelTransformationVisitor >> computeProcedureParameters: aFASTFortra
 	^ parameters
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> computeProcedureParametersDeclaration: aFASTFortranSegment [
 
 	| aStream parameters |
@@ -201,7 +201,7 @@ FASTFortranModelTransformationVisitor >> computeSegmentsDimensions: aFASTFortran
 		]
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> ensureEmptyStream [
 
 	tmpStream := WriteStream with: ''
@@ -216,7 +216,7 @@ FASTFortranModelTransformationVisitor >> initialize [
 	stack := Stack new
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeBoxedTypeDefinition: segmentName [
 
 	^ FASTFortran2kFormattedCodeString new
@@ -237,7 +237,7 @@ FASTFortranModelTransformationVisitor >> makeBoxedTypeDefinition: segmentName [
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeContainsStatement: segmentName [
 
 	^ FASTFortran2kFormattedCodeString new
@@ -251,7 +251,7 @@ contains
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeInterfaces: segmentName [
 
 	^ FASTFortran2kFormattedCodeString new
@@ -343,7 +343,7 @@ FASTFortranModelTransformationVisitor >> makeInterfaces: segmentName [
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureAssignPointerToPointer: segmentName [
 
 	^ FASTFortran2kFormattedCodeString new
@@ -365,7 +365,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureAssignPointerToPointer: se
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureBoxed: segmentName [
 
 	^ FASTFortran2kFormattedCodeString new
@@ -547,7 +547,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureBoxed: segmentName [
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureIgnore: segmentName [
 
 	^ FASTFortran2kFormattedCodeString new
@@ -575,7 +575,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureIgnore: segmentName [
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureSegadj: aFASTFortranSegment [
 
 	| segxxx parameterNames |
@@ -605,7 +605,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegadj: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureSegcop: aFASTFortranSegment [
 
 	| segxxx |
@@ -633,7 +633,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegcop: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureSegini2: aFASTFortranSegment [
 	"
 	subroutine {segmentName}_segini(this {routineParams})
@@ -675,7 +675,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegini2: aFASTFortranSegme
 		  yourself
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureSegini: aFASTFortranSegment [
 
 	| segxxx routineParams routineParamsDeclarations localParamsDims allocateSegmentAttributes segmentDimensions |
@@ -719,7 +719,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegini: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureSeglik: aFASTFortranSegment [
 
 	| segxxx parameterNames |
@@ -761,7 +761,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSeglik: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureSegload: aFASTFortranSegment [
 
 	| segxxx parameterNames |
@@ -791,7 +791,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegload: aFASTFortranSegme
 	^ segxxx
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureSegloc: segmentName [
 
 	^ FASTFortran2kFormattedCodeString new
@@ -813,7 +813,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegloc: segmentName [
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureSegmentType: segmentName [
 
 	^ FASTFortran2kFormattedCodeString new
@@ -833,7 +833,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegmentType: segmentName [
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureSegmov: aFASTFortranSegment [
 
 	| segxxx |
@@ -861,7 +861,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegmov: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureSegpar: aFASTFortranSegment [
 
 	| segxxx parameterNames |
@@ -892,7 +892,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegpar: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureSegprt: aFASTFortranSegment [
 
 	| segxxx parameterNames |
@@ -921,7 +921,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegprt: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureSegstore: aFASTFortranSegment [
 
 	| segxxx parameterNames |
@@ -950,7 +950,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegstore: aFASTFortranSegm
 	^ segxxx
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProcedureSegsup: aFASTFortranSegment [
 
 	| segxxx parameterNames |
@@ -978,7 +978,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegsup: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProceduresDimensions: aFASTFortranSegment [
 
 	| parameters procedures |
@@ -1017,7 +1017,7 @@ FASTFortranModelTransformationVisitor >> makeProceduresDimensions: aFASTFortranS
 	^procedures 
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeProgramUnit: programUnits [
 
 	| progUnits procedures |
@@ -1039,7 +1039,7 @@ FASTFortranModelTransformationVisitor >> makeProgramUnit: programUnits [
 	^ progUnits
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makePuModule: filename [
 	^ FASTFortran2kModule new 
 		name: (($. split: filename) first, '_mod');
@@ -1047,7 +1047,7 @@ FASTFortranModelTransformationVisitor >> makePuModule: filename [
 		yourself.
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeSegmentModuleProlog [
 
 	^ FASTFortran2kSourceCodeString new content: '
@@ -1061,7 +1061,7 @@ FASTFortranModelTransformationVisitor >> makeSegmentModuleProlog [
 '
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeSegmentTypeName: segmentName [
 
 	^ FASTFortran2kFormattedCodeString new
@@ -1073,7 +1073,7 @@ FASTFortranModelTransformationVisitor >> makeSegmentTypeName: segmentName [
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'helpers' }
+{ #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> makeTypeDefinition: aFASTFortranSegment [
 
 	| segment visitor |
