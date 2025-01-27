@@ -1097,11 +1097,11 @@ FASTFortranModelTransformationVisitor >> model [
 ]
 
 { #category : 'visiting - programUnits' }
-FASTFortranModelTransformationVisitor >> visitFASTEsopeCppIncludeStatement: aFASTEsopeCppIncludeStatement [
+FASTFortranModelTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsopeIncludeStatement [
 
 	| famixProgramUnit f2kProgramUnit |
 	
-	famixProgramUnit := aFASTEsopeCppIncludeStatement statementContainer fastBehaviouralParent famix.
+	famixProgramUnit := aFASTEsopeIncludeStatement statementContainer fastBehaviouralParent famix.
 	f2kProgramUnit := stack top.
 	famixProgramUnit includes halt
 ]
