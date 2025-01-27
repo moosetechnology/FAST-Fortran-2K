@@ -11,6 +11,19 @@ Class {
 	#package : 'FAST-Fortran2k-Visitors'
 }
 
+{ #category : 'helpers' }
+FASTFortranModelTransformationVisitor >> addUsesIn: puMain file: mainfile and: puModule [
+
+	useNeeded do: [ :assoc || source target |
+		source := assoc key.
+		target := assoc value.
+
+		(source = mainfile)
+		ifTrue: [ self addUse: target in: puMain ]
+		ifFalse:  [ self addUse: target in: puModule ]
+	]
+]
+
 { #category : 'visiting - helpers' }
 FASTFortranModelTransformationVisitor >> computeAllocateSegmentAttributes: aFASTFortranSegment [
 
@@ -1097,6 +1110,32 @@ FASTFortranModelTransformationVisitor >> model [
 	^ model
 ]
 
+{ #category : 'helpers' }
+FASTFortranModelTransformationVisitor >> programFile: programFile in: filename modules: programUnits [
+
+	| puModule puMain |
+
+	puModule := OrderedCollection new.
+	puMain := nil.
+
+	programUnits do: [ :progUnit |
+		(progUnit class = FASTFortran2kProgramMain)
+			ifTrue: [ puMain := progUnit  ]
+			ifFalse: [ puModule add: progUnit ]
+	].
+
+	puModule ifNotEmpty: [
+		programFile addProgramUnit: 
+			((self makePuModule: programFile)
+					procedures: programUnits;
+					yourself)
+	].
+
+	puMain ifNotNil: [ programFile addProgramUnit: puMain ].
+
+	self addUsesIn: puMain file: filename and: puModule
+]
+
 { #category : 'visiting' }
 FASTFortranModelTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsopeIncludeStatement [
 
@@ -1363,10 +1402,9 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranPrintStatement: aFASTFo
 { #category : 'visiting - programUnits' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranProgramFile: aFASTFortranProgramFile [
 
-	| programFile puMain puModules |
+	| programFile  programUnits |
 
-	puModules := OrderedCollection new.
-	puMain := nil.
+	programUnits := OrderedCollection new.
 	useNeeded := OrderedCollection new: 2.
 
 	programFile := FASTFortran2kProgramFile new 
@@ -1378,20 +1416,13 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranProgramFile: aFASTFortr
 		yourself.
 
 	aFASTFortranProgramFile programUnit do: [ :progUnit |
-		progUnit class = FASTFortranProgramMain 
-			ifTrue:  [ puMain := progUnit accept: self ] 
-			ifFalse: [ puModules add: (progUnit accept: self) ]
+			programUnits add: (progUnit accept: self)
 	].
 
-	puModules 
-		ifNotEmpty: [  
-			programFile addProgramUnit: 
-				((self makePuModule: aFASTFortranProgramFile famix filename)
-					procedures: puModules;
-					yourself) 
-		].
-	
-	puMain ifNotNil: [ programFile addProgramUnit: puMain ].
+	self
+		programFile: programFile
+		in: aFASTFortranProgramFile famix filename
+		modules: programUnits.
 
 	^programFile 
 	
