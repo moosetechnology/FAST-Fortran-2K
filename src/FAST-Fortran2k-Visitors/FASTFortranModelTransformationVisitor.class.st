@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'model',
 		'tmpStream',
-		'stack'
+		'stack',
+		'useNeeded'
 	],
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
@@ -1096,7 +1097,7 @@ FASTFortranModelTransformationVisitor >> model [
 	^ model
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting' }
 FASTFortranModelTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsopeIncludeStatement [
 
 	| famixProgramUnit f2kProgramUnit |
@@ -1106,7 +1107,7 @@ FASTFortranModelTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEs
 	famixProgramUnit includes halt
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting' }
 FASTFortranModelTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
 
 	| module segmentName |
@@ -1167,7 +1168,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranAssignmentStatement: an
 		  yourself
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranAsterisk: aFASTFortranAsterisk [
 
 	^ FASTFortran2kAsterisk new mooseModel: model
@@ -1224,14 +1225,14 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranCharacterLiteral: aFAST
 		  yourself
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranCharacterType: aFASTFortranCharacterType [
 
 	^ FASTFortran2kCharacterType new size:
 		  (aFASTFortranCharacterType size accept: self)
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranComment: aCommentNode [
 
 	^ FASTFortran2kComment new
@@ -1313,7 +1314,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranFunctionStatement: aFun
 	^fct
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting - expressions' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranIntegerLiteral: anIntegerLiteralNode [
 
 	^ FASTFortran2kIntegerLiteral new
@@ -1322,7 +1323,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranIntegerLiteral: anInteg
 		  yourself
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranIntegerType: aFASTFortranIntegerType [
 
 	^ FASTFortran2kIntegerType new
@@ -1426,7 +1427,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranRealLiteral: aRealLiter
 		  yourself
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranRealType: aRealTypeNode [
 
 	^ FASTFortran2kRealType new
@@ -1443,7 +1444,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranScalarVariable: aScalar
 		  yourself
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranSegment: aFASTFortranSegment [
 
 	| module segmentName |
@@ -1527,7 +1528,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranVariableDeclarationStat
 		  yourself
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting statement' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
 
 	| varDeclarator |
@@ -1541,7 +1542,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranVariableDeclarator: aFA
 	^varDeclarator 
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting' }
 FASTFortranModelTransformationVisitor >> visitFamixF77Type: aFamixF77Type [
 	| aTypeClass |
 	aTypeClass := {
@@ -1566,7 +1567,7 @@ FASTFortranModelTransformationVisitor >> visitSatementBlock: statementBlock [
 	^ FASTFortran2kStatementBlock new statements: statements
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting' }
 FASTFortranModelTransformationVisitor >> visitSegmentAttributes: attributes [
 
 	| generatedCode |
@@ -1590,7 +1591,7 @@ FASTFortranModelTransformationVisitor >> visitSegmentAttributes: attributes [
 	^ generatedCode
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting' }
 FASTFortranModelTransformationVisitor >> visitSementAttributes: attributes [
 
 	| generatedCode |
