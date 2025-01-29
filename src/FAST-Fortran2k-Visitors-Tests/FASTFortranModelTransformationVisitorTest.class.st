@@ -470,20 +470,25 @@ FASTFortranModelTransformationVisitorTest >> testProgramMainWithCppInclude [
 	"
 +------ incFile.obj --------------------------------+    
 |      integer N                                    |
-+---------------------------------------------------+    
-                     |
-                     v
-+------ incFile.obj.E ------------------------------+
-|      subroutine _$incFile_obj                     |
-|      integer N                                    |
-|      end                                          |
-+---------------------------------------------------+
++---------------------------------------------------+ 
 
 +------ mainFile.E ---------------------------------+
 |      program main                                 |
 |#include ""incFile.obj""                           |
 |      end                                          |
 +---------------------------------------------------+
+                     |
+                     v
+						cpp -E 
+                     |
+                     v
++------ mainFile.E ---------------------------------+
+|      program main                                 |
+|      integer N                                    |
+|      end                                          |
++---------------------------------------------------+
+
+translated in
 	"
 
 	| incFile mainFile fakeIncObj varDeclarationN programMain cppInclude famixIncludedFile res |
