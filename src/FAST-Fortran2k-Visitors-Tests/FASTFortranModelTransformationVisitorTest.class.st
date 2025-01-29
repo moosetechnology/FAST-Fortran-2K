@@ -613,7 +613,7 @@ C	--------end mainFile.f90----------------
 	
 	stmt := res statementBlock statements first.
 	self assert: stmt class equals: FASTFortran2kUseStatement.
-	self assert: stmt name equals: 'mainFile_mod'.
+	self assert: stmt name equals: 'someFile_mod'.
 	
 	stmt := res statementBlock statements second.
 	self assert: stmt class equals: FASTFortran2kImplicitStatement.
