@@ -358,59 +358,61 @@ C	--------end sub_mod.f90----------------
 FASTFortranModelTransformationVisitorTest >> testProgramAndProcedureMovedToProgranAndModule [
 	"
 	subroutine sub
-	print*, 'hello'
 	end
 	program demo
 	call sub()
 	end
 
 
-module sub_mod
+module subFile_mod
 	implicit none
 contains
 	subroutine sub()
-	print *, 'hello'
 	end subroutine sub
-end sub_mod
+end module subFile_mod
 
 program demo
-	use :: sub_mod
+	use :: subFile_mod
 	implicit none
 	call sub()
 end program demo
 
 "
 
-	| sourceFileSrc sourceFileDst subroutine programMain entity |
+	| sourceFileSrc sourceFileDst subroutine programMain subCallStatement famixF77ProgramFile stmt entity |
+	
+	
+	famixF77ProgramFile := FamixF77ProgramFile new filename: 'demo.f'.
 	
 	subroutine := FASTFortranSubroutine new 
 			name: 'sub'; 
-			statementBlock: (FASTFortranStatementBlock new
-				statements: {
-					FASTFortranPrintStatement new
-						format: FASTFortranAsterisk new;
-						arguments: { FASTFortranCharacterLiteral new primitiveValue: 'Hello' }; 
-						yourself
-				}
-			); 
-			yourself.
-			
-	programMain := FASTFortranProgramMain new 
-			name: 'demo'; 
-			statementBlock: (FASTFortranStatementBlock new
-				statements: { FASTFortranCallStatement new name: 'sub' ; arguments: {}; yourself }
-			); 
+			statementBlock: FASTFortranStatementBlock new;
+			famix: (FamixF77PUSubroutine new name: 'sub'; programFile: famixF77ProgramFile);
 			yourself.
 
+
+
+	subCallStatement := FASTFortranCallStatement new 
+		name: 'sub' ; 
+		arguments: {};
+		yourself.
+	
+	programMain := FASTFortranProgramMain new 
+		name: 'demo';
+		statementBlock: (FASTFortranStatementBlock new statements: {subCallStatement});
+		famix: (FamixF77PUMain new name: 'demo'; programFile: famixF77ProgramFile);
+		yourself.
+	
+	subCallStatement  famix: (FamixF77Invocation new 
+		sender: programMain famix;
+		addCandidate: subroutine famix;
+		yourself
+	).
 	
 	sourceFileSrc := FASTFortranProgramFile new "fileName: 'demo.f'"
 	 	programUnit: { subroutine . programMain };
+		famix: famixF77ProgramFile;
 		yourself.
-	
-	
-	sourceFileSrc famix: (FamixF77ProgramFile new filename: 'demo.f').
-	subroutine famix: (FamixF77PUSubroutine new name: 'sub').
-	programMain famix: (FamixF77PUMain new name: 'demo').
 
 	sourceFileDst := sourceFileSrc accept: visitor.
 	
@@ -429,6 +431,18 @@ end program demo
 	entity := sourceFileDst programUnit second.
 	self assert: entity class equals: FASTFortran2kProgramMain.
 	self assert: entity name equals: 'demo'.
+	self assert: entity statementBlock statements size equals: 3.
+	
+	stmt := entity statementBlock statements first.
+	self assert: stmt class equals: FASTFortran2kUseStatement.
+	self assert: stmt name equals: 'demo_mod'.
+	
+	stmt := entity statementBlock statements second.
+	self assert: stmt class equals: FASTFortran2kImplicitStatement.
+	
+	stmt := entity statementBlock statements third.
+	self assert: stmt class equals: FASTFortran2kCallStatement.
+	
 ]
 
 { #category : 'tests-programUnit' }
@@ -555,7 +569,7 @@ end program demo
 C	--------end mainFile.f90----------------
 	"
 
-	| subroutine programMain subroutineInvocation res  |
+	| subroutine programMain subroutineInvocation res  srcMainFile stmt |
 
 	subroutine :=  FASTFortranSubroutine new 
 			name: 'sub'; 
@@ -583,11 +597,28 @@ C	--------end mainFile.f90----------------
 			addCandidate: subroutine famix;
 			yourself
 		).
+		
+	srcMainFile := FASTFortranProgramFile new    "fileName: 'mainFile'"
+	 	addProgramUnit: programMain ;
+		famix: (FamixF77ProgramFile new filename: 'mainFile') ;
+		yourself.
 
-	res := programMain accept: visitor.
+	res := srcMainFile accept: visitor.
 
+	self assert: res programUnit size equals: 1.
+	res := res programUnit anyOne.
 	self assert: res class equals: FASTFortran2kProgramMain.
 	self assert: res name equals: 'demo'.
 	self assert: res statementBlock statements size equals: 3.
+	
+	stmt := res statementBlock statements first.
+	self assert: stmt class equals: FASTFortran2kUseStatement.
+	self assert: stmt name equals: 'mainFile_mod'.
+	
+	stmt := res statementBlock statements second.
+	self assert: stmt class equals: FASTFortran2kImplicitStatement.
+	
+	stmt := res statementBlock statements third.
+	self assert: stmt class equals: FASTFortran2kCallStatement.
 
 ]

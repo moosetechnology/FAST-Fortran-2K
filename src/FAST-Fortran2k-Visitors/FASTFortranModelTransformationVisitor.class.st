@@ -12,15 +12,30 @@ Class {
 }
 
 { #category : 'helpers' }
-FASTFortranModelTransformationVisitor >> addUsesIn: puMain file: mainfile and: puModule [
+FASTFortranModelTransformationVisitor >> addUseIn: filename to: entity [
+
+	self flag: #FIXME. "how to handle the order of uses statements"
+	entity statementBlock statements 
+		addFirst: (
+		FASTFortran2kUseStatement new 
+			name: (($. split: filename) first, '_mod');
+			mooseModel: model;
+			yourself
+		)
+	
+
+]
+
+{ #category : 'helpers' }
+FASTFortranModelTransformationVisitor >> addUsesIn: mainfile to: puMain or: puModule [
 
 	useNeeded do: [ :assoc || source target |
 		source := assoc key.
 		target := assoc value.
 
-		(source = mainfile)
-		ifTrue: [ self addUse: target in: puMain ]
-		ifFalse:  [ self addUse: target in: puModule ]
+		(source class = FamixF77PUMain)
+		ifTrue: [ self addUseIn: mainfile to: puMain ]
+		ifFalse:  [ self addUseIn: mainfile to: puModule ]
 	]
 ]
 
@@ -1114,26 +1129,25 @@ FASTFortranModelTransformationVisitor >> model [
 FASTFortranModelTransformationVisitor >> programFile: programFile in: filename modules: programUnits [
 
 	| puModule puMain |
-
 	puModule := OrderedCollection new.
 	puMain := nil.
 
 	programUnits do: [ :progUnit |
-		(progUnit class = FASTFortran2kProgramMain)
-			ifTrue: [ puMain := progUnit  ]
-			ifFalse: [ puModule add: progUnit ]
-	].
+		progUnit class = FASTFortran2kProgramMain
+			ifTrue: [ puMain := progUnit ]
+			ifFalse: [ puModule add: progUnit ] ].
 
 	puModule ifNotEmpty: [
-		programFile addProgramUnit: 
-			((self makePuModule: programFile)
-					procedures: programUnits;
-					yourself)
-	].
+		programFile addProgramUnit: ((self makePuModule: filename)
+				 procedures: puModule;
+				 yourself) ].
 
 	puMain ifNotNil: [ programFile addProgramUnit: puMain ].
 
-	self addUsesIn: puMain file: filename and: puModule
+	self addUsesIn: filename to: puMain or: puModule.
+	
+	useNeeded removeAll 
+	
 ]
 
 { #category : 'visiting' }
@@ -1247,10 +1261,10 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranCallStatement: aFASTFor
 		mooseModel: model;
 		yourself.
 
-	callerProgramFile := aFASTFortranCallStatement famix sender programFile.
+	callerProgramFile := aFASTFortranCallStatement famix sender.
 	calledProgramFile := aFASTFortranCallStatement famix candidates anyOne programFile.
-	(callerProgramFile filename = calledProgramFile filename)
-	ifFalse: [ useNeeded add: callerProgramFile -> calledProgramFile ].
+
+	useNeeded add: callerProgramFile -> calledProgramFile filename.
 
 	^ callStatement
 	
