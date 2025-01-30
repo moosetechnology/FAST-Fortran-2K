@@ -174,149 +174,6 @@ FASTFortranModelTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToDer
 	self assert: stmt name equals: 'bar'.
 ]
 
-{ #category : 'tests-statement' }
-FASTFortranModelTransformationVisitorTest >> testFunctionStatement [
-	"
-     PROGRAM demo
-     fct(x)  = x + 2
-     END
-
-program demo
-	implicit none
-contains
-    real function fct(x)
-	 real, intent(in) :: x
-    fct = x + 2
-    end function fct
-end program demo
-		
-	"
-	| src dst var fctStatement entity |
-	
-	var := self scalarVariable: #x.
-	
-	fctStatement := FASTFortranFunctionStatement new
-						name: 'fct';
-						parameters: { var };
-						expression: (self binary: '+' left: #x right: 2);
-						yourself.
-	
-	
-	fctStatement famix: (FamixF77StatementFunction new 
-		name: fctStatement name;
-		declaredType: (FamixF77TypeIntrinsic new name: 'real');
-		yourself
-	).
-	
-	var famixParameter: (FamixF77Parameter new 
-		name: 'x'; 
-		declaredType: (FamixF77TypeIntrinsic new name: 'real'); 
-		yourself
-	).
-				
-
-	src := FASTFortranProgramMain new 
-		name: 'demo'; 
-		statementBlock: (
-			FASTFortranStatementBlock new
-				statements: {fctStatement}
-		); 
-		yourself.
-
-		
-	dst := src accept: visitor.
-	
-	self assert: dst class equals: FASTFortran2kProgramMain.
-	self assert: dst name equals: 'demo'.
-	self assert: dst internalProcedures size equals: 1.
-	
-	entity := dst internalProcedures first.
-	self assert: entity class equals: FASTFortran2kInternalFunction.
-	self assert: entity name equals: 'fct'.
-	self assert: entity returnType class equals: FASTFortran2kRealType.
-	self assert: entity statementBlock statements size equals: 2.
-	self assert: entity parameters size equals: 1.
-	
-	entity := entity parameters first.
-	self assert: entity class equals: FASTFortran2kScalarVariable.
-	self assert: entity name equals: 'x'.
-
-]
-
-{ #category : 'tests-statement' }
-FASTFortranModelTransformationVisitorTest >> testFunctionStatementCalled [
-	"
-     PROGRAM demo
-     fct()  = 5
-     aVar = fct()
-     END
-
------------------------------
-
-program demo
-	implicit none
-	aVar = fct()
-contains
-    real function fct()
-    fct = 5
-    end function fct
-end program demo
-		
-	"
-	| fastMain res fastFunctionStatement entity fastCallStatement |
-	
-	fastFunctionStatement := FASTFortranFunctionStatement new
-						name: 'fct';
-						parameters: {};
-						expression: (self integerLiteral: 5);
-						yourself.
-	
-	
-	fastFunctionStatement famix: (FamixF77StatementFunction new 
-		name: fastFunctionStatement name;
-		declaredType: (FamixF77TypeIntrinsic new name: 'real');
-		yourself
-	).
-	
-	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
-
-	fastMain := FASTFortranProgramMain new 
-		name: 'demo';
-		famix: (FamixF77PUMain new programFile: famixProgramFile) ;
-		statementBlock: (self statementBlock: {
-			fastFunctionStatement .
-			fastCallStatement } ) ;
-		yourself.
-
-	fastFunctionStatement famix parentEntity: fastMain famix.
-
-	fastCallStatement expression famix: (
-		FamixF77Invocation new
-			sender: fastMain famix ;
-			addCandidate: fastFunctionStatement famix ;
-			yourself
-		).
-
-	fastProgramFile addProgramUnit: fastMain.
-
-	res := fastProgramFile accept: visitor.
-
-	self assert: res programUnit size equals: 1.
-	res := res programUnit anyOne.
-	
-	self assert: res class equals: FASTFortran2kProgramMain.
-	self assert: res name equals: 'demo'.
-	self assert: res internalProcedures size equals: 1.
-	
-	entity := res internalProcedures first.
-	self assert: entity class equals: FASTFortran2kInternalFunction.
-	self assert: entity name equals: 'fct'.
-	self assert: entity returnType class equals: FASTFortran2kRealType.
-	self assert: entity statementBlock statements size equals: 1.
-	self assert: entity parameters size equals: 0.
-	
-]
-
 { #category : 'running' }
 FASTFortranModelTransformationVisitorTest >> testMultipleProceduresMovedToModule [
 	"
@@ -625,6 +482,153 @@ translated in
 	self assert: res statementBlock first name equals: 'inc_obj_mod'.
 	self assert: res statementBlock second class equals: FASTFortran2kImplicitStatement.
 
+]
+
+{ #category : 'tests-statement' }
+FASTFortranModelTransformationVisitorTest >> testProgramMainWithFunctionStatement [
+	"
+     PROGRAM demo
+     fct(x)  = x + 2
+     END
+
+program demo
+	implicit none
+contains
+    real function fct(x)
+	 real, intent(in) :: x
+    fct = x + 2
+    end function fct
+end program demo
+		
+	"
+	| src dst var fctStatement entity |
+	
+	var := self scalarVariable: #x.
+	
+	fctStatement := FASTFortranFunctionStatement new
+						name: 'fct';
+						parameters: { var };
+						expression: (self binary: '+' left: #x right: 2);
+						yourself.
+	
+	
+	fctStatement famix: (FamixF77StatementFunction new 
+		name: fctStatement name;
+		declaredType: (FamixF77TypeIntrinsic new name: 'real');
+		yourself
+	).
+	
+	var famixParameter: (FamixF77Parameter new 
+		name: 'x'; 
+		declaredType: (FamixF77TypeIntrinsic new name: 'real'); 
+		yourself
+	).
+				
+
+	src := FASTFortranProgramMain new 
+		name: 'demo'; 
+		statementBlock: (
+			FASTFortranStatementBlock new
+				statements: {fctStatement}
+		); 
+		yourself.
+
+		
+	dst := src accept: visitor.
+	
+	self assert: dst class equals: FASTFortran2kProgramMain.
+	self assert: dst name equals: 'demo'.
+	self assert: dst internalProcedures size equals: 1.
+	
+	entity := dst internalProcedures first.
+	self assert: entity class equals: FASTFortran2kInternalFunction.
+	self assert: entity name equals: 'fct'.
+	self assert: entity returnType class equals: FASTFortran2kRealType.
+	self assert: entity statementBlock statements size equals: 2.
+	self assert: entity parameters size equals: 1.
+	
+	entity := entity parameters first.
+	self assert: entity class equals: FASTFortran2kScalarVariable.
+	self assert: entity name equals: 'x'.
+
+]
+
+{ #category : 'tests-statement' }
+FASTFortranModelTransformationVisitorTest >> testProgramMainWithFunctionStatementCalled [
+	"
+     PROGRAM demo
+     fct()  = 5
+     aVar = fct()
+     END
+
+-----------------------------
+
+program demo
+	implicit none
+	aVar = fct()
+contains
+    real function fct()
+    fct = 5
+    end function fct
+end program demo
+		
+	"
+	| fastMain res fastFunctionStatement entity fastCallStatement |
+	
+	fastFunctionStatement := FASTFortranFunctionStatement new
+						name: 'fct';
+						parameters: {};
+						expression: (self integerLiteral: 5);
+						yourself.
+	
+	
+	fastFunctionStatement famix: (FamixF77StatementFunction new 
+		name: fastFunctionStatement name;
+		declaredType: (FamixF77TypeIntrinsic new name: 'real');
+		yourself
+	).
+	
+	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
+
+	fastMain := FASTFortranProgramMain new 
+		name: 'demo';
+		famix: (FamixF77PUMain new programFile: famixProgramFile) ;
+		statementBlock: (self statementBlock: {
+			fastFunctionStatement .
+			fastCallStatement } ) ;
+		yourself.
+
+	fastFunctionStatement famix parentEntity: fastMain famix.
+
+	fastCallStatement expression famix: (
+		FamixF77Invocation new
+			sender: fastMain famix ;
+			addCandidate: fastFunctionStatement famix ;
+			yourself
+		).
+
+	fastProgramFile addProgramUnit: fastMain.
+
+	res := fastProgramFile accept: visitor.
+
+	self assert: res programUnit size equals: 1.
+	res := res programUnit anyOne.
+	
+	self assert: res class equals: FASTFortran2kProgramMain.
+	self assert: res name equals: 'demo'.
+	self assert: res statementBlock statements size equals: 2.
+	self assert: res statementBlock statements first class equals: FASTFortran2kImplicitStatement.
+	self assert: res statementBlock statements second class equals: FASTFortran2kAssignmentStatement.
+
+	self assert: res internalProcedures size equals: 1.
+	
+	entity := res internalProcedures first.
+	self assert: entity class equals: FASTFortran2kInternalFunction.
+	self assert: entity name equals: 'fct'.
+	self assert: entity returnType class equals: FASTFortran2kRealType.
+	self assert: entity statementBlock statements size equals: 1.
+	self assert: entity parameters size equals: 0.
+	
 ]
 
 { #category : 'tests-statement' }
