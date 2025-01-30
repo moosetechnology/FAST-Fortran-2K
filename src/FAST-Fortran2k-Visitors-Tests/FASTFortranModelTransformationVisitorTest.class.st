@@ -175,6 +175,12 @@ FASTFortranModelTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToDer
 ]
 
 { #category : 'running' }
+FASTFortranModelTransformationVisitorTest >> testEsopeTwoSegmentsInTwoModules [
+
+	self fail: #TODO
+]
+
+{ #category : 'running' }
 FASTFortranModelTransformationVisitorTest >> testMultipleProceduresMovedToModule [
 	"
 C	--------someFile.f----------------
@@ -238,11 +244,89 @@ C	--------end someFile_mod.f90----------------
 ]
 
 { #category : 'running' }
+FASTFortranModelTransformationVisitorTest >> testMultipleProceduresWithoutUse [
+	"
+C	--------someFile.f----------------
+	subroutine sub1
+	end
+	subroutine sub2
+	call sub1()
+	end
+C  -----end someFile.f --------------
+
+C	--------someFile_mod.f90----------------
+module sub_mod
+	implicit none
+contains
+	subroutine sub1()
+	end subroutine sub1
+	subroutine sub2()
+	call sub1()
+	end subroutine sub2
+end sub_mod
+C	--------end someFile_mod.f90----------------
+
+	"
+
+	| subroutine1 subroutine2 res module fastCallStatement |
+	
+	subroutine1 := FASTFortranSubroutine new
+		name: 'sub1' ;
+		statementBlock: FASTFortranStatementBlock new ;
+		famix: (FamixF77PUSubroutine new name: 'sub1') ; 
+			yourself.
+
+	fastCallStatement := self callStatement: 'sub1' arguments: #().
+
+	subroutine2 := FASTFortranSubroutine new
+		name: 'sub2' ;
+		statementBlock: (self statementBlock: { fastCallStatement } ) ;
+		famix: (FamixF77PUSubroutine new name: 'sub2') ; 
+			yourself.
+
+	fastCallStatement famix: (
+		FamixF77Invocation new
+			sender: subroutine2 famix ;
+			addCandidate: subroutine1 famix ;
+			yourself
+		).
+
+	fastProgramFile
+	 	addProgramUnit: subroutine1 ;
+	 	addProgramUnit: subroutine2.
+		
+	res := fastProgramFile accept: visitor.
+	
+	self assert: res class equals: FASTFortran2kProgramFile.
+	self assert: res programUnit size equals: 1.
+	
+	module := res programUnit anyOne.
+	self assert: module class equals: FASTFortran2kModule.
+	self assert: module procedures size equals: 2.
+
+	self skip: 'need to implement IMPLICIT in modules'.
+	self assert: module statementBlock statements size equals: 1.
+	self assert: module statementBlock statements anyOne class equals: FASTFortran2kImplicitStatement.
+
+]
+
+{ #category : 'running' }
+FASTFortranModelTransformationVisitorTest >> testProcedureCallingProcedureOtherModule [
+
+	self fail: #TODO
+]
+
+{ #category : 'running' }
+FASTFortranModelTransformationVisitorTest >> testProcedureCallingProcedureSameModule [
+
+	self fail: #TODO
+]
+
+{ #category : 'running' }
 FASTFortranModelTransformationVisitorTest >> testProcedureInProgFileMovedToModule [
 	"
 C	--------someFile.f----------------
 	subroutine sub
-	print*, 'hello'
 	end
 C  -----end someFile.f --------------
 
@@ -251,7 +335,6 @@ module someFile_mod
 	implicit none
 contains
 	subroutine sub()
-	print *, 'hello'
 	end subroutine sub
 end module someFile_mod
 C	--------end someFile_mod.f90----------------
@@ -262,14 +345,7 @@ C	--------end someFile_mod.f90----------------
 	
 	subroutine := FASTFortranSubroutine new 
 			name: 'sub'; 
-			statementBlock: (FASTFortranStatementBlock new
-				statements: {
-					FASTFortranPrintStatement new
-						format: FASTFortranAsterisk new;
-						arguments: { FASTFortranCharacterLiteral new primitiveValue: 'Hello' }; 
-						yourself
-				}
-			); 
+			statementBlock: (self statementBlock: #()) ; 
 			yourself.
 
 	fastProgramFile addProgramUnit: subroutine.
@@ -289,11 +365,18 @@ C	--------end someFile_mod.f90----------------
 	res := res procedures first.
 	self assert: res class equals: FASTFortran2kSubroutine.
 	self assert: res name equals: 'sub'.
-	self assert: res parameters size equals: 0.
-	self assert: res statementBlock statements size equals: 1.
-	self assert: res statementBlock statements first class equals: FASTFortran2kPrintStatement.
-	
+]
 
+{ #category : 'running' }
+FASTFortranModelTransformationVisitorTest >> testProcedureWithFunctionStatementCalled [
+
+	self fail: #TODO
+]
+
+{ #category : 'tests-statement' }
+FASTFortranModelTransformationVisitorTest >> testProcedureWithPointeurDeclaration [
+
+	self fail: #TODO
 ]
 
 { #category : 'running' }
@@ -301,6 +384,7 @@ FASTFortranModelTransformationVisitorTest >> testProgramAndProcedureMovedToProgr
 	"
 	subroutine sub
 	end
+
 	program demo
 	call sub()
 	end
@@ -756,4 +840,65 @@ C	--------end someFile.f90----------------
 	stmt := res statementBlock statements third.
 	self assert: stmt class equals: FASTFortran2kCallStatement.
 
+]
+
+{ #category : 'tests-statement' }
+FASTFortranModelTransformationVisitorTest >> testProgramWithPointeurDeclaration [
+    "
++------ someFile.E ---------------------------------+
+|      program main                                 |
+|      pointeur f.foo
+|      end                                          |
++---------------------------------------------------+
+
+program main
+    use :: foo_mod
+    implicit none
+    type(point) :: f
+end program main
+    "
+
+    | pointerDeclarator programMain res stmt |
+
+    pointerDeclarator := FASTEsopePointerDeclarationStatement new
+        addPointerDeclarator: (FASTEsopePointerDeclarator new 
+            pointedTypeName: 'foo';
+            variableDeclarator: (self variableDeclarator: #f);
+            yourself
+        );
+        famix: (FamixF77Variable new 
+            name: 'f'; 
+            declaredType: (FamixEsopeSegment new name: 'foo'); 
+            yourself 
+        );
+        yourself.
+
+    programMain := FASTFortranProgramMain new 
+        name: 'main';
+        statementBlock: (self statementBlock: {pointerDeclarator});
+        yourself.
+
+
+    programMain famix: (FamixF77PUMain new name: 'main'; programFile: famixProgramFile).
+
+    fastProgramFile addProgramUnit: programMain.
+
+    res := fastProgramFile accept: visitor.
+    
+    self assert: res programUnit size equals: 1.
+    res := res programUnit anyOne.
+    self assert: res class equals: FASTFortran2kProgramMain.
+    self assert: res name equals: 'main'.
+    self assert: res statementBlock statements size equals: 3.
+    
+    stmt := res statementBlock statements first.
+    self assert: stmt class equals: FASTFortran2kUseStatement.
+    self assert: stmt name equals: 'foo_mod'.
+    
+    stmt := res statementBlock statements second.
+    self assert: res class equals: FASTFortran2kImplicitStatement.
+    
+    
+    stmt := res statementBlock statements third.
+    self assert: res class equals: FASTFortran2kDerivedTypeDeclaration.
 ]
