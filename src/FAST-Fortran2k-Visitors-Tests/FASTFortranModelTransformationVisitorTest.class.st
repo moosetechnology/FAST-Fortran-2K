@@ -1,6 +1,10 @@
 Class {
 	#name : 'FASTFortranModelTransformationVisitorTest',
 	#superclass : 'FASTFortranAbstractVisitorTest',
+	#instVars : [
+		'fastProgramFile',
+		'famixProgramFile'
+	],
 	#category : 'FAST-Fortran2k-Visitors-Tests',
 	#package : 'FAST-Fortran2k-Visitors-Tests'
 }
@@ -24,6 +28,19 @@ FASTFortranModelTransformationVisitorTest >> fooSegment [
 FASTFortranModelTransformationVisitorTest >> newVisitor [
 
 	^FASTFortranModelTransformationVisitor new
+]
+
+{ #category : 'running' }
+FASTFortranModelTransformationVisitorTest >> setUp [ 
+
+	super setUp.
+
+	
+	fastProgramFile := FASTFortranProgramFile new.
+	famixProgramFile := FamixF77ProgramFile new filename: 'someFile.f'.
+
+	fastProgramFile famix: famixProgramFile.
+	
 ]
 
 { #category : 'running' }
@@ -158,7 +175,7 @@ FASTFortranModelTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToDer
 ]
 
 { #category : 'tests-statement' }
-FASTFortranModelTransformationVisitorTest >> testFctStatement [
+FASTFortranModelTransformationVisitorTest >> testFunctionStatement [
 	"
      PROGRAM demo
      fct(x)  = x + 2
@@ -226,6 +243,75 @@ end program demo
 
 ]
 
+{ #category : 'tests-statement' }
+FASTFortranModelTransformationVisitorTest >> testFunctionStatementCalled [
+	"
+     PROGRAM demo
+     fct()  = 5
+     fct()
+     END
+
+program demo
+	implicit none
+	fct()
+contains
+    real function fct()
+    fct = 5
+    end function fct
+end program demo
+		
+	"
+	| main dst fctStatement entity f77SourceFile callStatement |
+	
+	fctStatement := FASTFortranFunctionStatement new
+						name: 'fct';
+						parameters: {};
+						expression: (self integerLiteral: 5);
+						yourself.
+	
+	
+	fctStatement famix: (FamixF77StatementFunction new 
+		name: fctStatement name;
+		declaredType: (FamixF77TypeIntrinsic new name: 'real');
+		yourself
+	).
+	
+	callStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
+
+	f77SourceFile := FASTFortranProgramFile new
+	 	famix: (FamixF77ProgramFile new filename: 'demo.f') ;
+		yourself.
+	
+	main := FASTFortranProgramMain new 
+		name: 'demo'; 
+		statementBlock: (
+			FASTFortranStatementBlock new
+				statements: {
+					fctStatement .
+					callStatement }
+		) ;
+		yourself.
+
+		
+	dst := main accept: visitor.
+	
+	self assert: dst class equals: FASTFortran2kProgramMain.
+	self assert: dst name equals: 'demo'.
+	self assert: dst internalProcedures size equals: 1.
+	
+	entity := dst internalProcedures first.
+	self assert: entity class equals: FASTFortran2kInternalFunction.
+	self assert: entity name equals: 'fct'.
+	self assert: entity returnType class equals: FASTFortran2kRealType.
+	self assert: entity statementBlock statements size equals: 2.
+	self assert: entity parameters size equals: 1.
+	
+	entity := entity parameters first.
+	self assert: entity class equals: FASTFortran2kScalarVariable.
+	self assert: entity name equals: 'x'.
+
+]
+
 { #category : 'running' }
 FASTFortranModelTransformationVisitorTest >> testMultipleProceduresMovedToModule [
 	"
@@ -249,7 +335,7 @@ C	--------end someFile_mod.f90----------------
 
 	"
 
-	| f77SourceFile subroutine function res module |
+	| subroutine function res module |
 	
 	subroutine := FASTFortranSubroutine new
 		name: 'sub' ;
@@ -265,13 +351,11 @@ C	--------end someFile_mod.f90----------------
 			declaredType: (FamixF77TypeIntrinsic new name: 'real')) ;
 		yourself.
 
-	f77SourceFile := FASTFortranProgramFile new    "fileName: 'sub.f'"
+	fastProgramFile
 	 	addProgramUnit: subroutine ;
-	 	addProgramUnit: function ;
-		famix: (FamixF77ProgramFile new filename: 'someFile.f') ;
-		yourself.
+	 	addProgramUnit: function.
 		
-	res := f77SourceFile accept: visitor.
+	res := fastProgramFile accept: visitor.
 	
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res programUnit size equals: 1.
@@ -292,27 +376,27 @@ C	--------end someFile_mod.f90----------------
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testProcedureInProgFileMovedTOModule [
+FASTFortranModelTransformationVisitorTest >> testProcedureInProgFileMovedToModule [
 	"
-C	--------sub.f----------------
+C	--------someFile.f----------------
 	subroutine sub
 	print*, 'hello'
 	end
-C  -----end sub.f --------------
+C  -----end someFile.f --------------
 
-C	--------sub_mod.f90----------------
-module sub_mod
+C	--------someFile_mod.f90----------------
+module someFile_mod
 	implicit none
 contains
 	subroutine sub()
 	print *, 'hello'
 	end subroutine sub
-end sub_mod
-C	--------end sub_mod.f90----------------
+end module someFile_mod
+C	--------end someFile_mod.f90----------------
 
 	"
 
-	| f77SourceFile subroutine res |
+	| subroutine res |
 	
 	subroutine := FASTFortranSubroutine new 
 			name: 'sub'; 
@@ -326,22 +410,18 @@ C	--------end sub_mod.f90----------------
 			); 
 			yourself.
 
-	f77SourceFile := FASTFortranProgramFile new "fileName: 'sub.f'"
-	 	addProgramUnit: subroutine;
-		yourself.
-	
-	
-	f77SourceFile famix: (FamixF77ProgramFile new filename: 'sub.f').
+	fastProgramFile addProgramUnit: subroutine.
+
 	subroutine famix: (FamixF77PUSubroutine new name: 'sub').
 		
-	res := f77SourceFile accept: visitor.
+	res := fastProgramFile accept: visitor.
 	
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res programUnit size equals: 1.
 	
 	res := res programUnit first.
 	self assert: res class equals: FASTFortran2kModule.
-	self assert: res name equals: 'sub_mod'.
+	self assert: res name equals: 'someFile_mod'.
 	self assert: res procedures size equals: 1.
 	
 	res := res procedures first.
@@ -363,65 +443,53 @@ FASTFortranModelTransformationVisitorTest >> testProgramAndProcedureMovedToProgr
 	call sub()
 	end
 
+------------------------
 
-module subFile_mod
+module someFile_mod
 	implicit none
 contains
 	subroutine sub()
 	end subroutine sub
-end module subFile_mod
+end module someFile_mod
 
 program demo
-	use :: subFile_mod
+	use :: someFile_mod
 	implicit none
 	call sub()
 end program demo
 
 "
 
-	| sourceFileSrc sourceFileDst subroutine programMain subCallStatement famixF77ProgramFile stmt entity |
-	
-	
-	famixF77ProgramFile := FamixF77ProgramFile new filename: 'demo.f'.
-	
-	subroutine := FASTFortranSubroutine new 
-			name: 'sub'; 
-			statementBlock: FASTFortranStatementBlock new;
-			famix: (FamixF77PUSubroutine new name: 'sub'; programFile: famixF77ProgramFile);
+	| sourceFileDst subroutine programMain subCallStatement stmt entity |
+
+	subroutine := (self subroutine: 'sub')
+			famix: (FamixF77PUSubroutine new name: 'sub'; programFile: famixProgramFile);
 			yourself.
 
-
-
-	subCallStatement := FASTFortranCallStatement new 
-		name: 'sub' ; 
-		arguments: {};
-		yourself.
+	subCallStatement := self callStatement: 'sub' arguments: #().
 	
 	programMain := FASTFortranProgramMain new 
 		name: 'demo';
-		statementBlock: (FASTFortranStatementBlock new statements: {subCallStatement});
-		famix: (FamixF77PUMain new name: 'demo'; programFile: famixF77ProgramFile);
+		statementBlock: (self statementBlock: {subCallStatement});
+		famix: (FamixF77PUMain new name: 'demo'; programFile: famixProgramFile);
 		yourself.
-	
+
 	subCallStatement  famix: (FamixF77Invocation new 
 		sender: programMain famix;
 		addCandidate: subroutine famix;
 		yourself
 	).
 	
-	sourceFileSrc := FASTFortranProgramFile new "fileName: 'demo.f'"
-	 	programUnit: { subroutine . programMain };
-		famix: famixF77ProgramFile;
-		yourself.
+	fastProgramFile programUnit: { subroutine . programMain }.
 
-	sourceFileDst := sourceFileSrc accept: visitor.
+	sourceFileDst := fastProgramFile accept: visitor.
 	
 	self assert: sourceFileDst class equals: FASTFortran2kProgramFile.
 	self assert: sourceFileDst programUnit size equals: 2.
 	
 	entity := sourceFileDst programUnit first.
 	self assert: entity class equals: FASTFortran2kModule.
-	self assert: entity name equals: 'demo_mod'.
+	self assert: entity name equals: 'someFile_mod'.
 	self assert: entity procedures size equals: 1.
 	
 	entity := entity procedures first.
@@ -435,7 +503,7 @@ end program demo
 	
 	stmt := entity statementBlock statements first.
 	self assert: stmt class equals: FASTFortran2kUseStatement.
-	self assert: stmt name equals: 'demo_mod'.
+	self assert: stmt name equals: 'someFile_mod'.
 	
 	stmt := entity statementBlock statements second.
 	self assert: stmt class equals: FASTFortran2kImplicitStatement.
@@ -557,21 +625,21 @@ translated in
 { #category : 'running' }
 FASTFortranModelTransformationVisitorTest >> testProgramWithExternalSubroutineInvocation [
 	"
-	subrotine 'sub' defined in file: 'someFile.f'
+	subrotine 'sub' defined in another externalFile.f'
 
-C	--------mainFile.f----------------
+C	--------someFile.f----------------
 	program demo
 	call sub
 	end
-C  -----end mainFile.f --------------
+C  -----end someFile.f --------------
 
-C	--------mainFile.f90----------------
+C	--------someFile.f90----------------
 program demo
-	use :: someFile_mod
+	use :: externalFile_mod
 	implicit none
 	call sub()
 end program demo
-C	--------end mainFile.f90----------------
+C	--------end someFile.f90----------------
 	"
 
 	| subroutine programMain subroutineInvocation res  srcMainFile stmt |
@@ -580,7 +648,7 @@ C	--------end mainFile.f90----------------
 			name: 'sub'; 
 			famix: (FamixF77PUSubroutine new
 				name: 'sub' ;
-				programFile: (FamixF77ProgramFile new filename: 'someFile.f'));
+				programFile: (FamixF77ProgramFile new filename: 'externalFile.f'));
 			yourself.
 			
 	subroutineInvocation := FASTFortranCallStatement new 
@@ -593,7 +661,7 @@ C	--------end mainFile.f90----------------
 			statementBlock: ( FASTFortranStatementBlock new statements: { subroutineInvocation } );
 			famix: (FamixF77PUMain new
 				name: 'demo' ;
-				programFile: (FamixF77ProgramFile new filename: 'mainFile.f'));
+				programFile: famixProgramFile);
 			yourself.
 	
 	subroutineInvocation famix: (
@@ -603,12 +671,9 @@ C	--------end mainFile.f90----------------
 			yourself
 		).
 		
-	srcMainFile := FASTFortranProgramFile new    "fileName: 'mainFile'"
-	 	addProgramUnit: programMain ;
-		famix: (FamixF77ProgramFile new filename: 'mainFile') ;
-		yourself.
+	fastProgramFile addProgramUnit: programMain.
 
-	res := srcMainFile accept: visitor.
+	res := fastProgramFile accept: visitor.
 
 	self assert: res programUnit size equals: 1.
 	res := res programUnit anyOne.
@@ -618,7 +683,7 @@ C	--------end mainFile.f90----------------
 	
 	stmt := res statementBlock statements first.
 	self assert: stmt class equals: FASTFortran2kUseStatement.
-	self assert: stmt name equals: 'someFile_mod'.
+	self assert: stmt name equals: 'externalFile_mod'.
 	
 	stmt := res statementBlock statements second.
 	self assert: stmt class equals: FASTFortran2kImplicitStatement.
