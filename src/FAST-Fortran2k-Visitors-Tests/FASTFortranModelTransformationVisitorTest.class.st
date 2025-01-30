@@ -175,6 +175,42 @@ FASTFortranModelTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToDer
 ]
 
 { #category : 'tests-statement' }
+FASTFortranModelTransformationVisitorTest >> testFunctionCall [
+	"
+     fct(x,3)
+
+-----------------------------
+
+	fct(x,3)
+	"
+	|  functionCall res arg |
+	
+	functionCall := self
+		functionCall: 'fct'
+		arguments: {
+			self scalarVariable: 'x' .
+			self integerLiteral: 3
+		}.
+
+		
+	res := functionCall accept: visitor.
+	
+	self assert: res class equals: FASTFortran2kFunctionCall.
+	self assert: res name equals: 'fct'.
+	self assert: res arguments size equals: 2.
+
+	arg := res arguments first.
+	self assert: arg class equals: FASTFortran2kScalarVariable.
+	self assert: arg name equals: 'x'.
+
+	arg := res arguments second.
+	self assert: arg class equals: FASTFortran2kIntegerLiteral .
+	self assert: arg primitiveValue equals: 3.
+
+
+]
+
+{ #category : 'tests-statement' }
 FASTFortranModelTransformationVisitorTest >> testFunctionStatement [
 	"
      PROGRAM demo

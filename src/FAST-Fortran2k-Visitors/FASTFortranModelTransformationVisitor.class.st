@@ -1324,6 +1324,19 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranFunction: aFASTFortranF
 	^subroutine.
 ]
 
+{ #category : 'visiting - expressions' }
+FASTFortranModelTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFortranFunctionCall [
+
+	self visitFASTFortranTExpression: aFASTFortranFunctionCall.
+	self visitFASTFortranTWithArguments: aFASTFortranFunctionCall.
+
+	^FASTFortran2kFunctionCall new
+		mooseModel: model;
+		name: aFASTFortranFunctionCall name ;
+		arguments: (aFASTFortranFunctionCall arguments collect: [:arg | arg accept: self]) ;
+		yourself
+]
+
 { #category : 'visiting - statements' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranFunctionStatement: aFunctionStatementNode [
 
