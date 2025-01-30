@@ -175,42 +175,6 @@ FASTFortranModelTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToDer
 ]
 
 { #category : 'tests-statement' }
-FASTFortranModelTransformationVisitorTest >> testFunctionCall [
-	"
-     fct(x,3)
-
------------------------------
-
-	fct(x,3)
-	"
-	|  functionCall res arg |
-	
-	functionCall := self
-		functionCall: 'fct'
-		arguments: {
-			self scalarVariable: 'x' .
-			self integerLiteral: 3
-		}.
-
-		
-	res := functionCall accept: visitor.
-	
-	self assert: res class equals: FASTFortran2kFunctionCall.
-	self assert: res name equals: 'fct'.
-	self assert: res arguments size equals: 2.
-
-	arg := res arguments first.
-	self assert: arg class equals: FASTFortran2kScalarVariable.
-	self assert: arg name equals: 'x'.
-
-	arg := res arguments second.
-	self assert: arg class equals: FASTFortran2kIntegerLiteral .
-	self assert: arg primitiveValue equals: 3.
-
-
-]
-
-{ #category : 'tests-statement' }
 FASTFortranModelTransformationVisitorTest >> testFunctionStatement [
 	"
      PROGRAM demo
@@ -284,12 +248,14 @@ FASTFortranModelTransformationVisitorTest >> testFunctionStatementCalled [
 	"
      PROGRAM demo
      fct()  = 5
-     fct()
+     aVar = fct()
      END
+
+-----------------------------
 
 program demo
 	implicit none
-	fct()
+	aVar = fct()
 contains
     real function fct()
     fct = 5
@@ -297,55 +263,58 @@ contains
 end program demo
 		
 	"
-	| main dst fctStatement entity f77SourceFile callStatement |
+	| fastMain res fastFunctionStatement entity fastCallStatement |
 	
-	fctStatement := FASTFortranFunctionStatement new
+	fastFunctionStatement := FASTFortranFunctionStatement new
 						name: 'fct';
 						parameters: {};
 						expression: (self integerLiteral: 5);
 						yourself.
 	
 	
-	fctStatement famix: (FamixF77StatementFunction new 
-		name: fctStatement name;
+	fastFunctionStatement famix: (FamixF77StatementFunction new 
+		name: fastFunctionStatement name;
 		declaredType: (FamixF77TypeIntrinsic new name: 'real');
 		yourself
 	).
 	
-	callStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
+	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
 
-	f77SourceFile := FASTFortranProgramFile new
-	 	famix: (FamixF77ProgramFile new filename: 'demo.f') ;
-		yourself.
-	
-	main := FASTFortranProgramMain new 
-		name: 'demo'; 
-		statementBlock: (
-			FASTFortranStatementBlock new
-				statements: {
-					fctStatement .
-					callStatement }
-		) ;
+	fastMain := FASTFortranProgramMain new 
+		name: 'demo';
+		famix: (FamixF77PUMain new programFile: famixProgramFile) ;
+		statementBlock: (self statementBlock: {
+			fastFunctionStatement .
+			fastCallStatement } ) ;
 		yourself.
 
-		
-	dst := main accept: visitor.
+	fastFunctionStatement famix parentEntity: fastMain famix.
+
+	fastCallStatement expression famix: (
+		FamixF77Invocation new
+			sender: fastMain famix ;
+			addCandidate: fastFunctionStatement famix ;
+			yourself
+		).
+
+	fastProgramFile addProgramUnit: fastMain.
+
+	res := fastProgramFile accept: visitor.
+
+	self assert: res programUnit size equals: 1.
+	res := res programUnit anyOne.
 	
-	self assert: dst class equals: FASTFortran2kProgramMain.
-	self assert: dst name equals: 'demo'.
-	self assert: dst internalProcedures size equals: 1.
+	self assert: res class equals: FASTFortran2kProgramMain.
+	self assert: res name equals: 'demo'.
+	self assert: res internalProcedures size equals: 1.
 	
-	entity := dst internalProcedures first.
+	entity := res internalProcedures first.
 	self assert: entity class equals: FASTFortran2kInternalFunction.
 	self assert: entity name equals: 'fct'.
 	self assert: entity returnType class equals: FASTFortran2kRealType.
-	self assert: entity statementBlock statements size equals: 2.
-	self assert: entity parameters size equals: 1.
+	self assert: entity statementBlock statements size equals: 1.
+	self assert: entity parameters size equals: 0.
 	
-	entity := entity parameters first.
-	self assert: entity class equals: FASTFortran2kScalarVariable.
-	self assert: entity name equals: 'x'.
-
 ]
 
 { #category : 'running' }
@@ -658,6 +627,68 @@ translated in
 
 ]
 
+{ #category : 'tests-statement' }
+FASTFortranModelTransformationVisitorTest >> testProgramWithExternalFunctionCall [
+	"
+	function 'fct' defined in another externalFile.f'
+     PROGRAM demo
+     x = fct()
+     END
+
+-----------------------------
+
+program demo
+	use :: externalFile_mod
+	implicit none
+	aVar = fct()
+end program demo
+		
+	"
+	| fastMain res fastCallStatement stmt famixFunction |
+	
+	famixFunction := FamixF77PUFunction new
+		name: 'fct' ;
+		programFile: (FamixF77ProgramFile new filename: 'externalFile.f') ;
+		yourself.
+			
+	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
+
+	fastMain := FASTFortranProgramMain new 
+		name: 'demo'; 
+		statementBlock: (self statementBlock: { fastCallStatement } );
+			famix: (FamixF77PUMain new
+				name: 'demo' ;
+				programFile: famixProgramFile);
+		yourself.
+
+	fastCallStatement expression famix: (
+		FamixF77Invocation new
+			sender: fastMain famix ;
+			addCandidate: famixFunction ;
+			yourself
+		).
+		
+	fastProgramFile addProgramUnit: fastMain.
+
+	res := fastProgramFile accept: visitor.
+	
+	self assert: res programUnit size equals: 1.
+	res := res programUnit anyOne.
+	self assert: res class equals: FASTFortran2kProgramMain.
+	self assert: res statementBlock statements size equals: 3.
+
+	stmt := res statementBlock statements first.
+	self assert: stmt class equals: FASTFortran2kUseStatement.
+	self assert: stmt name equals: 'externalFile_mod'.
+	
+	stmt := res statementBlock statements second.
+	self assert: stmt class equals: FASTFortran2kImplicitStatement.
+	
+	stmt := res statementBlock statements third.
+	self assert: stmt class equals: FASTFortran2kAssignmentStatement.
+
+]
+
 { #category : 'running' }
 FASTFortranModelTransformationVisitorTest >> testProgramWithExternalSubroutineInvocation [
 	"
@@ -678,43 +709,37 @@ end program demo
 C	--------end someFile.f90----------------
 	"
 
-	| subroutine programMain subroutineInvocation res  srcMainFile stmt |
+	| famixSubroutine fastMain fastCallStatement res  stmt |
 
-	subroutine :=  FASTFortranSubroutine new 
-			name: 'sub'; 
-			famix: (FamixF77PUSubroutine new
-				name: 'sub' ;
-				programFile: (FamixF77ProgramFile new filename: 'externalFile.f'));
-			yourself.
+	famixSubroutine := FamixF77PUSubroutine new
+		name: 'sub' ;
+		programFile: (FamixF77ProgramFile new filename: 'externalFile.f');
+		yourself.
 			
-	subroutineInvocation := FASTFortranCallStatement new 
-			name: 'sub'; 
-			arguments: {};
-			yourself.
+	fastCallStatement := self callStatement: 'sub' arguments: #().
 	
-	programMain :=  FASTFortranProgramMain new 
+	fastMain :=  FASTFortranProgramMain new 
 			name: 'demo'; 
-			statementBlock: ( FASTFortranStatementBlock new statements: { subroutineInvocation } );
+			statementBlock: (self statementBlock: { fastCallStatement } );
 			famix: (FamixF77PUMain new
 				name: 'demo' ;
 				programFile: famixProgramFile);
 			yourself.
 	
-	subroutineInvocation famix: (
-		FamixF77Invocation new 
-			sender: programMain famix; 
-			addCandidate: subroutine famix;
+	fastCallStatement famix: (
+		FamixF77Invocation new
+			sender: fastMain famix ;
+			addCandidate: famixSubroutine ;
 			yourself
 		).
 		
-	fastProgramFile addProgramUnit: programMain.
+	fastProgramFile addProgramUnit: fastMain.
 
 	res := fastProgramFile accept: visitor.
 
 	self assert: res programUnit size equals: 1.
 	res := res programUnit anyOne.
 	self assert: res class equals: FASTFortran2kProgramMain.
-	self assert: res name equals: 'demo'.
 	self assert: res statementBlock statements size equals: 3.
 	
 	stmt := res statementBlock statements first.

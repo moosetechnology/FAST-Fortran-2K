@@ -12,7 +12,7 @@ Class {
 }
 
 { #category : 'helpers' }
-FASTFortranModelTransformationVisitor >> addUseIn: filename to: entity [
+FASTFortranModelTransformationVisitor >> addUseIn: entity to: filename [
 
 	self flag: #FIXME. "how to handle the order of uses statements"
 	entity statementBlock statements 
@@ -24,6 +24,21 @@ FASTFortranModelTransformationVisitor >> addUseIn: filename to: entity [
 		)
 	
 
+]
+
+{ #category : 'helpers' }
+FASTFortranModelTransformationVisitor >> addUsesIn: programUnit [
+
+	useNeeded do: [ :assoc || source target |
+		source := assoc key.
+		target := assoc value.
+
+		(source = programUnit)
+			ifTrue: [
+				(target filename = programUnit parentProgramFile filename)
+				ifFalse: [ self addUseIn: programUnit to: target filename ]
+			]
+	]
 ]
 
 { #category : 'helpers' }
@@ -1141,12 +1156,15 @@ FASTFortranModelTransformationVisitor >> programFile: programFile in: filename m
 	puModule ifNotEmpty: [
 		programFile addProgramUnit: ((self makePuModule: filename)
 				 procedures: puModule;
-				 yourself) ].
+				 yourself).
+		self addUsesIn: programFile programUnit last.
+	].
 
-	puMain ifNotNil: [ programFile addProgramUnit: puMain ].
+	puMain ifNotNil: [ 
+		programFile addProgramUnit: puMain.
+		self addUsesIn: puMain
+	].
 
-	self addUsesIn: filename to: puMain or: puModule.
-	
 	useNeeded removeAll 
 	
 ]
@@ -1251,7 +1269,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranBooleanLiteral: aBoolea
 { #category : 'visiting - statements' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranCallStatement: aFASTFortranCallStatement [
 
-	| callStatement callerProgramFile calledProgramFile |
+	| callStatement callerProgramUnit calledProgramFile |
 
 	callStatement := FASTFortran2kCallStatement new
 		name: aFASTFortranCallStatement name;
@@ -1261,14 +1279,13 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranCallStatement: aFASTFor
 		mooseModel: model;
 		yourself.
 
-	callerProgramFile := aFASTFortranCallStatement famix sender.
+	callerProgramUnit := stack top.
 	calledProgramFile := aFASTFortranCallStatement famix candidates anyOne programFile.
 
-	useNeeded add: callerProgramFile -> calledProgramFile filename.
+	useNeeded add: (callerProgramUnit -> calledProgramFile).
 
 	^ callStatement
-	
-	
+
 ]
 
 { #category : 'visiting - expressions' }
@@ -1327,14 +1344,20 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranFunction: aFASTFortranF
 { #category : 'visiting - expressions' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFortranFunctionCall [
 
-	self visitFASTFortranTExpression: aFASTFortranFunctionCall.
-	self visitFASTFortranTWithArguments: aFASTFortranFunctionCall.
+	| functionCall callerProgramUnit calledProgramFile |
 
-	^FASTFortran2kFunctionCall new
+	functionCall := FASTFortran2kFunctionCall new
 		mooseModel: model;
 		name: aFASTFortranFunctionCall name ;
 		arguments: (aFASTFortranFunctionCall arguments collect: [:arg | arg accept: self]) ;
-		yourself
+		yourself.
+
+	callerProgramUnit := stack top.
+	calledProgramFile := aFASTFortranFunctionCall famix candidates anyOne programFile.
+
+	useNeeded add: (callerProgramUnit -> calledProgramFile).
+
+	^functionCall 
 ]
 
 { #category : 'visiting - statements' }
