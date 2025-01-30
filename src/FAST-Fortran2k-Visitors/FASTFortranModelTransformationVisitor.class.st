@@ -1441,11 +1441,10 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranProgramFile: aFASTFortr
 	| programFile  programUnits |
 
 	programUnits := OrderedCollection new.
-	useNeeded := OrderedCollection new: 2.
+	useNeeded := OrderedCollection new.
 
 	programFile := FASTFortran2kProgramFile new 
-		"filename: (filename, '90');"
-		mooseModel: model;
+		mooseModel: model ;
 		comments: (
 			aFASTFortranProgramFile comments collect: [ :comment | comment accept: self  ]
 		);
