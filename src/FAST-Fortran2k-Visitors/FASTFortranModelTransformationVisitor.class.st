@@ -41,20 +41,6 @@ FASTFortranModelTransformationVisitor >> addUsesIn: programUnit [
 	]
 ]
 
-{ #category : 'helpers' }
-FASTFortranModelTransformationVisitor >> addUsesIn: mainfile to: puMain or: puModule [
-
-	useNeeded do: [ :assoc || source target |
-		source := assoc key.
-		target := assoc value.
-		self flag: #FIXME. "mainFile or target not needed anymore ?"
-
-		(source class = FamixF77PUMain)
-			ifTrue:  [ self addUseIn: target to: puMain ]
-			ifFalse: [ self addUseIn: target to: puModule ]
-	]
-]
-
 { #category : 'visiting - helpers' }
 FASTFortranModelTransformationVisitor >> computeAllocateSegmentAttributes: aFASTFortranSegment [
 
