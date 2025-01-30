@@ -142,10 +142,16 @@ FASTFortranModelTransformationVisitor >> computeProcedureInitialisationAndAlloca
 { #category : 'entity creation' }
 FASTFortranModelTransformationVisitor >> computeProcedureLocalVariablesDimensions: aFASTFortranSegment [
 
-	| maxDim aStream |
-	maxDim := (aFASTFortranSegment statements flatCollect: [ :declaration |
-		           declaration declarators collect: [ :declarator |
-			           declarator dimensions size ] ]) max.
+	| maxDim aStream dimensions |
+	dimensions := aFASTFortranSegment statements 
+		flatCollect: [ :declaration |
+			declaration declarators 
+				collect: [ :declarator | declarator dimensions size ] 
+		].
+
+	maxDim := dimensions 
+		ifNotEmpty: [ dimensions max ] 
+		ifEmpty:    [ 0 ].
 
 	aStream := WriteStream on: ''.
 
@@ -1166,6 +1172,36 @@ FASTFortranModelTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEs
 ]
 
 { #category : 'visiting' }
+FASTFortranModelTransformationVisitor >> visitFASTEsopePointerDeclarationStatement: aFASTEsopePointerDeclarationStatement [
+	^aFASTEsopePointerDeclarationStatement pointerDeclarators 
+		collect: [ :pointerDeclarator | pointerDeclarator accept: self ].
+	
+]
+
+{ #category : 'visiting' }
+FASTFortranModelTransformationVisitor >> visitFASTEsopePointerDeclarator: aFASTEsopePointerDeclarator [ 
+	
+	| esopeDeclarator callerProgramUnit pointerDeclaredType |
+
+	esopeDeclarator := FASTFortran2kDerivedTypeDeclaration new 
+		type: (FASTFortran2kUserDefinedType new 
+			name: aFASTEsopePointerDeclarator pointedTypeName;
+			mooseModel: model;
+			yourself
+		);
+		addDeclarator: (aFASTEsopePointerDeclarator variableDeclarator accept: self);
+		mooseModel: model;
+		yourself.
+
+	callerProgramUnit := stack top.
+	pointerDeclaredType := aFASTEsopePointerDeclarator famix pointedTypeName.
+
+	useNeeded add: (callerProgramUnit  -> pointerDeclaredType).
+
+	^esopeDeclarator
+]
+
+{ #category : 'visiting' }
 FASTFortranModelTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
 
 	| module segmentName |
@@ -1557,14 +1593,18 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranStatementBlock: aFASTFo
 	f2kStatementBlock := FASTFortran2kStatementBlock new
 		  mooseModel: model;
 		  yourself.
-	
-	
+
 	aFASTFortranStatementBlock statements
 		do: [ :statement | | f2kStatement |
 			f2kStatement := statement accept: self.
 
 			statement class = FASTFortranFunctionStatement
-				ifFalse: [ f2kStatementBlock addStatement: f2kStatement ]
+				ifFalse: [ 
+					f2kStatement isCollection
+						ifTrue: [ f2kStatementBlock statements addAll: f2kStatement ]
+						ifFalse: [  f2kStatementBlock addStatement: f2kStatement ]
+					
+				]
 				ifTrue:  [ programUnit addInternalProcedure: f2kStatement ]
 		].
 
