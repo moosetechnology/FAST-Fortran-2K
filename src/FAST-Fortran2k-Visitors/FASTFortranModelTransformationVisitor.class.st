@@ -12,13 +12,13 @@ Class {
 }
 
 { #category : 'helpers' }
-FASTFortranModelTransformationVisitor >> addUseIn: entity to: filename [
+FASTFortranModelTransformationVisitor >> addUseIn: aFASTFortran2kEntity to: moduleName [
 
 	self flag: #FIXME. "how to handle the order of uses statements"
-	entity statementBlock statements 
+	aFASTFortran2kEntity statementBlock statements 
 		addFirst: (
 		FASTFortran2kUseStatement new 
-			name: (($. split: filename) first, '_mod');
+			name: moduleName ;
 			mooseModel: model;
 			yourself
 		)
@@ -28,15 +28,17 @@ FASTFortranModelTransformationVisitor >> addUseIn: entity to: filename [
 
 { #category : 'helpers' }
 FASTFortranModelTransformationVisitor >> addUsesIn: programUnit [
+	"programUnit is a FASTFortran2k ProgramUnit.
+	 Checking if it needs some 'use' instructions"
 
 	useNeeded do: [ :assoc || source target |
-		source := assoc key.
-		target := assoc value.
+		source := assoc key.    "a FASTFortran2k ProgramUnit or a DerivedTypeDefinition"
+		target := assoc value.  "a FamixF77 ProgramFile or Segment"
 
 		(source = programUnit)
 			ifTrue: [
-				(target filename = programUnit parentProgramFile filename)
-				ifFalse: [ self addUseIn: programUnit to: target filename ]
+				(source needsUseFor: target)
+					ifTrue: [ self addUseIn: programUnit to: target migratedModuleName ]
 			]
 	]
 ]
@@ -241,6 +243,13 @@ FASTFortranModelTransformationVisitor >> computeSegmentsDimensions: aFASTFortran
 FASTFortranModelTransformationVisitor >> ensureEmptyStream [
 
 	tmpStream := WriteStream with: ''
+]
+
+{ #category : 'helpers' }
+FASTFortranModelTransformationVisitor >> fortran2kFilename: f77Filename [
+	"assuming f77Filename is of the form: 'xyz.f' "
+	
+	^f77Filename , '90'
 ]
 
 { #category : 'initialization' }
@@ -1134,7 +1143,7 @@ FASTFortranModelTransformationVisitor >> model [
 ]
 
 { #category : 'helpers' }
-FASTFortranModelTransformationVisitor >> programFile: programFile in: filename modules: programUnits [
+FASTFortranModelTransformationVisitor >> programFile: programFile in: f77Filename modules: programUnits [
 
 	| puModule puMain |
 	puModule := OrderedCollection new.
@@ -1146,14 +1155,17 @@ FASTFortranModelTransformationVisitor >> programFile: programFile in: filename m
 			ifFalse: [ puModule add: progUnit ] ].
 
 	puModule ifNotEmpty: [
-		programFile addProgramUnit: ((self makePuModule: filename)
+		programFile addProgramUnit: ((self makePuModule: f77Filename)
 				 procedures: puModule;
 				 yourself).
 		self addUsesIn: programFile programUnit last.
 	].
 
 	puMain ifNotNil: [ 
-		programFile addProgramUnit: puMain.
+		programFile
+			addProgramUnit: puMain ;
+			filename: (self fortran2kFilename: f77Filename).
+
 		self addUsesIn: puMain
 	].
 
@@ -1302,7 +1314,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranCallStatement: aFASTFor
 		yourself.
 
 	callerProgramUnit := stack top.
-	calledProgramFile := aFASTFortranCallStatement famix candidates anyOne programFile.
+	calledProgramFile := aFASTFortranCallStatement famix candidates anyOne.
 
 	useNeeded add: (callerProgramUnit -> calledProgramFile).
 
@@ -1375,7 +1387,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFort
 		yourself.
 
 	callerProgramUnit := stack top.
-	calledProgramFile := aFASTFortranFunctionCall famix candidates anyOne programFile.
+	calledProgramFile := aFASTFortranFunctionCall famix candidates anyOne.
 
 	useNeeded add: (callerProgramUnit -> calledProgramFile).
 
@@ -1477,11 +1489,10 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranProgramFile: aFASTFortr
 	| programFile  programUnits |
 
 	programUnits := OrderedCollection new.
-	useNeeded := OrderedCollection new: 2.
+	useNeeded := OrderedCollection new.
 
 	programFile := FASTFortran2kProgramFile new 
-		"filename: (filename, '90');"
-		mooseModel: model;
+		mooseModel: model ;
 		comments: (
 			aFASTFortranProgramFile comments collect: [ :comment | comment accept: self  ]
 		);
