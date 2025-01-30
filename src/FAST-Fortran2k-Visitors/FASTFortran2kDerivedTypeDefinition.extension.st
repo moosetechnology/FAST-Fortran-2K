@@ -6,3 +6,9 @@ FASTFortran2kDerivedTypeDefinition >> accept: aVisitor [
 	^ aVisitor visitFASTFortran2kDerivedTypeDefinition: self.
 
 ]
+
+{ #category : '*FAST-Fortran2k-Visitors' }
+FASTFortran2kDerivedTypeDefinition >> migratedModuleName [
+
+	^self statementContainer fastBehaviouralParent migratedModuleName
+]
