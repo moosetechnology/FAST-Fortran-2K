@@ -6,3 +6,9 @@ FASTFortran2kProcedure >> accept: aVisitor [
 	^ aVisitor visitFASTFortran2kProcedure: self.
 
 ]
+
+{ #category : '*FAST-Fortran2k-Visitors' }
+FASTFortran2kProcedure >> migratedModuleName [
+
+	^self module migratedModuleName
+]
