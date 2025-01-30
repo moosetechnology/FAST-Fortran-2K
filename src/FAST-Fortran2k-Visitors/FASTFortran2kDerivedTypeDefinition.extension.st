@@ -12,3 +12,10 @@ FASTFortran2kDerivedTypeDefinition >> migratedModuleName [
 
 	^self statementContainer fastBehaviouralParent migratedModuleName
 ]
+
+{ #category : '*FAST-Fortran2k-Visitors' }
+FASTFortran2kDerivedTypeDefinition >> needsUseFor: aFamix77Entity [
+1halt.
+	^(self name = aFamix77Entity name)
+		not
+]

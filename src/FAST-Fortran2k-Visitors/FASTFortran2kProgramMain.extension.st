@@ -12,3 +12,9 @@ FASTFortran2kProgramMain >> migratedModuleName [
 
 	^self parentProgramFile filename
 ]
+
+{ #category : '*FAST-Fortran2k-Visitors' }
+FASTFortran2kProgramMain >> needsUseFor: aFamix77Entity [
+1halt.
+	^aFamix77Entity needsUseForProgramMain: self
+]
