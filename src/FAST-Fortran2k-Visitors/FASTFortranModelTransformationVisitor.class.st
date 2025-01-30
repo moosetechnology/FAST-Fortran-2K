@@ -12,13 +12,13 @@ Class {
 }
 
 { #category : 'helpers' }
-FASTFortranModelTransformationVisitor >> addUseIn: entity to: filename [
+FASTFortranModelTransformationVisitor >> addUseIn: aFASTFortran2kEntity to: moduleName [
 
 	self flag: #FIXME. "how to handle the order of uses statements"
-	entity statementBlock statements 
+	aFASTFortran2kEntity statementBlock statements 
 		addFirst: (
 		FASTFortran2kUseStatement new 
-			name: (($. split: filename) first, '_mod');
+			name: moduleName ;
 			mooseModel: model;
 			yourself
 		)
