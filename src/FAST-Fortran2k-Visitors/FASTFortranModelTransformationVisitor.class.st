@@ -1211,7 +1211,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranAssignmentExpression: a
 		  yourself
 ]
 
-{ #category : 'visiting statement' }
+{ #category : 'visiting - statements' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranAssignmentStatement: anAssignmentStatementNode [
 
 	^ FASTFortran2kAssignmentStatement new
@@ -1248,10 +1248,9 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranBooleanLiteral: aBoolea
 		  yourself
 ]
 
-{ #category : 'visiting statement' }
+{ #category : 'visiting - statements' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranCallStatement: aFASTFortranCallStatement [
 
-	
 	| callStatement callerProgramFile calledProgramFile |
 
 	callStatement := FASTFortran2kCallStatement new
@@ -1297,7 +1296,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranComment: aCommentNode [
 		  yourself
 ]
 
-{ #category : 'visiting statement' }
+{ #category : 'visiting - statements' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranDoStatement: aDoStatementNode [
 
 	^ FASTFortran2kDoStatement new
@@ -1325,7 +1324,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranFunction: aFASTFortranF
 	^subroutine.
 ]
 
-{ #category : 'visiting statement' }
+{ #category : 'visiting - statements' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranFunctionStatement: aFunctionStatementNode [
 
 
@@ -1402,7 +1401,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranLoopControlExpression: 
 		  yourself
 ]
 
-{ #category : 'visiting statement' }
+{ #category : 'visiting - statements' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranPrintStatement: aFASTFortranPrintStatement [
 
 	^ FASTFortran2kPrintStatement new
@@ -1528,7 +1527,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranSegment: aFASTFortranSe
 	^ module
 ]
 
-{ #category : 'visiting statement' }
+{ #category : 'visiting - statements' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranStatementBlock: aFASTFortranStatementBlock [
 
 	| programUnit f2kStatementBlock |
@@ -1567,7 +1566,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranSubroutine: aFASTFortra
 	^subroutine.
 ]
 
-{ #category : 'visiting statement' }
+{ #category : 'visiting - statements' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
 
 	^ FASTFortran2kVariableDeclarationStatement new
@@ -1576,7 +1575,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranVariableDeclarationStat
 		  yourself
 ]
 
-{ #category : 'visiting statement' }
+{ #category : 'visiting - statements' }
 FASTFortranModelTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
 
 	| varDeclarator |
@@ -1605,7 +1604,7 @@ FASTFortranModelTransformationVisitor >> visitFamixF77Type: aFamixF77Type [
 		yourself.
 ]
 
-{ #category : 'visiting statement' }
+{ #category : 'visiting - statements' }
 FASTFortranModelTransformationVisitor >> visitSatementBlock: statementBlock [
 
 	| statements |
@@ -1661,7 +1660,7 @@ FASTFortranModelTransformationVisitor >> visitSementAttributes: attributes [
 	^ generatedCode
 ]
 
-{ #category : 'visiting statement' }
+{ #category : 'visiting - statements' }
 FASTFortranModelTransformationVisitor >> visitVariableDeclaratorDimensions: variableDeclarationsDimensions [
 	
 	^variableDeclarationsDimensions
