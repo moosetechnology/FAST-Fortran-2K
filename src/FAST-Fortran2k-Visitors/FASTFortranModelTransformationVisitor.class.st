@@ -1640,7 +1640,7 @@ FASTFortranModelTransformationVisitor >> visitFASTFortranSubroutine: aFASTFortra
 		yourself.
 		
 	stack push: subroutine.
-	
+
 	subroutine statementBlock: (aFASTFortranSubroutine statementBlock accept: self).
 	
 	stack pop.
