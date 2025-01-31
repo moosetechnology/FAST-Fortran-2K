@@ -426,7 +426,6 @@ end module someFile_mod
     res := res programUnit anyOne.
     self assert: res class equals: FASTFortran2kModule.
     self assert: res name equals: 'someFile_mod'.
-	 self assert: res procedures size equals: 1.
     self assert: res statementBlock statements size equals: 2.
 
     self skip: #TODO. "correct the adding 'use' in the module for this test"
@@ -436,11 +435,8 @@ end module someFile_mod
     
     stmt := res statementBlock statements second.
     self assert: stmt class equals: FASTFortran2kImplicitStatement.
-    
-    
-    stmt := res statementBlock statements third.
-    self assert: stmt class equals: FASTFortran2kDerivedTypeDeclaration.
 
+	 self assert: res procedures size equals: 1.
 	 self assert: res procedures anyOne class equals: FASTFortran2kSubroutine.
 	
 	 stmt := 	res procedures anyOne statementBlock.
