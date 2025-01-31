@@ -35,7 +35,7 @@ FASTFortranModelTransformationVisitor >> addUsesIn: programUnit [
 		source := assoc key.    "a FASTFortran2k ProgramUnit or a DerivedTypeDefinition"
 		target := assoc value.  "a FamixF77 ProgramFile or Segment"
 
-		(source = programUnit)
+		(source inSameFileAs: programUnit)
 			ifTrue: [
 				(source needsUseFor: target)
 					ifTrue: [ self addUseIn: programUnit to: target migratedModuleName ]
