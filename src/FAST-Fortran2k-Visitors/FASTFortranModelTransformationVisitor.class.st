@@ -1088,6 +1088,14 @@ FASTFortranModelTransformationVisitor >> makeProgramUnit: programUnits [
 FASTFortranModelTransformationVisitor >> makePuModule: filename [
 	^ FASTFortran2kModule new 
 		name: (($. split: filename) first, '_mod');
+		statementBlock: (FASTFortran2kStatementBlock new
+			addStatement: (FASTFortran2kImplicitStatement new 
+				mooseModel: model; 
+				yourself
+			);
+			mooseModel: model;
+			yourself
+		);
 		mooseModel: model;
 		yourself.
 ]

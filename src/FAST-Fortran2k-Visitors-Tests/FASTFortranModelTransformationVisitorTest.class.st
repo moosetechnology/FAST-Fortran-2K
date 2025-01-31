@@ -304,7 +304,6 @@ C	--------end someFile_mod.f90----------------
 	self assert: module class equals: FASTFortran2kModule.
 	self assert: module procedures size equals: 2.
 
-	self skip: 'need to implement IMPLICIT in modules'.
 	self assert: module statementBlock statements size equals: 1.
 	self assert: module statementBlock statements anyOne class equals: FASTFortran2kImplicitStatement.
 
