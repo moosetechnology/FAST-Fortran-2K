@@ -15,6 +15,6 @@ FASTFortran2kProcedure >> migratedModuleName [
 
 { #category : '*FAST-Fortran2k-Visitors' }
 FASTFortran2kProcedure >> needsUseFor: aFamix77Entity [
-1halt.
+
 	^aFamix77Entity needsUseForProcedure: self
 ]
