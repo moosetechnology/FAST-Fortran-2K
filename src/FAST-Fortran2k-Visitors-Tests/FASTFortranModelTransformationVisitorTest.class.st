@@ -777,7 +777,7 @@ end program main
             variableDeclarator: (self variableDeclarator: #f);
             yourself
         );
-        famix: (FamixF77Variable new 
+        famix: (FamixEsopePointer new 
             name: 'f'; 
             declaredType: (FamixEsopeSegment new name: 'foo'); 
             yourself 
@@ -807,9 +807,9 @@ end program main
     self assert: stmt name equals: 'foo_mod'.
     
     stmt := res statementBlock statements second.
-    self assert: res class equals: FASTFortran2kImplicitStatement.
+    self assert: stmt class equals: FASTFortran2kImplicitStatement.
     
     
     stmt := res statementBlock statements third.
-    self assert: res class equals: FASTFortran2kDerivedTypeDeclaration.
+    self assert: stmt class equals: FASTFortran2kDerivedTypeDeclaration.
 ]
