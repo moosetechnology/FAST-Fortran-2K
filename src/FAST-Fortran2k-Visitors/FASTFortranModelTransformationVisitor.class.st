@@ -1162,17 +1162,21 @@ FASTFortranModelTransformationVisitor >> programFile: programFile in: f77Filenam
 			ifTrue: [ puMain := progUnit ]
 			ifFalse: [ puModule add: progUnit ] ].
 
+	puModule ifNotEmpty: [ programFile filename: (self fortran2kFilename: f77Filename) ].
+
+	puMain ifNotNil: [ programFile filename: (self fortran2kFilename: f77Filename) ].
+
 	puModule ifNotEmpty: [
-		programFile addProgramUnit: ((self makePuModule: f77Filename)
+		programFile
+			addProgramUnit: ((self makePuModule: f77Filename)
 				 procedures: puModule;
 				 yourself).
+
 		self addUsesIn: programFile programUnit last.
 	].
 
 	puMain ifNotNil: [ 
-		programFile
-			addProgramUnit: puMain ;
-			filename: (self fortran2kFilename: f77Filename).
+		programFile addProgramUnit: puMain.
 
 		self addUsesIn: puMain
 	].
