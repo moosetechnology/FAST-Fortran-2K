@@ -1214,7 +1214,7 @@ FASTFortranModelTransformationVisitor >> visitFASTEsopePointerDeclarator: aFASTE
 		yourself.
 
 	callerProgramUnit := stack top.
-	pointerDeclaredType := aFASTEsopePointerDeclarator pointerDeclarationStatement famix.
+	pointerDeclaredType := aFASTEsopePointerDeclarator pointerDeclarationStatement famix declaredType.
 
 	useNeeded add: (callerProgramUnit  -> pointerDeclaredType).
 
