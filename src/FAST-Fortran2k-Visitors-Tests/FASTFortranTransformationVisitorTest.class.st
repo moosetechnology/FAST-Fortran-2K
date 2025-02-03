@@ -707,6 +707,64 @@ end program demo
 	
 ]
 
+{ #category : 'tests-programUnit' }
+FASTFortranTransformationVisitorTest >> testProgramWithAssignementStatement [
+	| res entity stmtBlock |
+
+	stmtBlock := FASTFortranStatementBlock new.
+	stmtBlock addStatement: (self assignementStatement: 'x' value: 5).
+
+	FASTFortranProgramMain new 
+		name: 'demo' ; 
+		statementBlock: stmtBlock ; 
+		parentProgramFile: fastProgramFile.
+		
+	res := fastProgramFile accept: visitor.
+	
+	self assert: res size equals: 1.
+
+	res := res anyOne programUnit anyOne.
+	self assert: res class equals: FASTFortran2kProgramMain.
+	self assert: res statementBlock statements size equals: 2.
+	
+	entity := res statementBlock statements first.
+	self assert: entity class equals: FASTFortran2kImplicitStatement.
+	
+	entity := res statementBlock statements second.
+	self assert: entity class equals: FASTFortran2kAssignmentStatement.
+
+	
+]
+
+{ #category : 'tests-programUnit' }
+FASTFortranTransformationVisitorTest >> testProgramWithDeclarationStatement [
+	| res entity stmtBlock |
+
+	stmtBlock := FASTFortranStatementBlock new.
+	stmtBlock addStatement: (self declarationStatement: #str type: #(character 20) ).
+
+	FASTFortranProgramMain new 
+		name: 'demo' ; 
+		statementBlock: stmtBlock ; 
+		parentProgramFile: fastProgramFile.
+		
+	res := fastProgramFile accept: visitor.
+	
+	self assert: res size equals: 1.
+
+	res := res anyOne programUnit anyOne.
+	self assert: res class equals: FASTFortran2kProgramMain.
+	self assert: res statementBlock statements size equals: 2.
+	
+	entity := res statementBlock statements first.
+	self assert: entity class equals: FASTFortran2kImplicitStatement.
+	
+	entity := res statementBlock statements second.
+	self assert: entity class equals: FASTFortran2kVariableDeclarationStatement.
+
+	
+]
+
 { #category : 'tests-statement' }
 FASTFortranTransformationVisitorTest >> testProgramWithExternalFunctionCall [
 	"
