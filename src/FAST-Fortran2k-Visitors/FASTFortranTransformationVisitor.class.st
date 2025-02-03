@@ -1,10 +1,8 @@
 Class {
 	#name : 'FASTFortranTransformationVisitor',
-	#superclass : 'FASTFortranVisitor',
+	#superclass : 'FASTFortranAbstractTransformationVisitor',
 	#instVars : [
-		'model',
 		'tmpStream',
-		'stack',
 		'useNeeded'
 	],
 	#category : 'FAST-Fortran2k-Visitors',
@@ -298,7 +296,6 @@ FASTFortranTransformationVisitor >> initialize [
 	super initialize.
 
 	model := FASTFortran2kModel new.
-	stack := Stack new
 ]
 
 { #category : 'entity creation' }
@@ -1188,6 +1185,12 @@ FASTFortranTransformationVisitor >> makeTypeDefinition: aFASTFortranSegment [
 FASTFortranTransformationVisitor >> model [
 
 	^ model
+]
+
+{ #category : 'accessing' }
+FASTFortranTransformationVisitor >> model: aFASTModel [
+
+	model := aFASTModel 
 ]
 
 { #category : 'helpers' }

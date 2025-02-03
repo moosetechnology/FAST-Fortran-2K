@@ -1,6 +1,6 @@
 Class {
 	#name : 'FASTFortranSegmentTransformationVisitor',
-	#superclass : 'FASTFortranTransformationVisitor',
+	#superclass : 'FASTFortranBehavioralTransformationVisitor',
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
 }
