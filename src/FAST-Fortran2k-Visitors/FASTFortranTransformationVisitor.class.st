@@ -1231,7 +1231,7 @@ FASTFortranTransformationVisitor >> visitFASTFortranProgramFile: aFASTFortranPro
 
 	self flag: 'TODO aFASTFortranProgramFile comments'.
 
-	aFASTFortranProgramFile programUnit do: [ :progUnit || visitor |
+	^aFASTFortranProgramFile programUnit collect: [ :progUnit || visitor |
 		visitor := self subVisitor: progUnit transformationVisitorClass.
 		progUnit accept: visitor
 	].
