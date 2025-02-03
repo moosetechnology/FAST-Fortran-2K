@@ -1,5 +1,5 @@
 Class {
-	#name : 'FASTFortranModelTransformationVisitorTest',
+	#name : 'FASTFortranTransformationVisitorTest',
 	#superclass : 'FASTFortranAbstractVisitorTest',
 	#instVars : [
 		'fastProgramFile',
@@ -10,7 +10,7 @@ Class {
 }
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> fooSegment [
+FASTFortranTransformationVisitorTest >> fooSegment [
 
 	^(FASTEsopeSegment new name: 'foo')
 		statements: { 
@@ -25,13 +25,13 @@ FASTFortranModelTransformationVisitorTest >> fooSegment [
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> newVisitor [
+FASTFortranTransformationVisitorTest >> newVisitor [
 
-	^FASTFortranModelTransformationVisitor new
+	^FASTFortranTransformationVisitor new
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> setUp [ 
+FASTFortranTransformationVisitorTest >> setUp [ 
 
 	super setUp.
 
@@ -44,7 +44,7 @@ FASTFortranModelTransformationVisitorTest >> setUp [
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testArrayDeclaration [
+FASTFortranTransformationVisitorTest >> testArrayDeclaration [
 	| stmt dst |
 	stmt := self arrayDeclaration: 'v' dimensions: #( #('1' '10') ).
 	
@@ -56,7 +56,7 @@ FASTFortranModelTransformationVisitorTest >> testArrayDeclaration [
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testAssignementStatementLiteralValue [
+FASTFortranTransformationVisitorTest >> testAssignementStatementLiteralValue [
 	| stmt res |
 	stmt := self assignementStatement: #aVar value: (self logicalLiteral: '.true.').
 	
@@ -71,7 +71,7 @@ FASTFortranModelTransformationVisitorTest >> testAssignementStatementLiteralValu
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testComment [
+FASTFortranTransformationVisitorTest >> testComment [
 	| cmt dst |
 	cmt := self comment: 'This is a comment'.
 	
@@ -82,7 +82,7 @@ FASTFortranModelTransformationVisitorTest >> testComment [
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testDoStatement [
+FASTFortranTransformationVisitorTest >> testDoStatement [
 	| stmt res loopControl |
 
 	stmt := self doStatement: #(i 1 max 1) statements: #().
@@ -100,7 +100,7 @@ FASTFortranModelTransformationVisitorTest >> testDoStatement [
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testEsopeSegmentToDerivedTypeInModule [
+FASTFortranTransformationVisitorTest >> testEsopeSegmentToDerivedTypeInModule [
 	"
 	segment foo
 	integer bar
@@ -133,7 +133,7 @@ FASTFortranModelTransformationVisitorTest >> testEsopeSegmentToDerivedTypeInModu
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToDerivedTypeInModule [
+FASTFortranTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToDerivedTypeInModule [
 	"
 	segment foo
 	integer bar(N)
@@ -175,13 +175,13 @@ FASTFortranModelTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToDer
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testEsopeTwoSegmentsInTwoModules [
+FASTFortranTransformationVisitorTest >> testEsopeTwoSegmentsInTwoModules [
 
 	self fail: #TODO
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testMultipleProceduresMovedToModule [
+FASTFortranTransformationVisitorTest >> testMultipleProceduresMovedToModule [
 	"
 C	--------someFile.f----------------
 	subroutine sub
@@ -244,7 +244,7 @@ C	--------end someFile_mod.f90----------------
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testMultipleProceduresWithoutUse [
+FASTFortranTransformationVisitorTest >> testMultipleProceduresWithoutUse [
 	"
 C	--------someFile.f----------------
 	subroutine sub1
@@ -310,19 +310,19 @@ C	--------end someFile_mod.f90----------------
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testProcedureCallingProcedureOtherModule [
+FASTFortranTransformationVisitorTest >> testProcedureCallingProcedureOtherModule [
 
 	self fail: #TODO
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testProcedureCallingProcedureSameModule [
+FASTFortranTransformationVisitorTest >> testProcedureCallingProcedureSameModule [
 
 	self fail: #TODO
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testProcedureInProgFileMovedToModule [
+FASTFortranTransformationVisitorTest >> testProcedureInProgFileMovedToModule [
 	"
 C	--------someFile.f----------------
 	subroutine sub
@@ -367,13 +367,13 @@ C	--------end someFile_mod.f90----------------
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testProcedureWithFunctionStatementCalled [
+FASTFortranTransformationVisitorTest >> testProcedureWithFunctionStatementCalled [
 
 	self fail: #TODO
 ]
 
 { #category : 'tests-statement' }
-FASTFortranModelTransformationVisitorTest >> testProcedureWithPointeurDeclaration [
+FASTFortranTransformationVisitorTest >> testProcedureWithPointeurDeclaration [
 
     "
 +------ someFile.E ---------------------------------+
@@ -453,7 +453,7 @@ end module someFile_mod
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testProgramAndProcedureMovedToProgranAndModule [
+FASTFortranTransformationVisitorTest >> testProgramAndProcedureMovedToProgranAndModule [
 	"
 	subroutine sub
 	end
@@ -533,7 +533,7 @@ end program demo
 ]
 
 { #category : 'tests-programUnit' }
-FASTFortranModelTransformationVisitorTest >> testProgramEmpty [
+FASTFortranTransformationVisitorTest >> testProgramEmpty [
 	| src dst entity |
 
 	src := FASTFortranProgramMain new 
@@ -553,7 +553,7 @@ FASTFortranModelTransformationVisitorTest >> testProgramEmpty [
 ]
 
 { #category : 'tests-statement' }
-FASTFortranModelTransformationVisitorTest >> testProgramMainWithFunctionStatement [
+FASTFortranTransformationVisitorTest >> testProgramMainWithFunctionStatement [
 	"
      PROGRAM demo
      fct(x)  = x + 2
@@ -622,7 +622,7 @@ end program demo
 ]
 
 { #category : 'tests-statement' }
-FASTFortranModelTransformationVisitorTest >> testProgramMainWithFunctionStatementCalled [
+FASTFortranTransformationVisitorTest >> testProgramMainWithFunctionStatementCalled [
 	"
      PROGRAM demo
      fct()  = 5
@@ -700,7 +700,7 @@ end program demo
 ]
 
 { #category : 'tests-statement' }
-FASTFortranModelTransformationVisitorTest >> testProgramWithExternalFunctionCall [
+FASTFortranTransformationVisitorTest >> testProgramWithExternalFunctionCall [
 	"
 	function 'fct' defined in another externalFile.f'
      PROGRAM demo
@@ -762,7 +762,7 @@ end program demo
 ]
 
 { #category : 'running' }
-FASTFortranModelTransformationVisitorTest >> testProgramWithExternalSubroutineInvocation [
+FASTFortranTransformationVisitorTest >> testProgramWithExternalSubroutineInvocation [
 	"
 	subrotine 'sub' defined in another externalFile.f'
 
@@ -827,7 +827,7 @@ C	--------end someFile.f90----------------
 ]
 
 { #category : 'tests-statement' }
-FASTFortranModelTransformationVisitorTest >> testProgramWithPointeurDeclaration [
+FASTFortranTransformationVisitorTest >> testProgramWithPointeurDeclaration [
     "
 +------ someFile.E ---------------------------------+
 |      program main                                 |
