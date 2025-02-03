@@ -17,6 +17,18 @@ FASTFortranAbstractTransformationVisitor >> initialize [
 	stack := Stack new
 ]
 
+{ #category : 'accessing' }
+FASTFortranAbstractTransformationVisitor >> model [
+
+	^ model
+]
+
+{ #category : 'accessing' }
+FASTFortranAbstractTransformationVisitor >> model: aFASTModel [
+
+	model := aFASTModel 
+]
+
 { #category : 'helpers' }
 FASTFortranAbstractTransformationVisitor >> subVisitor: visitorClass [
 
