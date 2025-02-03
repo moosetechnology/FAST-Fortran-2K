@@ -834,6 +834,31 @@ C	--------end someFile.f90----------------
 
 ]
 
+{ #category : 'tests-programUnit' }
+FASTFortranTransformationVisitorTest >> testProgramWithImplicitStatement [
+	| res entity stmtBlock |
+
+	stmtBlock := FASTFortranStatementBlock new.
+	stmtBlock addStatement: (FASTFortranImplicitStatement new typingRules: #() ).
+
+	FASTFortranProgramMain new 
+		name: 'demo' ; 
+		statementBlock: stmtBlock ; 
+		parentProgramFile: fastProgramFile.
+		
+	res := fastProgramFile accept: visitor.
+	
+	self assert: res size equals: 1.
+
+	res := res anyOne programUnit anyOne.
+	self assert: res class equals: FASTFortran2kProgramMain.
+	self assert: res statementBlock statements size equals: 1.
+	
+	entity := res statementBlock statements first.
+	self assert: entity class equals: FASTFortran2kImplicitStatement.
+	
+]
+
 { #category : 'tests-statement' }
 FASTFortranTransformationVisitorTest >> testProgramWithPointeurDeclaration [
     "

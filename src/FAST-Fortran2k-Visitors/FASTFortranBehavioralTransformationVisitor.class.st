@@ -198,6 +198,13 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement:
 	^fct
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranImplicitStatement: aFASTFortranImplicitStatement [
+
+	^model newImplicitStatement
+		typingRules: (self visitFASTFortranList: aFASTFortranImplicitStatement typingRules)
+]
+
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerLiteral: anIntegerLiteralNode [
 
