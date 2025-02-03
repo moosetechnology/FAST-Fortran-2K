@@ -128,11 +128,9 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterType: aFA
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDoStatement: aDoStatementNode [
 
-	^ FASTFortran2kDoStatement new
-		  loopControl: (aDoStatementNode loopControl accept: self);
-		  statementBlock:
-			  (self visitFASTFortranSatementBlock: aDoStatementNode statementBlock);
-		  mooseModel: model;
+	^model newDoStatement
+		  loopControl: (aDoStatementNode loopControl accept: self) ;
+		  statementBlock: (aDoStatementNode statementBlock accept: self) ;
 		  yourself
 ]
 
@@ -255,16 +253,6 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealType: aRealTyp
 		  yourself
 ]
 
-{ #category : 'visiting - statements' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTFortranSatementBlock: statementBlock [
-
-	| statements |
-
-	statements := self visitFASTFortranList: statementBlock statements.
-
-	^ FASTFortran2kStatementBlock new statements: statements
-]
-
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranScalarVariable: aScalarVariableNode [
 
@@ -276,12 +264,12 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranScalarVariable: aS
 
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aFASTFortranStatementBlock [
+	"Need to deal with StatementFunction that are created as InternalProcedure in the parent
+	programUnit (which is on the top of the stack)"
 
-	| programUnit f2kStatementBlock |
-	programUnit := stack top.
-	f2kStatementBlock := FASTFortran2kStatementBlock new
-		  mooseModel: model;
-		  yourself.
+	| f2kStatementBlock |
+
+	f2kStatementBlock := model newStatementBlock.
 
 	aFASTFortranStatementBlock statements
 		do: [ :statement | | f2kStatement |
@@ -294,7 +282,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 						ifFalse: [  f2kStatementBlock addStatement: f2kStatement ]
 					
 				]
-				ifTrue:  [ programUnit addInternalProcedure: f2kStatement ]
+				ifTrue: [stack top addInternalProcedure: f2kStatement ]
 		].
 
 	^f2kStatementBlock
