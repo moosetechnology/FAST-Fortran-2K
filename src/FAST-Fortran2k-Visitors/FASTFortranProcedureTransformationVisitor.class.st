@@ -4,3 +4,37 @@ Class {
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
 }
+
+{ #category : 'visiting - programUnits' }
+FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFortranFunction [
+
+	| subroutine |
+	subroutine := FASTFortran2kFunction new
+		name: aFASTFortranFunction name;
+		mooseModel: model;
+		yourself.
+		
+	stack push: subroutine.
+	
+	super visitFASTFortranFunction: aFASTFortranFunction.
+	
+	stack pop.
+	^subroutine.
+]
+
+{ #category : 'visiting - programUnits' }
+FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFortranSubroutine [
+
+	| subroutine |
+	subroutine := FASTFortran2kSubroutine new
+		name: aFASTFortranSubroutine name;
+		mooseModel: model;
+		yourself.
+		
+	stack push: subroutine.
+
+	subroutine statementBlock: (aFASTFortranSubroutine statementBlock accept: self).
+	
+	stack pop.
+	^subroutine.
+]
