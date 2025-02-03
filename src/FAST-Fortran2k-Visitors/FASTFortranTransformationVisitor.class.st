@@ -1181,18 +1181,6 @@ FASTFortranTransformationVisitor >> makeTypeDefinition: aFASTFortranSegment [
 	^segment
 ]
 
-{ #category : 'accessing' }
-FASTFortranTransformationVisitor >> model [
-
-	^ model
-]
-
-{ #category : 'accessing' }
-FASTFortranTransformationVisitor >> model: aFASTModel [
-
-	model := aFASTModel 
-]
-
 { #category : 'helpers' }
 FASTFortranTransformationVisitor >> programFile: programFile in: f77Filename modules: programUnits [
 
