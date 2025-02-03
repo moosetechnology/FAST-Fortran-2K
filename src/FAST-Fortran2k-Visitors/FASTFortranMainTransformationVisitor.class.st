@@ -23,27 +23,26 @@ FASTFortranMainTransformationVisitor >> visitFASTFortranProgramMain: aProgramNod
 
 	| programMain programFile |
 	
-	programFile := FASTFortran2kProgramFile new
-		mooseModel: model;
+	programFile := model newProgramFile
 		filename: (self fortran2kFilename: aProgramNode) ;
 		yourself.
 
-	programMain := FASTFortran2kProgramMain new 
+	programMain := model newProgramMain 
 		name: aProgramNode name;
 		parentProgramFile: programFile ;
-		mooseModel: model; 
 		yourself.
 
 	stack push: programMain.
 	
 	programMain statementBlock: (aProgramNode statementBlock accept: self).
-	
+
 	programMain statementBlock statements
 		detect: [ :statement | statement class = FASTFortran2kImplicitStatement ]
-		ifNone: [ programMain statementBlock statements addFirst: FASTFortran2kImplicitStatement new ].
+		ifNone: [ programMain statementBlock statements addFirst: model newImplicitStatement ].
 
 	stack pop.
-	^programMain
+
+	^programFile
 ]
 
 { #category : 'visiting - programUnits' }

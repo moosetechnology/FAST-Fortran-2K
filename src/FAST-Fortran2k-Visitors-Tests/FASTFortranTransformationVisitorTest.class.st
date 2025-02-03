@@ -534,20 +534,28 @@ end program demo
 
 { #category : 'tests-programUnit' }
 FASTFortranTransformationVisitorTest >> testProgramEmpty [
-	| src dst entity |
+	| res entity |
 
-	src := FASTFortranProgramMain new 
-		name: 'demo'; 
-		statementBlock: FASTFortranStatementBlock new; 
+	FASTFortranProgramMain new 
+		name: 'demo' ; 
+		statementBlock: FASTFortranStatementBlock new ; 
+		parentProgramFile: fastProgramFile ;
 		yourself.
 		
-	dst := src accept: visitor.
+	res := fastProgramFile accept: visitor.
 	
-	self assert: dst class equals: FASTFortran2kProgramMain.
-	self assert: dst name equals: 'demo'.
-	self assert: dst statementBlock statements size equals: 1.
+	self assert: res size equals: 1.
+
+	res := res anyOne.
+	self assert: res class equals: FASTFortran2kProgramFile.
+	self assert: res programUnit size equals: 1.
+
+	res := res programUnit anyOne.
+	self assert: res class equals: FASTFortran2kProgramMain.
+	self assert: res name equals: 'demo'.
+	self assert: res statementBlock statements size equals: 1.
 	
-	entity := dst statementBlock statements first.
+	entity := res statementBlock statements first.
 	self assert: entity class equals: FASTFortran2kImplicitStatement.
 	
 ]
