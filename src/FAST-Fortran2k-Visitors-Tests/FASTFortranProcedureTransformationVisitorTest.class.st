@@ -8,18 +8,13 @@ Class {
 { #category : 'running' }
 FASTFortranProcedureTransformationVisitorTest >> newVisitor [
 
-	^FASTFortranMainTransformationVisitor new
+	^FASTFortranProcedureTransformationVisitor new
 		model: FASTFortran2kModel new
 ]
 
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testFunctionEmpty [
-"
----- demo.f ----
-	integer function fct()
-	end
-
----- demo_mod.f90
+	"---- demo_mod.f90
 module demo_mod
 	implicit none
 contains
@@ -28,20 +23,12 @@ contains
 end module demo_mod
 "
 	| res |
+	self functionEmpty.
 
-	FASTFortranFunction new 
-		name: 'fct' ;
-		declaredType: (self integerType: nil);
-		statementBlock: FASTFortranStatementBlock new ; 
-		parentProgramFile: fastProgramFile.
-		
-	res := fastProgramFile accept: visitor.
+	res := procedure accept: visitor.
 
-	self assert: res size equals: 1.
-
-	res := res anyOne.
 	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res filename equals: 'demo_mod.f90'.
+	self assert: res filename equals: 'someFile_mod.f90'.
 	self assert: res programUnit size equals: 1.
 
 	res := res programUnit anyOne.

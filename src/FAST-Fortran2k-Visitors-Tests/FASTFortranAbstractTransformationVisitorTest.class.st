@@ -12,6 +12,20 @@ Class {
 }
 
 { #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> functionEmpty [
+	"---- demo.f ----
+	integer function fct()
+	end"
+
+	procedure := FASTFortranFunction new 
+		name: 'fct' ;
+		declaredType: (self integerType: nil);
+		statementBlock: FASTFortranStatementBlock new ; 
+		parentProgramFile: fastProgramFile.
+		
+]
+
+{ #category : 'setup' }
 FASTFortranAbstractTransformationVisitorTest >> programEmpty [
 	"
      PROGRAM demo
