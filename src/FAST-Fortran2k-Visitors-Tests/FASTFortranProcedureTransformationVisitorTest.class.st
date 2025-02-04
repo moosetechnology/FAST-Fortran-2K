@@ -9,7 +9,7 @@ Class {
 FASTFortranProcedureTransformationVisitorTest >> newVisitor [
 
 	^FASTFortranProcedureTransformationVisitor new
-		model: FASTFortran2kModel new
+		parentVisitor: FASTFortranTransformationVisitor new
 ]
 
 { #category : 'tests' }
@@ -25,7 +25,7 @@ end module demo_mod
 	| res |
 	self functionEmpty.
 
-	res := procedure accept: visitor.
+	res := fastProcedure accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res filename equals: 'someFile_mod.f90'.
@@ -33,15 +33,15 @@ end module demo_mod
 
 	res := res programUnit anyOne.
 	self assert: res class equals: FASTFortran2kModule.
-	self assert: res name equals: 'demo_mod'.
+	self assert: res name equals: 'someFile_mod'.
 	self assert: res statementBlock statements size equals: 1.
 	self assert: res statementBlock statements anyOne class equals: FASTFortran2kImplicitStatement.
 	self assert: res procedures size equals: 1.
 	
 	res := res procedures anyOne.
-	self assert: res class equals: FASTFortranFunction.
+	self assert: res class equals: FASTFortran2kFunction.
 	self assert: res name equals: 'fct'.
-	self assert: res statementBlock statements size equals: 1
+	self assert: res statementBlock statements size equals: 0
 ]
 
 { #category : 'tests' }
@@ -397,7 +397,7 @@ end program demo
 	
 	self programWithFunctionStatement.
 
-	res := mainProgram accept: visitor.
+	res := fastMainProgram accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res programUnit size equals: 1.
@@ -444,7 +444,7 @@ end program demo
 	| res  entity |
 	self programWithFunctionStatementCalled.
 
-	res := mainProgram accept: visitor.
+	res := fastMainProgram accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res programUnit size equals: 1.
