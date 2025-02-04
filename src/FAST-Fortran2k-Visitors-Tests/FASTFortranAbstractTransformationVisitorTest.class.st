@@ -4,8 +4,8 @@ Class {
 	#instVars : [
 		'fastProgramFile',
 		'famixProgramFile',
-		'procedure',
-		'mainProgram'
+		'fastMainProgram',
+		'fastProcedure'
 	],
 	#category : 'FAST-Fortran2k-Visitors-Tests',
 	#package : 'FAST-Fortran2k-Visitors-Tests'
@@ -31,7 +31,7 @@ FASTFortranAbstractTransformationVisitorTest >> programEmpty [
      PROGRAM demo
      END"
 
-	mainProgram := FASTFortranProgramMain new 
+	fastMainProgram := FASTFortranProgramMain new 
 		name: 'demo' ; 
 		statementBlock: FASTFortranStatementBlock new ; 
 		parentProgramFile: fastProgramFile ;
@@ -47,7 +47,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithDeclarationStatement 
 	end"
 
 	self programEmpty.
-	mainProgram 	statementBlock addStatement: (self declarationStatement: #str type: #(character 20) ).
+	fastMainProgram 	statementBlock addStatement: (self declarationStatement: #str type: #(character 20) ).
 
 ]
 
@@ -70,11 +70,11 @@ FASTFortranAbstractTransformationVisitorTest >> programWithExternalFunctionCall 
 	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
 
 	self programEmpty.
-	mainProgram 	statementBlock addStatement: fastCallStatement.
+	fastMainProgram 	statementBlock addStatement: fastCallStatement.
 
 	fastCallStatement expression famix: (
 		FamixF77Invocation new
-			sender: mainProgram famix ;
+			sender: fastMainProgram famix ;
 			addCandidate: famixFunction ;
 			yourself
 		).
@@ -101,11 +101,11 @@ C  -----end someFile.f --------------"
 	fastCallStatement := self callStatement: 'sub' arguments: #().
 	
 	self programEmpty.
-	mainProgram 	statementBlock addStatement: fastCallStatement.
+	fastMainProgram 	statementBlock addStatement: fastCallStatement.
 	
 	fastCallStatement famix: (
 		FamixF77Invocation new
-			sender: mainProgram famix ;
+			sender: fastMainProgram famix ;
 			addCandidate: famixSubroutine ;
 			yourself
 		).
@@ -142,7 +142,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithFunctionStatement [
 	).
 				
 	self programEmpty.
-	mainProgram 	statementBlock addStatement: function.
+	fastMainProgram 	statementBlock addStatement: function.
 
 ]
 
@@ -171,19 +171,19 @@ FASTFortranAbstractTransformationVisitorTest >> programWithFunctionStatementCall
 	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
 
 	self programEmpty.
-	mainProgram statementBlock addStatement: fastFunctionStatement.
-	mainProgram statementBlock addStatement: fastCallStatement.
+	fastMainProgram statementBlock addStatement: fastFunctionStatement.
+	fastMainProgram statementBlock addStatement: fastCallStatement.
 
-	fastFunctionStatement famix parentEntity: mainProgram famix.
+	fastFunctionStatement famix parentEntity: fastMainProgram famix.
 
 	fastCallStatement expression famix: (
 		FamixF77Invocation new
-			sender: mainProgram famix ;
+			sender: fastMainProgram famix ;
 			addCandidate: fastFunctionStatement famix ;
 			yourself
 		).
 
-	fastProgramFile addProgramUnit: mainProgram
+	fastProgramFile addProgramUnit: fastMainProgram
 
 ]
 
@@ -212,7 +212,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithPointeurDeclaration [
         yourself.
 
 	self programEmpty.
-	mainProgram statementBlock addStatement: pointerDeclarator.
+	fastMainProgram statementBlock addStatement: pointerDeclarator.
 
 ]
 
@@ -228,22 +228,22 @@ FASTFortranAbstractTransformationVisitorTest >> programWithProcedureInvoked [
 
 
 	| subCallStatement |
-	procedure := (self subroutine: 'sub')
+	fastProcedure := (self subroutine: 'sub')
 			famix: (FamixF77PUSubroutine new name: 'sub'; programFile: famixProgramFile);
 			yourself.
 
 	subCallStatement := self callStatement: 'sub' arguments: #().
 	
 	self programEmpty.
-	mainProgram statementBlock addStatement: subCallStatement.
+	fastMainProgram statementBlock addStatement: subCallStatement.
 
 	subCallStatement  famix: (FamixF77Invocation new 
-		sender: mainProgram famix;
-		addCandidate: procedure famix;
+		sender: fastMainProgram famix;
+		addCandidate: fastProcedure famix;
 		yourself
 	).
 
-	fastProgramFile programUnit: { procedure . mainProgram }.
+	fastProgramFile programUnit: { fastProcedure . fastMainProgram }.
 
 ]
 
@@ -261,7 +261,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithSegment [
 	segment_foo famix: (FamixEsopeSegment new name: 'foo'; attributes: #()).
 
 	self programEmpty.
-	mainProgram statementBlock addStatement: segment_foo.
+	fastMainProgram statementBlock addStatement: segment_foo.
 		
 ]
 
