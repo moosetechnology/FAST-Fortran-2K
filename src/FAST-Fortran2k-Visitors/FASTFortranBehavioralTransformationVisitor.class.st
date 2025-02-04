@@ -255,8 +255,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement:
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranImplicitStatement: aFASTFortranImplicitStatement [
 
-	^model newImplicitStatement
-		typingRules: (self visitFASTFortranList: aFASTFortranImplicitStatement typingRules)
+	^nil
 ]
 
 { #category : 'visiting - expressions' }
