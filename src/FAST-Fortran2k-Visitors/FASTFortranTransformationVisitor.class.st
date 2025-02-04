@@ -64,7 +64,7 @@ FASTFortranTransformationVisitor >> createProgramFile: f77Filename forProgramUni
 
 	puModule ifNotEmpty: [
 		programFiles
-			addProgramUnit: ((self makePuModule: f77Filename)
+			addProgramUnit: ((self ensureModule: f77Filename)
 				 procedures: puModule;
 				 yourself).
 
@@ -123,7 +123,7 @@ FASTFortranTransformationVisitor >> programFile: programFile in: f77Filename mod
 
 	puModule ifNotEmpty: [
 		programFile
-			addProgramUnit: ((self makePuModule: f77Filename)
+			addProgramUnit: ((self ensureModule: f77Filename)
 				 procedures: puModule;
 				 yourself).
 

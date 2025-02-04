@@ -8,18 +8,20 @@ Class {
 { #category : 'visiting - programUnits' }
 FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFortranFunction [
 
-	| subroutine |
-	subroutine := FASTFortran2kFunction new
-		name: aFASTFortranFunction name;
-		mooseModel: model;
+	| function module |
+
+	module := self ensureModule: aFASTFortranFunction famix migratedModuleName. 
+
+	function := model newFunction
+		name: aFASTFortranFunction name ;
 		yourself.
-		
-	stack push: subroutine.
+
+	stack push: function.
 	
 	super visitFASTFortranFunction: aFASTFortranFunction.
 	
 	stack pop.
-	^subroutine.
+	^function.
 ]
 
 { #category : 'visiting - programUnits' }
