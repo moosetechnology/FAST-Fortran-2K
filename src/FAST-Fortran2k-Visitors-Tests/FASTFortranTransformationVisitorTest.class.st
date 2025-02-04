@@ -10,24 +10,20 @@ Class {
 }
 
 { #category : 'running' }
-FASTFortranTransformationVisitorTest >> fooSegment [
-
-	^(FASTEsopeSegment new name: 'foo')
-		statements: { 
-			FASTFortranVariableDeclarationStatement new
-				declaredType: (FASTFortranIntegerType new); 
-				declarators: { 
-					FASTFortranVariableDeclarator new
-						name: 'bar'
-				} 
-		} ;
-		yourself
-]
-
-{ #category : 'running' }
 FASTFortranTransformationVisitorTest >> newVisitor [
 
 	^FASTFortranTransformationVisitor new
+]
+
+{ #category : 'running' }
+FASTFortranTransformationVisitorTest >> segment: aName attributes: aDeclarationStatements [
+
+	^FASTEsopeSegment new 
+		name: aName;
+		statements: (aDeclarationStatements collect: [:assoc | 
+			self declarationStatement: assoc key type: assoc value
+		]);
+		yourself
 ]
 
 { #category : 'running' }

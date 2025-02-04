@@ -2,7 +2,6 @@ Class {
 	#name : 'FASTFortranTransformationVisitor',
 	#superclass : 'FASTFortranAbstractTransformationVisitor',
 	#instVars : [
-		'tmpStream',
 		'useNeeded'
 	],
 	#category : 'FAST-Fortran2k-Visitors',

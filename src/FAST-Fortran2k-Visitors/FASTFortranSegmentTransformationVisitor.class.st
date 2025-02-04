@@ -1,6 +1,9 @@
 Class {
 	#name : 'FASTFortranSegmentTransformationVisitor',
 	#superclass : 'FASTFortranBehavioralTransformationVisitor',
+	#instVars : [
+		'tmpStream'
+	],
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
 }
