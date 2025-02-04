@@ -12,16 +12,18 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 
 	module := self ensureModule: aFASTFortranFunction famix migratedModuleName. 
 
-	function := model newFunction
+	function := self model newFunction
 		name: aFASTFortranFunction name ;
+		module: module ;
 		yourself.
 
 	stack push: function.
 	
-	super visitFASTFortranFunction: aFASTFortranFunction.
-	
+	function statementBlock: (aFASTFortranFunction statementBlock accept: self).
+
 	stack pop.
-	^function.
+
+	^module parentProgramFile
 ]
 
 { #category : 'visiting - programUnits' }
