@@ -26,9 +26,8 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFortranSubroutine [
 
 	| subroutine |
-	subroutine := FASTFortran2kSubroutine new
+	subroutine := model newSubroutine
 		name: aFASTFortranSubroutine name;
-		mooseModel: model;
 		yourself.
 		
 	stack push: subroutine.
