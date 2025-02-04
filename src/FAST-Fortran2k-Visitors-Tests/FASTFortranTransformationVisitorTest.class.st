@@ -578,7 +578,7 @@ module segment_foo_mod
 	...
 end module segment_foo_mod
 "
-	| res segment_foo |
+	| module res entity segment_foo |
 	
 	segment_foo := self segment: 'foo' attributes: #().
 	segment_foo famix: (FamixEsopeSegment new name: 'foo'; attributes: #()).
@@ -591,24 +591,29 @@ end module segment_foo_mod
 		
 	res := fastProgramFile accept: visitor.
 
-	self assert: res size equals: 1.
+	self assert: res size equals: 2.
 
-	res := res anyOne.
-	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res filename equals: 'demo_mod.f90'.
-	self assert: res programUnit size equals: 1.
+	module := res first.
+	self assert: module class equals: FASTFortran2kProgramFile.
+	self assert: module filename equals: 'demo_mod.f90'.
+	self assert: module programUnit size equals: 1.
 
-	res := res programUnit anyOne.
-	self assert: res class equals: FASTFortran2kModule.
-	self assert: res name equals: 'demo_mod'.
-	self assert: res statementBlock statements size equals: 1.
-	self assert: res statementBlock statements anyOne class equals: FASTFortran2kImplicitStatement.
-	self assert: res procedures size equals: 1.
+	entity := module programUnit anyOne.
+	self assert: entity class equals: FASTFortran2kModule.
+	self assert: entity name equals: 'demo_mod'.
+	self assert: entity statementBlock statements size equals: 1.
+	self assert: entity statementBlock statements anyOne class equals: FASTFortran2kImplicitStatement.
+	self assert: entity procedures size equals: 1.
 	
-	res := res procedures anyOne.
-	self assert: res class equals: FASTFortranFunction.
-	self assert: res name equals: 'fct'.
-	self assert: res statementBlock statements size equals: 1
+	entity := entity procedures anyOne.
+	self assert: entity class equals: FASTFortranFunction.
+	self assert: entity name equals: 'fct'.
+	self assert: entity statementBlock statements size equals: 1.
+	
+	module := res second.
+	self assert: module class equals: FASTFortran2kProgramFile.
+	self assert: module filename equals: 'foo_mod.f90'.
+	
 ]
 
 { #category : 'running' }
