@@ -1,0 +1,336 @@
+Class {
+	#name : 'FASTFortranMainTransformationVisitorTest',
+	#superclass : 'FASTFortranAbstractTransformationVisitorTest',
+	#category : 'FAST-Fortran2k-Visitors-Tests',
+	#package : 'FAST-Fortran2k-Visitors-Tests'
+}
+
+{ #category : 'running' }
+FASTFortranMainTransformationVisitorTest >> newVisitor [
+
+	^FASTFortranMainTransformationVisitor new
+		model: FASTFortran2kModel new
+]
+
+{ #category : 'tests-programUnit' }
+FASTFortranMainTransformationVisitorTest >> testMainProgramWithSegment [
+"
+
+---- demo.f90
+	program demo
+	end
+
+--- segment_foo_mod.f90
+module segment_foo_mod
+	...
+	type :: segment_foo
+		...
+	end type segment_foo
+	...
+end module segment_foo_mod
+"
+	| res entity |
+	self programWithSegment.
+
+	res := mainProgram accept: visitor.
+
+	self assert: res class equals: FASTFortran2kProgramFile.
+	self assert: res filename equals: 'someFile.f90'.
+	self assert: res programUnit size equals: 1.
+
+	entity := res programUnit anyOne.
+	self assert: entity class equals: FASTFortran2kProgramMain.
+	self assert: entity name equals: 'demo'.
+	self assert: entity statementBlock statements size equals: 1.    "IMPLICIT NONE statement"
+
+]
+
+{ #category : 'tests-programUnit' }
+FASTFortranMainTransformationVisitorTest >> testProgramEmpty [
+	| res entity |
+
+	self programEmpty.
+
+	res := mainProgram accept: visitor.
+
+	self assert: res class equals: FASTFortran2kProgramFile.
+	self assert: res programUnit size equals: 1.
+
+	res := res programUnit anyOne.
+
+	self assert: res class equals: FASTFortran2kProgramMain.
+	self assert: res name equals: 'demo'.
+	self assert: res statementBlock statements size equals: 1.
+	
+	entity := res statementBlock statements first.
+	self assert: entity class equals: FASTFortran2kImplicitStatement.
+	
+]
+
+{ #category : 'tests-statement' }
+FASTFortranMainTransformationVisitorTest >> testProgramMainWithFunctionStatement [
+	"
+program demo
+	implicit none
+contains
+    real function fct(x)
+	 real, intent(in) :: x
+    fct = x + 2
+    end function fct
+end program demo
+		
+	"
+	| res entity |
+	
+	self programWithFunctionStatement.
+
+	res := mainProgram accept: visitor.
+
+	self assert: res class equals: FASTFortran2kProgramFile.
+	self assert: res programUnit size equals: 1.
+
+	res := res programUnit anyOne.
+
+	self assert: res class equals: FASTFortran2kProgramMain.
+	self assert: res name equals: 'demo'.
+	self assert: res internalProcedures size equals: 1.
+	
+	entity := res internalProcedures first.
+	self assert: entity class equals: FASTFortran2kInternalFunction.
+	self assert: entity name equals: 'fct'.
+	self assert: entity returnType class equals: FASTFortran2kRealType.
+	self assert: entity statementBlock statements size equals: 2.
+	self assert: entity parameters size equals: 1.
+	
+	entity := entity parameters first.
+	self assert: entity class equals: FASTFortran2kScalarVariable.
+	self assert: entity name equals: 'x'.
+
+]
+
+{ #category : 'tests-statement' }
+FASTFortranMainTransformationVisitorTest >> testProgramMainWithFunctionStatementCalled [
+	"
+     PROGRAM demo
+     fct()  = 5
+     aVar = fct()
+     END
+
+-----------------------------
+
+program demo
+	implicit none
+	aVar = fct()
+contains
+    real function fct()
+    fct = 5
+    end function fct
+end program demo
+		
+	"
+	| res  entity |
+	self programWithFunctionStatementCalled.
+
+	res := mainProgram accept: visitor.
+
+	self assert: res class equals: FASTFortran2kProgramFile.
+	self assert: res programUnit size equals: 1.
+
+	res := res programUnit anyOne.
+	
+	self assert: res class equals: FASTFortran2kProgramMain.
+	self assert: res name equals: 'demo'.
+	self assert: res statementBlock statements size equals: 2.
+	self assert: res statementBlock statements first class equals: FASTFortran2kImplicitStatement.
+	self assert: res statementBlock statements second class equals: FASTFortran2kAssignmentStatement.
+
+	self assert: res internalProcedures size equals: 1.
+	
+	entity := res internalProcedures first.
+	self assert: entity class equals: FASTFortran2kInternalFunction.
+	self assert: entity name equals: 'fct'.
+	self assert: entity returnType class equals: FASTFortran2kRealType.
+	self assert: entity statementBlock statements size equals: 1.
+	self assert: entity parameters size equals: 0.
+	
+]
+
+{ #category : 'tests-programUnit' }
+FASTFortranMainTransformationVisitorTest >> testProgramWithAssignementStatement [
+	| res entity |
+
+	self programEmpty.
+	mainProgram 	statementBlock addStatement: (self assignementStatement: 'x' value: 5).
+		
+	res := mainProgram accept: visitor.
+	
+	res := res programUnit anyOne.
+	self assert: res class equals: FASTFortran2kProgramMain.
+	self assert: res statementBlock statements size equals: 2.
+	
+	entity := res statementBlock statements first.
+	self assert: entity class equals: FASTFortran2kImplicitStatement.
+	
+	entity := res statementBlock statements second.
+	self assert: entity class equals: FASTFortran2kAssignmentStatement.
+
+	
+]
+
+{ #category : 'tests-programUnit' }
+FASTFortranMainTransformationVisitorTest >> testProgramWithDeclarationStatement [
+	| res entity |
+	self programWithDeclarationStatement.
+
+	res := mainProgram accept: visitor.
+
+	res := res programUnit anyOne.
+	self assert: res class equals: FASTFortran2kProgramMain.
+	self assert: res statementBlock statements size equals: 2.
+	
+	entity := res statementBlock statements first.
+	self assert: entity class equals: FASTFortran2kImplicitStatement.
+	
+	entity := res statementBlock statements second.
+	self assert: entity class equals: FASTFortran2kVariableDeclarationStatement.
+
+	
+]
+
+{ #category : 'tests-statement' }
+FASTFortranMainTransformationVisitorTest >> testProgramWithExternalFunctionCall [
+	"program demo
+	implicit none
+	aVar = fct()
+end program demo
+		
+	"
+	| res stmt |
+	self programWithExternalFunctionCall.
+
+	res := mainProgram accept: visitor.
+	
+	self assert: res programUnit size equals: 1.
+	res := res programUnit anyOne.
+	self assert: res class equals: FASTFortran2kProgramMain.
+
+	self assert: res statementBlock statements size equals: 2.
+
+	stmt := res statementBlock statements first.
+	self assert: stmt class equals: FASTFortran2kImplicitStatement.
+	
+	stmt := res statementBlock statements second.
+	self assert: stmt class equals: FASTFortran2kAssignmentStatement.
+
+]
+
+{ #category : 'running' }
+FASTFortranMainTransformationVisitorTest >> testProgramWithExternalSubroutineInvocation [
+	"
+C	--------someFile.f90----------------
+program demo
+	implicit none
+	call sub()
+end program demo
+C	--------end someFile.f90----------------
+	"
+
+	| res  stmt |
+	self programWithExternalSubroutineInvocation.
+
+	res := mainProgram accept: visitor.
+
+	self assert: res programUnit size equals: 1.
+	res := res programUnit anyOne.
+	self assert: res class equals: FASTFortran2kProgramMain.
+	self assert: res statementBlock statements size equals: 2.
+	
+	stmt := res statementBlock statements first.
+	self assert: stmt class equals: FASTFortran2kImplicitStatement.
+	
+	stmt := res statementBlock statements second.
+	self assert: stmt class equals: FASTFortran2kCallStatement.
+
+]
+
+{ #category : 'tests-programUnit' }
+FASTFortranMainTransformationVisitorTest >> testProgramWithImplicitStatement [
+	| res entity stmtBlock |
+
+	stmtBlock := FASTFortranStatementBlock new.
+	stmtBlock addStatement: (FASTFortranImplicitStatement new typingRules: #() ).
+
+	mainProgram := FASTFortranProgramMain new 
+		name: 'demo' ; 
+		statementBlock: stmtBlock ; 
+		parentProgramFile: fastProgramFile.
+		
+	res := mainProgram accept: visitor.
+	
+	res := res programUnit anyOne.
+	self assert: res class equals: FASTFortran2kProgramMain.
+	self assert: res statementBlock statements size equals: 1.
+	
+	entity := res statementBlock statements first.
+	self assert: entity class equals: FASTFortran2kImplicitStatement.
+	
+]
+
+{ #category : 'tests-statement' }
+FASTFortranMainTransformationVisitorTest >> testProgramWithPointeurDeclaration [
+    "program main
+    implicit none
+    type(point) :: f
+end program main
+    "
+
+    | res stmt |
+
+	self programWithPointeurDeclaration.
+
+    res := mainProgram accept: visitor.
+    
+    self assert: res programUnit size equals: 1.
+    res := res programUnit anyOne.
+    self assert: res class equals: FASTFortran2kProgramMain.
+    self assert: res name equals: 'demo'.
+    self assert: res statementBlock statements size equals: 2.
+    
+    stmt := res statementBlock statements first.
+    self assert: stmt class equals: FASTFortran2kImplicitStatement.
+
+    stmt := res statementBlock statements second.
+    self assert: stmt class equals: FASTFortran2kDerivedTypeDeclaration.
+]
+
+{ #category : 'running' }
+FASTFortranMainTransformationVisitorTest >> testProgramWithProcedure [
+	"
+program demo
+	implicit none
+	call sub()
+end program demo
+
+"
+
+	| res stmt entity |
+	self programWithProcedureInvoked.
+
+	res := mainProgram accept: visitor.
+	
+	self assert: res class equals: FASTFortran2kProgramFile.
+	self assert: res programUnit size equals: 1.
+	
+	entity := res programUnit anyOne.
+
+	self assert: entity class equals: FASTFortran2kProgramMain.
+	self assert: entity name equals: 'demo'.
+	self assert: entity statementBlock statements size equals: 2.
+	
+	stmt := entity statementBlock statements first.
+	self assert: stmt class equals: FASTFortran2kImplicitStatement.
+	
+	stmt := entity statementBlock statements second.
+	self assert: stmt class equals: FASTFortran2kCallStatement.
+	
+]
