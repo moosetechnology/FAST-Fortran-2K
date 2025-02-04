@@ -105,9 +105,9 @@ FASTFortranTransformationVisitorTest >> testEsopeSegmentToDerivedTypeInModule [
 
 	| stmt res f2ksegment |
 	
-	stmt := self fooSegment.
+	stmt := self segment: 'foo' attributes: { #bar -> #integer }.
 	
-	res := stmt accept: visitor.
+	res := stmt accept: FASTFortranSegmentTransformationVisitor new.
 
 	self assert: res class equals: FASTFortran2kModule.
 	self assert: res name equals: 'foo_m'.
@@ -138,11 +138,11 @@ FASTFortranTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToDerivedT
 
 	| stmt res f2ksegment |
 	
-	stmt := self fooSegment.
+	stmt := self segment: 'foo' attributes: { #bar -> #integer }.
 	stmt statements anyOne declarators anyOne
 		dimensions: { FASTFortranArrayRange new upperBound: (self scalarVariable: #N) }.
 	
-	res := stmt accept: visitor.
+	res := stmt accept: FASTFortranSegmentTransformationVisitor new.
 
 	self assert: res class equals: FASTFortran2kModule.
 	self assert: res name equals: 'foo_m'.
