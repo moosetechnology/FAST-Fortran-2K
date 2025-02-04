@@ -6,6 +6,12 @@ Class {
 }
 
 { #category : 'visiting - programUnits' }
+FASTFortranProcedureTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
+
+	^nil
+]
+
+{ #category : 'visiting - programUnits' }
 FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFortranFunction [
 
 	| function module |

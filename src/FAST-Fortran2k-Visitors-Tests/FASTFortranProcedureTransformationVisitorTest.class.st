@@ -14,14 +14,14 @@ FASTFortranProcedureTransformationVisitorTest >> newVisitor [
 
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testFunctionEmpty [
-	"---- demo_mod.f90
-module demo_mod
-	implicit none
-contains
-	integer function fct()
-	end function fct
-end module demo_mod
-"
+	" demo_mod.f90
+
+	module demo_mod
+		implicit none
+	contains
+		integer function fct()
+		end function fct
+	end module demo_mod"
 	| res |
 	self functionEmpty.
 
@@ -332,64 +332,32 @@ end module someFile_mod
 
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureWithSegment [
-"
----- demo.f ----
-	subroutine sub
-	segment foo
-	end segment
-	end
+	" demo_mod.f90
 
----- demo_mod.f90
-module demo_mod
-	implicit none
-contains
-	subroutine sub()
-	end subroutine sub
-end module demo_mod
+	module demo_mod
+		implicit none
+	contains
+		integer function fct()
+		end function fct
+	end module demo_mod"
+	| res |
+	self functionWithSegment.
 
---- segment_foo_mod.f90
-module segment_foo_mod
-	...
-	type :: segment_foo
-		...
-	end type segment_foo
-	...
-end module segment_foo_mod
-"
-	| module res entity segment_foo |
+	res := fastProcedures anyOne accept: visitor.
+
+	self assert: res class equals: FASTFortran2kProgramFile.
+	self assert: res filename equals: 'someFile_mod.f90'.
+	self assert: res programUnit size equals: 1.
+
+	res := res programUnit anyOne.
+	self assert: res class equals: FASTFortran2kModule.
+	self assert: res name equals: 'someFile_mod'.
+	self assert: res statementBlock statements size equals: 1.
+	self assert: res statementBlock statements anyOne class equals: FASTFortran2kImplicitStatement.
+	self assert: res procedures size equals: 1.
 	
-	segment_foo := self segment: 'foo' attributes: #().
-	segment_foo famix: (FamixEsopeSegment new name: 'foo'; attributes: #()).
-
-	FASTFortranFunction new 
-		name: 'fct' ;
-		declaredType: (self integerType: nil);
-		statementBlock: (self statementBlock: {segment_foo }) ; 
-		parentProgramFile: fastProgramFile.
-		
-	res := fastProgramFile accept: visitor.
-
-	self assert: res size equals: 2.
-
-	module := res first.
-	self assert: module class equals: FASTFortran2kProgramFile.
-	self assert: module filename equals: 'demo_mod.f90'.
-	self assert: module programUnit size equals: 1.
-
-	entity := module programUnit anyOne.
-	self assert: entity class equals: FASTFortran2kModule.
-	self assert: entity name equals: 'demo_mod'.
-	self assert: entity statementBlock statements size equals: 1.
-	self assert: entity statementBlock statements anyOne class equals: FASTFortran2kImplicitStatement.
-	self assert: entity procedures size equals: 1.
-	
-	entity := entity procedures anyOne.
-	self assert: entity class equals: FASTFortranFunction.
-	self assert: entity name equals: 'fct'.
-	self assert: entity statementBlock statements size equals: 1.
-	
-	module := res second.
-	self assert: module class equals: FASTFortran2kProgramFile.
-	self assert: module filename equals: 'foo_mod.f90'.
-	
+	res := res procedures anyOne.
+	self assert: res class equals: FASTFortran2kFunction.
+	self assert: res name equals: 'fct'.
+	self assert: res statementBlock statements size equals: 0
 ]

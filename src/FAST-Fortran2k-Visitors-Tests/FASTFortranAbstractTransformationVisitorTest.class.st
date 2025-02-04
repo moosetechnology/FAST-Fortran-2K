@@ -15,7 +15,7 @@ Class {
 FASTFortranAbstractTransformationVisitorTest >> functionEmpty [
 	"---- demo.f ----
 	integer function fct()
-	end"
+	end function fct"
 
 	| famix |
 	famix := FamixF77PUFunction new
@@ -28,6 +28,24 @@ FASTFortranAbstractTransformationVisitorTest >> functionEmpty [
 		statementBlock: FASTFortranStatementBlock new ;
 		famix: famix ;
 		parentProgramFile: fastProgramFile }.
+		
+]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> functionWithSegment [
+	"  ---- demo.f ----
+	integer fct()
+	  segment foo
+	  end segment
+	end function fct"
+
+	| segment_foo |
+
+	segment_foo := self segment: 'foo' attributes: #().
+	segment_foo famix: (FamixEsopeSegment new name: 'foo'; attributes: #()).
+
+	self functionEmpty.
+	fastProcedures anyOne statementBlock addStatement: segment_foo.
 		
 ]
 
@@ -257,8 +275,8 @@ FASTFortranAbstractTransformationVisitorTest >> programWithProcedureInvoked [
 FASTFortranAbstractTransformationVisitorTest >> programWithSegment [
 	"  ---- demo.f ----
 	program demo
-	segment foo
-	end segment
+	  segment foo
+	  end segment
 	end"
 
 	| segment_foo |
