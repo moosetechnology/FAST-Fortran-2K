@@ -29,15 +29,20 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 { #category : 'visiting - programUnits' }
 FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFortranSubroutine [
 
-	| subroutine |
-	subroutine := model newSubroutine
-		name: aFASTFortranSubroutine name;
-		yourself.
-		
-	stack push: subroutine.
+	| subrtn module |
 
-	subroutine statementBlock: (aFASTFortranSubroutine statementBlock accept: self).
+	module := self ensureModule: aFASTFortranSubroutine famix migratedModuleName. 
+
+	subrtn := self model newSubroutine
+		name: aFASTFortranSubroutine name ;
+		module: module ;
+		yourself.
+
+	stack push: subrtn.
 	
+	subrtn statementBlock: (aFASTFortranSubroutine statementBlock accept: self).
+
 	stack pop.
-	^subroutine.
+
+	^module parentProgramFile
 ]

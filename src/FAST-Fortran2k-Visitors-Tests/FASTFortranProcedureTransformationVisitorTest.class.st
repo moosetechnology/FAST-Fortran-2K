@@ -230,10 +230,87 @@ C	--------end someFile_mod.f90----------------
 	self assert: res name equals: 'sub'.
 ]
 
-{ #category : 'tests' }
-FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatementCalled [
+{ #category : 'tests-statement' }
+FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatement [
+	"
+	module someFile_mod
+		implicit none
+		contains
+			subroutine sub
+			contains
+   				real function fct(x)
+	 			real, intent(in) :: x
+    			fct = x + 2
+    		end function fct
+		end subroutine sub
+	end module"
 
-	self fail: #TODO
+	| res entity |
+	
+	self procedureWithFunctionStatement.
+
+	res := fastProcedure accept: visitor.
+
+	self assert: res class equals: FASTFortran2kProgramFile.
+	self assert: res programUnit size equals: 1.
+
+	res := res programUnit anyOne.
+
+	self assert: res class equals: FASTFortran2kModule.
+	self assert: res procedures size equals: 1.
+	
+	entity := res procedures anyOne.
+	self assert: entity class equals: FASTFortran2kSubroutine.
+	self assert: entity name equals: 'sub'.
+	self assert: entity internalProcedures size equals: 1.
+
+	entity := entity internalProcedures anyOne.
+	self assert: entity class equals: FASTFortran2kInternalFunction.
+	self assert: entity name equals: 'fct'.
+]
+
+{ #category : 'tests-statement' }
+FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatementCalled [
+	"module someFile_mod
+		implicit none
+		contains
+			subroutine sub
+			aVar = fct(5)
+			contains
+   				real function fct(x)
+	 			real, intent(in) :: x
+    			fct = x + 2
+    		end function fct
+		end subroutine sub
+	end module""
+		
+	"
+	| res  entity |
+	self procedureWithFunctionStatementCalled.
+
+	res := fastProcedure accept: visitor.
+
+	self assert: res class equals: FASTFortran2kProgramFile.
+	self assert: res programUnit size equals: 1.
+
+	res := res programUnit anyOne.
+
+	self assert: res class equals: FASTFortran2kModule.
+	self assert: res procedures size equals: 1.
+
+	res := res procedures anyOne.
+	
+	self assert: res class equals: FASTFortran2kSubroutine.
+	self assert: res name equals: 'sub'.
+	self assert: res statementBlock statements size equals: 1.
+	self assert: res statementBlock statements first class equals: FASTFortran2kAssignmentStatement.
+
+	self assert: res internalProcedures size equals: 1.
+	
+	entity := res internalProcedures first.
+	self assert: entity class equals: FASTFortran2kInternalFunction.
+	self assert: entity name equals: 'fct'.
+	
 ]
 
 { #category : 'tests' }
@@ -378,136 +455,4 @@ end module segment_foo_mod
 	self assert: module class equals: FASTFortran2kProgramFile.
 	self assert: module filename equals: 'foo_mod.f90'.
 	
-]
-
-{ #category : 'tests-statement' }
-FASTFortranProcedureTransformationVisitorTest >> testProgramMainWithFunctionStatement [
-	"
-program demo
-	implicit none
-contains
-    real function fct(x)
-	 real, intent(in) :: x
-    fct = x + 2
-    end function fct
-end program demo
-		
-	"
-	| res entity |
-	
-	self programWithFunctionStatement.
-
-	res := fastMainProgram accept: visitor.
-
-	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res programUnit size equals: 1.
-
-	res := res programUnit anyOne.
-
-	self assert: res class equals: FASTFortran2kProgramMain.
-	self assert: res name equals: 'demo'.
-	self assert: res internalProcedures size equals: 1.
-	
-	entity := res internalProcedures first.
-	self assert: entity class equals: FASTFortran2kInternalFunction.
-	self assert: entity name equals: 'fct'.
-	self assert: entity returnType class equals: FASTFortran2kRealType.
-	self assert: entity statementBlock statements size equals: 2.
-	self assert: entity parameters size equals: 1.
-	
-	entity := entity parameters first.
-	self assert: entity class equals: FASTFortran2kScalarVariable.
-	self assert: entity name equals: 'x'.
-
-]
-
-{ #category : 'tests-statement' }
-FASTFortranProcedureTransformationVisitorTest >> testProgramMainWithFunctionStatementCalled [
-	"
-     PROGRAM demo
-     fct()  = 5
-     aVar = fct()
-     END
-
------------------------------
-
-program demo
-	implicit none
-	aVar = fct()
-contains
-    real function fct()
-    fct = 5
-    end function fct
-end program demo
-		
-	"
-	| res  entity |
-	self programWithFunctionStatementCalled.
-
-	res := fastMainProgram accept: visitor.
-
-	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res programUnit size equals: 1.
-
-	res := res programUnit anyOne.
-	
-	self assert: res class equals: FASTFortran2kProgramMain.
-	self assert: res name equals: 'demo'.
-	self assert: res statementBlock statements size equals: 2.
-	self assert: res statementBlock statements first class equals: FASTFortran2kImplicitStatement.
-	self assert: res statementBlock statements second class equals: FASTFortran2kAssignmentStatement.
-
-	self assert: res internalProcedures size equals: 1.
-	
-	entity := res internalProcedures first.
-	self assert: entity class equals: FASTFortran2kInternalFunction.
-	self assert: entity name equals: 'fct'.
-	self assert: entity returnType class equals: FASTFortran2kRealType.
-	self assert: entity statementBlock statements size equals: 1.
-	self assert: entity parameters size equals: 0.
-	
-]
-
-{ #category : 'tests' }
-FASTFortranProcedureTransformationVisitorTest >> testSubroutineEmpty [
-"
----- demo.f ----
-	subroutine sub
-	end
-
----- demo_mod.f90
-module demo_mod
-	implicit none
-contains
-	subroutine sub()
-	end subroutine sub
-end module demo_mod
-"
-	| res |
-
-	FASTFortranSubroutine new 
-		name: 'sub' ; 
-		statementBlock: FASTFortranStatementBlock new ; 
-		parentProgramFile: fastProgramFile.
-		
-	res := fastProgramFile accept: visitor.
-
-	self assert: res size equals: 1.
-
-	res := res anyOne.
-	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res filename equals: 'demo_mod.f90'.
-	self assert: res programUnit size equals: 1.
-
-	res := res programUnit anyOne.
-	self assert: res class equals: FASTFortran2kModule.
-	self assert: res name equals: 'demo_mod'.
-	self assert: res statementBlock statements size equals: 1.
-	self assert: res statementBlock statements anyOne class equals: FASTFortran2kImplicitStatement.
-	self assert: res procedures size equals: 1.
-	
-	res := res procedures anyOne.
-	self assert: res class equals: FASTFortran2kSubroutine.
-	self assert: res name equals: 'sub'.
-	self assert: res statementBlock statements size equals: 1
 ]

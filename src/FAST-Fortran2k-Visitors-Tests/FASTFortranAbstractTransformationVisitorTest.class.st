@@ -32,6 +32,78 @@ FASTFortranAbstractTransformationVisitorTest >> functionEmpty [
 ]
 
 { #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> procedureWithFunctionStatement [
+	"
+     subroutine sub
+     fct(x)  = x + 2
+     END"
+
+	| var function |
+	var := self scalarVariable: #x.
+	
+	function := FASTFortranFunctionStatement new
+						name: 'fct';
+						parameters: { var };
+						expression: (self binary: '+' left: #x right: 2);
+						yourself.
+
+	function famix: (FamixF77StatementFunction new 
+		name: function name;
+		declaredType: (FamixF77TypeIntrinsic new name: 'real');
+		yourself
+	).
+	
+	var famixParameter: (FamixF77Parameter new 
+		name: 'x'; 
+		declaredType: (FamixF77TypeIntrinsic new name: 'real'); 
+		yourself
+	).
+				
+	self subroutineEmpty.
+	fastProcedure statementBlock addStatement: function.
+
+]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> procedureWithFunctionStatementCalled [
+	"
+     PROGRAM demo
+     fct()  = 5
+     aVar = fct()
+     END"
+
+	| fastFunctionStatement fastCallStatement |
+	fastFunctionStatement := FASTFortranFunctionStatement new
+		name: 'fct';
+		parameters: {};
+		expression: (self integerLiteral: 5);
+		yourself.
+	
+	
+	fastFunctionStatement famix: (FamixF77StatementFunction new 
+		name: fastFunctionStatement name;
+		declaredType: (FamixF77TypeIntrinsic new name: 'real');
+		yourself
+	).
+	
+	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
+
+	self subroutineEmpty.
+	fastProcedure statementBlock addStatement: fastFunctionStatement.
+	fastProcedure statementBlock addStatement: fastCallStatement.
+
+	fastFunctionStatement famix parentEntity: fastProcedure famix.
+
+	fastCallStatement expression famix: (
+		FamixF77Invocation new
+			sender: fastProcedure famix ;
+			addCandidate: fastFunctionStatement famix ;
+			yourself
+		).
+
+]
+
+{ #category : 'setup' }
 FASTFortranAbstractTransformationVisitorTest >> programEmpty [
 	"
      PROGRAM demo
@@ -293,4 +365,23 @@ FASTFortranAbstractTransformationVisitorTest >> setUp [
 
 	fastProgramFile famix: famixProgramFile.
 	
+]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> subroutineEmpty [
+	"---- demo.f ----
+	subroutine sub
+	end"
+
+	| famix |
+	famix := FamixF77PUSubroutine new
+			name: 'sub' ; 
+			programFile: famixProgramFile.
+
+	fastProcedure := FASTFortranSubroutine new 
+		name: 'sub' ;
+		statementBlock: FASTFortranStatementBlock new ;
+		famix: famix ;
+		parentProgramFile: fastProgramFile.
+		
 ]
