@@ -185,51 +185,6 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureCallingProcedureSa
 	self fail: #TODO
 ]
 
-{ #category : 'tests' }
-FASTFortranProcedureTransformationVisitorTest >> testProcedureInProgFileMovedToModule [
-	"
-C	--------someFile.f----------------
-	subroutine sub
-	end
-C  -----end someFile.f --------------
-
-C	--------someFile_mod.f90----------------
-module someFile_mod
-	implicit none
-contains
-	subroutine sub()
-	end subroutine sub
-end module someFile_mod
-C	--------end someFile_mod.f90----------------
-
-	"
-
-	| subroutine res |
-	
-	subroutine := FASTFortranSubroutine new 
-			name: 'sub'; 
-			statementBlock: (self statementBlock: #()) ; 
-			yourself.
-
-	fastProgramFile addProgramUnit: subroutine.
-
-	subroutine famix: (FamixF77PUSubroutine new name: 'sub').
-		
-	res := fastProgramFile accept: visitor.
-	
-	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res programUnit size equals: 1.
-	
-	res := res programUnit first.
-	self assert: res class equals: FASTFortran2kModule.
-	self assert: res name equals: 'someFile_mod'.
-	self assert: res procedures size equals: 1.
-	
-	res := res procedures first.
-	self assert: res class equals: FASTFortran2kSubroutine.
-	self assert: res name equals: 'sub'.
-]
-
 { #category : 'tests-statement' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatement [
 	"
@@ -455,4 +410,41 @@ end module segment_foo_mod
 	self assert: module class equals: FASTFortran2kProgramFile.
 	self assert: module filename equals: 'foo_mod.f90'.
 	
+]
+
+{ #category : 'tests' }
+FASTFortranProcedureTransformationVisitorTest >> testSubroutineEmpty [
+	"
+C	--------someFile_mod.f90----------------
+module someFile_mod
+	implicit none
+contains
+	subroutine sub()
+	end subroutine sub
+end module someFile_mod
+C	--------end someFile_mod.f90----------------
+
+	"
+
+	| res |
+			
+	self subroutineEmpty.
+		
+	res := fastProcedure accept: visitor.
+
+	self assert: res class equals: FASTFortran2kProgramFile.
+	self assert: res filename equals: 'someFile_mod.f90'.
+	self assert: res programUnit size equals: 1.
+
+	res := res programUnit anyOne.
+	self assert: res class equals: FASTFortran2kModule.
+	self assert: res name equals: 'someFile_mod'.
+	self assert: res statementBlock statements size equals: 1.
+	self assert: res statementBlock statements anyOne class equals: FASTFortran2kImplicitStatement.
+	self assert: res procedures size equals: 1.
+	
+	res := res procedures anyOne.
+	self assert: res class equals: FASTFortran2kSubroutine.
+	self assert: res name equals: 'sub'.
+	self assert: res statementBlock statements size equals: 0
 ]
