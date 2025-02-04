@@ -276,14 +276,15 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 		do: [ :statement | | f2kStatement |
 			f2kStatement := statement accept: self.
 
-			statement class = FASTFortranFunctionStatement
-				ifFalse: [ 
-					f2kStatement isCollection
-						ifTrue: [ f2kStatementBlock statements addAll: f2kStatement ]
-						ifFalse: [  f2kStatementBlock addStatement: f2kStatement ]
-					
-				]
-				ifTrue: [stack top addInternalProcedure: f2kStatement ]
+			f2kStatement ifNotNil: [
+				statement class = FASTFortranFunctionStatement
+					ifTrue: [stack top addInternalProcedure: f2kStatement ]
+					ifFalse: [ 
+						f2kStatement isCollection
+							ifTrue: [ f2kStatementBlock statements addAll: f2kStatement ]
+							ifFalse: [  f2kStatementBlock addStatement: f2kStatement ]
+					]
+			]
 		].
 
 	^f2kStatementBlock
