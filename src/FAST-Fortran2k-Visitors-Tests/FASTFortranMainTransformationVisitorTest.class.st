@@ -278,11 +278,10 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithImplicitStatement [
 
 { #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramWithPointeurDeclaration [
-    "program main
+    "program demo
     implicit none
     type(point) :: f
-end program main
-    "
+    end program demo"
 
     | res stmt |
 
@@ -291,7 +290,9 @@ end program main
     res := fastMainProgram accept: visitor.
     
     self assert: res programUnit size equals: 1.
+
     res := res programUnit anyOne.
+
     self assert: res class equals: FASTFortran2kProgramMain.
     self assert: res name equals: 'demo'.
     self assert: res statementBlock statements size equals: 2.
@@ -301,6 +302,12 @@ end program main
 
     stmt := res statementBlock statements second.
     self assert: stmt class equals: FASTFortran2kDerivedTypeDeclaration.
+	 self assert: stmt type class equals: FASTFortran2kUserDefinedType.
+	 self assert: stmt type name equals: 'foo'.	
+	 self assert: stmt declarators size equals: 1.
+	 self assert: stmt declarators anyOne class equals: FASTFortran2kVariableDeclarator.
+	 self assert: stmt declarators anyOne name equals: 'f'.
+
 ]
 
 { #category : 'tests' }

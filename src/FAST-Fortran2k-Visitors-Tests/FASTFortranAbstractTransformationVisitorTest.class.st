@@ -446,3 +446,30 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineWithFunctionStatementC
 		).
 
 ]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> subroutineWithPointeurDeclaration [
+    " someFile.E
+
+      subroutine sub
+      pointeur f.foo
+      end subroutine sub"
+
+	| pointerDeclarator |
+	pointerDeclarator := FASTEsopePointerDeclarationStatement new
+        addPointerDeclarator: (FASTEsopePointerDeclarator new 
+            pointedTypeName: 'foo';
+            variableDeclarator: (self variableDeclarator: #f);
+            yourself
+        );
+        famix: (FamixEsopePointer new 
+            name: 'f'; 
+            declaredType: (FamixEsopeSegment new name: 'foo'); 
+            yourself 
+        );
+        yourself.
+
+	self subroutineEmpty.
+	fastProcedures anyOne statementBlock addStatement: pointerDeclarator.
+
+]

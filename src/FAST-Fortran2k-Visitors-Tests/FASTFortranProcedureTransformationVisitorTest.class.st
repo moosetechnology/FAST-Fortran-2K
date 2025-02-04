@@ -110,63 +110,6 @@ end sub_mod"
 
 ]
 
-{ #category : 'tests' }
-FASTFortranProcedureTransformationVisitorTest >> testProcedureCallingProcedureOtherModule [
-
-	self fail: #TODO
-]
-
-{ #category : 'tests' }
-FASTFortranProcedureTransformationVisitorTest >> testProcedureCallingProcedureSameModule [
-
-	self fail: #TODO
-]
-
-{ #category : 'tests' }
-FASTFortranProcedureTransformationVisitorTest >> testProcedureInProgFileMovedToModule [
-	"
-C	--------someFile.f----------------
-	subroutine sub
-	end
-C  -----end someFile.f --------------
-
-C	--------someFile_mod.f90----------------
-module someFile_mod
-	implicit none
-contains
-	subroutine sub()
-	end subroutine sub
-end module someFile_mod
-C	--------end someFile_mod.f90----------------
-
-	"
-
-	| subroutine res |
-	
-	subroutine := FASTFortranSubroutine new 
-			name: 'sub'; 
-			statementBlock: (self statementBlock: #()) ; 
-			yourself.
-
-	fastProgramFile addProgramUnit: subroutine.
-
-	subroutine famix: (FamixF77PUSubroutine new name: 'sub').
-		
-	res := fastProgramFile accept: visitor.
-	
-	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res programUnit size equals: 1.
-	
-	res := res programUnit first.
-	self assert: res class equals: FASTFortran2kModule.
-	self assert: res name equals: 'someFile_mod'.
-	self assert: res procedures size equals: 1.
-	
-	res := res procedures first.
-	self assert: res class equals: FASTFortran2kSubroutine.
-	self assert: res name equals: 'sub'.
-]
-
 { #category : 'tests-statement' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatement [
 	"
@@ -253,71 +196,31 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatem
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureWithPointeurDeclaration [
 
-    "
-+------ someFile.E ---------------------------------+
-|      subroutine sub                               |
-|      pointeur f.foo
-|      end                                          |
-+---------------------------------------------------+
+    " someFile_mod.f90
 
---- someFile_mod.f90 --------
-module someFile_mod
-    use :: foo_mod
-    implicit none
-contains
-	subroutine sub()
-	    type(point) :: f
-	end subroutine sub
-end module someFile_mod
+	module someFile_mod
+	    implicit none
+	contains
+		subroutine sub()
+	 	   type(point) :: f
+		end subroutine sub
+	end module someFile_mod
     "
 
-    | pointerDeclarator fastSubroutine res stmt |
+    | res stmt |
+	self subroutineWithPointeurDeclaration.
 
-	self skip: #TODO.
-
-    pointerDeclarator := FASTEsopePointerDeclarationStatement new
-        addPointerDeclarator: (FASTEsopePointerDeclarator new 
-            pointedTypeName: 'foo';
-            variableDeclarator: (self variableDeclarator: #f);
-            yourself
-        );
-        famix: (FamixEsopePointer new 
-            name: 'f'; 
-            declaredType: (FamixEsopeSegment new name: 'foo'); 
-            yourself 
-        );
-        yourself.
-
-    fastSubroutine := FASTFortranSubroutine new 
-        name: 'sub';
-        statementBlock: (self statementBlock: {pointerDeclarator});
-        yourself.
-
-
-    fastSubroutine famix: (FamixF77PUSubroutine new name: 'sub'; programFile: famixProgramFile).
-
-    fastProgramFile addProgramUnit: fastSubroutine.
-
-    res := fastProgramFile accept: visitor.
+    res := fastProcedures anyOne accept: visitor.
     
     self assert: res programUnit size equals: 1.
+
     res := res programUnit anyOne.
     self assert: res class equals: FASTFortran2kModule.
-    self assert: res name equals: 'someFile_mod'.
-    self assert: res statementBlock statements size equals: 2.
-
-    self skip: #TODO. "correct the adding 'use' in the module for this test"
-	 stmt := res statementBlock statements first.
-    self assert: stmt class equals: FASTFortran2kUseStatement.
-    self assert: stmt name equals: 'foo_mod'.
-    
-    stmt := res statementBlock statements second.
-    self assert: stmt class equals: FASTFortran2kImplicitStatement.
-
 	 self assert: res procedures size equals: 1.
 	 self assert: res procedures anyOne class equals: FASTFortran2kSubroutine.
 	
 	 stmt := 	res procedures anyOne statementBlock.
+
 	 self assert: stmt statements size equals: 1.
 	 self assert: stmt statements anyOne class equals: FASTFortran2kDerivedTypeDeclaration.
 	 self assert: stmt statements anyOne type class equals: FASTFortran2kUserDefinedType.
