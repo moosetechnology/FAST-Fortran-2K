@@ -13,6 +13,13 @@ FASTFortranMainTransformationVisitor >> fortran2kFilename: f77ProgramMain [
 ]
 
 { #category : 'visiting - programUnits' }
+FASTFortranMainTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
+
+	"aFASTEsopeSegmentNode accept: (self subVisitor: aFASTEsopeSegmentNode transformationVisitorClass)"
+	^nil
+]
+
+{ #category : 'visiting - programUnits' }
 FASTFortranMainTransformationVisitor >> visitFASTFortranFunction: aFASTFortranFunction [
 
 	^nil

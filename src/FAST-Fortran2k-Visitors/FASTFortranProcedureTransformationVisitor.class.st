@@ -6,12 +6,6 @@ Class {
 }
 
 { #category : 'visiting - programUnits' }
-FASTFortranProcedureTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
-
-	^aFASTEsopeSegmentNode accept: (self subVisitor: aFASTEsopeSegmentNode transformationVisitorClass)
-]
-
-{ #category : 'visiting - programUnits' }
 FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFortranFunction [
 
 	| subroutine |
