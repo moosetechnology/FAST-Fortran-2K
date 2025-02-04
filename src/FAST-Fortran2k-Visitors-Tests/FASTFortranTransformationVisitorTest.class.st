@@ -235,6 +235,51 @@ end module bar_mod
 	self assert: stmt name equals: 'bar'.
 ]
 
+{ #category : 'tests-programUnit' }
+FASTFortranTransformationVisitorTest >> testFunctionEmpty [
+"
+---- demo.f ----
+	integer function fct()
+	end
+
+---- demo_mod.f90
+module demo_mod
+	implicit none
+contains
+	integer function fct()
+	end function fct
+end module demo_mod
+"
+	| res |
+
+	FASTFortranFunction new 
+		name: 'fct' ;
+		declaredType: (self integerType: nil);
+		statementBlock: FASTFortranStatementBlock new ; 
+		parentProgramFile: fastProgramFile.
+		
+	res := fastProgramFile accept: visitor.
+
+	self assert: res size equals: 1.
+
+	res := res anyOne.
+	self assert: res class equals: FASTFortran2kProgramFile.
+	self assert: res filename equals: 'demo_mod.f90'.
+	self assert: res programUnit size equals: 1.
+
+	res := res programUnit anyOne.
+	self assert: res class equals: FASTFortran2kModule.
+	self assert: res name equals: 'demo_mod'.
+	self assert: res statementBlock statements size equals: 1.
+	self assert: res statementBlock statements anyOne class equals: FASTFortran2kImplicitStatement.
+	self assert: res procedures size equals: 1.
+	
+	res := res procedures anyOne.
+	self assert: res class equals: FASTFortranFunction.
+	self assert: res name equals: 'fct'.
+	self assert: res statementBlock statements size equals: 1
+]
+
 { #category : 'running' }
 FASTFortranTransformationVisitorTest >> testMultipleProceduresMovedToModule [
 	"
@@ -1037,4 +1082,48 @@ end program main
     
     stmt := res statementBlock statements third.
     self assert: stmt class equals: FASTFortran2kDerivedTypeDeclaration.
+]
+
+{ #category : 'tests-programUnit' }
+FASTFortranTransformationVisitorTest >> testSubroutineEmpty [
+"
+---- demo.f ----
+	subroutine sub
+	end
+
+---- demo_mod.f90
+module demo_mod
+	implicit none
+contains
+	subroutine sub()
+	end subroutine sub
+end module demo_mod
+"
+	| res |
+
+	FASTFortranSubroutine new 
+		name: 'sub' ; 
+		statementBlock: FASTFortranStatementBlock new ; 
+		parentProgramFile: fastProgramFile.
+		
+	res := fastProgramFile accept: visitor.
+
+	self assert: res size equals: 1.
+
+	res := res anyOne.
+	self assert: res class equals: FASTFortran2kProgramFile.
+	self assert: res filename equals: 'demo_mod.f90'.
+	self assert: res programUnit size equals: 1.
+
+	res := res programUnit anyOne.
+	self assert: res class equals: FASTFortran2kModule.
+	self assert: res name equals: 'demo_mod'.
+	self assert: res statementBlock statements size equals: 1.
+	self assert: res statementBlock statements anyOne class equals: FASTFortran2kImplicitStatement.
+	self assert: res procedures size equals: 1.
+	
+	res := res procedures anyOne.
+	self assert: res class equals: FASTFortran2kSubroutine.
+	self assert: res name equals: 'sub'.
+	self assert: res statementBlock statements size equals: 1
 ]
