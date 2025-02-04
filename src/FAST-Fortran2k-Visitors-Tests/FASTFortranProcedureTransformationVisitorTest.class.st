@@ -12,7 +12,7 @@ FASTFortranProcedureTransformationVisitorTest >> newVisitor [
 		model: FASTFortran2kModel new
 ]
 
-{ #category : 'tests-programUnit' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testFunctionEmpty [
 "
 ---- demo.f ----
@@ -57,7 +57,7 @@ end module demo_mod
 	self assert: res statementBlock statements size equals: 1
 ]
 
-{ #category : 'running' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testMultipleProceduresMovedToModule [
 	"
 C	--------someFile.f----------------
@@ -120,7 +120,7 @@ C	--------end someFile_mod.f90----------------
 
 ]
 
-{ #category : 'running' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testMultipleProceduresWithoutUse [
 	"
 C	--------someFile.f----------------
@@ -186,19 +186,19 @@ C	--------end someFile_mod.f90----------------
 
 ]
 
-{ #category : 'running' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureCallingProcedureOtherModule [
 
 	self fail: #TODO
 ]
 
-{ #category : 'running' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureCallingProcedureSameModule [
 
 	self fail: #TODO
 ]
 
-{ #category : 'running' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureInProgFileMovedToModule [
 	"
 C	--------someFile.f----------------
@@ -243,13 +243,13 @@ C	--------end someFile_mod.f90----------------
 	self assert: res name equals: 'sub'.
 ]
 
-{ #category : 'running' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatementCalled [
 
 	self fail: #TODO
 ]
 
-{ #category : 'tests-statement' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureWithPointeurDeclaration [
 
     "
@@ -329,7 +329,7 @@ end module someFile_mod
     
 ]
 
-{ #category : 'tests-programUnit' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureWithSegment [
 "
 ---- demo.f ----
@@ -481,7 +481,7 @@ end program demo
 	
 ]
 
-{ #category : 'tests-programUnit' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testSubroutineEmpty [
 "
 ---- demo.f ----
