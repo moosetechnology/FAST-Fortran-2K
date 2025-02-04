@@ -17,10 +17,16 @@ FASTFortranAbstractTransformationVisitorTest >> functionEmpty [
 	integer function fct()
 	end"
 
-	procedure := FASTFortranFunction new 
+	| famix |
+	famix := FamixF77PUFunction new
+			name: 'fct' ; 
+			declaredType: (FamixF77TypeIntrinsic new name: 'integer') ;
+			programFile: famixProgramFile.
+
+	fastProcedure := FASTFortranFunction new 
 		name: 'fct' ;
-		declaredType: (self integerType: nil);
-		statementBlock: FASTFortranStatementBlock new ; 
+		statementBlock: FASTFortranStatementBlock new ;
+		famix: famix ;
 		parentProgramFile: fastProgramFile.
 		
 ]
