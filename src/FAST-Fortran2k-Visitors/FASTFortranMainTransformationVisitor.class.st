@@ -30,11 +30,11 @@ FASTFortranMainTransformationVisitor >> visitFASTFortranProgramMain: aProgramNod
 
 	| programMain programFile |
 	
-	programFile := model newProgramFile
+	programFile := self model newProgramFile
 		filename: (self fortran2kFilename: aProgramNode) ;
 		yourself.
 
-	programMain := model newProgramMain 
+	programMain := self model newProgramMain 
 		name: aProgramNode name;
 		parentProgramFile: programFile ;
 		yourself.
@@ -42,10 +42,7 @@ FASTFortranMainTransformationVisitor >> visitFASTFortranProgramMain: aProgramNod
 	stack push: programMain.
 	
 	programMain statementBlock: (aProgramNode statementBlock accept: self).
-
-	programMain statementBlock statements
-		detect: [ :statement | statement class = FASTFortran2kImplicitStatement ]
-		ifNone: [ programMain statementBlock statements addFirst: model newImplicitStatement ].
+	programMain statementBlock statements addFirst: self model newImplicitStatement.
 
 	stack pop.
 

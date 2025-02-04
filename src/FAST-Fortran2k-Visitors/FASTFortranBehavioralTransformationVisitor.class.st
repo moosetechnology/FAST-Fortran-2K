@@ -75,11 +75,11 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 	esopeDeclarator := FASTFortran2kDerivedTypeDeclaration new 
 		type: (FASTFortran2kUserDefinedType new 
 			name: aFASTEsopePointerDeclarator pointedTypeName;
-			mooseModel: model;
+			mooseModel: self model;
 			yourself
 		);
 		addDeclarator: (aFASTEsopePointerDeclarator variableDeclarator accept: self);
-		mooseModel: model;
+		mooseModel: self model;
 		yourself.
 
 	callerProgramUnit := stack top.
@@ -111,7 +111,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentStatemen
 		  variable: (anAssignmentStatementNode variable accept: self);
 		  expression: (anAssignmentStatementNode expression accept: self);
 		  "migrateFrom: anAssignmentStatementNode;"
-		  mooseModel: model;
+		  mooseModel: self model;
 		  yourself
 ]
 
@@ -128,7 +128,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranBinaryExpression: 
 		  operator: aBinaryExpresionNode operator;
 		  leftOperand: (aBinaryExpresionNode leftOperand accept: self);
 		  rightOperand: (aBinaryExpresionNode rightOperand accept: self);
-		  mooseModel: model;
+		  mooseModel: self model;
 		  yourself
 ]
 
@@ -151,7 +151,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCallStatement: aFA
 		arguments: (aFASTFortranCallStatement arguments
 				collect: [ :argument | argument accept: self ]
 		);
-		mooseModel: model;
+		mooseModel: self model;
 		yourself.
 
 	callerProgramUnit := stack top.
@@ -194,7 +194,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionCall: aFAS
 	| functionCall callerProgramUnit calledProgramFile |
 
 	functionCall := FASTFortran2kFunctionCall new
-		mooseModel: model;
+		mooseModel: self model;
 		name: aFASTFortranFunctionCall name ;
 		arguments: (aFASTFortranFunctionCall arguments collect: [:arg | arg accept: self]) ;
 		yourself.
@@ -220,7 +220,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement:
 	fct	 parameters: (aFunctionStatementNode parameters collect: [:parameter | 
 			FASTFortran2kScalarVariable new 
 				name: parameter name; 
-				mooseModel: model;
+				mooseModel: self model;
 				yourself
 			]).
 		
@@ -232,10 +232,10 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement:
 				type: (parameter famixParameter declaredType accept: self);
 				declarators: { FASTFortran2kVariableDeclarator new 
 					name:  parameter name; 
-					mooseModel: model; 
+					mooseModel: self model; 
 					yourself 
 				};
-				mooseModel: model;
+				mooseModel: self model;
 				yourself
 		)
 	].
@@ -245,7 +245,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement:
 			FASTFortran2kAssignmentStatement new
 				variable: (FASTFortran2kVariable new name: aFunctionStatementNode name);
 				expression: (aFunctionStatementNode expression accept: self);
-				mooseModel: model;
+				mooseModel: self model;
 				yourself
 			).
 		
@@ -264,7 +264,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerLiteral: an
 
 	^ FASTFortran2kIntegerLiteral new
 		  primitiveValue: anIntegerLiteralNode primitiveValue;
-		  mooseModel: model;
+		  mooseModel: self model;
 		  yourself
 ]
 
@@ -313,7 +313,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranScalarVariable: aS
 
 	^ FASTFortran2kScalarVariable new
 		  name: aScalarVariableNode name;
-		  mooseModel: model;
+		  mooseModel: self model;
 		  yourself
 ]
 
@@ -324,7 +324,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 
 	| f2kStatementBlock |
 
-	f2kStatementBlock := model newStatementBlock.
+	f2kStatementBlock := self model newStatementBlock.
 
 	aFASTFortranStatementBlock statements
 		do: [ :statement | | f2kStatement |
@@ -349,7 +349,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclaratio
 
 	^ FASTFortran2kVariableDeclarationStatement new
 		  type: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
-		  mooseModel: model;
+		  mooseModel: self model;
 		  yourself
 ]
 
@@ -364,6 +364,6 @@ FASTFortranBehavioralTransformationVisitor >> visitFamixF77Type: aFamixF77Type [
 	} asDictionary at: aFamixF77Type name.
 
 	^aTypeClass new
-		mooseModel: model;
+		mooseModel: self model;
 		yourself.
 ]
