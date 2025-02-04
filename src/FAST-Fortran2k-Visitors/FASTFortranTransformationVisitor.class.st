@@ -88,11 +88,20 @@ FASTFortranTransformationVisitor >> fortran2kFilename: f77Filename [
 	^f77Filename , '90'
 ]
 
+{ #category : 'helpers' }
+FASTFortranTransformationVisitor >> getModule: filename ifAbsentPut: aBlock [
+
+	^allModules
+		at: filename 
+		ifAbsentPut: aBlock
+]
+
 { #category : 'initialization' }
 FASTFortranTransformationVisitor >> initialize [
 
 	super initialize.
 
+	allModules := Dictionary new.
 	model := FASTFortran2kModel new.
 ]
 
