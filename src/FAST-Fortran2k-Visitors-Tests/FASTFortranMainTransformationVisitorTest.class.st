@@ -9,7 +9,7 @@ Class {
 FASTFortranMainTransformationVisitorTest >> newVisitor [
 
 	^FASTFortranMainTransformationVisitor new
-		model: FASTFortran2kModel new
+		parentVisitor: FASTFortranTransformationVisitor new
 ]
 
 { #category : 'tests' }
@@ -32,7 +32,7 @@ end module segment_foo_mod
 	| res entity |
 	self programWithSegment.
 
-	res := mainProgram accept: visitor.
+	res := fastMainProgram accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res filename equals: 'someFile.f90'.
@@ -51,7 +51,7 @@ FASTFortranMainTransformationVisitorTest >> testProgramEmpty [
 
 	self programEmpty.
 
-	res := mainProgram accept: visitor.
+	res := fastMainProgram accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res programUnit size equals: 1.
@@ -84,7 +84,7 @@ end program demo
 	
 	self programWithFunctionStatement.
 
-	res := mainProgram accept: visitor.
+	res := fastMainProgram accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res programUnit size equals: 1.
@@ -131,7 +131,7 @@ end program demo
 	| res  entity |
 	self programWithFunctionStatementCalled.
 
-	res := mainProgram accept: visitor.
+	res := fastMainProgram accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res programUnit size equals: 1.
@@ -160,9 +160,9 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithAssignementStatement 
 	| res entity |
 
 	self programEmpty.
-	mainProgram 	statementBlock addStatement: (self assignementStatement: 'x' value: 5).
+	fastMainProgram 	statementBlock addStatement: (self assignementStatement: 'x' value: 5).
 		
-	res := mainProgram accept: visitor.
+	res := fastMainProgram accept: visitor.
 	
 	res := res programUnit anyOne.
 	self assert: res class equals: FASTFortran2kProgramMain.
@@ -182,7 +182,7 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithDeclarationStatement 
 	| res entity |
 	self programWithDeclarationStatement.
 
-	res := mainProgram accept: visitor.
+	res := fastMainProgram accept: visitor.
 
 	res := res programUnit anyOne.
 	self assert: res class equals: FASTFortran2kProgramMain.
@@ -208,7 +208,7 @@ end program demo
 	| res stmt |
 	self programWithExternalFunctionCall.
 
-	res := mainProgram accept: visitor.
+	res := fastMainProgram accept: visitor.
 	
 	self assert: res programUnit size equals: 1.
 	res := res programUnit anyOne.
@@ -238,7 +238,7 @@ C	--------end someFile.f90----------------
 	| res  stmt |
 	self programWithExternalSubroutineInvocation.
 
-	res := mainProgram accept: visitor.
+	res := fastMainProgram accept: visitor.
 
 	self assert: res programUnit size equals: 1.
 	res := res programUnit anyOne.
@@ -260,12 +260,12 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithImplicitStatement [
 	stmtBlock := FASTFortranStatementBlock new.
 	stmtBlock addStatement: (FASTFortranImplicitStatement new typingRules: #() ).
 
-	mainProgram := FASTFortranProgramMain new 
+	fastMainProgram := FASTFortranProgramMain new 
 		name: 'demo' ; 
 		statementBlock: stmtBlock ; 
 		parentProgramFile: fastProgramFile.
 		
-	res := mainProgram accept: visitor.
+	res := fastMainProgram accept: visitor.
 	
 	res := res programUnit anyOne.
 	self assert: res class equals: FASTFortran2kProgramMain.
@@ -288,7 +288,7 @@ end program main
 
 	self programWithPointeurDeclaration.
 
-    res := mainProgram accept: visitor.
+    res := fastMainProgram accept: visitor.
     
     self assert: res programUnit size equals: 1.
     res := res programUnit anyOne.
@@ -316,7 +316,7 @@ end program demo
 	| res stmt entity |
 	self programWithProcedureInvoked.
 
-	res := mainProgram accept: visitor.
+	res := fastMainProgram accept: visitor.
 	
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res programUnit size equals: 1.
