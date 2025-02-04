@@ -25,7 +25,7 @@ end module demo_mod
 	| res |
 	self functionEmpty.
 
-	res := fastProcedure accept: visitor.
+	res := fastProcedures anyOne accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res filename equals: 'someFile_mod.f90'.
@@ -45,49 +45,22 @@ end module demo_mod
 ]
 
 { #category : 'tests' }
-FASTFortranProcedureTransformationVisitorTest >> testMultipleProceduresMovedToModule [
-	"
-C	--------someFile.f----------------
-	subroutine sub
-	end
-	real function f()
-	end function
-C  -----end someFile.f --------------
-
-C	--------someFile_mod.f90----------------
-module sub_mod
+FASTFortranProcedureTransformationVisitorTest >> testMultipleProcedures [
+	"--------someFile_mod.f90----------------
+module someFile_mod
 	implicit none
 contains
+	real function fct()
+	end function fct
+	
 	subroutine sub()
 	end subroutine sub
-	real function f()
-	end function f
-end sub_mod
-C	--------end someFile_mod.f90----------------
+end someFile_mod	"
 
-	"
+	| res module |
 
-	| subroutine function res module |
-	
-	subroutine := FASTFortranSubroutine new
-		name: 'sub' ;
-		statementBlock: FASTFortranStatementBlock new ;
-		famix: (FamixF77PUSubroutine new name: 'sub') ; 
-			yourself.
-
-	function := FASTFortranFunction new 
-		name: 'f' ;
-		statementBlock: FASTFortranStatementBlock new ;
-		famix: (FamixF77PUFunction new
-			name: 'f' ; 
-			declaredType: (FamixF77TypeIntrinsic new name: 'real')) ;
-		yourself.
-
-	fastProgramFile
-	 	addProgramUnit: subroutine ;
-	 	addProgramUnit: function.
-		
-	res := fastProgramFile accept: visitor.
+	self subroutineAndFunction.
+	fastProcedures do: [ :pu | res := pu accept: visitor ].
 	
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res programUnit size equals: 1.
@@ -98,68 +71,32 @@ C	--------end someFile_mod.f90----------------
 	self assert: module procedures size equals: 2.
 	
 	res := module procedures first.
-	self assert: res class equals: FASTFortran2kSubroutine.
-	self assert: res name equals: 'sub'.
+	self assert: res class equals: FASTFortran2kFunction.
+	self assert: res name equals: 'fct'.
 
 	res := module procedures second.
-	self assert: res class equals: FASTFortran2kFunction.
-	self assert: res name equals: 'f'.
-
+	self assert: res class equals: FASTFortran2kSubroutine.
+	self assert: res name equals: 'sub'.
 ]
 
 { #category : 'tests' }
-FASTFortranProcedureTransformationVisitorTest >> testMultipleProceduresWithoutUse [
-	"
-C	--------someFile.f----------------
-	subroutine sub1
-	end
-	subroutine sub2
-	call sub1()
-	end
-C  -----end someFile.f --------------
-
-C	--------someFile_mod.f90----------------
+FASTFortranProcedureTransformationVisitorTest >> testMultipleProceduresWithCall [
+	"--------someFile_mod.f90----------------
 module sub_mod
 	implicit none
 contains
-	subroutine sub1()
-	end subroutine sub1
-	subroutine sub2()
-	call sub1()
-	end subroutine sub2
-end sub_mod
-C	--------end someFile_mod.f90----------------
+	integer function fct()
+	end function fct()
 
-	"
+	subroutine sub()
+	aVar = fct()
+	end subroutine sub
+end sub_mod"
 
-	| subroutine1 subroutine2 res module fastCallStatement |
+	| res module |
 	
-	subroutine1 := FASTFortranSubroutine new
-		name: 'sub1' ;
-		statementBlock: FASTFortranStatementBlock new ;
-		famix: (FamixF77PUSubroutine new name: 'sub1') ; 
-			yourself.
-
-	fastCallStatement := self callStatement: 'sub1' arguments: #().
-
-	subroutine2 := FASTFortranSubroutine new
-		name: 'sub2' ;
-		statementBlock: (self statementBlock: { fastCallStatement } ) ;
-		famix: (FamixF77PUSubroutine new name: 'sub2') ; 
-			yourself.
-
-	fastCallStatement famix: (
-		FamixF77Invocation new
-			sender: subroutine2 famix ;
-			addCandidate: subroutine1 famix ;
-			yourself
-		).
-
-	fastProgramFile
-	 	addProgramUnit: subroutine1 ;
-	 	addProgramUnit: subroutine2.
-		
-	res := fastProgramFile accept: visitor.
+	self subroutineAndFunctionWithCall.
+	fastProcedures do: [ :pu | res := pu accept: visitor ].
 	
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res programUnit size equals: 1.
@@ -247,9 +184,9 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatem
 
 	| res entity |
 	
-	self procedureWithFunctionStatement.
+	self subroutineWithFunctionStatement.
 
-	res := fastProcedure accept: visitor.
+	res := fastProcedures anyOne accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res programUnit size equals: 1.
@@ -286,9 +223,9 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatem
 		
 	"
 	| res  entity |
-	self procedureWithFunctionStatementCalled.
+	self subroutineWithFunctionStatementCalled.
 
-	res := fastProcedure accept: visitor.
+	res := fastProcedures anyOne accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res programUnit size equals: 1.
