@@ -2,7 +2,8 @@ Class {
 	#name : 'FASTFortranTransformationVisitor',
 	#superclass : 'FASTFortranAbstractTransformationVisitor',
 	#instVars : [
-		'useNeeded'
+		'useNeeded',
+		'allModules'
 	],
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
@@ -128,6 +129,14 @@ FASTFortranTransformationVisitor >> programFile: programFile in: f77Filename mod
 
 	useNeeded removeAll 
 	
+]
+
+{ #category : 'helpers' }
+FASTFortranTransformationVisitor >> subVisitor: visitorClass [
+
+	^visitorClass new
+		parentVisitor: self ;
+		yourself
 ]
 
 { #category : 'visiting' }

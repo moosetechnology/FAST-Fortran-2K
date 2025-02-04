@@ -1,9 +1,30 @@
 Class {
 	#name : 'FASTFortranBehavioralTransformationVisitor',
 	#superclass : 'FASTFortranAbstractTransformationVisitor',
+	#instVars : [
+		'parentVisitor'
+	],
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
 }
+
+{ #category : 'accessing' }
+FASTFortranBehavioralTransformationVisitor >> model [
+
+	^parentVisitor model
+]
+
+{ #category : 'accessing' }
+FASTFortranBehavioralTransformationVisitor >> parentVisitor [
+
+	^ parentVisitor
+]
+
+{ #category : 'accessing' }
+FASTFortranBehavioralTransformationVisitor >> parentVisitor: anObject [
+
+	parentVisitor := anObject
+]
 
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarationStatement: aFASTEsopePointerDeclarationStatement [

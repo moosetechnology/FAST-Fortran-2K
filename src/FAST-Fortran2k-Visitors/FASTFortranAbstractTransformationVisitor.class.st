@@ -29,14 +29,6 @@ FASTFortranAbstractTransformationVisitor >> model: aFASTModel [
 	model := aFASTModel 
 ]
 
-{ #category : 'helpers' }
-FASTFortranAbstractTransformationVisitor >> subVisitor: visitorClass [
-
-	^visitorClass new
-		model: model ;
-		yourself
-]
-
 { #category : 'visiting' }
 FASTFortranAbstractTransformationVisitor >> visitFASTFortranComment: aCommentNode [
 
