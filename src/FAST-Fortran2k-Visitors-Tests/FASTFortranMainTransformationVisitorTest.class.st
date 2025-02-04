@@ -12,7 +12,7 @@ FASTFortranMainTransformationVisitorTest >> newVisitor [
 		model: FASTFortran2kModel new
 ]
 
-{ #category : 'tests-programUnit' }
+{ #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testMainProgramWithSegment [
 "
 
@@ -45,7 +45,7 @@ end module segment_foo_mod
 
 ]
 
-{ #category : 'tests-programUnit' }
+{ #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramEmpty [
 	| res entity |
 
@@ -67,7 +67,7 @@ FASTFortranMainTransformationVisitorTest >> testProgramEmpty [
 	
 ]
 
-{ #category : 'tests-statement' }
+{ #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramMainWithFunctionStatement [
 	"
 program demo
@@ -108,7 +108,7 @@ end program demo
 
 ]
 
-{ #category : 'tests-statement' }
+{ #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramMainWithFunctionStatementCalled [
 	"
      PROGRAM demo
@@ -155,7 +155,7 @@ end program demo
 	
 ]
 
-{ #category : 'tests-programUnit' }
+{ #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramWithAssignementStatement [
 	| res entity |
 
@@ -177,7 +177,7 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithAssignementStatement 
 	
 ]
 
-{ #category : 'tests-programUnit' }
+{ #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramWithDeclarationStatement [
 	| res entity |
 	self programWithDeclarationStatement.
@@ -197,7 +197,7 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithDeclarationStatement 
 	
 ]
 
-{ #category : 'tests-statement' }
+{ #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramWithExternalFunctionCall [
 	"program demo
 	implicit none
@@ -224,7 +224,7 @@ end program demo
 
 ]
 
-{ #category : 'running' }
+{ #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramWithExternalSubroutineInvocation [
 	"
 C	--------someFile.f90----------------
@@ -253,7 +253,7 @@ C	--------end someFile.f90----------------
 
 ]
 
-{ #category : 'tests-programUnit' }
+{ #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramWithImplicitStatement [
 	| res entity stmtBlock |
 
@@ -276,7 +276,7 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithImplicitStatement [
 	
 ]
 
-{ #category : 'tests-statement' }
+{ #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramWithPointeurDeclaration [
     "program main
     implicit none
@@ -303,7 +303,7 @@ end program main
     self assert: stmt class equals: FASTFortran2kDerivedTypeDeclaration.
 ]
 
-{ #category : 'running' }
+{ #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramWithProcedure [
 	"
 program demo
