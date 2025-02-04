@@ -46,8 +46,29 @@ FASTFortranAbstractTransformationVisitor >> visitFASTFortranComment: aCommentNod
 		  yourself
 ]
 
+{ #category : 'visiting - expressions' }
+FASTFortranAbstractTransformationVisitor >> visitFASTFortranIntegerType: aFASTFortranIntegerType [
+	^ model newIntegerType
+]
+
 { #category : 'visiting - helpers' }
 FASTFortranAbstractTransformationVisitor >> visitFASTFortranList: list [
 
 	^ list collect: [ :item | item accept: self ]
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranAbstractTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
+
+	| varDeclarator |
+	varDeclarator := FASTFortran2kVariableDeclarator new
+		  name: aFASTFortranVariableDeclarator name;
+		  yourself.
+		
+	varDeclarator dimensions:
+		(varDeclarator dimensions collect: [ :dimension | 
+			dimension accept: self
+		]).
+
+	^varDeclarator 
 ]

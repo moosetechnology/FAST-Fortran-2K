@@ -214,12 +214,6 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerLiteral: an
 		  yourself
 ]
 
-{ #category : 'visiting' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerType: aFASTFortranIntegerType [
-
-	^ FASTFortran2kIntegerType new
-]
-
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLoopControlExpression: aLoopControlNode [
 
@@ -302,22 +296,6 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclaratio
 		  type: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
 		  mooseModel: model;
 		  yourself
-]
-
-{ #category : 'visiting - statements' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
-
-	| varDeclarator |
-	varDeclarator := FASTFortran2kVariableDeclarator new
-		  name: aFASTFortranVariableDeclarator name;
-		  yourself.
-		
-	varDeclarator dimensions:
-		(varDeclarator dimensions collect: [ :dimension | 
-			dimension accept: self
-		]).
-
-	^varDeclarator 
 ]
 
 { #category : 'visiting' }
