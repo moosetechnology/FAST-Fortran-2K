@@ -806,9 +806,15 @@ end program demo
 
 	res := fastProgramFile accept: visitor.
 	
+	self assert: res size equals: 1.
+	
+	res := res anyOne.
+	
 	self assert: res programUnit size equals: 1.
 	res := res programUnit anyOne.
 	self assert: res class equals: FASTFortran2kProgramMain.
+	
+	self flag: #TODO. "this test should pass after handling correctly the use statement"
 	self assert: res statementBlock statements size equals: 3.
 
 	stmt := res statementBlock statements first.
