@@ -5,7 +5,7 @@ Class {
 		'fastProgramFile',
 		'famixProgramFile',
 		'fastMainProgram',
-		'fastProcedure'
+		'fastProcedures'
 	],
 	#category : 'FAST-Fortran2k-Visitors-Tests',
 	#package : 'FAST-Fortran2k-Visitors-Tests'
@@ -15,7 +15,7 @@ Class {
 FASTFortranAbstractTransformationVisitorTest >> functionEmpty [
 	"---- demo.f ----
 	integer function fct()
-	end"
+	end function fct"
 
 	| famix |
 	famix := FamixF77PUFunction new
@@ -23,84 +23,30 @@ FASTFortranAbstractTransformationVisitorTest >> functionEmpty [
 			declaredType: (FamixF77TypeIntrinsic new name: 'integer') ;
 			programFile: famixProgramFile.
 
-	fastProcedure := FASTFortranFunction new 
+	fastProcedures := { FASTFortranFunction new 
 		name: 'fct' ;
 		statementBlock: FASTFortranStatementBlock new ;
 		famix: famix ;
-		parentProgramFile: fastProgramFile.
+		parentProgramFile: fastProgramFile }.
 		
 ]
 
 { #category : 'setup' }
-FASTFortranAbstractTransformationVisitorTest >> procedureWithFunctionStatement [
-	"
-     subroutine sub
-     fct(x)  = x + 2
-     END"
+FASTFortranAbstractTransformationVisitorTest >> functionWithSegment [
+	"  ---- demo.f ----
+	integer fct()
+	  segment foo
+	  end segment
+	end function fct"
 
-	| var function |
-	var := self scalarVariable: #x.
-	
-	function := FASTFortranFunctionStatement new
-						name: 'fct';
-						parameters: { var };
-						expression: (self binary: '+' left: #x right: 2);
-						yourself.
+	| segment_foo |
 
-	function famix: (FamixF77StatementFunction new 
-		name: function name;
-		declaredType: (FamixF77TypeIntrinsic new name: 'real');
-		yourself
-	).
-	
-	var famixParameter: (FamixF77Parameter new 
-		name: 'x'; 
-		declaredType: (FamixF77TypeIntrinsic new name: 'real'); 
-		yourself
-	).
-				
-	self subroutineEmpty.
-	fastProcedure statementBlock addStatement: function.
+	segment_foo := self segment: 'foo' attributes: #().
+	segment_foo famix: (FamixEsopeSegment new name: 'foo'; attributes: #()).
 
-]
-
-{ #category : 'setup' }
-FASTFortranAbstractTransformationVisitorTest >> procedureWithFunctionStatementCalled [
-	"
-     PROGRAM demo
-     fct()  = 5
-     aVar = fct()
-     END"
-
-	| fastFunctionStatement fastCallStatement |
-	fastFunctionStatement := FASTFortranFunctionStatement new
-		name: 'fct';
-		parameters: {};
-		expression: (self integerLiteral: 5);
-		yourself.
-	
-	
-	fastFunctionStatement famix: (FamixF77StatementFunction new 
-		name: fastFunctionStatement name;
-		declaredType: (FamixF77TypeIntrinsic new name: 'real');
-		yourself
-	).
-	
-	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
-
-	self subroutineEmpty.
-	fastProcedure statementBlock addStatement: fastFunctionStatement.
-	fastProcedure statementBlock addStatement: fastCallStatement.
-
-	fastFunctionStatement famix parentEntity: fastProcedure famix.
-
-	fastCallStatement expression famix: (
-		FamixF77Invocation new
-			sender: fastProcedure famix ;
-			addCandidate: fastFunctionStatement famix ;
-			yourself
-		).
-
+	self functionEmpty.
+	fastProcedures anyOne statementBlock addStatement: segment_foo.
+		
 ]
 
 { #category : 'setup' }
@@ -306,7 +252,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithProcedureInvoked [
 
 
 	| subCallStatement |
-	fastProcedure := (self subroutine: 'sub')
+	fastProcedures := (self subroutine: 'sub')
 			famix: (FamixF77PUSubroutine new name: 'sub'; programFile: famixProgramFile);
 			yourself.
 
@@ -317,11 +263,11 @@ FASTFortranAbstractTransformationVisitorTest >> programWithProcedureInvoked [
 
 	subCallStatement  famix: (FamixF77Invocation new 
 		sender: fastMainProgram famix;
-		addCandidate: fastProcedure famix;
+		addCandidate: fastProcedures famix;
 		yourself
 	).
 
-	fastProgramFile programUnit: { fastProcedure . fastMainProgram }.
+	fastProgramFile programUnit: { fastProcedures . fastMainProgram }.
 
 ]
 
@@ -329,8 +275,8 @@ FASTFortranAbstractTransformationVisitorTest >> programWithProcedureInvoked [
 FASTFortranAbstractTransformationVisitorTest >> programWithSegment [
 	"  ---- demo.f ----
 	program demo
-	segment foo
-	end segment
+	  segment foo
+	  end segment
 	end"
 
 	| segment_foo |
@@ -368,6 +314,47 @@ FASTFortranAbstractTransformationVisitorTest >> setUp [
 ]
 
 { #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunction [
+	"---- demo.f ----
+	subroutine sub
+	aVar = fct()
+	end"
+
+	| fastFunction fastSubroutine |
+
+	self functionEmpty.
+	fastFunction := fastProcedures anyOne.
+	
+	self subroutineEmpty.
+	fastSubroutine := fastProcedures anyOne.
+
+	fastProcedures := { fastFunction . fastSubroutine }
+]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunctionWithCall [
+	"---- demo.f ----
+	subroutine sub
+	aVar = fct()
+	end"
+
+	| fastCallStatement |
+	self subroutineAndFunction.
+
+	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
+
+	fastProcedures second statementBlock addStatement: fastCallStatement.
+
+	fastCallStatement expression famix: (
+		FamixF77Invocation new
+			sender: fastProcedures second famix ;
+			addCandidate: fastProcedures first famix ;
+			yourself
+		).
+
+]
+
+{ #category : 'setup' }
 FASTFortranAbstractTransformationVisitorTest >> subroutineEmpty [
 	"---- demo.f ----
 	subroutine sub
@@ -378,10 +365,111 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineEmpty [
 			name: 'sub' ; 
 			programFile: famixProgramFile.
 
-	fastProcedure := FASTFortranSubroutine new 
+	fastProcedures := { FASTFortranSubroutine new 
 		name: 'sub' ;
 		statementBlock: FASTFortranStatementBlock new ;
 		famix: famix ;
-		parentProgramFile: fastProgramFile.
+		parentProgramFile: fastProgramFile }
 		
+]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> subroutineWithFunctionStatement [
+	"
+     subroutine sub
+     fct(x)  = x + 2
+     END"
+
+	| var function |
+	var := self scalarVariable: #x.
+	
+	function := FASTFortranFunctionStatement new
+						name: 'fct';
+						parameters: { var };
+						expression: (self binary: '+' left: #x right: 2);
+						yourself.
+
+	function famix: (FamixF77StatementFunction new 
+		name: function name;
+		declaredType: (FamixF77TypeIntrinsic new name: 'real');
+		yourself
+	).
+	
+	var famixParameter: (FamixF77Parameter new 
+		name: 'x'; 
+		declaredType: (FamixF77TypeIntrinsic new name: 'real'); 
+		yourself
+	).
+				
+	self subroutineEmpty.
+
+	fastProcedures anyOne statementBlock addStatement: function.
+
+]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> subroutineWithFunctionStatementCalled [
+	"
+     PROGRAM demo
+     fct()  = 5
+     aVar = fct()
+     END"
+
+	| fastFunctionStatement fastCallStatement fastSubroutine |
+	fastFunctionStatement := FASTFortranFunctionStatement new
+		name: 'fct';
+		parameters: {};
+		expression: (self integerLiteral: 5);
+		yourself.
+	
+	
+	fastFunctionStatement famix: (FamixF77StatementFunction new 
+		name: fastFunctionStatement name;
+		declaredType: (FamixF77TypeIntrinsic new name: 'real');
+		yourself
+	).
+	
+	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
+
+	self subroutineEmpty.
+	fastSubroutine := fastProcedures anyOne.
+	fastSubroutine statementBlock addStatement: fastFunctionStatement.
+	fastSubroutine statementBlock addStatement: fastCallStatement.
+
+	fastFunctionStatement famix parentEntity: fastSubroutine famix.
+
+	fastCallStatement expression famix: (
+		FamixF77Invocation new
+			sender: fastSubroutine famix ;
+			addCandidate: fastFunctionStatement famix ;
+			yourself
+		).
+
+]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> subroutineWithPointeurDeclaration [
+    " someFile.E
+
+      subroutine sub
+      pointeur f.foo
+      end subroutine sub"
+
+	| pointerDeclarator |
+	pointerDeclarator := FASTEsopePointerDeclarationStatement new
+        addPointerDeclarator: (FASTEsopePointerDeclarator new 
+            pointedTypeName: 'foo';
+            variableDeclarator: (self variableDeclarator: #f);
+            yourself
+        );
+        famix: (FamixEsopePointer new 
+            name: 'f'; 
+            declaredType: (FamixEsopeSegment new name: 'foo'); 
+            yourself 
+        );
+        yourself.
+
+	self subroutineEmpty.
+	fastProcedures anyOne statementBlock addStatement: pointerDeclarator.
+
 ]
