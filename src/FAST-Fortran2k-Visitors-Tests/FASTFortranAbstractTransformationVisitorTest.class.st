@@ -70,6 +70,26 @@ FASTFortranAbstractTransformationVisitorTest >> functionWithSegment [
 ]
 
 { #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> pointerDeclaration [
+
+	| fastPointer |
+	fastPointer := (self variableDeclarator: #f)
+		famixDeclaration: (FamixEsopePointer new 
+            name: 'f'; 
+            declaredType: (FamixEsopeSegment new name: 'foo'); 
+            yourself).
+
+	^FASTEsopePointerDeclarationStatement new
+        addPointerDeclarator: (FASTEsopePointerDeclarator new 
+            pointedTypeName: 'foo' ;
+            variableDeclarator: fastPointer ;
+            yourself
+        ) ;
+        yourself.
+
+]
+
+{ #category : 'setup' }
 FASTFortranAbstractTransformationVisitorTest >> procedureWithCommandSegadj [
 	"
 	subroutine sub
@@ -277,18 +297,8 @@ FASTFortranAbstractTransformationVisitorTest >> programWithPointeurDeclaration [
 "
 
 	| pointerDeclarator |
-	pointerDeclarator := FASTEsopePointerDeclarationStatement new
-        addPointerDeclarator: (FASTEsopePointerDeclarator new 
-            pointedTypeName: 'foo';
-            variableDeclarator: (self variableDeclarator: #f);
-            yourself
-        );
-        famix: (FamixEsopePointer new 
-            name: 'f'; 
-            declaredType: (FamixEsopeSegment new name: 'foo'); 
-            yourself 
-        );
-        yourself.
+
+	pointerDeclarator := self pointerDeclaration.
 
 	self programEmpty.
 	fastMainProgram statementBlock addStatement: pointerDeclarator.
@@ -411,8 +421,10 @@ FASTFortranAbstractTransformationVisitorTest >> statementFunctionWithExternalFun
 { #category : 'setup' }
 FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunction [
 	"---- demo.f ----
+	function fct()
+	end function
+
 	subroutine sub
-	aVar = fct()
 	end"
 
 	| fastFunction fastSubroutine |
@@ -429,6 +441,9 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunction [
 { #category : 'setup' }
 FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunctionWithCall [
 	"---- demo.f ----
+	function fct()
+	end function
+
 	subroutine sub
 	aVar = fct()
 	end"
@@ -466,6 +481,36 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineEmpty [
 		famix: famix ;
 		parentProgramFile: fastProgramFile }
 		
+]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> subroutineWithExternalSubroutineInvocation [
+	"
+	subrotine 'sub2' defined in another externalFile.f'
+
+C	--------someFile.f----------------
+	subroutine sub
+	call sub2
+	end
+C  -----end someFile.f --------------"
+
+	| famixSubrtnCalled fastCallStatement |
+	famixSubrtnCalled := FamixF77PUSubroutine new
+		name: 'sub2' ;
+		programFile: (FamixF77ProgramFile new filename: 'externalFile.f');
+		yourself.
+	
+	self subroutineEmpty.
+		
+	fastCallStatement := (self callStatement: 'sub2' arguments: #())
+		famix: (
+			FamixF77Invocation new
+				sender: fastProcedures anyOne famix ;
+				addCandidate: famixSubrtnCalled ;
+				yourself
+			).
+
+	fastProcedures anyOne statementBlock addStatement: fastCallStatement.
 ]
 
 { #category : 'setup' }
@@ -550,20 +595,9 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineWithPointeurDeclaratio
       pointeur f.foo
       end subroutine sub"
 
-	| pointerDeclarator fastPointer |
-	fastPointer := (self variableDeclarator: #f)
-		famixDeclaration: (FamixEsopePointer new 
-            name: 'f'; 
-            declaredType: (FamixEsopeSegment new name: 'foo'); 
-            yourself).
+	| pointerDeclarator |
 
-	pointerDeclarator := FASTEsopePointerDeclarationStatement new
-        addPointerDeclarator: (FASTEsopePointerDeclarator new 
-            pointedTypeName: 'foo' ;
-            variableDeclarator: fastPointer ;
-            yourself
-        ) ;
-        yourself.
+	pointerDeclarator := self pointerDeclaration.
 
 	self subroutineEmpty.
 	fastProcedures anyOne statementBlock addStatement: pointerDeclarator.

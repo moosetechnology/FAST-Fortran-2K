@@ -60,16 +60,27 @@ FASTFortranUseTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentN
 ]
 
 { #category : 'visiting - expressions' }
+FASTFortranUseTransformationVisitor >> visitFASTFortranCallStatement: aFASTFortranCallStatement [
+
+	|  caller called |
+
+	caller := aFASTFortranCallStatement famix sender.
+	called := aFASTFortranCallStatement famix candidates anyOne.
+
+	(caller migratedModuleName = called migratedModuleName)
+		ifFalse: [ usesNeeded add: (caller -> called) ].
+
+	super visitFASTFortranCallStatement: aFASTFortranCallStatement
+]
+
+{ #category : 'visiting - expressions' }
 FASTFortranUseTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFortranFunctionCall [
 
 	| caller called |
 	caller := aFASTFortranFunctionCall famix sender.
 	called := aFASTFortranFunctionCall famix candidates anyOne.
 
-	(caller class = FamixF77StatementFunction) 
-		ifTrue: [ caller := caller parentEntity ].
-
-	(caller programFile = called programFile)
+	(caller migratedModuleName = called migratedModuleName)
 		ifFalse: [ usesNeeded add: (caller -> called) ].
 
 	super visitFASTFortranFunctionCall: aFASTFortranFunctionCall
