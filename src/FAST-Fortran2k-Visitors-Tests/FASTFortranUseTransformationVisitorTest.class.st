@@ -5,13 +5,6 @@ Class {
 	#package : 'FAST-Fortran2k-Visitors-Tests'
 }
 
-{ #category : 'running' }
-FASTFortranUseTransformationVisitorTest >> newVisitor [
-
-	^FASTFortranUseTransformationVisitor new
-		parentVisitor: FASTFortranTransformationVisitor new
-]
-
 { #category : 'tests' }
 FASTFortranUseTransformationVisitorTest >> testProcedureWithPointeurDeclaration [
 
@@ -163,4 +156,10 @@ FASTFortranUseTransformationVisitorTest >> testSubroutineWithFunctionStatementCa
 	usesNeeded := visitor usesNeeded.
 
 	self assert: usesNeeded size equals: 0
+]
+
+{ #category : 'running' }
+FASTFortranUseTransformationVisitorTest >> visitorClass [ 
+
+	^FASTFortranUseTransformationVisitor
 ]

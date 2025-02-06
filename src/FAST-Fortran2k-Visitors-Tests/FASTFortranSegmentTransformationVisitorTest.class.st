@@ -9,13 +9,6 @@ Class {
 }
 
 { #category : 'running' }
-FASTFortranSegmentTransformationVisitorTest >> newVisitor [
-
-	^FASTFortranSegmentTransformationVisitor new
-		parentVisitor: FASTFortranTransformationVisitor new
-]
-
-{ #category : 'running' }
 FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentToDerivedTypeInModule [
 	"
 	segment foo
@@ -228,4 +221,10 @@ end module foo_mod
 	self assert: f2ksegment name equals: 'foo'.
 	
 	self assert: f2ksegment derivedTypeComponents size equals: 0.
+]
+
+{ #category : 'running' }
+FASTFortranSegmentTransformationVisitorTest >> visitorClass [ 
+
+	^FASTFortranSegmentTransformationVisitor
 ]

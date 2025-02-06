@@ -6,10 +6,44 @@ Class {
 }
 
 { #category : 'running' }
-FASTFortranProcedureTransformationVisitorTest >> newVisitor [
+FASTFortranProcedureTransformationVisitorTest >> testCreateModule [
 
-	^FASTFortranProcedureTransformationVisitor new
-		parentVisitor: FASTFortranTransformationVisitor new
+	| module |
+
+	module := visitor createModule: 'someName_mod'.
+
+	self assert: module class equals: FASTFortran2kModule.
+	self assert: module name equals: 'someName_mod'.
+	
+	self assert: module parentProgramFile isNotNil.
+	self assert: module parentProgramFile class equals: FASTFortran2kProgramFile.
+	self assert: module parentProgramFile filename equals: 'someName_mod.f90'
+
+]
+
+{ #category : 'running' }
+FASTFortranProcedureTransformationVisitorTest >> testEnsureModuleOnce [
+
+	| module |
+
+	module := visitor ensureModule: 'someName_mod'.
+
+	self assert: module class equals: FASTFortran2kModule.
+	self assert: module name equals: 'someName_mod'.
+
+]
+
+{ #category : 'running' }
+FASTFortranProcedureTransformationVisitorTest >> testEnsureModuleTwice [
+
+	| module |
+
+	module := visitor ensureModule: 'someName_mod'.
+
+	self assert: module class equals: FASTFortran2kModule.
+	self assert: module name equals: 'someName_mod'.
+
+	self assert: (visitor ensureModule: 'someName_mod') equals: module
 ]
 
 { #category : 'tests' }
@@ -401,4 +435,10 @@ C	--------end someFile_mod.f90----------------
 	self assert: res class equals: FASTFortran2kSubroutine.
 	self assert: res name equals: 'sub'.
 	self assert: res statementBlock statements size equals: 0
+]
+
+{ #category : 'running' }
+FASTFortranProcedureTransformationVisitorTest >> visitorClass [ 
+
+	^FASTFortranProcedureTransformationVisitor
 ]

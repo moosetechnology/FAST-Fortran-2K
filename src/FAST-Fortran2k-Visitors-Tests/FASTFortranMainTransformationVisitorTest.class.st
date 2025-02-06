@@ -5,13 +5,6 @@ Class {
 	#package : 'FAST-Fortran2k-Visitors-Tests'
 }
 
-{ #category : 'running' }
-FASTFortranMainTransformationVisitorTest >> newVisitor [
-
-	^FASTFortranMainTransformationVisitor new
-		parentVisitor: FASTFortranTransformationVisitor new
-]
-
 { #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testMainProgramWithSegment [
 "
@@ -373,4 +366,10 @@ end program demo
 	stmt := entity statementBlock statements second.
 	self assert: stmt class equals: FASTFortran2kCallStatement.
 	
+]
+
+{ #category : 'running' }
+FASTFortranMainTransformationVisitorTest >> visitorClass [ 
+
+	^FASTFortranMainTransformationVisitor
 ]

@@ -69,6 +69,12 @@ FASTFortranAbstractTransformationVisitorTest >> functionWithSegment [
 		
 ]
 
+{ #category : 'running' }
+FASTFortranAbstractTransformationVisitorTest >> newVisitor [
+
+	^ self visitorClass new parentTransformator: FamixEsopeToFortran2k new
+]
+
 { #category : 'setup' }
 FASTFortranAbstractTransformationVisitorTest >> pointerDeclaration [
 
@@ -623,4 +629,10 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineWithTwoSegment [
 	self subroutineEmpty.
 	fastProcedures anyOne statementBlock: (self statementBlock: {segment_foo . segment_bar }).
 		
+]
+
+{ #category : 'running' }
+FASTFortranAbstractTransformationVisitorTest >> visitorClass [ 
+
+	self subclassResponsibility 
 ]
