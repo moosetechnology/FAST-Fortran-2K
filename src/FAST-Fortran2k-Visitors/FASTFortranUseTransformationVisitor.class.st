@@ -35,6 +35,30 @@ FASTFortranUseTransformationVisitor >> usesNeeded [
 	^usesNeeded 
 ]
 
+{ #category : 'visiting' }
+FASTFortranUseTransformationVisitor >> visitFASTEsopePointerDeclarationStatement: aFASTEsopePointerDeclarationStatement [
+
+	self visitFASTFortranList: aFASTEsopePointerDeclarationStatement pointerDeclarators
+	
+]
+
+{ #category : 'visiting' }
+FASTFortranUseTransformationVisitor >> visitFASTEsopePointerDeclarator: aFASTEsopePointerDeclarator [ 
+	
+	| programUnit segment |
+	programUnit := aFASTEsopePointerDeclarator pointerDeclarationStatement statementContainer fastBehaviouralParent famix.
+	segment := aFASTEsopePointerDeclarator variableDeclarator famixDeclaration declaredType.
+
+	usesNeeded add: (programUnit -> segment)
+
+]
+
+{ #category : 'visiting - expressions' }
+FASTFortranUseTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
+
+	self visitFASTFortranList: aFASTEsopeSegmentNode statements
+]
+
 { #category : 'visiting - expressions' }
 FASTFortranUseTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFortranFunctionCall [
 

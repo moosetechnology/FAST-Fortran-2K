@@ -13,6 +13,39 @@ FASTFortranUseTransformationVisitorTest >> newVisitor [
 ]
 
 { #category : 'tests' }
+FASTFortranUseTransformationVisitorTest >> testProcedureWithPointeurDeclaration [
+
+    "usesNeeded:
+		sub -> foo"
+
+    |  usesNeeded |
+	self subroutineWithPointeurDeclaration.
+
+   fastProcedures anyOne accept: visitor.
+
+	usesNeeded := visitor usesNeeded.
+
+	self assert: usesNeeded size equals: 1.
+
+	self assert: usesNeeded anyOne key class equals: FamixF77PUSubroutine.
+	self assert: usesNeeded anyOne value class equals: FamixEsopeSegment.
+]
+
+{ #category : 'tests' }
+FASTFortranUseTransformationVisitorTest >> testProcedureWithSegment [
+	"usesNeeded: N/A"
+
+	| usesNeeded |
+	self functionWithSegment.
+
+	fastProcedures anyOne accept: visitor.
+
+	usesNeeded := visitor usesNeeded.
+
+	self assert: usesNeeded size equals: 0
+]
+
+{ #category : 'tests' }
 FASTFortranUseTransformationVisitorTest >> testProgramWithExternalFunctionCall [
 	"use needed:
 	demo -> fct	
