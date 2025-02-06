@@ -12,6 +12,26 @@ Class {
 }
 
 { #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> esopeCommandClass: esopeCommandClass pointers: associations [
+	| variables |
+	
+	variables := associations collect: [ :assoc | 
+		FASTFortranScalarVariable new 
+			name: assoc key;
+			famixParameter: (FamixF77Parameter new 
+            name: assoc key; 
+            declaredType: (FamixEsopeSegment new name: assoc value); 
+            yourself 
+        )	
+	].
+
+	^esopeCommandClass new
+   		variables: variables;
+        yourself.
+
+]
+
+{ #category : 'setup' }
 FASTFortranAbstractTransformationVisitorTest >> functionEmpty [
 	"---- demo.f ----
 	integer function fct()
@@ -73,19 +93,11 @@ FASTFortranAbstractTransformationVisitorTest >> programWithCommandSegini [
 +---------------------------------------------------+
 "
 
-	| segCommand |
-	segCommand := FASTEsopeSegini new
-   		addVariable: (FASTFortranScalarVariable new 
-			name: 'p';
-			famixParameter: (FamixF77Parameter new 
-            name: 'p'; 
-            declaredType: (FamixEsopeSegment new name: 'foo'); 
-            yourself 
-        ));
-        yourself.
+	| esopeCommand |
+	esopeCommand := self esopeCommandClass: FASTEsopeSegini pointers: { #aPtr -> #aSegment }.
 
 	self programEmpty.
-	fastMainProgram statementBlock addStatement: segCommand.
+	fastMainProgram statementBlock addStatement: esopeCommand.
 
 ]
 
