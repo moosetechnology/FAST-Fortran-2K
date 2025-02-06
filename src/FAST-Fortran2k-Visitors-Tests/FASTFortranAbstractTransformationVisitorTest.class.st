@@ -221,7 +221,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithFunctionStatement [
 	).
 				
 	self programEmpty.
-	fastMainProgram 	statementBlock addStatement: function.
+	fastMainProgram statementBlock addStatement: function.
 
 ]
 
@@ -366,6 +366,46 @@ FASTFortranAbstractTransformationVisitorTest >> setUp [
 
 	fastProgramFile famix: famixProgramFile.
 	
+]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> statementFunctionWithExternalFunctionCall [
+	"
+     PROGRAM demo
+     fct()  = toto()
+     END"
+
+	| fastStmtFunction famixStmtFunction famixExternalFunction fastCallExpression |
+
+	famixExternalFunction := FamixF77PUFunction new
+		name: 'toto' ;
+		declaredType: (FamixF77TypeIntrinsic new name: 'real') ;
+		programFile: (FamixF77ProgramFile new filename: 'externalFile.f') ;
+		yourself.
+
+	famixStmtFunction := FamixF77StatementFunction new 
+		name: 'fct';
+		declaredType: (FamixF77TypeIntrinsic new name: 'real') ;
+		parentEntity: (FamixF77PUMain new
+			name: 'demo' ;
+			programFile: famixProgramFile ) ;
+		yourself.
+	
+	fastCallExpression := (self functionCall: 'toto' arguments: #())
+		famix: (FamixF77Invocation new
+			sender: famixStmtFunction ;
+			candidates: { famixExternalFunction } ).
+
+	fastStmtFunction := FASTFortranFunctionStatement new
+						name: 'fct';
+						parameters: #();
+						expression: fastCallExpression ;
+						famix: famixStmtFunction ;
+						yourself.
+
+	self programEmpty.
+	fastMainProgram statementBlock addStatement: fastStmtFunction.
+
 ]
 
 { #category : 'setup' }

@@ -23,3 +23,9 @@ FamixF77StatementFunction >> needsUseForProgramMain: aFASTFortran2kProgramMain [
 
 	^false
 ]
+
+{ #category : '*FAST-Fortran2k-Visitors' }
+FamixF77StatementFunction >> programFile [
+
+	^self parentEntity programFile
+]

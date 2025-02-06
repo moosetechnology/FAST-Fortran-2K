@@ -62,3 +62,21 @@ FASTFortranUseTransformationVisitorTest >> testProgramWithExternalFunctionCall [
 	self assert: usesNeeded anyOne key class equals: FamixF77PUMain.
 	self assert: usesNeeded anyOne value class equals: FamixF77PUFunction.
 ]
+
+{ #category : 'tests' }
+FASTFortranUseTransformationVisitorTest >> testStatementFunctionWithExternalFunctionCall [
+	"use needed:
+	demo -> toto	
+	"
+	| usesNeeded |
+	self statementFunctionWithExternalFunctionCall.
+
+	fastMainProgram accept: visitor.
+	
+	usesNeeded := visitor usesNeeded.
+
+	self assert: usesNeeded size equals: 1.
+
+	self assert: usesNeeded anyOne key class equals: FamixF77PUMain.
+	self assert: usesNeeded anyOne value class equals: FamixF77PUFunction.
+]

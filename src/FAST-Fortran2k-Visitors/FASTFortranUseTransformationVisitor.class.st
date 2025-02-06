@@ -65,7 +65,10 @@ FASTFortranUseTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFortra
 	| caller called |
 	caller := aFASTFortranFunctionCall famix sender.
 	called := aFASTFortranFunctionCall famix candidates anyOne.
-	
+
+	(caller class = FamixF77StatementFunction) 
+		ifTrue: [ caller := caller parentEntity ].
+
 	(caller programFile = called programFile)
 		ifFalse: [ usesNeeded add: (caller -> called) ].
 
