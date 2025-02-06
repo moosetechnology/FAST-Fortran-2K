@@ -15,15 +15,15 @@ FASTFortranBehavioralTransformationVisitor >> model [
 ]
 
 { #category : 'accessing' }
-FASTFortranBehavioralTransformationVisitor >> parentVisitor [
+FASTFortranBehavioralTransformationVisitor >> parentTransformator [
 
-	^ parentVisitor
+	^ parentTransformator
 ]
 
 { #category : 'accessing' }
-FASTFortranBehavioralTransformationVisitor >> parentVisitor: anObject [
+FASTFortranBehavioralTransformationVisitor >> parentTransformator: anObject [
 
-	parentVisitor := anObject
+	parentTransformator := anObject
 ]
 
 { #category : 'visiting' }

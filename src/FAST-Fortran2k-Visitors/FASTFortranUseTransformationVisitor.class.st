@@ -18,13 +18,13 @@ FASTFortranUseTransformationVisitor >> initialize [
 ]
 
 { #category : 'accessing' }
-FASTFortranUseTransformationVisitor >> parentVisitor [
+FASTFortranUseTransformationVisitor >> parentTransformator [
 
 	^ parentVisitor
 ]
 
 { #category : 'accessing' }
-FASTFortranUseTransformationVisitor >> parentVisitor: anObject [
+FASTFortranUseTransformationVisitor >> parentTransformator: anObject [
 
 	parentVisitor := anObject
 ]
