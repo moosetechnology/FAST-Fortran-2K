@@ -103,9 +103,6 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSe
 		self flag: '#TODO: add others arguments from segment dimensional expressions'.
 		anEsopeCommandCall
 	]
-	
-	
-	
 ]
 
 { #category : 'visiting - expressions' }
