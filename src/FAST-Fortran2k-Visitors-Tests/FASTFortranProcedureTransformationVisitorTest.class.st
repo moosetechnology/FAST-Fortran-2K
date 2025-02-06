@@ -12,7 +12,7 @@ FASTFortranProcedureTransformationVisitorTest >> newVisitor [
 		parentVisitor: FASTFortranTransformationVisitor new
 ]
 
-{ #category : 'running' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testEsopeTwoSegmentsInTwoModules [
 
 		"
@@ -177,6 +177,40 @@ end sub_mod"
 
 ]
 
+{ #category : 'tests' }
+FASTFortranProcedureTransformationVisitorTest >> testProcedureWithCommandSegadj [
+    "subroutine sub
+    call segadj(aPtr,...) #FIXME: others arguments ? 
+    end subroutine sub"
+
+    | res stmt |
+
+	 self procedureWithCommandSegadj.
+
+    res := fastProcedures anyOne accept: visitor.
+    
+    self assert: res programUnit size equals: 1.
+
+    res := res programUnit anyOne.
+	 self assert: res class equals: FASTFortran2kModule.
+	 self assert: res statementBlock statements size equals: 1.
+	 self assert: res procedures size equals: 1.
+
+	 res := res procedures anyOne.
+
+    self assert: res class equals: FASTFortran2kSubroutine.
+    self assert: res name equals: 'sub'.
+    self assert: res statementBlock statements size equals: 1.
+
+    stmt := res statementBlock statements anyOne.
+    self assert: stmt class equals: FASTFortran2kCallStatement.
+	 self assert: stmt name equals: 'segadj'.	
+	 self assert: stmt arguments size equals: 1.
+	 self assert: stmt arguments anyOne class equals: FASTFortran2kScalarVariable.
+	 self assert: stmt arguments anyOne name equals: 'aPtr'.
+
+]
+
 { #category : 'tests-statement' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatement [
 	"
@@ -330,40 +364,6 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithSegment [
 	self assert: res class equals: FASTFortran2kFunction.
 	self assert: res name equals: 'fct'.
 	self assert: res statementBlock statements size equals: 0
-]
-
-{ #category : 'running' }
-FASTFortranProcedureTransformationVisitorTest >> testProgramWithCommandSegini [
-    "subroutine sub
-    call segini(p, ....) #FIXME: others arguments ? 
-    end subroutine sub"
-
-    | res stmt |
-
-	 self procedureWithCommandSegadj.
-
-    res := fastProcedures anyOne accept: visitor.
-    
-    self assert: res programUnit size equals: 1.
-
-    res := res programUnit anyOne.
-	 self assert: res class equals: FASTFortran2kModule.
-	 self assert: res statementBlock statements size equals: 1.
-	 self assert: res procedures size equals: 1.
-
-	 res := res procedures anyOne.
-
-    self assert: res class equals: FASTFortran2kSubroutine.
-    self assert: res name equals: 'sub'.
-    self assert: res statementBlock statements size equals: 1.
-
-    stmt := res statementBlock statements anyOne.
-    self assert: stmt class equals: FASTFortran2kCallStatement.
-	 self assert: stmt name equals: 'segadj'.	
-	 self assert: stmt arguments size equals: 1.
-	 self assert: stmt arguments anyOne class equals: FASTFortran2kScalarVariable.
-	 self assert: stmt arguments anyOne name equals: 'aPtr'.
-
 ]
 
 { #category : 'tests' }

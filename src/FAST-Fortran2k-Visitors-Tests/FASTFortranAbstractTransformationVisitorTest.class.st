@@ -93,6 +93,9 @@ FASTFortranAbstractTransformationVisitorTest >> programEmpty [
 		name: 'demo' ; 
 		statementBlock: FASTFortranStatementBlock new ; 
 		parentProgramFile: fastProgramFile ;
+		famix: (FamixF77PUMain new
+			name: 'demo' ;
+			programFile: famixProgramFile) ;
 		yourself.
 
 ]
@@ -146,7 +149,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithExternalFunctionCall 
 	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
 
 	self programEmpty.
-	fastMainProgram 	statementBlock addStatement: fastCallStatement.
+	fastMainProgram statementBlock addStatement: fastCallStatement.
 
 	fastCallStatement expression famix: (
 		FamixF77Invocation new

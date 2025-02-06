@@ -181,7 +181,7 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithAssignementStatement 
 FASTFortranMainTransformationVisitorTest >> testProgramWithCommandSegini [
     "program demo
     implicit none
-    call segini(p, ....) #FIXME: others arguments ? 
+    call segini(aPtr,...) #FIXME: others arguments ? 
     end program demo"
 
     | res stmt |
