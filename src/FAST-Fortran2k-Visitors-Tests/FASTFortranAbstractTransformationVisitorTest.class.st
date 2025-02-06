@@ -473,3 +473,24 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineWithPointeurDeclaratio
 	fastProcedures anyOne statementBlock addStatement: pointerDeclarator.
 
 ]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> subroutineWithTwoSegment [
+	"  ---- demo.f ----
+	integer fct()
+	  segment foo
+	  end segment
+	end function fct"
+
+	| segment_foo segment_bar |
+
+	segment_foo := self segment: 'foo' attributes: #().
+	segment_foo famix: (FamixEsopeSegment new name: 'foo'; attributes: #()).
+
+	segment_bar := self segment: 'bar' attributes: #().
+	segment_bar famix: (FamixEsopeSegment new name: 'bar'; attributes: #()).
+
+	self subroutineEmpty.
+	fastProcedures anyOne statementBlock: (self statementBlock: {segment_foo . segment_bar }).
+		
+]
