@@ -206,7 +206,7 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithCommandSegini [
 	 self assert: stmt name equals: 'segini'.	
 	 self assert: stmt arguments size equals: 1.
 	 self assert: stmt arguments anyOne class equals: FASTFortran2kScalarVariable.
-	 self assert: stmt arguments anyOne name equals: 'p'.
+	 self assert: stmt arguments anyOne name equals: 'aPtr'.
 
 ]
 
