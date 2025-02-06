@@ -283,7 +283,7 @@ C	--------end someFile_mod.f90----------------
 			
 	self subroutineEmpty.
 		
-	res := fastProcedure accept: visitor.
+	res := fastProcedures anyOne accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res filename equals: 'someFile_mod.f90'.
