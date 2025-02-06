@@ -1,9 +1,45 @@
 Class {
 	#name : 'FASTFortranProcedureTransformationVisitor',
 	#superclass : 'FASTFortranBehavioralTransformationVisitor',
+	#instVars : [
+		'allModules'
+	],
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
 }
+
+{ #category : 'helpers - segment' }
+FASTFortranProcedureTransformationVisitor >> createModule: moduleName [
+
+	| module |
+	module := self model newModule
+		name: moduleName ;
+		statementBlock: (self model newStatementBlock
+			addStatement: self model newImplicitStatement ;
+			yourself ) ;
+		yourself.
+	
+	
+	self model newProgramFile
+		filename: (moduleName , '.f90') ;
+		programUnit: {  module } ;
+		yourself.
+
+	^module
+
+]
+
+{ #category : 'helpers - segment' }
+FASTFortranProcedureTransformationVisitor >> ensureModule: filename [
+
+	^self getModule: filename ifAbsentPut: [ self createModule: filename ]
+]
+
+{ #category : 'helpers - segment' }
+FASTFortranProcedureTransformationVisitor >> getModule: filename ifAbsentPut: aBlock [
+
+	^parentTransformator getModule: filename ifAbsentPut: aBlock
+]
 
 { #category : 'visiting - programUnits' }
 FASTFortranProcedureTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [

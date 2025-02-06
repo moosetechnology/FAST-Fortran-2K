@@ -2,44 +2,11 @@ Class {
 	#name : 'FASTFortranBehavioralTransformationVisitor',
 	#superclass : 'FASTFortranAbstractTransformationVisitor',
 	#instVars : [
-		'parentVisitor'
+		'parentTransformator'
 	],
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
 }
-
-{ #category : 'helpers - segment' }
-FASTFortranBehavioralTransformationVisitor >> createModule: moduleName [
-
-	| module |
-	module := self model newModule
-		name: moduleName ;
-		statementBlock: (self model newStatementBlock
-			addStatement: self model newImplicitStatement ;
-			yourself ) ;
-		yourself.
-	
-	
-	self model newProgramFile
-		filename: (moduleName , '.f90') ;
-		programUnit: {  module } ;
-		yourself.
-
-	^module
-
-]
-
-{ #category : 'helpers - segment' }
-FASTFortranBehavioralTransformationVisitor >> ensureModule: filename [
-
-	^self getModule: filename ifAbsentPut: [ self createModule: filename ]
-]
-
-{ #category : 'helpers - segment' }
-FASTFortranBehavioralTransformationVisitor >> getModule: filename ifAbsentPut: aBlock [
-
-	^parentVisitor getModule: filename ifAbsentPut: aBlock
-]
 
 { #category : 'accessing' }
 FASTFortranBehavioralTransformationVisitor >> model [
