@@ -178,6 +178,39 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithAssignementStatement 
 ]
 
 { #category : 'tests' }
+FASTFortranMainTransformationVisitorTest >> testProgramWithCommandSegini [
+    "program demo
+    implicit none
+    call segini(p, ....) #FIXME: others arguments ? 
+    end program demo"
+
+    | res stmt |
+
+	self programWithCommandSegini.
+
+    res := fastMainProgram accept: visitor.
+    
+    self assert: res programUnit size equals: 1.
+
+    res := res programUnit anyOne.
+
+    self assert: res class equals: FASTFortran2kProgramMain.
+    self assert: res name equals: 'demo'.
+    self assert: res statementBlock statements size equals: 2.
+    
+    stmt := res statementBlock statements first.
+    self assert: stmt class equals: FASTFortran2kImplicitStatement.
+
+    stmt := res statementBlock statements second.
+    self assert: stmt class equals: FASTFortran2kCallStatement.
+	 self assert: stmt name equals: 'segini'.	
+	 self assert: stmt arguments size equals: 1.
+	 self assert: stmt arguments anyOne class equals: FASTFortran2kScalarVariable.
+	 self assert: stmt arguments anyOne name equals: 'p'.
+
+]
+
+{ #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramWithDeclarationStatement [
 	| res entity |
 	self programWithDeclarationStatement.

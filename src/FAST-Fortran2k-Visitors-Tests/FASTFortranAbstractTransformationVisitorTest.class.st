@@ -64,6 +64,32 @@ FASTFortranAbstractTransformationVisitorTest >> programEmpty [
 ]
 
 { #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> programWithCommandSegini [
+    "
++------ someFile.E ---------------------------------+
+|      program main                                 |
+|      segini p
+|      end                                          |
++---------------------------------------------------+
+"
+
+	| segCommand |
+	segCommand := FASTEsopeSegini new
+   		addVariable: (FASTFortranScalarVariable new 
+			name: 'p';
+			famixParameter: (FamixF77Parameter new 
+            name: 'p'; 
+            declaredType: (FamixEsopeSegment new name: 'foo'); 
+            yourself 
+        ));
+        yourself.
+
+	self programEmpty.
+	fastMainProgram statementBlock addStatement: segCommand.
+
+]
+
+{ #category : 'setup' }
 FASTFortranAbstractTransformationVisitorTest >> programWithDeclarationStatement [
 	"  ---- demo.f ----
 	program demo

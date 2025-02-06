@@ -90,6 +90,24 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 	^esopeDeclarator
 ]
 
+{ #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSegini [ 
+	
+	^aFASTEsopeSegini variables collect:  [ :variable | | anEsopeCommandCall argument |
+		argument := variable accept: self.
+		anEsopeCommandCall := self model newCallStatement
+			name: 'segini';
+			addArgument: argument;
+			yourself.
+		
+		self flag: '#TODO: add others arguments from segment dimensional expressions'.
+		anEsopeCommandCall
+	]
+	
+	
+	
+]
+
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentExpression: anAssignmentExpressionNode [
 
