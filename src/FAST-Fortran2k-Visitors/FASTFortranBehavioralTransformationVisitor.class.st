@@ -313,24 +313,26 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranScalarVariable: aS
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aFASTFortranStatementBlock [
 	"Need to deal with StatementFunction that are created as InternalProcedure in the parent
 	programUnit (which is on the top of the stack)"
-
+	
 	| f2kStatementBlock |
-
+	
 	f2kStatementBlock := self model newStatementBlock.
 
 	aFASTFortranStatementBlock statements
-		do: [ :statement | | f2kStatement |
-			f2kStatement := statement accept: self.
-
-			f2kStatement ifNotNil: [
-				statement class = FASTFortranFunctionStatement
-					ifTrue: [stack top addInternalProcedure: f2kStatement ]
-					ifFalse: [ 
-						f2kStatement isCollection
-							ifTrue: [ f2kStatementBlock statements addAll: f2kStatement ]
-							ifFalse: [  f2kStatementBlock addStatement: f2kStatement ]
-					]
-			]
+		do: [ :statement | 
+			(statement accept: self)
+				ifNotNil: [ :f2kStatementOrModule | 
+					f2kStatementOrModule class = FASTFortran2kModule 
+						ifFalse: [ 
+							statement class = FASTFortranFunctionStatement
+								ifTrue: [stack top addInternalProcedure: f2kStatementOrModule ]
+								ifFalse: [ 
+									f2kStatementOrModule isCollection
+										ifTrue: [ f2kStatementBlock statements addAll: f2kStatementOrModule ]
+										ifFalse: [  f2kStatementBlock addStatement: f2kStatementOrModule ]
+								]
+						]
+			 	]
 		].
 
 	^f2kStatementBlock
