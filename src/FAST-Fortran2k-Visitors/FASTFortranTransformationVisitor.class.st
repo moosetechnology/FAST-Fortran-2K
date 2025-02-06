@@ -141,10 +141,10 @@ FASTFortranTransformationVisitor >> programFile: programFile in: f77Filename mod
 ]
 
 { #category : 'helpers' }
-FASTFortranTransformationVisitor >> subVisitor: visitorClass [
+FASTFortranTransformationVisitor >> transformationVisitor: visitorClass [
 
 	^visitorClass new
-		parentVisitor: self ;
+		parentTransformator: self ;
 		yourself
 ]
 
@@ -164,7 +164,7 @@ FASTFortranTransformationVisitor >> visitFASTFortranProgramFile: aFASTFortranPro
 	self flag: 'TODO aFASTFortranProgramFile comments'.
 
 	^aFASTFortranProgramFile programUnit collectAsSet: [ :progUnit || visitor |
-		visitor := self subVisitor: progUnit transformationVisitorClass.
+		visitor := self transformationVisitor: progUnit transformationVisitorClass.
 		progUnit accept: visitor
 	].
 
