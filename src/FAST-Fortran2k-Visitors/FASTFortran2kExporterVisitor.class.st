@@ -427,11 +427,11 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseRenamedStatement: aFASTFort
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUseStatement [
 
 	self << 'use'.
-	aFASTFortran2kUseStatement isIntrinsic ifTrue: [
-		self << ', intrinsic' ].
+	"aFASTFortran2kUseStatement isIntrinsic ifTrue: [
+		self << ', intrinsic' ]."
 	self
 		<< ' :: ';
-		<< aFASTFortran2kUseStatement moduleName.
+		<< aFASTFortran2kUseStatement name.
 
 	aFASTFortran2kUseStatement useRenamedStatements 
 		ifNotNil: [:useRenamedStatement | 
