@@ -70,6 +70,20 @@ FASTFortranAbstractTransformationVisitorTest >> functionWithSegment [
 ]
 
 { #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> procedureWithCommandSegadj [
+	"
+	subroutine sub
+	segadj aPtr
+	end
+	"
+	| esopeCommand |
+	esopeCommand := self esopeCommandClass: FASTEsopeSegadj pointers: { #aPtr -> #aSegment }.
+	
+	self subroutineEmpty.
+	fastProcedures anyOne statementBlock addStatement: esopeCommand.
+]
+
+{ #category : 'setup' }
 FASTFortranAbstractTransformationVisitorTest >> programEmpty [
 	"
      PROGRAM demo

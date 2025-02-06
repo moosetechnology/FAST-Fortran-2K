@@ -91,6 +91,20 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 ]
 
 { #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegadj: aFASTEsopeSegadj [ 
+	^aFASTEsopeSegadj variables collect:  [ :variable | | anEsopeCommandCall argument |
+		argument := variable accept: self.
+		anEsopeCommandCall := self model newCallStatement
+			name: 'segadj';
+			addArgument: argument;
+			yourself.
+		
+		self flag: '#TODO: add others arguments from segment dimensional expressions'.
+		anEsopeCommandCall
+	]
+]
+
+{ #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSegini [ 
 	
 	^aFASTEsopeSegini variables collect:  [ :variable | | anEsopeCommandCall argument |
