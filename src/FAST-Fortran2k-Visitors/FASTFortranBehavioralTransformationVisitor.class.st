@@ -11,7 +11,7 @@ Class {
 { #category : 'accessing' }
 FASTFortranBehavioralTransformationVisitor >> model [
 
-	^parentVisitor model
+	^parentTransformator modelOut
 ]
 
 { #category : 'accessing' }
