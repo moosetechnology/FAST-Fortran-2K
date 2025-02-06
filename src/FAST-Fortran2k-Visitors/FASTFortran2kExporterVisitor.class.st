@@ -289,6 +289,12 @@ FASTFortran2kExporterVisitor >> unindented: aPrintable [
 	self output: aPrintable
 ]
 
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kCharacterType: aFASTFortran2kCharacterType [
+
+	^ self visitFASTFortranCharacterType: aFASTFortran2kCharacterType
+]
+
 { #category : 'precedence' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedType: aFASTFortran2kDerivedType [
 
@@ -304,6 +310,22 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedType: aFASTFortran2kDer
 { #category : 'precedence' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponent: aFASTFortran2kDerivedTypeComponent [
 
+	^ self visitFASTFortranVariableDeclarationStatement:
+		  aFASTFortran2kDerivedTypeComponent
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDeclaration: aFASTFortran2kDerivedTypeDeclaration [
+
+	^ self visitFASTFortranTypeDeclarationStatement:
+		  aFASTFortran2kDerivedTypeDeclaration
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDefinition: aFASTFortran2kDerivedTypeDefinition [
+
+	^ self visitFASTFortranDerivedType:
+		  aFASTFortran2kDerivedTypeDefinition
 ]
 
 { #category : 'visiting' }
@@ -311,6 +333,18 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFormattedCodeString: aFASTFort
 
 	self << (aFASTFortran2kFormattedCodeString content format:
 		 aFASTFortran2kFormattedCodeString values)
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kIntegerLiteral: aFASTFortran2kIntegerLiteral [
+
+	^ self visitFASTFortranIntegerLiteral: aFASTFortran2kIntegerLiteral
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kIntegerType: aFASTFortran2kIntegerType [
+
+	^ self visitFASTFortranIntegerType: aFASTFortran2kIntegerType
 ]
 
 { #category : 'visiting' }
@@ -341,9 +375,52 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramMain: aFASTFortran2kPro
 ]
 
 { #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kRealType: aFASTFortran2kRealType [
+
+	^ self visitFASTFortranRealType: aFASTFortran2kRealType
+]
+
+{ #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kSourceCodeString: aFASTFortran2kSourceCodeString [
 
 	self << aFASTFortran2kSourceCodeString content
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kUseNoRenamedStatement: aFASTFortran2kUseNoRenamedStatement [
+
+	self << aFASTFortran2kUseNoRenamedStatement name
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kUseOnlyStatement: aFASTFortran2kUseOnlyStatement [ 
+	self
+		<< 'use :: ';
+		<< aFASTFortran2kUseOnlyStatement name;
+		<< ', only: '.
+
+	self visitNodeListSeparatedByCommas: aFASTFortran2kUseOnlyStatement useNoRenamedStatements.
+	
+	aFASTFortran2kUseOnlyStatement useRenamedStatements ifNotNil: [ :useRenamedStatements |  
+		useRenamedStatements ifNotEmpty: [ 
+			self << ', '.
+			self visitNodeListSeparatedByCommas: useRenamedStatements 
+		] 
+	].
+	self newLine 
+	
+	
+	 
+	
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kUseRenamedStatement: aFASTFortran2kUseRenamedStatement [
+
+	self
+		<< aFASTFortran2kUseRenamedStatement alias;
+		<< ' => ';
+		<< aFASTFortran2kUseRenamedStatement name
 ]
 
 { #category : 'visiting' }
@@ -380,6 +457,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUserDefinedType: aFASTFortran2
 ]
 
 { #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarator: aFASTFortran2kVariableDeclarator [
+
+	^ self visitFASTFortranVariableDeclarator:
+		  aFASTFortran2kVariableDeclarator
+]
+
+{ #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortranAttribute: aFASTFortran2kAttribute [
 
 	^ self visitFASTFortranVariableDeclarationStatement:
@@ -408,8 +492,9 @@ FASTFortran2kExporterVisitor >> visitFASTFortranDerivedType: aFASTFortran2kDeriv
 		<< aFASTFortran2kDerivedType name.
 	self newLine.
 
-	aFASTFortran2kDerivedType attributes do: [ :attribute |
-		attribute accept: self ].
+	aFASTFortran2kDerivedType derivedTypeComponents do: [ :derivedTypeComponent |
+		derivedTypeComponent accept: self 
+	].
 
 	self
 		<< 'end type ';
@@ -436,9 +521,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortranType: aFASTFortran2kType [
 
 	aFASTFortran2kType size 
 		ifNotNil: [ :length |
+				self << '(len='.
 				length class = FASTFortran2kAsterisk
-					ifTrue: [ self << '(len=*)' ]
-					ifFalse: [ length accept: self ] 
+					ifTrue: [ self << '*)' ]
+					ifFalse: [
+						length accept: self.
+						self << ')'
+					]
 		]
 ]
 
