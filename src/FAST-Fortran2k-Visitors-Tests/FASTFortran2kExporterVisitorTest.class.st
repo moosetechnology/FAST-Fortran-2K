@@ -210,7 +210,7 @@ FASTFortran2kExporterVisitorTest >> testTypeDefinition [
 		        yourself.
 
 	self assertExport: stmt equals: 'type :: point_t
-      character(len=:) :: label
+      character(len=*) :: label
       real :: x, y
 end type point_t
 '
