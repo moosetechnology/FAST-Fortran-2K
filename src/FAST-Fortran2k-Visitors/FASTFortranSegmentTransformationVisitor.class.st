@@ -213,7 +213,7 @@ FASTFortranSegmentTransformationVisitor >> ensureEmptyStream [
 { #category : 'helpers - segment' }
 FASTFortranSegmentTransformationVisitor >> makeBoxedTypeDefinition: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
     public boxed_{segmentName}
     type, extends(segment) :: boxed_{segmentName}
@@ -234,7 +234,7 @@ FASTFortranSegmentTransformationVisitor >> makeBoxedTypeDefinition: segmentName 
 { #category : 'helpers - segment' }
 FASTFortranSegmentTransformationVisitor >> makeContainsStatement: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
 contains
 	 ! ## primary aspects
@@ -248,7 +248,7 @@ contains
 { #category : 'helpers - segment' }
 FASTFortranSegmentTransformationVisitor >> makeInterfaces: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
 	 public assignment (=)
     interface assignment (=)
@@ -340,7 +340,7 @@ FASTFortranSegmentTransformationVisitor >> makeInterfaces: segmentName [
 { #category : 'helpers - segment' }
 FASTFortranSegmentTransformationVisitor >> makeProcedureAssignPointerToPointer: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
     subroutine {segmentName}_assign_pointer_to_pointer(this, that)
         ! >> Just to detect at compile-time "this = that" bad usage, 
@@ -362,7 +362,7 @@ FASTFortranSegmentTransformationVisitor >> makeProcedureAssignPointerToPointer: 
 { #category : 'helpers - segment' }
 FASTFortranSegmentTransformationVisitor >> makeProcedureBoxed: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
     ! ## boxed aspects
 
@@ -544,7 +544,7 @@ FASTFortranSegmentTransformationVisitor >> makeProcedureBoxed: segmentName [
 { #category : 'helpers - segment' }
 FASTFortranSegmentTransformationVisitor >> makeProcedureIgnore: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
     subroutine ignore_{segmentName}(variable, variable_name, routine)
         use, intrinsic :: iso_fortran_env, only : int64
@@ -588,7 +588,7 @@ FASTFortranSegmentTransformationVisitor >> makeProcedureSegadj: aFASTFortranSegm
 	end subroutine {segmentName}_segadj(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values: {
 				          (#segmentName -> aFASTFortranSegment name).
@@ -617,7 +617,7 @@ FASTFortranSegmentTransformationVisitor >> makeProcedureSegcop: aFASTFortranSegm
 	end subroutine {segmentName}_segcop(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values:
 			          (Dictionary with:
@@ -698,7 +698,7 @@ FASTFortranSegmentTransformationVisitor >> makeProcedureSegini: aFASTFortranSegm
 	end subroutine {segmentName}_segini
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values: { 
 						#segmentName -> aFASTFortranSegment name. 
@@ -744,7 +744,7 @@ FASTFortranSegmentTransformationVisitor >> makeProcedureSeglik: aFASTFortranSegm
 	end function {segmentName}_seglik(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values: {
 				          (#segmentName -> aFASTFortranSegment name).
@@ -775,7 +775,7 @@ FASTFortranSegmentTransformationVisitor >> makeProcedureSegload: aFASTFortranSeg
 	end subroutine {segmentName}_seg_load(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values:
 			          (Dictionary with:
@@ -788,7 +788,7 @@ FASTFortranSegmentTransformationVisitor >> makeProcedureSegload: aFASTFortranSeg
 { #category : 'helpers - segment' }
 FASTFortranSegmentTransformationVisitor >> makeProcedureSegloc: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
     function {segmentName}_segloc(this) result(this_loc)
         ! ## Return a location of the "this" pointer
@@ -810,7 +810,7 @@ FASTFortranSegmentTransformationVisitor >> makeProcedureSegloc: segmentName [
 { #category : 'helpers - segment' }
 FASTFortranSegmentTransformationVisitor >> makeProcedureSegmentType: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
     subroutine {segmentName}_seg_type(this, type_name)
         ! ## Return the name of the segment type
@@ -845,7 +845,7 @@ FASTFortranSegmentTransformationVisitor >> makeProcedureSegmov: aFASTFortranSegm
 	end subroutine {segmentName}_segmov(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values:
 			          (Dictionary with:
@@ -875,7 +875,7 @@ FASTFortranSegmentTransformationVisitor >> makeProcedureSegpar: aFASTFortranSegm
 	end subroutine {segmentName}_segpar(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values: {
 				          (#segmentName -> aFASTFortranSegment name).
@@ -905,7 +905,7 @@ FASTFortranSegmentTransformationVisitor >> makeProcedureSegprt: aFASTFortranSegm
 	end subroutine {segmentName}_segprt(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values:
 			          (Dictionary with:
@@ -934,7 +934,7 @@ FASTFortranSegmentTransformationVisitor >> makeProcedureSegstore: aFASTFortranSe
 	end subroutine {segmentName}_seg_store(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values:
 			          (Dictionary with:
@@ -962,7 +962,7 @@ FASTFortranSegmentTransformationVisitor >> makeProcedureSegsup: aFASTFortranSegm
 	end subroutine {segmentName}_segsup(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values:
 			          (Dictionary with:
@@ -1036,7 +1036,7 @@ FASTFortranSegmentTransformationVisitor >> makeProgramUnit: programUnits [
 { #category : 'helpers - segment' }
 FASTFortranSegmentTransformationVisitor >> makeSegmentModuleProlog [
 
-	^ FASTFortran2kSourceCodeString new content: '
+	^ self model newSourceCodeString content: '
 	use ignore_m
 	use contract_m
 	use segment_m
@@ -1063,16 +1063,14 @@ FASTFortranSegmentTransformationVisitor >> makeSegmentTypeName: segmentName [
 FASTFortranSegmentTransformationVisitor >> makeTypeDefinition: aFASTFortranSegment [
 
 	| segment visitor |
-	segment := FASTFortran2kDerivedTypeDefinition new
-		           name: aFASTFortranSegment name;
-		           derivedTypeComponents: OrderedCollection new.
+	segment := self model newDerivedTypeDefinition
+		           name: aFASTFortranSegment name.
 
 	visitor := FASTEsopeSegmentVisitor new.
 
 	aFASTFortranSegment statements do: [ :declarationStatement |
-		segment derivedTypeComponents addAll:
+		segment derivedTypeComponents:
 			(declarationStatement accept: visitor) ].
-
 
 	^segment
 ]
@@ -1083,7 +1081,7 @@ FASTFortranSegmentTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegm
 	| module segmentName |
 	segmentName := aFASTEsopeSegmentNode name.
 
-	module := FASTFortran2kModule new name: segmentName , '_m'.
+	module := self model newModule name: segmentName , '_mod'.
 	module addProcedure: (self makeProcedureSegini2: aFASTEsopeSegmentNode).
 	module procedures addAll:
 		(self makeProceduresDimensions: aFASTEsopeSegmentNode).
@@ -1099,6 +1097,7 @@ FASTFortranSegmentTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegm
 				 (self makeProcedureIgnore: segmentName).
 				 (self makeProcedureAssignPointerToPointer: segmentName).
 				 (self makeProcedureSegmentType: segmentName).
+				 (self makeProcedureSegini: aFASTEsopeSegmentNode).
 				 (self makeProcedureSegcop: aFASTEsopeSegmentNode).
 				 (self makeProcedureSegmov: aFASTEsopeSegmentNode).
 				 (self makeProcedureSegadj: aFASTEsopeSegmentNode).

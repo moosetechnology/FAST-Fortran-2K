@@ -32,15 +32,15 @@ FASTFortranAbstractTransformationVisitor >> model: aFASTModel [
 { #category : 'visiting' }
 FASTFortranAbstractTransformationVisitor >> visitFASTFortranComment: aCommentNode [
 
-	^ FASTFortran2kComment new
+	^ self model newComment
 		  content: aCommentNode content;
-		  mooseModel: model;
 		  yourself
 ]
 
 { #category : 'visiting - expressions' }
 FASTFortranAbstractTransformationVisitor >> visitFASTFortranIntegerType: aFASTFortranIntegerType [
-	^ model newIntegerType
+
+	^ self model newIntegerType
 ]
 
 { #category : 'visiting - helpers' }

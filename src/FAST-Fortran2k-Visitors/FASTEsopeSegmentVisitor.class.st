@@ -12,10 +12,10 @@ FASTEsopeSegmentVisitor >> visitDeclarationDimension: aFASTExpression [
 	aFASTExpression upperBound class = FASTFortranScalarVariable
 		ifFalse: [ ^ nil ].
 
-	^ FASTFortran2kDerivedTypeComponent new
-		  type: FASTFortran2kIntegerType new;
-		  declarators: { (FASTFortran2kVariableDeclarator new name:
-					   aFASTExpression upperBound name) }
+	^ self model newDerivedTypeComponent
+		type: self model newIntegerType;
+		declarators: { (self model newVariableDeclarator name: aFASTExpression upperBound name) };
+		yourself
 ]
 
 { #category : 'visiting - statements' }
@@ -30,7 +30,7 @@ FASTEsopeSegmentVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFo
 			(self visitDeclarationDimension: declarationDimension) ifNotNil: [
 				:f2kDim | declarationStatements add: f2kDim ] ] ].
 
-	variableDeclaration := FASTFortran2kDerivedTypeComponent new.
+	variableDeclaration := self model newDerivedTypeComponent.
 
 	variableDeclaration type:
 		(aFASTFortranVariableDeclarationStatement declaredType accept: self).

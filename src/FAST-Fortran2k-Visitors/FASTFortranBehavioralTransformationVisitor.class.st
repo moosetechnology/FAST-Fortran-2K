@@ -93,14 +93,9 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentExpression: anAssignmentExpressionNode [
 
-	| variable expression |
-	variable := anAssignmentExpressionNode variable accept: self.
-	expression := anAssignmentExpressionNode expression accept: self.
-
-	^ FASTFortran2kAssignmentExpression new
-		  variable: variable;
-		  expression: expression;
-		  mooseModel: model;
+	^ self model newAssignmentExpression
+		  variable: (anAssignmentExpressionNode variable accept: self);
+		  expression: (anAssignmentExpressionNode expression accept: self);
 		  yourself
 ]
 
@@ -135,9 +130,8 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranBinaryExpression: 
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranBooleanLiteral: aBooleanLiteralNode [
 
-	^ FASTFortran2kBooleanLiteral new
+	^ self model newBooleanLiteral
 		  primitiveValue: aBooleanLiteralNode primitiveValue;
-		  mooseModel: model;
 		  yourself
 ]
 
@@ -182,7 +176,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterType: aFA
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDoStatement: aDoStatementNode [
 
-	^model newDoStatement
+	^self model newDoStatement
 		  loopControl: (aDoStatementNode loopControl accept: self) ;
 		  statementBlock: (aDoStatementNode statementBlock accept: self) ;
 		  yourself
@@ -270,11 +264,10 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerLiteral: an
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLoopControlExpression: aLoopControlNode [
 
-	^ FASTFortran2kLoopControlExpression new
-		  init: (self accept: aLoopControlNode init);
-		  limit: (self accept: aLoopControlNode limit);
-		  increment: (self accept: aLoopControlNode increment);
-		  mooseModel: model;
+	^self model newLoopControlExpression
+		  init: (aLoopControlNode init accept: self);
+		  limit: (aLoopControlNode limit accept: self);
+		  increment: (aLoopControlNode increment ifNotNil: [:increment | increment  accept: self ]);
 		  yourself
 ]
 
