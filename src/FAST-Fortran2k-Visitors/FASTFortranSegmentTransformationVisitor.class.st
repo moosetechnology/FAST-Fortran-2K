@@ -32,7 +32,10 @@ FASTFortranSegmentTransformationVisitor >> computeLocalParamsDims: segmentDimens
 
 	| nbDims aStream |
 	aStream := WriteStream on: ''.
-	nbDims := (segmentDimensions collect: [ :routineParam | routineParam size ]) max.
+	nbDims := segmentDimensions 
+		ifEmpty: [ 0 ]
+		ifNotEmpty: [ (segmentDimensions collect: [ :routineParam | routineParam size ]) max ].
+
 	1 to: nbDims 
 		do: [ :each | aStream << ('integer :: ooo_dim{1}' format: {each}); lf ].
 
