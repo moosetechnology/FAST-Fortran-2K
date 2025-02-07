@@ -123,6 +123,27 @@ FASTFortran2kExporterVisitor >> defaultOperatorsPrecedence [
 	}
 ]
 
+{ #category : 'exporting' }
+FASTFortran2kExporterVisitor >> export [
+	"visiting each file and export it to corresponding f2k file"
+
+	(self model allWithType: FASTFortran2kProgramFile)
+		do: [ :programFile | | toFilename |
+
+			toFilename := programFile filename.
+			toFilename asFileReference 
+				writeStreamDo: [ :aStream | 
+					programFile programUnit do: [ :programUnit | 
+						programUnit accept: self.
+						aStream << self outputStream contents.
+
+						self flag: 'FIXME: It emptied the outputstream to avoid accumulation'.
+						self outputStream: (WriteStream with: '') 
+					]
+				]
+		]
+]
+
 { #category : 'precedence' }
 FASTFortran2kExporterVisitor >> expressionContextOperator [
 	"lazy accessor"
