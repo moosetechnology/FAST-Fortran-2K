@@ -182,8 +182,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionCall: aFAS
 
 	| functionCall callerProgramUnit calledProgramFile |
 
-	functionCall := FASTFortran2kFunctionCall new
-		mooseModel: self model;
+	functionCall := self model newFunctionCall
 		name: aFASTFortranFunctionCall name ;
 		arguments: (aFASTFortranFunctionCall arguments collect: [:arg | arg accept: self]) ;
 		yourself.
@@ -250,9 +249,8 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranImplicitStatement:
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerLiteral: anIntegerLiteralNode [
 
-	^ FASTFortran2kIntegerLiteral new
+	^ self model newIntegerLiteral
 		  primitiveValue: anIntegerLiteralNode primitiveValue;
-		  mooseModel: self model;
 		  yourself
 ]
 
