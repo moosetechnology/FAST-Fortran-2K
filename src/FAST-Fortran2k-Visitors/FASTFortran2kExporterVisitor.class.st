@@ -203,6 +203,18 @@ FASTFortran2kExporterVisitor >> lowerPrecedence: operator [
 			(self operatorPrecedence: operator) < (self operatorPrecedence: operatorStack top)]
 ]
 
+{ #category : 'accessing' }
+FASTFortran2kExporterVisitor >> model [
+
+	^ modelIn
+]
+
+{ #category : 'accessing' }
+FASTFortran2kExporterVisitor >> model: anObject [
+
+	modelIn := anObject
+]
+
 { #category : 'outputting' }
 FASTFortran2kExporterVisitor >> newLine [
 
