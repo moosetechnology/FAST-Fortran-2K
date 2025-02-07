@@ -109,7 +109,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentStatemen
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAsterisk: aFASTFortranAsterisk [
 
-	^ FASTFortran2kAsterisk new mooseModel: model
+	^ self model newAsterisk
 ]
 
 { #category : 'visiting - expressions' }
@@ -156,9 +156,8 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCallStatement: aFA
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterLiteral: aFASTFortranCharacterLiteral [
 
-	^ FASTFortran2kCharacterLiteral new
+	^ self model newCharacterLiteral
 		  primitiveValue: aFASTFortranCharacterLiteral primitiveValue;
-		  mooseModel: model;
 		  yourself
 ]
 
@@ -270,12 +269,11 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLoopControlExpress
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranPrintStatement: aFASTFortranPrintStatement [
 
-	^ FASTFortran2kPrintStatement new
+	^ self model newPrintStatement
 		  format: (aFASTFortranPrintStatement format accept: self);
 		  arguments:
 			  (aFASTFortranPrintStatement arguments collect: [ :arg |
 					   arg accept: self ]);
-		  mooseModel: model;
 		  yourself
 ]
 
