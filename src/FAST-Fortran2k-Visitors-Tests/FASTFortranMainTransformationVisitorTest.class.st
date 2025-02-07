@@ -281,16 +281,12 @@ C	--------end someFile.f90----------------
 
 { #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramWithImplicitStatement [
-	| res entity stmtBlock |
+	| res entity |
 
-	stmtBlock := FASTFortranStatementBlock new.
-	stmtBlock addStatement: (FASTFortranImplicitStatement new typingRules: #() ).
+	self programEmpty.
 
-	fastMainProgram := FASTFortranProgramMain new 
-		name: 'demo' ; 
-		statementBlock: stmtBlock ; 
-		parentProgramFile: fastProgramFile.
-		
+	fastMainProgram statementBlock addStatement: (FASTFortranImplicitStatement new typingRules: #() ).
+
 	res := fastMainProgram accept: visitor.
 	
 	res := res programUnit anyOne.
