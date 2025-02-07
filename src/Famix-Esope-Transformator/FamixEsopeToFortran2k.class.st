@@ -70,6 +70,7 @@ FamixEsopeToFortran2k >> run [
 	(modelIn allWithType: FamixF77ProgramFile) do: [ :famixProgFile || fastProgFile |
 		fastProgFile := FASTFortranProgramFile new
 			filename: famixProgFile filename.
+		fastProgFile famix: famixProgFile.
 
 		famixProgFile programUnits do: [ :famixProgUnit || visitor fastProgramUnit |
 			famixProgUnit bindFASTModel.
@@ -79,8 +80,11 @@ FamixEsopeToFortran2k >> run [
 			visitor := self transformationVisitor: fastProgramUnit transformationVisitorClass.
 			fastProgramUnit accept: visitor.
 
+			visitor := FASTFortranUseTransformationVisitor new
+				parentTransformator: self.
+			fastProgramUnit accept: visitor.
 			usesNeeded addAll: visitor usesNeeded.
-			
+
 			fastProgramUnit accept: CRFFBindingCleaner new
 		]
 	].
