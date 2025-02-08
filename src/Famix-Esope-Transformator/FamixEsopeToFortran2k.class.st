@@ -85,7 +85,7 @@ FamixEsopeToFortran2k >> run [
 			fastProgramUnit accept: visitor.
 			usesNeeded addAll: visitor usesNeeded.
 
-			fastProgramUnit accept: CRFFBindingCleaner new
+			fastProgramUnit accept: CRFEsopeBindingCleanerVisitor new
 		]
 	].
 
