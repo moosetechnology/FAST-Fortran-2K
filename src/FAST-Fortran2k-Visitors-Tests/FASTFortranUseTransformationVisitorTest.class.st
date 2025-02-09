@@ -16,7 +16,7 @@ FASTFortranUseTransformationVisitorTest >> testProcedureWithPointeurDeclaration 
 
    fastProcedures anyOne accept: visitor.
 
-	usesNeeded := visitor usesNeeded.
+	usesNeeded := self usesNeeded.
 
 	self assert: usesNeeded size equals: 1.
 
@@ -33,7 +33,7 @@ FASTFortranUseTransformationVisitorTest >> testProcedureWithSegment [
 
 	fastProcedures anyOne accept: visitor.
 
-	usesNeeded := visitor usesNeeded.
+	usesNeeded := self usesNeeded.
 
 	self assert: usesNeeded size equals: 0
 ]
@@ -48,7 +48,7 @@ FASTFortranUseTransformationVisitorTest >> testProgramWithExternalFunctionCall [
 
 	fastMainProgram accept: visitor.
 	
-	usesNeeded := visitor usesNeeded.
+	usesNeeded := self usesNeeded.
 
 	self assert: usesNeeded size equals: 1.
 
@@ -66,7 +66,7 @@ FASTFortranUseTransformationVisitorTest >> testProgramWithProcedureInvoked [
 
 	fastMainProgram accept: visitor.
 
-	usesNeeded := visitor usesNeeded.
+	usesNeeded := self usesNeeded.
 
 	self assert: usesNeeded size equals: 1.
 
@@ -83,7 +83,7 @@ FASTFortranUseTransformationVisitorTest >> testProgramWithSegment [
 
 	fastMainProgram accept: visitor.
 
-	usesNeeded := visitor usesNeeded.
+	usesNeeded := self usesNeeded.
 
 	self assert: usesNeeded size equals: 0
 ]
@@ -98,7 +98,7 @@ FASTFortranUseTransformationVisitorTest >> testStatementFunctionWithExternalFunc
 
 	fastMainProgram accept: visitor.
 	
-	usesNeeded := visitor usesNeeded.
+	usesNeeded := self usesNeeded.
 
 	self assert: usesNeeded size equals: 1.
 
@@ -117,7 +117,7 @@ FASTFortranUseTransformationVisitorTest >> testSubroutineAndFunctionWithCall [
 
    fastProcedures anyOne accept: visitor.
 
-	usesNeeded := visitor usesNeeded.
+	usesNeeded := self usesNeeded.
 
 	self assert: usesNeeded size equals: 1.
 
@@ -138,7 +138,7 @@ FASTFortranUseTransformationVisitorTest >> testSubroutineWithFunctionStatement [
 
    fastProcedures anyOne accept: visitor.
 
-	usesNeeded := visitor usesNeeded.
+	usesNeeded := self usesNeeded.
 
 	self assert: usesNeeded size equals: 0
 ]
@@ -153,9 +153,15 @@ FASTFortranUseTransformationVisitorTest >> testSubroutineWithFunctionStatementCa
 
    fastProcedures anyOne accept: visitor.
 
-	usesNeeded := visitor usesNeeded.
+	usesNeeded := self usesNeeded.
 
 	self assert: usesNeeded size equals: 0
+]
+
+{ #category : 'running' }
+FASTFortranUseTransformationVisitorTest >> usesNeeded [ 
+
+	^visitor parentTransformator usesNeeded
 ]
 
 { #category : 'running' }
