@@ -1027,7 +1027,7 @@ FASTFortranSegmentTransformationVisitor >> makeProgramUnit: programUnits [
 		progUnits add: (FASTFortran2kModule new
 				 name: 'temp_mod';
 				 procedures: procedures;
-				 mooseModel: model;
+				 mooseModel: self model;
 				 yourself) ].
 
 	progUnits add:
@@ -1069,11 +1069,9 @@ FASTFortranSegmentTransformationVisitor >> makeTypeDefinition: aFASTFortranSegme
 	segment := self model newDerivedTypeDefinition
 		           name: aFASTFortranSegment name.
 
-	visitor := FASTEsopeSegmentVisitor new.
-
 	aFASTFortranSegment statements do: [ :declarationStatement |
-		segment derivedTypeComponents:
-			(declarationStatement accept: visitor) ].
+		segment addDerivedTypeComponent:
+			(declarationStatement accept: self) ].
 
 	^segment
 ]
@@ -1113,6 +1111,15 @@ FASTFortranSegmentTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegm
 				 (self makeProcedureSegloc: segmentName).
 				 (self makeProcedureBoxed: segmentName) }).
 	^ module
+]
+
+{ #category : 'visiting' }
+FASTFortranSegmentTransformationVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
+
+	^self model newDerivedTypeComponent
+		type: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
+		declarators: (self visitFASTFortranList: aFASTFortranVariableDeclarationStatement declarators) ;
+		yourself
 ]
 
 { #category : 'visiting' }
