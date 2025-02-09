@@ -2,7 +2,6 @@ Class {
 	#name : 'FASTFortranAbstractTransformationVisitor',
 	#superclass : 'FASTFortranVisitor',
 	#instVars : [
-		'model',
 		'stack'
 	],
 	#category : 'FAST-Fortran2k-Visitors',
@@ -15,18 +14,6 @@ FASTFortranAbstractTransformationVisitor >> initialize [
 	super initialize.
 
 	stack := Stack new
-]
-
-{ #category : 'accessing' }
-FASTFortranAbstractTransformationVisitor >> model [
-
-	^ model
-]
-
-{ #category : 'accessing' }
-FASTFortranAbstractTransformationVisitor >> model: aFASTModel [
-
-	model := aFASTModel 
 ]
 
 { #category : 'visiting' }
