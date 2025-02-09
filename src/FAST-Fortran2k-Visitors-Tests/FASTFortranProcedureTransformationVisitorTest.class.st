@@ -5,7 +5,7 @@ Class {
 	#package : 'FAST-Fortran2k-Visitors-Tests'
 }
 
-{ #category : 'running' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testCreateModule [
 
 	| module |
@@ -21,7 +21,7 @@ FASTFortranProcedureTransformationVisitorTest >> testCreateModule [
 
 ]
 
-{ #category : 'running' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testEnsureModuleOnce [
 
 	| module |
@@ -33,7 +33,7 @@ FASTFortranProcedureTransformationVisitorTest >> testEnsureModuleOnce [
 
 ]
 
-{ #category : 'running' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testEnsureModuleTwice [
 
 	| module |
