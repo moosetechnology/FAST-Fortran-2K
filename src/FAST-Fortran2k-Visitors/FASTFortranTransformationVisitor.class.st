@@ -3,7 +3,8 @@ Class {
 	#superclass : 'FASTFortranAbstractTransformationVisitor',
 	#instVars : [
 		'useNeeded',
-		'allModules'
+		'allModules',
+		'model'
 	],
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
@@ -13,6 +14,7 @@ Class {
 FASTFortranTransformationVisitor >> addUseIn: aFASTFortran2kEntity to: moduleName [
 
 	self flag: #FIXME. "how to handle the order of uses statements"
+
 	aFASTFortran2kEntity statementBlock statements 
 		addFirst: (
 		FASTFortran2kUseStatement new 
