@@ -126,6 +126,12 @@ FamixEsopeToFortran2k >> transformationVisitor: visitorClass [
 ]
 
 { #category : 'accessing' }
+FamixEsopeToFortran2k >> useNeeded: anAssociation [
+
+	usesNeeded add: anAssociation 
+]
+
+{ #category : 'accessing' }
 FamixEsopeToFortran2k >> usesNeeded [
 
 	^ usesNeeded

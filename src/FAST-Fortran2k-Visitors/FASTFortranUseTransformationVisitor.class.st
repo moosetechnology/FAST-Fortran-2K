@@ -2,37 +2,28 @@ Class {
 	#name : 'FASTFortranUseTransformationVisitor',
 	#superclass : 'FASTFortranAbstractTransformationVisitor',
 	#instVars : [
-		'parentVisitor',
-		'usesNeeded'
+		'parentTransformator'
 	],
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
 }
 
-{ #category : 'initialization' }
-FASTFortranUseTransformationVisitor >> initialize [ 
-
-	super initialize.
-
-	usesNeeded := Set new
-]
-
 { #category : 'accessing' }
 FASTFortranUseTransformationVisitor >> parentTransformator [
 
-	^ parentVisitor
+	^ parentTransformator
 ]
 
 { #category : 'accessing' }
 FASTFortranUseTransformationVisitor >> parentTransformator: anObject [
 
-	parentVisitor := anObject
+	parentTransformator := anObject
 ]
 
 { #category : 'accessing' }
-FASTFortranUseTransformationVisitor >> usesNeeded [
+FASTFortranUseTransformationVisitor >> useNeeded: anAssociation [
 
-	^usesNeeded 
+	parentTransformator useNeeded: anAssociation 
 ]
 
 { #category : 'visiting' }
@@ -49,7 +40,7 @@ FASTFortranUseTransformationVisitor >> visitFASTEsopePointerDeclarator: aFASTEso
 	programUnit := aFASTEsopePointerDeclarator pointerDeclarationStatement statementContainer fastBehaviouralParent famix.
 	segment := aFASTEsopePointerDeclarator variableDeclarator famixDeclaration declaredType.
 
-	usesNeeded add: (programUnit -> segment)
+	self useNeeded: (programUnit -> segment)
 
 ]
 
@@ -68,7 +59,7 @@ FASTFortranUseTransformationVisitor >> visitFASTFortranCallStatement: aFASTFortr
 	called := aFASTFortranCallStatement famix candidates anyOne.
 
 	(caller migratedModuleName = called migratedModuleName)
-		ifFalse: [ usesNeeded add: (caller -> called) ].
+		ifFalse: [ self useNeeded: (caller -> called) ].
 
 	super visitFASTFortranCallStatement: aFASTFortranCallStatement
 ]
@@ -81,7 +72,7 @@ FASTFortranUseTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFortra
 	called := aFASTFortranFunctionCall famix candidates anyOne.
 
 	(caller migratedModuleName = called migratedModuleName)
-		ifFalse: [ usesNeeded add: (caller -> called) ].
+		ifFalse: [ self useNeeded: (caller -> called) ].
 
 	super visitFASTFortranFunctionCall: aFASTFortranFunctionCall
 ]
