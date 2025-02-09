@@ -1069,9 +1069,12 @@ FASTFortranSegmentTransformationVisitor >> makeTypeDefinition: aFASTFortranSegme
 	segment := self model newDerivedTypeDefinition
 		           name: aFASTFortranSegment name.
 
+	visitor := FASTEsopeSegmentVisitor new
+		model: self model.
+
 	aFASTFortranSegment statements do: [ :declarationStatement |
-		segment addDerivedTypeComponent:
-			(declarationStatement accept: self) ].
+		segment derivedTypeComponents:
+			(declarationStatement accept: visitor) ].
 
 	^segment
 ]

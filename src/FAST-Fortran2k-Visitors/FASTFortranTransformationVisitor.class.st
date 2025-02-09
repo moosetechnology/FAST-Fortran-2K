@@ -107,6 +107,18 @@ FASTFortranTransformationVisitor >> initialize [
 	model := FASTFortran2kModel new.
 ]
 
+{ #category : 'accessing' }
+FASTFortranTransformationVisitor >> model [
+
+	^ model
+]
+
+{ #category : 'accessing' }
+FASTFortranTransformationVisitor >> model: anObject [
+
+	model := anObject
+]
+
 { #category : 'helpers' }
 FASTFortranTransformationVisitor >> programFile: programFile in: f77Filename modules: programUnits [
 
