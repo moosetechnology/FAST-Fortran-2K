@@ -11,6 +11,14 @@ Class {
 	#package : 'Famix-Esope-Transformator'
 }
 
+{ #category : 'running' }
+FamixEsopeToFortran2k >> exportFAST2k [
+
+	FASTFortran2kExporterVisitor new
+		model: fast2kModel ;
+		export
+]
+
 { #category : 'accessing' }
 FamixEsopeToFortran2k >> famixModel [
 
@@ -27,6 +35,18 @@ FamixEsopeToFortran2k >> famixModel: anObject [
 FamixEsopeToFortran2k >> fast2kModel [
 
 	^ fast2kModel
+]
+
+{ #category : 'running' }
+FamixEsopeToFortran2k >> fastModelFor: famixProgUnit in: famixProgFile [
+
+	| fastProgramUnit |
+	famixProgUnit bindFASTModel.
+	fastProgramUnit := famixProgUnit fast.
+
+	fastProgramUnit parentProgramFile: famixProgFile fast.
+
+	^fastProgramUnit 
 ]
 
 { #category : 'helpers - segment' }
@@ -50,6 +70,22 @@ FamixEsopeToFortran2k >> initialize [
 ]
 
 { #category : 'running' }
+FamixEsopeToFortran2k >> migrateToFAST2k: aFASTProgramUnit [
+
+	| visitor |
+
+	visitor := self transformationVisitor: aFASTProgramUnit transformationVisitorClass.
+	aFASTProgramUnit accept: visitor.
+
+	visitor := FASTFortranUseTransformationVisitor new
+		parentTransformator: self.
+	aFASTProgramUnit accept: visitor.
+
+	^visitor model
+
+]
+
+{ #category : 'running' }
 FamixEsopeToFortran2k >> resolveUses: usesNeeded [
 	"usesNeeded is a collection of associations:
 	 - user -- a FamixF77ProgramUnit
@@ -61,37 +97,24 @@ FamixEsopeToFortran2k >> resolveUses: usesNeeded [
 
 { #category : 'running' }
 FamixEsopeToFortran2k >> run [
-
-	| usesNeeded |
 	usesNeeded := Set new.
 
-	(modelIn allWithType: FamixF77ProgramFile) do: [ :famixProgFile || fastProgFile |
-		fastProgFile := FASTFortranProgramFile new
-			filename: famixProgFile filename.
-		fastProgFile famix: famixProgFile.
+	(famixModel allWithType: FamixF77ProgramFile) do: [ :famixProgFile |
+		famixProgFile fast: (FASTFortranProgramFile new
+			filename: famixProgFile filename).
 
-		famixProgFile programUnits do: [ :famixProgUnit || visitor fastProgramUnit |
-			famixProgUnit bindFASTModel.
-			fastProgramUnit := famixProgUnit fast.
-			fastProgFile addProgramUnit: fastProgramUnit.
+		famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
+			fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgFile.
 
-			visitor := self transformationVisitor: fastProgramUnit transformationVisitorClass.
-			fastProgramUnit accept: visitor.
+			self migrateToFAST2k: fastProgramUnit.
 
-			visitor := FASTFortranUseTransformationVisitor new
-				parentTransformator: self.
-			fastProgramUnit accept: visitor.
-			usesNeeded addAll: visitor usesNeeded.
-
-			fastProgramUnit accept: CRFEsopeBindingCleanerVisitor new
+			fastProgramUnit mooseModel cleanAll
 		]
 	].
 
 	self resolveUses: usesNeeded.
 
-	FASTFortran2kExporterVisitor new
-		model: modelOut ;
-		export
+	self exportFAST2k
 ]
 
 { #category : 'running' }
