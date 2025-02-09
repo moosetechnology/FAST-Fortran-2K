@@ -2,13 +2,32 @@ Class {
 	#name : 'FamixEsopeToFortran2k',
 	#superclass : 'Object',
 	#instVars : [
-		'modelIn',
-		'modelOut',
-		'allModules'
+		'allModules',
+		'usesNeeded',
+		'famixModel',
+		'fast2kModel'
 	],
 	#category : 'Famix-Esope-Transformator',
 	#package : 'Famix-Esope-Transformator'
 }
+
+{ #category : 'accessing' }
+FamixEsopeToFortran2k >> famixModel [
+
+	^ famixModel
+]
+
+{ #category : 'accessing' }
+FamixEsopeToFortran2k >> famixModel: anObject [
+
+	famixModel := anObject
+]
+
+{ #category : 'accessing' }
+FamixEsopeToFortran2k >> fast2kModel [
+
+	^ fast2kModel
+]
 
 { #category : 'helpers - segment' }
 FamixEsopeToFortran2k >> getModule: filename ifAbsentPut: aBlock [
@@ -23,32 +42,11 @@ FamixEsopeToFortran2k >> initialize [
 
 	super initialize.
 
-	modelOut := FASTFortran2kModel new.
+	famixModel := FamixEsopeModel new.
 	allModules := Dictionary new.
-]
+	usesNeeded := Set new.
+	fast2kModel := FASTFortran2kModel new.
 
-{ #category : 'accessing' }
-FamixEsopeToFortran2k >> modelIn [
-
-	^ modelIn
-]
-
-{ #category : 'accessing' }
-FamixEsopeToFortran2k >> modelIn: anObject [
-
-	modelIn := anObject
-]
-
-{ #category : 'accessing' }
-FamixEsopeToFortran2k >> modelOut [
-
-	^ modelOut
-]
-
-{ #category : 'accessing' }
-FamixEsopeToFortran2k >> modelOut: anObject [
-
-	modelOut := anObject
 ]
 
 { #category : 'running' }
@@ -102,4 +100,10 @@ FamixEsopeToFortran2k >> transformationVisitor: visitorClass [
 	^visitorClass new
 		parentTransformator: self ;
 		yourself
+]
+
+{ #category : 'accessing' }
+FamixEsopeToFortran2k >> usesNeeded [
+
+	^ usesNeeded
 ]
