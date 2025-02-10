@@ -295,9 +295,8 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealType: aRealTyp
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranScalarVariable: aScalarVariableNode [
 
-	^ FASTFortran2kScalarVariable new
+	^ self model newScalarVariable
 		  name: aScalarVariableNode name;
-		  mooseModel: self model;
 		  yourself
 ]
 
