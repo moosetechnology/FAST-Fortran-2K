@@ -460,7 +460,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramMain: aFASTFortran2kPro
 	
 	self 
 		<< 'end program ';
-		<< aFASTFortran2kProgramNode name
+		<< aFASTFortran2kProgramNode name;
+		newLine
 ]
 
 { #category : 'visiting' }
@@ -480,12 +481,17 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSubroutine: aFASTFortran2kSubr
 	self
 		<< 'subroutine ';
 		<< aFASTFortran2kSubroutine name.
+		
 	self visitFASTFortranTWithParameters: aFASTFortran2kSubroutine.
+
 	self newLine.
+
 	self visitFASTFortranTBehaviouralEntity: aFASTFortran2kSubroutine.
+	
 	self 
 		<< 'end subroutine ';
-		<< aFASTFortran2kSubroutine name
+		<< aFASTFortran2kSubroutine name;
+		newLine
 		
 	
 	
