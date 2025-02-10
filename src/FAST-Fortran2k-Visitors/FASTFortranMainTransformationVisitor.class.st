@@ -9,7 +9,7 @@ Class {
 FASTFortranMainTransformationVisitor >> fortran2kFilename: f77ProgramMain [
 	"assuming F77 filename is of the form: 'xyz.f' "
 	
-	^f77ProgramMain parentProgramFile famix filename , '90'
+	^f77ProgramMain famix programFile filename , '90'
 ]
 
 { #category : 'visiting - programUnits' }
