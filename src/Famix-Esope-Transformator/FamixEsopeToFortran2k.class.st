@@ -111,7 +111,8 @@ FamixEsopeToFortran2k >> run [
 
 			self migrateToFAST2k: fastProgramUnit.
 
-			fastProgramUnit mooseModel cleanAll
+			self flag: '#FIXME: fastProgramUnit mooseModel removeAll'
+			"fastProgramUnit mooseModel cleanAll"
 		]
 	].
 
