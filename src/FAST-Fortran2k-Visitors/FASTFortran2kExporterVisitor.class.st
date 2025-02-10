@@ -326,9 +326,28 @@ FASTFortran2kExporterVisitor >> unindented: aPrintable [
 ]
 
 { #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentStatement: aFASTFortran2kAssignmentStatement [ 
+	aFASTFortran2kAssignmentStatement variable accept: self.
+	self << ' = '.
+	aFASTFortran2kAssignmentStatement expression accept: self.
+]
+
+{ #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kAsterisk: aFASTFortran2kAsterisk [
 
 	self << '*'
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kBinaryExpression: aFASTFortran2kBinaryExpression [ 
+	aFASTFortran2kBinaryExpression leftOperand accept: self.
+
+	self 
+		<< ' ';
+		<< aFASTFortran2kBinaryExpression operator;
+		<< ' '.
+
+	aFASTFortran2kBinaryExpression rightOperand accept: self.
 ]
 
 { #category : 'visiting' }
@@ -397,6 +416,41 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFormattedCodeString: aFASTFort
 
 	self << (aFASTFortran2kFormattedCodeString content format:
 		 aFASTFortran2kFormattedCodeString values)
+]
+
+{ #category : 'visiting - programUnits' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFunction [ 
+	aFASTFortran2kFunction returnType 
+		ifNotNil: [ :returnTyppe | returnTyppe accept: self ].
+	
+	self
+		<< ' function '
+		<< aFASTFortran2kFunction name
+		<< '('.
+
+	self visitNodeListSeparatedByCommas: aFASTFortran2kFunction parameters.
+
+	self << ')'.
+	self newLine.
+	
+	aFASTFortran2kFunction statementBlock accept: self.
+
+	self 
+		newLine;
+		<< 'end function ';
+		<< aFASTFortran2kFunction name;
+		newLine
+	
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCall [ 
+	self
+		<< aFASTFortran2kFunctionCall name;
+		<< ' ( '.
+
+	self visitNodeListSeparatedByCommas: aFASTFortran2kFunctionCall arguments.
+	self << ' )'
 ]
 
 { #category : 'visiting' }
@@ -471,9 +525,23 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kRealType: aFASTFortran2kRealTy
 ]
 
 { #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kScalarVariable: aFASTFortran2kScalarVariable [ 
+	self 
+		<< aFASTFortran2kScalarVariable name
+]
+
+{ #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kSourceCodeString: aFASTFortran2kSourceCodeString [
 
 	self << aFASTFortran2kSourceCodeString content
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kStatementBlock: aFASTFortran2kStatementBlock [ 
+	aFASTFortran2kStatementBlock statements
+		ifNotNil:[ :statements | 
+			statements do: [ :statement | statement accept: self ]
+		] 
 ]
 
 { #category : 'visiting - programUnits' }
