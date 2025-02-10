@@ -56,11 +56,13 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 
 	function := self model newFunction
 		name: aFASTFortranFunction name ;
+		returnType: (aFASTFortranFunction famix declaredType accept: self);
 		module: module ;
 		yourself.
 
 	stack push: function.
-	
+
+	function parameters: (aFASTFortranFunction parameters collect: [ :parameter | parameter accept: self ]).
 	function statementBlock: (aFASTFortranFunction statementBlock accept: self).
 
 	stack pop.
@@ -81,7 +83,8 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFo
 		yourself.
 
 	stack push: subrtn.
-	
+
+	subrtn parameters: (aFASTFortranSubroutine parameters collect: [ :parameter | parameter accept: self ]).	
 	subrtn statementBlock: (aFASTFortranSubroutine statementBlock accept: self).
 
 	stack pop.
