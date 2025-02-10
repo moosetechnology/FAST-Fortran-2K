@@ -57,7 +57,10 @@ FamixEsopeToFortran2k >> resolveUses: usesNeeded [
 	 - user -- a FamixF77ProgramUnit
 	 - needed -- a FamixF77ProgramUnit or FamixEsopeSegment"
 
-	usesNeeded do: [ :association |
+	usesNeeded do: [ :association | | source target | 1halt.
+		source := association key.
+		target := association value.
+		source fast attributeAt: source fast name ifAbsentPut: target migratedModuleName
 	]
 ]
 
