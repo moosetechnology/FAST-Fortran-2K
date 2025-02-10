@@ -81,7 +81,7 @@ FamixEsopeToFortran2k >> migrateToFAST2k: aFASTProgramUnit [
 		parentTransformator: self.
 	aFASTProgramUnit accept: visitor.
 
-	^visitor model
+	^visitor parentTransformator fast2kModel
 
 ]
 
