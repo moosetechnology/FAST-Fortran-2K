@@ -2,13 +2,52 @@ Class {
 	#name : 'FamixEsopeToFortran2k',
 	#superclass : 'Object',
 	#instVars : [
-		'modelIn',
-		'modelOut',
-		'allModules'
+		'allModules',
+		'usesNeeded',
+		'famixModel',
+		'fast2kModel'
 	],
 	#category : 'Famix-Esope-Transformator',
 	#package : 'Famix-Esope-Transformator'
 }
+
+{ #category : 'running' }
+FamixEsopeToFortran2k >> exportFAST2k [
+
+	FASTFortran2kExporterVisitor new
+		model: fast2kModel ;
+		export
+]
+
+{ #category : 'accessing' }
+FamixEsopeToFortran2k >> famixModel [
+
+	^ famixModel
+]
+
+{ #category : 'accessing' }
+FamixEsopeToFortran2k >> famixModel: anObject [
+
+	famixModel := anObject
+]
+
+{ #category : 'accessing' }
+FamixEsopeToFortran2k >> fast2kModel [
+
+	^ fast2kModel
+]
+
+{ #category : 'running' }
+FamixEsopeToFortran2k >> fastModelFor: famixProgUnit in: famixProgFile [
+
+	| fastProgramUnit |
+	famixProgUnit bindFASTModel.
+	fastProgramUnit := famixProgUnit fast.
+
+	fastProgramUnit parentProgramFile: famixProgFile fast.
+
+	^fastProgramUnit 
+]
 
 { #category : 'helpers - segment' }
 FamixEsopeToFortran2k >> getModule: filename ifAbsentPut: aBlock [
@@ -23,32 +62,27 @@ FamixEsopeToFortran2k >> initialize [
 
 	super initialize.
 
-	modelOut := FASTFortran2kModel new.
+	famixModel := FamixEsopeModel new.
 	allModules := Dictionary new.
+	usesNeeded := Set new.
+	fast2kModel := FASTFortran2kModel new.
+
 ]
 
-{ #category : 'accessing' }
-FamixEsopeToFortran2k >> modelIn [
+{ #category : 'running' }
+FamixEsopeToFortran2k >> migrateToFAST2k: aFASTProgramUnit [
 
-	^ modelIn
-]
+	| visitor |
 
-{ #category : 'accessing' }
-FamixEsopeToFortran2k >> modelIn: anObject [
+	visitor := self transformationVisitor: aFASTProgramUnit transformationVisitorClass.
+	aFASTProgramUnit accept: visitor.
 
-	modelIn := anObject
-]
+	visitor := FASTFortranUseTransformationVisitor new
+		parentTransformator: self.
+	aFASTProgramUnit accept: visitor.
 
-{ #category : 'accessing' }
-FamixEsopeToFortran2k >> modelOut [
+	^visitor model
 
-	^ modelOut
-]
-
-{ #category : 'accessing' }
-FamixEsopeToFortran2k >> modelOut: anObject [
-
-	modelOut := anObject
 ]
 
 { #category : 'running' }
@@ -66,37 +100,24 @@ FamixEsopeToFortran2k >> resolveUses: usesNeeded [
 
 { #category : 'running' }
 FamixEsopeToFortran2k >> run [
-
-	| usesNeeded |
 	usesNeeded := Set new.
 
-	(modelIn allWithType: FamixF77ProgramFile) do: [ :famixProgFile || fastProgFile |
-		fastProgFile := FASTFortranProgramFile new
-			filename: famixProgFile filename.
-		fastProgFile famix: famixProgFile.
+	(famixModel allWithType: FamixF77ProgramFile) do: [ :famixProgFile |
+		famixProgFile fast: (FASTFortranProgramFile new
+			filename: famixProgFile filename).
 
-		famixProgFile programUnits do: [ :famixProgUnit || visitor fastProgramUnit |
-			famixProgUnit bindFASTModel.
-			fastProgramUnit := famixProgUnit fast.
-			fastProgFile addProgramUnit: fastProgramUnit.
+		famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
+			fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgFile.
 
-			visitor := self transformationVisitor: fastProgramUnit transformationVisitorClass.
-			fastProgramUnit accept: visitor.
+			self migrateToFAST2k: fastProgramUnit.
 
-			visitor := FASTFortranUseTransformationVisitor new
-				parentTransformator: self.
-			fastProgramUnit accept: visitor.
-			usesNeeded addAll: visitor usesNeeded.
-
-			fastProgramUnit accept: CRFFBindingCleaner new
+			fastProgramUnit mooseModel cleanAll
 		]
 	].
 
 	self resolveUses: usesNeeded.
 
-	FASTFortran2kExporterVisitor new
-		model: modelOut ;
-		export
+	self exportFAST2k
 ]
 
 { #category : 'running' }
@@ -105,4 +126,16 @@ FamixEsopeToFortran2k >> transformationVisitor: visitorClass [
 	^visitorClass new
 		parentTransformator: self ;
 		yourself
+]
+
+{ #category : 'accessing' }
+FamixEsopeToFortran2k >> useNeeded: anAssociation [
+
+	usesNeeded add: anAssociation 
+]
+
+{ #category : 'accessing' }
+FamixEsopeToFortran2k >> usesNeeded [
+
+	^ usesNeeded
 ]

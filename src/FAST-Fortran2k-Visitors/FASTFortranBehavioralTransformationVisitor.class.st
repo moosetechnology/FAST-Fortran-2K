@@ -11,7 +11,7 @@ Class {
 { #category : 'accessing' }
 FASTFortranBehavioralTransformationVisitor >> model [
 
-	^parentTransformator modelOut
+	^self parentTransformator fast2kModel
 ]
 
 { #category : 'accessing' }
@@ -280,7 +280,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealLiteral: aReal
 
 	^ FASTFortran2kRealLiteral new
 		  primitiveValue: aRealLiteralNode primitiveValue;
-		  mooseModel: model;
+		  mooseModel: self model;
 		  yourself
 ]
 
@@ -288,7 +288,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealLiteral: aReal
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealType: aRealTypeNode [
 
 	^ FASTFortran2kRealType new
-		  mooseModel: model;
+		  mooseModel: self model;
 		  yourself
 ]
 
