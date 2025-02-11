@@ -11,6 +11,12 @@ An entity that can contain fortran program units and comments
 | `programUnit` | `FASTFortran2kProgramFile` | `parentProgramFile` | `FASTFortran2kProgramUnit` | Program Units in a program file|
 
 
+## Properties
+======================
+
+| Name | Type | Default value | Comment |
+|---|
+| `filename` | `String` | nil | |
 
 "
 Class {
@@ -19,6 +25,7 @@ Class {
 	#traits : 'FASTTWithComments',
 	#classTraits : 'FASTTWithComments classTrait',
 	#instVars : [
+		'#filename => FMProperty',
 		'#programUnit => FMMany type: #FASTFortran2kProgramUnit opposite: #parentProgramFile'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
@@ -39,6 +46,20 @@ FASTFortran2kProgramFile class >> annotation [
 FASTFortran2kProgramFile >> addProgramUnit: anObject [
 	<generated>
 	^ self programUnit add: anObject
+]
+
+{ #category : 'accessing' }
+FASTFortran2kProgramFile >> filename [
+
+	<FMProperty: #filename type: #String>
+	<generated>
+	^ filename
+]
+
+{ #category : 'accessing' }
+FASTFortran2kProgramFile >> filename: anObject [
+	<generated>
+	filename := anObject
 ]
 
 { #category : 'accessing' }

@@ -835,6 +835,8 @@ FASTFortran2kGenerator >> defineProperties2k [
 	(formattedCodeString property: #values type: #Object)
 		comment: 'Values of the variables to format the string'.
 	
+	(programFile property: #filename type: #String).
+	
 	(typeBoundProcedure property: #alias type: #String)
 		comment: 'I represent the alias name of the procedure'.
 		

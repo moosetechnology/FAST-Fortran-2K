@@ -1,38 +1,22 @@
 Class {
-	#name : 'FASTFortranModelTransformationVisitor',
-	#superclass : 'FASTFortranVisitor',
+	#name : 'FASTFortranSegmentTransformationVisitor',
+	#superclass : 'FASTFortranBehavioralTransformationVisitor',
 	#instVars : [
-		'model',
-		'tmpStream',
-		'stack',
-		'useNeeded'
+		'tmpStream'
 	],
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
 }
 
-{ #category : 'helpers' }
-FASTFortranModelTransformationVisitor >> addUsesIn: puMain file: mainfile and: puModule [
-
-	useNeeded do: [ :assoc || source target |
-		source := assoc key.
-		target := assoc value.
-
-		(source = mainfile)
-		ifTrue: [ self addUse: target in: puMain ]
-		ifFalse:  [ self addUse: target in: puModule ]
-	]
-]
-
 { #category : 'visiting - helpers' }
-FASTFortranModelTransformationVisitor >> computeAllocateSegmentAttributes: aFASTFortranSegment [
+FASTFortranSegmentTransformationVisitor >> computeAllocateSegmentAttributes: aFASTFortranSegment [
 
 	^ '
 '
 ]
 
 { #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> computeDimensionalExpressions: aFASTFortranSegment [
+FASTFortranSegmentTransformationVisitor >> computeDimensionalExpressions: aFASTFortranSegment [
 
 	| visitor parameters |
 	parameters := Set new.
@@ -44,11 +28,14 @@ FASTFortranModelTransformationVisitor >> computeDimensionalExpressions: aFASTFor
 ]
 
 { #category : 'visiting - helpers' }
-FASTFortranModelTransformationVisitor >> computeLocalParamsDims: segmentDimensions [
+FASTFortranSegmentTransformationVisitor >> computeLocalParamsDims: segmentDimensions [
 
 	| nbDims aStream |
 	aStream := WriteStream on: ''.
-	nbDims := (segmentDimensions collect: [ :routineParam | routineParam size ]) max.
+	nbDims := segmentDimensions 
+		ifEmpty: [ 0 ]
+		ifNotEmpty: [ (segmentDimensions collect: [ :routineParam | routineParam size ]) max ].
+
 	1 to: nbDims 
 		do: [ :each | aStream << ('integer :: ooo_dim{1}' format: {each}); lf ].
 
@@ -56,7 +43,7 @@ FASTFortranModelTransformationVisitor >> computeLocalParamsDims: segmentDimensio
 ]
 
 { #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> computeProcedureInitialisationAndAllocation: aFASTFortranSegment [
+FASTFortranSegmentTransformationVisitor >> computeProcedureInitialisationAndAllocation: aFASTFortranSegment [
 
 	| aStream dimensions |
 	aStream := WriteStream on: ''.
@@ -123,12 +110,18 @@ FASTFortranModelTransformationVisitor >> computeProcedureInitialisationAndAlloca
 ]
 
 { #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> computeProcedureLocalVariablesDimensions: aFASTFortranSegment [
+FASTFortranSegmentTransformationVisitor >> computeProcedureLocalVariablesDimensions: aFASTFortranSegment [
 
-	| maxDim aStream |
-	maxDim := (aFASTFortranSegment statements flatCollect: [ :declaration |
-		           declaration declarators collect: [ :declarator |
-			           declarator dimensions size ] ]) max.
+	| maxDim aStream dimensions |
+	dimensions := aFASTFortranSegment statements 
+		flatCollect: [ :declaration |
+			declaration declarators 
+				collect: [ :declarator | declarator dimensions size ] 
+		].
+
+	maxDim := dimensions 
+		ifNotEmpty: [ dimensions max ] 
+		ifEmpty:    [ 0 ].
 
 	aStream := WriteStream on: ''.
 
@@ -141,7 +134,7 @@ FASTFortranModelTransformationVisitor >> computeProcedureLocalVariablesDimension
 ]
 
 { #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> computeProcedureParameters: aFASTFortranSegment [
+FASTFortranSegmentTransformationVisitor >> computeProcedureParameters: aFASTFortranSegment [
 
 	| parameters |
 	parameters := OrderedCollection new.
@@ -154,7 +147,7 @@ FASTFortranModelTransformationVisitor >> computeProcedureParameters: aFASTFortra
 ]
 
 { #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> computeProcedureParametersDeclaration: aFASTFortranSegment [
+FASTFortranSegmentTransformationVisitor >> computeProcedureParametersDeclaration: aFASTFortranSegment [
 
 	| aStream parameters |
 	parameters := self computeDimensionalExpressions: aFASTFortranSegment.
@@ -172,7 +165,7 @@ FASTFortranModelTransformationVisitor >> computeProcedureParametersDeclaration: 
 ]
 
 { #category : 'visiting - helpers' }
-FASTFortranModelTransformationVisitor >> computeRoutineParams: segmentDimensions [
+FASTFortranSegmentTransformationVisitor >> computeRoutineParams: segmentDimensions [
 
 	|  dimensions |
 
@@ -189,7 +182,7 @@ FASTFortranModelTransformationVisitor >> computeRoutineParams: segmentDimensions
 ]
 
 { #category : 'visiting - helpers' }
-FASTFortranModelTransformationVisitor >> computeRoutineParamsDeclarations: routineParams [
+FASTFortranSegmentTransformationVisitor >> computeRoutineParamsDeclarations: routineParams [
 	| aStream |
 	aStream := WriteStream on: ''.
 	routineParams 
@@ -203,7 +196,7 @@ FASTFortranModelTransformationVisitor >> computeRoutineParamsDeclarations: routi
 ]
 
 { #category : 'visiting - helpers' }
-FASTFortranModelTransformationVisitor >> computeSegmentsDimensions: aFASTFortranSegment [
+FASTFortranSegmentTransformationVisitor >> computeSegmentsDimensions: aFASTFortranSegment [
 
 	| visitor |
 	visitor := FASTEsopeSegmentDimensionsVisitor new.
@@ -214,25 +207,16 @@ FASTFortranModelTransformationVisitor >> computeSegmentsDimensions: aFASTFortran
 		]
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> ensureEmptyStream [
+{ #category : 'helpers' }
+FASTFortranSegmentTransformationVisitor >> ensureEmptyStream [
 
 	tmpStream := WriteStream with: ''
 ]
 
-{ #category : 'initialization' }
-FASTFortranModelTransformationVisitor >> initialize [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeBoxedTypeDefinition: segmentName [
 
-	super initialize.
-
-	model := FASTFortran2kModel new.
-	stack := Stack new
-]
-
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeBoxedTypeDefinition: segmentName [
-
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
     public boxed_{segmentName}
     type, extends(segment) :: boxed_{segmentName}
@@ -250,10 +234,10 @@ FASTFortranModelTransformationVisitor >> makeBoxedTypeDefinition: segmentName [
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeContainsStatement: segmentName [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeContainsStatement: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
 contains
 	 ! ## primary aspects
@@ -264,10 +248,10 @@ contains
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeInterfaces: segmentName [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeInterfaces: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
 	 public assignment (=)
     interface assignment (=)
@@ -356,10 +340,10 @@ FASTFortranModelTransformationVisitor >> makeInterfaces: segmentName [
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureAssignPointerToPointer: segmentName [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureAssignPointerToPointer: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
     subroutine {segmentName}_assign_pointer_to_pointer(this, that)
         ! >> Just to detect at compile-time "this = that" bad usage, 
@@ -378,10 +362,10 @@ FASTFortranModelTransformationVisitor >> makeProcedureAssignPointerToPointer: se
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureBoxed: segmentName [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureBoxed: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
     ! ## boxed aspects
 
@@ -560,10 +544,10 @@ FASTFortranModelTransformationVisitor >> makeProcedureBoxed: segmentName [
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureIgnore: segmentName [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureIgnore: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
     subroutine ignore_{segmentName}(variable, variable_name, routine)
         use, intrinsic :: iso_fortran_env, only : int64
@@ -588,8 +572,8 @@ FASTFortranModelTransformationVisitor >> makeProcedureIgnore: segmentName [
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureSegadj: aFASTFortranSegment [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureSegadj: aFASTFortranSegment [
 
 	| segxxx parameterNames |
 	self ensureEmptyStream.
@@ -607,7 +591,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegadj: aFASTFortranSegmen
 	end subroutine {segmentName}_segadj(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values: {
 				          (#segmentName -> aFASTFortranSegment name).
@@ -618,8 +602,8 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegadj: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureSegcop: aFASTFortranSegment [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureSegcop: aFASTFortranSegment [
 
 	| segxxx |
 	self ensureEmptyStream.
@@ -636,7 +620,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegcop: aFASTFortranSegmen
 	end subroutine {segmentName}_segcop(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values:
 			          (Dictionary with:
@@ -646,8 +630,8 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegcop: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureSegini2: aFASTFortranSegment [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureSegini2: aFASTFortranSegment [
 	"
 	subroutine {segmentName}_segini(this {routineParams})
 		! ## Initialize a new ""this"" segment with default values
@@ -688,8 +672,8 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegini2: aFASTFortranSegme
 		  yourself
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureSegini: aFASTFortranSegment [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureSegini: aFASTFortranSegment [
 
 	| segxxx routineParams routineParamsDeclarations localParamsDims allocateSegmentAttributes segmentDimensions |
 	self ensureEmptyStream.
@@ -717,7 +701,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegini: aFASTFortranSegmen
 	end subroutine {segmentName}_segini
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values: { 
 						#segmentName -> aFASTFortranSegment name. 
@@ -732,8 +716,8 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegini: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureSeglik: aFASTFortranSegment [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureSeglik: aFASTFortranSegment [
 
 	| segxxx parameterNames |
 	self ensureEmptyStream.
@@ -763,7 +747,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSeglik: aFASTFortranSegmen
 	end function {segmentName}_seglik(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values: {
 				          (#segmentName -> aFASTFortranSegment name).
@@ -774,8 +758,8 @@ FASTFortranModelTransformationVisitor >> makeProcedureSeglik: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureSegload: aFASTFortranSegment [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureSegload: aFASTFortranSegment [
 
 	| segxxx parameterNames |
 	self ensureEmptyStream.
@@ -794,7 +778,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegload: aFASTFortranSegme
 	end subroutine {segmentName}_seg_load(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values:
 			          (Dictionary with:
@@ -804,10 +788,10 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegload: aFASTFortranSegme
 	^ segxxx
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureSegloc: segmentName [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureSegloc: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
     function {segmentName}_segloc(this) result(this_loc)
         ! ## Return a location of the "this" pointer
@@ -826,10 +810,10 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegloc: segmentName [
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureSegmentType: segmentName [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureSegmentType: segmentName [
 
-	^ FASTFortran2kFormattedCodeString new
+	^ self model newFormattedCodeString
 		  content: '
     subroutine {segmentName}_seg_type(this, type_name)
         ! ## Return the name of the segment type
@@ -846,8 +830,8 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegmentType: segmentName [
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureSegmov: aFASTFortranSegment [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureSegmov: aFASTFortranSegment [
 
 	| segxxx |
 	self ensureEmptyStream.
@@ -864,7 +848,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegmov: aFASTFortranSegmen
 	end subroutine {segmentName}_segmov(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values:
 			          (Dictionary with:
@@ -874,8 +858,8 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegmov: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureSegpar: aFASTFortranSegment [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureSegpar: aFASTFortranSegment [
 
 	| segxxx parameterNames |
 	self ensureEmptyStream.
@@ -894,7 +878,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegpar: aFASTFortranSegmen
 	end subroutine {segmentName}_segpar(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values: {
 				          (#segmentName -> aFASTFortranSegment name).
@@ -905,8 +889,8 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegpar: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureSegprt: aFASTFortranSegment [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureSegprt: aFASTFortranSegment [
 
 	| segxxx parameterNames |
 	self ensureEmptyStream.
@@ -924,7 +908,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegprt: aFASTFortranSegmen
 	end subroutine {segmentName}_segprt(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values:
 			          (Dictionary with:
@@ -934,8 +918,8 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegprt: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureSegstore: aFASTFortranSegment [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureSegstore: aFASTFortranSegment [
 
 	| segxxx parameterNames |
 	self ensureEmptyStream.
@@ -953,7 +937,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegstore: aFASTFortranSegm
 	end subroutine {segmentName}_seg_store(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values:
 			          (Dictionary with:
@@ -963,8 +947,8 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegstore: aFASTFortranSegm
 	^ segxxx
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProcedureSegsup: aFASTFortranSegment [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProcedureSegsup: aFASTFortranSegment [
 
 	| segxxx parameterNames |
 	self ensureEmptyStream.
@@ -981,7 +965,7 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegsup: aFASTFortranSegmen
 	end subroutine {segmentName}_segsup(this)
 '.
 
-	segxxx := FASTFortran2kFormattedCodeString new
+	segxxx := self model newFormattedCodeString
 		          content: tmpStream contents;
 		          values:
 			          (Dictionary with:
@@ -991,8 +975,8 @@ FASTFortranModelTransformationVisitor >> makeProcedureSegsup: aFASTFortranSegmen
 	^ segxxx
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProceduresDimensions: aFASTFortranSegment [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProceduresDimensions: aFASTFortranSegment [
 
 	| parameters procedures |
 	parameters := self computeDimensionalExpressions: aFASTFortranSegment.
@@ -1030,8 +1014,8 @@ FASTFortranModelTransformationVisitor >> makeProceduresDimensions: aFASTFortranS
 	^procedures 
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeProgramUnit: programUnits [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeProgramUnit: programUnits [
 
 	| progUnits procedures |
 	progUnits := OrderedCollection new.
@@ -1043,7 +1027,7 @@ FASTFortranModelTransformationVisitor >> makeProgramUnit: programUnits [
 		progUnits add: (FASTFortran2kModule new
 				 name: 'temp_mod';
 				 procedures: procedures;
-				 mooseModel: model;
+				 mooseModel: self model;
 				 yourself) ].
 
 	progUnits add:
@@ -1052,18 +1036,10 @@ FASTFortranModelTransformationVisitor >> makeProgramUnit: programUnits [
 	^ progUnits
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makePuModule: filename [
-	^ FASTFortran2kModule new 
-		name: (($. split: filename) first, '_mod');
-		mooseModel: model;
-		yourself.
-]
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeSegmentModuleProlog [
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeSegmentModuleProlog [
-
-	^ FASTFortran2kSourceCodeString new content: '
+	^ self model newSourceCodeString content: '
 	use ignore_m
 	use contract_m
 	use segment_m
@@ -1074,8 +1050,8 @@ FASTFortranModelTransformationVisitor >> makeSegmentModuleProlog [
 '
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeSegmentTypeName: segmentName [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeSegmentTypeName: segmentName [
 
 	^ FASTFortran2kFormattedCodeString new
 		  content: '
@@ -1086,73 +1062,30 @@ FASTFortranModelTransformationVisitor >> makeSegmentTypeName: segmentName [
 		  values: (Dictionary with: #segmentName -> segmentName)
 ]
 
-{ #category : 'entity creation' }
-FASTFortranModelTransformationVisitor >> makeTypeDefinition: aFASTFortranSegment [
+{ #category : 'helpers - segment' }
+FASTFortranSegmentTransformationVisitor >> makeTypeDefinition: aFASTFortranSegment [
 
 	| segment visitor |
-	segment := FASTFortran2kDerivedTypeDefinition new
-		           name: aFASTFortranSegment name;
-		           derivedTypeComponents: OrderedCollection new.
+	segment := self model newDerivedTypeDefinition
+		           name: aFASTFortranSegment name.
 
-	visitor := FASTEsopeSegmentVisitor new.
+	visitor := FASTEsopeSegmentVisitor new
+		model: self model.
 
 	aFASTFortranSegment statements do: [ :declarationStatement |
-		segment derivedTypeComponents addAll:
+		segment derivedTypeComponents:
 			(declarationStatement accept: visitor) ].
-
 
 	^segment
 ]
 
-{ #category : 'accessing' }
-FASTFortranModelTransformationVisitor >> model [
-
-	^ model
-]
-
-{ #category : 'helpers' }
-FASTFortranModelTransformationVisitor >> programFile: programFile in: filename modules: programUnits [
-
-	| puModule puMain |
-
-	puModule := OrderedCollection new.
-	puMain := nil.
-
-	programUnits do: [ :progUnit |
-		(progUnit class = FASTFortran2kProgramMain)
-			ifTrue: [ puMain := progUnit  ]
-			ifFalse: [ puModule add: progUnit ]
-	].
-
-	puModule ifNotEmpty: [
-		programFile addProgramUnit: 
-			((self makePuModule: programFile)
-					procedures: programUnits;
-					yourself)
-	].
-
-	puMain ifNotNil: [ programFile addProgramUnit: puMain ].
-
-	self addUsesIn: puMain file: filename and: puModule
-]
-
 { #category : 'visiting' }
-FASTFortranModelTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsopeIncludeStatement [
-
-	| famixProgramUnit f2kProgramUnit |
-	
-	famixProgramUnit := aFASTEsopeIncludeStatement statementContainer fastBehaviouralParent famix.
-	f2kProgramUnit := stack top.
-	famixProgramUnit includes halt
-]
-
-{ #category : 'visiting' }
-FASTFortranModelTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
+FASTFortranSegmentTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
 
 	| module segmentName |
 	segmentName := aFASTEsopeSegmentNode name.
 
-	module := FASTFortran2kModule new name: segmentName , '_m'.
+	module := self model newModule name: segmentName , '_mod'.
 	module addProcedure: (self makeProcedureSegini2: aFASTEsopeSegmentNode).
 	module procedures addAll:
 		(self makeProceduresDimensions: aFASTEsopeSegmentNode).
@@ -1168,6 +1101,7 @@ FASTFortranModelTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmen
 				 (self makeProcedureIgnore: segmentName).
 				 (self makeProcedureAssignPointerToPointer: segmentName).
 				 (self makeProcedureSegmentType: segmentName).
+				 (self makeProcedureSegini: aFASTEsopeSegmentNode).
 				 (self makeProcedureSegcop: aFASTEsopeSegmentNode).
 				 (self makeProcedureSegmov: aFASTEsopeSegmentNode).
 				 (self makeProcedureSegadj: aFASTEsopeSegmentNode).
@@ -1182,426 +1116,17 @@ FASTFortranModelTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmen
 	^ module
 ]
 
-{ #category : 'visiting - expressions' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranAssignmentExpression: anAssignmentExpressionNode [
+{ #category : 'visiting' }
+FASTFortranSegmentTransformationVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
 
-	| variable expression |
-	variable := anAssignmentExpressionNode variable accept: self.
-	expression := anAssignmentExpressionNode expression accept: self.
-
-	^ FASTFortran2kAssignmentExpression new
-		  variable: variable;
-		  expression: expression;
-		  mooseModel: model;
-		  yourself
-]
-
-{ #category : 'visiting statement' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranAssignmentStatement: anAssignmentStatementNode [
-
-	^ FASTFortran2kAssignmentStatement new
-		  variable: (anAssignmentStatementNode variable accept: self);
-		  expression: (anAssignmentStatementNode expression accept: self);
-		  "migrateFrom: anAssignmentStatementNode;"
-		  mooseModel: model;
-		  yourself
+	^self model newDerivedTypeComponent
+		type: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
+		declarators: (self visitFASTFortranList: aFASTFortranVariableDeclarationStatement declarators) ;
+		yourself
 ]
 
 { #category : 'visiting' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranAsterisk: aFASTFortranAsterisk [
-
-	^ FASTFortran2kAsterisk new mooseModel: model
-]
-
-{ #category : 'visiting - expressions' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranBinaryExpression: aBinaryExpresionNode [
-
-	^ FASTFortran2kBinaryExpression new
-		  operator: aBinaryExpresionNode operator;
-		  leftOperand: (aBinaryExpresionNode leftOperand accept: self);
-		  rightOperand: (aBinaryExpresionNode rightOperand accept: self);
-		  mooseModel: model;
-		  yourself
-]
-
-{ #category : 'visiting - expressions' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranBooleanLiteral: aBooleanLiteralNode [
-
-	^ FASTFortran2kBooleanLiteral new
-		  primitiveValue: aBooleanLiteralNode primitiveValue;
-		  mooseModel: model;
-		  yourself
-]
-
-{ #category : 'visiting statement' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranCallStatement: aFASTFortranCallStatement [
-
-	
-	| callStatement callerProgramFile calledProgramFile |
-
-	callStatement := FASTFortran2kCallStatement new
-		name: aFASTFortranCallStatement name;
-		arguments: (aFASTFortranCallStatement arguments
-				collect: [ :argument | argument accept: self ]
-		);
-		mooseModel: model;
-		yourself.
-
-	callerProgramFile := aFASTFortranCallStatement famix sender programFile.
-	calledProgramFile := aFASTFortranCallStatement famix candidates anyOne programFile.
-	(callerProgramFile filename = calledProgramFile filename)
-	ifFalse: [ useNeeded add: callerProgramFile -> calledProgramFile ].
-
-	^ callStatement
-	
-	
-]
-
-{ #category : 'visiting - expressions' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranCharacterLiteral: aFASTFortranCharacterLiteral [
-
-	^ FASTFortran2kCharacterLiteral new
-		  primitiveValue: aFASTFortranCharacterLiteral primitiveValue;
-		  mooseModel: model;
-		  yourself
-]
-
-{ #category : 'visiting' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranCharacterType: aFASTFortranCharacterType [
-
-	^ FASTFortran2kCharacterType new size:
-		  (aFASTFortranCharacterType size accept: self)
-]
-
-{ #category : 'visiting' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranComment: aCommentNode [
-
-	^ FASTFortran2kComment new
-		  content: aCommentNode content;
-		  mooseModel: model;
-		  yourself
-]
-
-{ #category : 'visiting statement' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranDoStatement: aDoStatementNode [
-
-	^ FASTFortran2kDoStatement new
-		  loopControl: (aDoStatementNode loopControl accept: self);
-		  statementBlock:
-			  (self visitSatementBlock: aDoStatementNode statementBlock);
-		  mooseModel: model;
-		  yourself
-]
-
-{ #category : 'visiting - programUnits' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranFunction: aFASTFortranFunction [
-
-	| subroutine |
-	subroutine := FASTFortran2kFunction new
-		name: aFASTFortranFunction name;
-		mooseModel: model;
-		yourself.
-		
-	stack push: subroutine.
-	
-	super visitFASTFortranFunction: aFASTFortranFunction.
-	
-	stack pop.
-	^subroutine.
-]
-
-{ #category : 'visiting statement' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranFunctionStatement: aFunctionStatementNode [
-
-
-	| fct |
-	fct := FASTFortran2kInternalFunction new
-		name: aFunctionStatementNode name.
-	
-	fct returnType: (aFunctionStatementNode famix declaredType accept: self).
-		
-	fct	 parameters: (aFunctionStatementNode parameters collect: [:parameter | 
-			FASTFortran2kScalarVariable new 
-				name: parameter name; 
-				mooseModel: model;
-				yourself
-			]).
-		
-	fct statementBlock: FASTFortran2kStatementBlock new.
-
-	aFunctionStatementNode parameters do: [:parameter |
-		fct statementBlock addStatement: (
-			FASTFortran2kVariableDeclarationStatement new
-				type: (parameter famixParameter declaredType accept: self);
-				declarators: { FASTFortran2kVariableDeclarator new 
-					name:  parameter name; 
-					mooseModel: model; 
-					yourself 
-				};
-				mooseModel: model;
-				yourself
-		)
-	].
-
-	
-	fct statementBlock addStatement:	(	
-			FASTFortran2kAssignmentStatement new
-				variable: (FASTFortran2kVariable new name: aFunctionStatementNode name);
-				expression: (aFunctionStatementNode expression accept: self);
-				mooseModel: model;
-				yourself
-			).
-		
-	^fct
-]
-
-{ #category : 'visiting - expressions' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranIntegerLiteral: anIntegerLiteralNode [
-
-	^ FASTFortran2kIntegerLiteral new
-		  primitiveValue: anIntegerLiteralNode primitiveValue;
-		  mooseModel: model;
-		  yourself
-]
-
-{ #category : 'visiting' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranIntegerType: aFASTFortranIntegerType [
-
-	^ FASTFortran2kIntegerType new
-]
-
-{ #category : 'visiting - helpers' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranList: list [
-
-	^ list collect: [ :item | item accept: self ]
-]
-
-{ #category : 'visiting - expressions' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranLoopControlExpression: aLoopControlNode [
-
-	^ FASTFortran2kLoopControlExpression new
-		  init: (self accept: aLoopControlNode init);
-		  limit: (self accept: aLoopControlNode limit);
-		  increment: (self accept: aLoopControlNode increment);
-		  mooseModel: model;
-		  yourself
-]
-
-{ #category : 'visiting statement' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranPrintStatement: aFASTFortranPrintStatement [
-
-	^ FASTFortran2kPrintStatement new
-		  format: (aFASTFortranPrintStatement format accept: self);
-		  arguments:
-			  (aFASTFortranPrintStatement arguments collect: [ :arg |
-					   arg accept: self ]);
-		  mooseModel: model;
-		  yourself
-]
-
-{ #category : 'visiting - programUnits' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranProgramFile: aFASTFortranProgramFile [
-
-	| programFile  programUnits |
-
-	programUnits := OrderedCollection new.
-	useNeeded := OrderedCollection new: 2.
-
-	programFile := FASTFortran2kProgramFile new 
-		"filename: (filename, '90');"
-		mooseModel: model;
-		comments: (
-			aFASTFortranProgramFile comments collect: [ :comment | comment accept: self  ]
-		);
-		yourself.
-
-	aFASTFortranProgramFile programUnit do: [ :progUnit |
-			programUnits add: (progUnit accept: self)
-	].
-
-	self
-		programFile: programFile
-		in: aFASTFortranProgramFile famix filename
-		modules: programUnits.
-
-	^programFile 
-	
- 
-]
-
-{ #category : 'visiting - programUnits' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranProgramMain: aProgramNode [
-
-	| programMain |
-	
-	programMain := FASTFortran2kProgramMain new 
-		name: aProgramNode name;
-		mooseModel: model; 
-		yourself.
-
-	stack push: programMain.
-	
-	programMain statementBlock: (aProgramNode statementBlock accept: self).
-	
-	programMain statementBlock statements
-		detect: [ :statement | statement class = FASTFortran2kImplicitStatement ]
-		ifNone: [ programMain statementBlock statements addFirst: FASTFortran2kImplicitStatement new ].
-
-	stack pop.
-	^programMain
-]
-
-{ #category : 'visiting - expressions' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranRealLiteral: aRealLiteralNode [
-
-	^ FASTFortran2kRealLiteral new
-		  primitiveValue: aRealLiteralNode primitiveValue;
-		  mooseModel: model;
-		  yourself
-]
-
-{ #category : 'visiting' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranRealType: aRealTypeNode [
-
-	^ FASTFortran2kRealType new
-		  mooseModel: model;
-		  yourself
-]
-
-{ #category : 'visiting - expressions' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranScalarVariable: aScalarVariableNode [
-
-	^ FASTFortran2kScalarVariable new
-		  name: aScalarVariableNode name;
-		  mooseModel: model;
-		  yourself
-]
-
-{ #category : 'visiting' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranSegment: aFASTFortranSegment [
-
-	| module segmentName |
-	segmentName := aFASTFortranSegment name.
-
-	module := FASTFortran2kModule new name: segmentName , '_m'.
-	module addProcedure: (self makeProcedureSegini2: aFASTFortranSegment).
-	module procedures addAll:
-		(self makeProceduresDimensions: aFASTFortranSegment).
-
-	module statementBlock:
-		(FASTFortran2kStatementBlock new statements: {
-				 self makeSegmentModuleProlog.
-				 (self makeTypeDefinition: aFASTFortranSegment).
-				 (self makeSegmentTypeName: segmentName).
-				 (self makeBoxedTypeDefinition: segmentName).
-				 (self makeInterfaces: segmentName).
-				 (self makeContainsStatement: segmentName).
-				 (self makeProcedureIgnore: segmentName).
-				 (self makeProcedureAssignPointerToPointer: segmentName).
-				 (self makeProcedureSegmentType: segmentName).
-				 (self makeProcedureSegcop: aFASTFortranSegment).
-				 (self makeProcedureSegmov: aFASTFortranSegment).
-				 (self makeProcedureSegadj: aFASTFortranSegment).
-				 (self makeProcedureSegsup: aFASTFortranSegment).
-				 (self makeProcedureSegprt: aFASTFortranSegment).
-				 (self makeProcedureSegstore: aFASTFortranSegment).
-				 (self makeProcedureSegload: aFASTFortranSegment).
-				 (self makeProcedureSegpar: aFASTFortranSegment).
-				 (self makeProcedureSeglik: aFASTFortranSegment).
-				 (self makeProcedureSegloc: segmentName).
-				 (self makeProcedureBoxed: segmentName) }).
-	^ module
-]
-
-{ #category : 'visiting statement' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranStatementBlock: aFASTFortranStatementBlock [
-
-	| programUnit f2kStatementBlock |
-	programUnit := stack top.
-	f2kStatementBlock := FASTFortran2kStatementBlock new
-		  mooseModel: model;
-		  yourself.
-	
-	
-	aFASTFortranStatementBlock statements
-		do: [ :statement | | f2kStatement |
-			f2kStatement := statement accept: self.
-
-			statement class = FASTFortranFunctionStatement
-				ifFalse: [ f2kStatementBlock addStatement: f2kStatement ]
-				ifTrue:  [ programUnit addInternalProcedure: f2kStatement ]
-		].
-
-	^f2kStatementBlock
-]
-
-{ #category : 'visiting - programUnits' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranSubroutine: aFASTFortranSubroutine [
-
-	| subroutine |
-	subroutine := FASTFortran2kSubroutine new
-		name: aFASTFortranSubroutine name;
-		mooseModel: model;
-		yourself.
-		
-	stack push: subroutine.
-	
-	subroutine statementBlock: (aFASTFortranSubroutine statementBlock accept: self).
-	
-	stack pop.
-	^subroutine.
-]
-
-{ #category : 'visiting statement' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
-
-	^ FASTFortran2kVariableDeclarationStatement new
-		  type: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
-		  mooseModel: model;
-		  yourself
-]
-
-{ #category : 'visiting statement' }
-FASTFortranModelTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
-
-	| varDeclarator |
-	varDeclarator := FASTFortran2kVariableDeclarator new
-		  name: aFASTFortranVariableDeclarator name;
-		  yourself.
-		
-	varDeclarator dimensions:
-		(self visitVariableDeclaratorDimensions: varDeclarator dimensions).
-
-	^varDeclarator 
-]
-
-{ #category : 'visiting' }
-FASTFortranModelTransformationVisitor >> visitFamixF77Type: aFamixF77Type [
-	| aTypeClass |
-	aTypeClass := {
-		#real -> FASTFortran2kRealType.
-		#integer -> FASTFortran2kIntegerType.
-		#character -> FASTFortran2kCharacterType.
-		#logical -> FASTFortran2kLogicalType.
-	} asDictionary at: aFamixF77Type name.
-
-	^aTypeClass new
-		mooseModel: model;
-		yourself.
-]
-
-{ #category : 'visiting statement' }
-FASTFortranModelTransformationVisitor >> visitSatementBlock: statementBlock [
-
-	| statements |
-
-	statements := self visitFASTFortranList: statementBlock statements.
-
-	^ FASTFortran2kStatementBlock new statements: statements
-]
-
-{ #category : 'visiting' }
-FASTFortranModelTransformationVisitor >> visitSegmentAttributes: attributes [
+FASTFortranSegmentTransformationVisitor >> visitSegmentAttributes: attributes [
 
 	| generatedCode |
 	self ensureEmptyStream.
@@ -1622,35 +1147,4 @@ FASTFortranModelTransformationVisitor >> visitSegmentAttributes: attributes [
 	generatedCode := tmpStream contents.
 	self ensureEmptyStream.
 	^ generatedCode
-]
-
-{ #category : 'visiting' }
-FASTFortranModelTransformationVisitor >> visitSementAttributes: attributes [
-
-	| generatedCode |
-	self ensureEmptyStream.
-	attributes do: [ :each |
-		| parameters |
-
-		self flag: #FIXME. "handle parameters in each declaractors dimensions"
-		parameters := each declarators collect: #dimensions.
-
-		parameters ifNotEmpty: [ 
- 		tmpStream
-			<<
-			''	
-			].
-		].
-	generatedCode := tmpStream contents.
-	self ensureEmptyStream.
-	^ generatedCode
-]
-
-{ #category : 'visiting statement' }
-FASTFortranModelTransformationVisitor >> visitVariableDeclaratorDimensions: variableDeclarationsDimensions [
-	
-	^variableDeclarationsDimensions
-		collect: [ :dimension | 
-			dimension accept: self
-		]
 ]

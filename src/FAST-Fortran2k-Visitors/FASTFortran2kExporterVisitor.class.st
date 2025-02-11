@@ -8,6 +8,9 @@ Class {
 	#superclass : 'FASTFortranExporterVisitor',
 	#traits : 'FASTTExporter',
 	#classTraits : 'FASTTExporter classTrait',
+	#instVars : [
+		'modelIn'
+	],
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
 }
@@ -120,6 +123,27 @@ FASTFortran2kExporterVisitor >> defaultOperatorsPrecedence [
 	}
 ]
 
+{ #category : 'exporting' }
+FASTFortran2kExporterVisitor >> export [
+	"visiting each file and export it to corresponding f2k file"
+
+	(self model allWithType: FASTFortran2kProgramFile)
+		do: [ :programFile | | toFilename |
+
+			toFilename := programFile filename.
+			toFilename asFileReference 
+				writeStreamDo: [ :aStream | 
+					programFile programUnit do: [ :programUnit | 
+						programUnit accept: self.
+						aStream << self outputStream contents.
+
+						self flag: 'FIXME: It emptied the outputstream to avoid accumulation'.
+						self outputStream: (WriteStream with: '') 
+					]
+				]
+		]
+]
+
 { #category : 'precedence' }
 FASTFortran2kExporterVisitor >> expressionContextOperator [
 	"lazy accessor"
@@ -177,6 +201,18 @@ FASTFortran2kExporterVisitor >> lowerPrecedence: operator [
 		ifEmpty: [ false ]
 		ifNotEmpty: [ :operatorStack |
 			(self operatorPrecedence: operator) < (self operatorPrecedence: operatorStack top)]
+]
+
+{ #category : 'accessing' }
+FASTFortran2kExporterVisitor >> model [
+
+	^ modelIn
+]
+
+{ #category : 'accessing' }
+FASTFortran2kExporterVisitor >> model: anObject [
+
+	modelIn := anObject
 ]
 
 { #category : 'outputting' }
@@ -289,6 +325,59 @@ FASTFortran2kExporterVisitor >> unindented: aPrintable [
 	self output: aPrintable
 ]
 
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentStatement: aFASTFortran2kAssignmentStatement [ 
+	aFASTFortran2kAssignmentStatement variable accept: self.
+	self << ' = '.
+	aFASTFortran2kAssignmentStatement expression accept: self.
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kAsterisk: aFASTFortran2kAsterisk [
+
+	self << '*'
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kBinaryExpression: aFASTFortran2kBinaryExpression [ 
+	aFASTFortran2kBinaryExpression leftOperand accept: self.
+
+	self 
+		<< ' ';
+		<< aFASTFortran2kBinaryExpression operator;
+		<< ' '.
+
+	aFASTFortran2kBinaryExpression rightOperand accept: self.
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kCallStatement: aFASTFortran2kCallStatement [ 
+	self 
+		<< '      call ';
+		<< aFASTFortran2kCallStatement name.
+
+	self << '('.
+	self visitNodeListSeparatedByCommas: aFASTFortran2kCallStatement arguments.
+	self << ')'.
+	self newLine
+		
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kCharacterLiteral: aFASTFortran2kCharacterLiteral [
+
+	self 
+		<< '''';
+		<< aFASTFortran2kCharacterLiteral primitiveValue;
+		<< ''''
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kCharacterType: aFASTFortran2kCharacterType [
+
+	^ self visitFASTFortranCharacterType: aFASTFortran2kCharacterType
+]
+
 { #category : 'precedence' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedType: aFASTFortran2kDerivedType [
 
@@ -304,6 +393,22 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedType: aFASTFortran2kDer
 { #category : 'precedence' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponent: aFASTFortran2kDerivedTypeComponent [
 
+	^ self visitFASTFortranVariableDeclarationStatement:
+		  aFASTFortran2kDerivedTypeComponent
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDeclaration: aFASTFortran2kDerivedTypeDeclaration [
+
+	^ self visitFASTFortranTypeDeclarationStatement:
+		  aFASTFortran2kDerivedTypeDeclaration
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDefinition: aFASTFortran2kDerivedTypeDefinition [
+
+	^ self visitFASTFortranDerivedType:
+		  aFASTFortran2kDerivedTypeDefinition
 ]
 
 { #category : 'visiting' }
@@ -313,7 +418,54 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFormattedCodeString: aFASTFort
 		 aFASTFortran2kFormattedCodeString values)
 ]
 
+{ #category : 'visiting - programUnits' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFunction [ 
+	aFASTFortran2kFunction returnType 
+		ifNotNil: [ :returnTyppe | returnTyppe accept: self ].
+	
+	self
+		<< ' function '
+		<< aFASTFortran2kFunction name
+		<< '('.
+
+	self visitNodeListSeparatedByCommas: aFASTFortran2kFunction parameters.
+
+	self << ')'.
+	self newLine.
+	
+	aFASTFortran2kFunction statementBlock accept: self.
+
+	self 
+		newLine;
+		<< 'end function ';
+		<< aFASTFortran2kFunction name;
+		newLine
+	
+]
+
 { #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCall [ 
+	self
+		<< aFASTFortran2kFunctionCall name;
+		<< ' ( '.
+
+	self visitNodeListSeparatedByCommas: aFASTFortran2kFunctionCall arguments.
+	self << ' )'
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kIntegerLiteral: aFASTFortran2kIntegerLiteral [
+
+	^ self visitFASTFortranIntegerLiteral: aFASTFortran2kIntegerLiteral
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kIntegerType: aFASTFortran2kIntegerType [
+
+	^ self visitFASTFortranIntegerType: aFASTFortran2kIntegerType
+]
+
+{ #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kModule: aFASTFortranModule [
 
 	| moduleName |
@@ -324,12 +476,33 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kModule: aFASTFortranModule [
 		newLine.
 	aFASTFortranModule statementBlock ifNotNil: [ :statementBlock |
 		statementBlock statements do: [ :each | each accept: self ] ].
+	
+	aFASTFortranModule procedures ifNotEmpty: [ :procedures |
+		self << 'contains'.
+		self newLine.
+		procedures do: [ :procedure | procedure accept: self ].
+		self newLine.
+	].
+	
 	self
 		<< ('end module ' , moduleName);
 		newLine
 ]
 
 { #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kPrintStatement: aFASTFortran2kPrintStatement [ 
+	self
+		<< '     print '.
+	
+	aFASTFortran2kPrintStatement format accept: self.
+	
+	self << ', '.
+	
+	self visitNodeListSeparatedByCommas: aFASTFortran2kPrintStatement arguments.
+	self newLine
+]
+
+{ #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramMain: aFASTFortran2kProgramNode [
 
 	self
@@ -338,6 +511,23 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramMain: aFASTFortran2kPro
 		newLine.
 	
 	self visitFASTFortranTBehaviouralEntity: aFASTFortran2kProgramNode.
+	
+	self 
+		<< 'end program ';
+		<< aFASTFortran2kProgramNode name;
+		newLine
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kRealType: aFASTFortran2kRealType [
+
+	^ self visitFASTFortranRealType: aFASTFortran2kRealType
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kScalarVariable: aFASTFortran2kScalarVariable [ 
+	self 
+		<< aFASTFortran2kScalarVariable name
 ]
 
 { #category : 'visiting' }
@@ -347,14 +537,80 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSourceCodeString: aFASTFortran
 ]
 
 { #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kStatementBlock: aFASTFortran2kStatementBlock [ 
+	aFASTFortran2kStatementBlock statements
+		ifNotNil:[ :statements | 
+			statements do: [ :statement | statement accept: self ]
+		] 
+]
+
+{ #category : 'visiting - programUnits' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kSubroutine: aFASTFortran2kSubroutine [ 
+	self
+		<< 'subroutine ';
+		<< aFASTFortran2kSubroutine name.
+		
+	self visitFASTFortranTWithParameters: aFASTFortran2kSubroutine.
+
+	self newLine.
+
+	self visitFASTFortranTBehaviouralEntity: aFASTFortran2kSubroutine.
+	
+	self 
+		<< 'end subroutine ';
+		<< aFASTFortran2kSubroutine name;
+		newLine
+		
+	
+	
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kUseNoRenamedStatement: aFASTFortran2kUseNoRenamedStatement [
+
+	self << aFASTFortran2kUseNoRenamedStatement name
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kUseOnlyStatement: aFASTFortran2kUseOnlyStatement [ 
+	self
+		<< 'use :: ';
+		<< aFASTFortran2kUseOnlyStatement name;
+		<< ', only: '.
+
+	self visitNodeListSeparatedByCommas: aFASTFortran2kUseOnlyStatement useNoRenamedStatements.
+	
+	aFASTFortran2kUseOnlyStatement useRenamedStatements ifNotNil: [ :useRenamedStatements |  
+		useRenamedStatements ifNotEmpty: [ 
+			self << ', '.
+			self visitNodeListSeparatedByCommas: useRenamedStatements 
+		] 
+	].
+	self newLine 
+	
+	
+	 
+	
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kUseRenamedStatement: aFASTFortran2kUseRenamedStatement [
+
+	self
+		<< aFASTFortran2kUseRenamedStatement alias;
+		<< ' => ';
+		<< aFASTFortran2kUseRenamedStatement name
+]
+
+{ #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUseStatement [
 
 	self << 'use'.
-	aFASTFortran2kUseStatement isIntrinsic ifTrue: [
-		self << ', intrinsic' ].
+	"aFASTFortran2kUseStatement isIntrinsic ifTrue: [
+		self << ', intrinsic' ]."
 	self
 		<< ' :: ';
-		<< aFASTFortran2kUseStatement moduleName.
+		<< aFASTFortran2kUseStatement name.
 
 	aFASTFortran2kUseStatement useRenamedStatements 
 		ifNotNil: [:useRenamedStatement | 
@@ -377,6 +633,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUserDefinedType: aFASTFortran2
 	self << 'type(';
 		<< aFASTFortran2kUserDefinedType name;
 		<< ')'
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarator: aFASTFortran2kVariableDeclarator [
+
+	^ self visitFASTFortranVariableDeclarator:
+		  aFASTFortran2kVariableDeclarator
 ]
 
 { #category : 'visiting' }
@@ -408,8 +671,9 @@ FASTFortran2kExporterVisitor >> visitFASTFortranDerivedType: aFASTFortran2kDeriv
 		<< aFASTFortran2kDerivedType name.
 	self newLine.
 
-	aFASTFortran2kDerivedType attributes do: [ :attribute |
-		attribute accept: self ].
+	aFASTFortran2kDerivedType derivedTypeComponents do: [ :derivedTypeComponent |
+		derivedTypeComponent accept: self 
+	].
 
 	self
 		<< 'end type ';
@@ -424,11 +688,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortranTBehaviouralEntity: aFASTFortran
 	ifNotNil: [ 
 		aFASTFortranTBehaviouralEntity statementBlock statements 
 			do: [ :statement | statement accept: self ]
-	].
-	self
-		<< 'end program ';
-		<< aFASTFortranTBehaviouralEntity name;
-		newLine
+	]
 ]
 
 { #category : 'visiting' }
@@ -436,9 +696,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortranType: aFASTFortran2kType [
 
 	aFASTFortran2kType size 
 		ifNotNil: [ :length |
+				self << '(len='.
 				length class = FASTFortran2kAsterisk
-					ifTrue: [ self << '(len=*)' ]
-					ifFalse: [ length accept: self ] 
+					ifTrue: [ self << '*)' ]
+					ifFalse: [
+						length accept: self.
+						self << ')'
+					]
 		]
 ]
 
