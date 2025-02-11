@@ -9,6 +9,12 @@ A fortran comment
 |---|
 | `container` | `FASTTComment` | `comments` | `FASTTWithComments` | Source code entity containing the comment|
 
+### Other
+| Relation | Origin | Opposite | Type | Comment |
+|---|
+| `derivedTypeComponent` | `FASTFortran2kComment` | `comment` | `FASTFortran2kDerivedTypeComponent` | |
+| `derivedTypeDefinition` | `FASTFortran2kComment` | `comment` | `FASTFortran2kDerivedTypeDefinition` | |
+
 
 ## Properties
 ======================
@@ -27,7 +33,9 @@ Class {
 	#traits : 'FASTTComment + FASTTEntity',
 	#classTraits : 'FASTTComment classTrait + FASTTEntity classTrait',
 	#instVars : [
-		'#content => FMProperty'
+		'#content => FMProperty',
+		'#derivedTypeDefinition => FMOne type: #FASTFortran2kDerivedTypeDefinition opposite: #comment',
+		'#derivedTypeComponent => FMOne type: #FASTFortran2kDerivedTypeComponent opposite: #comment'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -56,4 +64,36 @@ FASTFortran2kComment >> content [
 FASTFortran2kComment >> content: anObject [
 	<generated>
 	content := anObject
+]
+
+{ #category : 'accessing' }
+FASTFortran2kComment >> derivedTypeComponent [
+	"Relation named: #derivedTypeComponent type: #FASTFortran2kDerivedTypeComponent opposite: #comment"
+
+	<generated>
+	<derived>
+	^ derivedTypeComponent
+]
+
+{ #category : 'accessing' }
+FASTFortran2kComment >> derivedTypeComponent: anObject [
+
+	<generated>
+	derivedTypeComponent := anObject
+]
+
+{ #category : 'accessing' }
+FASTFortran2kComment >> derivedTypeDefinition [
+	"Relation named: #derivedTypeDefinition type: #FASTFortran2kDerivedTypeDefinition opposite: #comment"
+
+	<generated>
+	<derived>
+	^ derivedTypeDefinition
+]
+
+{ #category : 'accessing' }
+FASTFortran2kComment >> derivedTypeDefinition: anObject [
+
+	<generated>
+	derivedTypeDefinition := anObject
 ]

@@ -8,7 +8,7 @@ An entity that can contain fortran program units and comments
 | Relation | Origin | Opposite | Type | Comment |
 |---|
 | `comments` | `FASTTWithComments` | `container` | `FASTTComment` | list of comments defined in the entity|
-| `programUnit` | `FASTFortran2kProgramFile` | `parentProgramFile` | `FASTFortran2kProgramUnit` | Program Units in a program file|
+| `programUnits` | `FASTFortran2kProgramFile` | `programFile` | `FASTFortran2kProgramUnit` | Program Units in a program file|
 
 
 ## Properties
@@ -26,7 +26,7 @@ Class {
 	#classTraits : 'FASTTWithComments classTrait',
 	#instVars : [
 		'#filename => FMProperty',
-		'#programUnit => FMMany type: #FASTFortran2kProgramUnit opposite: #parentProgramFile'
+		'#programUnits => FMMany type: #FASTFortran2kProgramUnit opposite: #programFile'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -45,7 +45,7 @@ FASTFortran2kProgramFile class >> annotation [
 { #category : 'adding' }
 FASTFortran2kProgramFile >> addProgramUnit: anObject [
 	<generated>
-	^ self programUnit add: anObject
+	^ self programUnits add: anObject
 ]
 
 { #category : 'accessing' }
@@ -63,25 +63,25 @@ FASTFortran2kProgramFile >> filename: anObject [
 ]
 
 { #category : 'accessing' }
-FASTFortran2kProgramFile >> programUnit [
-	"Relation named: #programUnit type: #FASTFortran2kProgramUnit opposite: #parentProgramFile"
+FASTFortran2kProgramFile >> programUnits [
+	"Relation named: #programUnits type: #FASTFortran2kProgramUnit opposite: #programFile"
 
 	<generated>
 	<FMComment: 'Program Units in a program file'>
 	<derived>
-	^ programUnit
+	^ programUnits
 ]
 
 { #category : 'accessing' }
-FASTFortran2kProgramFile >> programUnit: anObject [
+FASTFortran2kProgramFile >> programUnits: anObject [
 
 	<generated>
-	programUnit value: anObject
+	programUnits value: anObject
 ]
 
 { #category : 'navigation' }
-FASTFortran2kProgramFile >> programUnitGroup [
+FASTFortran2kProgramFile >> programUnitsGroup [
 	<generated>
-	<navigation: 'ProgramUnit'>
-	^ MooseSpecializedGroup withAll: self programUnit asSet
+	<navigation: 'ProgramUnits'>
+	^ MooseSpecializedGroup withAll: self programUnits asSet
 ]

@@ -19,9 +19,3 @@ FASTFortran2kSubroutine class >> annotation [
 	<generated>
 	^ self
 ]
-
-{ #category : 'helpers' }
-FASTFortran2kSubroutine >> inSameFileAs: aFASTFortran2kEntity [
-
-	^self migratedModuleName = aFASTFortran2kEntity migratedModuleName
-]

@@ -252,6 +252,20 @@ FASTFortran2kTEntityCreator >> newDerivedTypeComponent [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newDerivedTypeComponentAccess [
+
+	<generated>
+	^ self add: FASTFortran2kDerivedTypeComponentAccess new
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newDerivedTypeComponentDimension [
+
+	<generated>
+	^ self add: FASTFortran2kDerivedTypeComponentDimension new
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newDerivedTypeDeclaration [
 
 	<generated>
@@ -263,6 +277,13 @@ FASTFortran2kTEntityCreator >> newDerivedTypeDefinition [
 
 	<generated>
 	^ self add: FASTFortran2kDerivedTypeDefinition new
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newDerivedTypeParameter [
+
+	<generated>
+	^ self add: FASTFortran2kDerivedTypeParameter new
 ]
 
 { #category : 'entity creation' }

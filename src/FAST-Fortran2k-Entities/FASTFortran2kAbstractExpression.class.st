@@ -43,17 +43,17 @@ Class {
 	#traits : 'FASTTExpression',
 	#classTraits : 'FASTTExpression classTrait',
 	#instVars : [
-		'#assignementExpressionOwner => FMOne type: #FASTFortran2kFunctionStatement opposite: #expression',
 		'#parentArrayDimensionDeclarator => FMOne type: #FASTFortran2kArrayRange opposite: #upperBound',
 		'#parentArrayExpression => FMOne type: #FASTFortran2kArrayVariable opposite: #indices',
-		'#parentConditionalStatement => FMOne type: #FASTFortran2kConditionalStatement opposite: #condition',
 		'#parentDataStatement => FMOne type: #FASTFortran2kDataGroup opposite: #dataConstants',
-		'#parentGotoAssignedStatement => FMOne type: #FASTFortran2kGoToAssignedStatement opposite: #selectorExpression',
+		'#variableDeclaratorOwner => FMOne type: #FASTFortran2kVariableDeclarator opposite: #expression',
+		'#assignementExpressionOwner => FMOne type: #FASTFortran2kFunctionStatement opposite: #expression',
 		'#parentGotoComputedStatement => FMOne type: #FASTFortran2kGoToComputedStatement opposite: #selectorExpression',
+		'#parentGotoAssignedStatement => FMOne type: #FASTFortran2kGoToAssignedStatement opposite: #selectorExpression',
+		'#parentConditionalStatement => FMOne type: #FASTFortran2kConditionalStatement opposite: #condition',
 		'#parentLoopControlIncrement => FMOne type: #FASTFortran2kLoopControlExpression opposite: #increment',
 		'#parentLoopControlLimit => FMOne type: #FASTFortran2kLoopControlExpression opposite: #limit',
-		'#parentTypeSize => FMOne type: #FASTFortran2kType opposite: #size',
-		'#variableDeclaratorOwner => FMOne type: #FASTFortran2kVariableDeclarator opposite: #expression'
+		'#parentTypeSize => FMOne type: #FASTFortran2kType opposite: #size'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',

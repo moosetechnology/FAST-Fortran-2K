@@ -25,9 +25,9 @@ Class {
 	#superclass : 'FASTFortran2kEntity',
 	#instVars : [
 		'#parentDeclaration => FMOne type: #FASTFortran2kVariableDeclarationStatement opposite: #type',
+		'#typedFunctions => FMOne type: #FASTFortran2kFunction opposite: #returnType',
 		'#parentImplicitRule => FMOne type: #FASTFortran2kImplicitTypingRule opposite: #type',
-		'#size => FMOne type: #FASTFortran2kAbstractExpression opposite: #parentTypeSize',
-		'#typedFunctions => FMOne type: #FASTFortran2kFunction opposite: #returnType'
+		'#size => FMOne type: #FASTFortran2kAbstractExpression opposite: #parentTypeSize'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
