@@ -29,9 +29,9 @@ end module segment_foo_mod
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res filename equals: 'someFile.f90'.
-	self assert: res programUnit size equals: 1.
+	self assert: res programUnits size equals: 1.
 
-	entity := res programUnit anyOne.
+	entity := res programUnits anyOne.
 	self assert: entity class equals: FASTFortran2kProgramMain.
 	self assert: entity name equals: 'demo'.
 	self assert: entity statementBlock statements size equals: 1.    "IMPLICIT NONE statement"
@@ -47,9 +47,9 @@ FASTFortranMainTransformationVisitorTest >> testProgramEmpty [
 	res := fastMainProgram accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res programUnit size equals: 1.
+	self assert: res programUnits size equals: 1.
 
-	res := res programUnit anyOne.
+	res := res programUnits anyOne.
 
 	self assert: res class equals: FASTFortran2kProgramMain.
 	self assert: res name equals: 'demo'.
@@ -80,9 +80,9 @@ end program demo
 	res := fastMainProgram accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res programUnit size equals: 1.
+	self assert: res programUnits size equals: 1.
 
-	res := res programUnit anyOne.
+	res := res programUnits anyOne.
 
 	self assert: res class equals: FASTFortran2kProgramMain.
 	self assert: res name equals: 'demo'.
@@ -127,9 +127,9 @@ end program demo
 	res := fastMainProgram accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res programUnit size equals: 1.
+	self assert: res programUnits size equals: 1.
 
-	res := res programUnit anyOne.
+	res := res programUnits anyOne.
 	
 	self assert: res class equals: FASTFortran2kProgramMain.
 	self assert: res name equals: 'demo'.
@@ -157,7 +157,7 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithAssignementStatement 
 		
 	res := fastMainProgram accept: visitor.
 	
-	res := res programUnit anyOne.
+	res := res programUnits anyOne.
 	self assert: res class equals: FASTFortran2kProgramMain.
 	self assert: res statementBlock statements size equals: 2.
 	
@@ -183,9 +183,9 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithCommandSegini [
 
     res := fastMainProgram accept: visitor.
     
-    self assert: res programUnit size equals: 1.
+    self assert: res programUnits size equals: 1.
 
-    res := res programUnit anyOne.
+    res := res programUnits anyOne.
 
     self assert: res class equals: FASTFortran2kProgramMain.
     self assert: res name equals: 'demo'.
@@ -210,7 +210,7 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithDeclarationStatement 
 
 	res := fastMainProgram accept: visitor.
 
-	res := res programUnit anyOne.
+	res := res programUnits anyOne.
 	self assert: res class equals: FASTFortran2kProgramMain.
 	self assert: res statementBlock statements size equals: 2.
 	
@@ -236,8 +236,8 @@ end program demo
 
 	res := fastMainProgram accept: visitor.
 	
-	self assert: res programUnit size equals: 1.
-	res := res programUnit anyOne.
+	self assert: res programUnits size equals: 1.
+	res := res programUnits anyOne.
 	self assert: res class equals: FASTFortran2kProgramMain.
 
 	self assert: res statementBlock statements size equals: 2.
@@ -266,8 +266,8 @@ C	--------end someFile.f90----------------
 
 	res := fastMainProgram accept: visitor.
 
-	self assert: res programUnit size equals: 1.
-	res := res programUnit anyOne.
+	self assert: res programUnits size equals: 1.
+	res := res programUnits anyOne.
 	self assert: res class equals: FASTFortran2kProgramMain.
 	self assert: res statementBlock statements size equals: 2.
 	
@@ -289,7 +289,7 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithImplicitStatement [
 
 	res := fastMainProgram accept: visitor.
 	
-	res := res programUnit anyOne.
+	res := res programUnits anyOne.
 	self assert: res class equals: FASTFortran2kProgramMain.
 	self assert: res statementBlock statements size equals: 1.
 	
@@ -311,9 +311,9 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithPointeurDeclaration [
 
     res := fastMainProgram accept: visitor.
     
-    self assert: res programUnit size equals: 1.
+    self assert: res programUnits size equals: 1.
 
-    res := res programUnit anyOne.
+    res := res programUnits anyOne.
 
     self assert: res class equals: FASTFortran2kProgramMain.
     self assert: res name equals: 'demo'.
@@ -348,9 +348,9 @@ end program demo
 	res := fastMainProgram accept: visitor.
 	
 	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res programUnit size equals: 1.
+	self assert: res programUnits size equals: 1.
 	
-	entity := res programUnit anyOne.
+	entity := res programUnits anyOne.
 
 	self assert: entity class equals: FASTFortran2kProgramMain.
 	self assert: entity name equals: 'demo'.

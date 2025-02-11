@@ -36,7 +36,7 @@ FASTFortranMainTransformationVisitor >> visitFASTFortranProgramMain: aProgramNod
 
 	programMain := self model newProgramMain 
 		name: aProgramNode name;
-		parentProgramFile: programFile ;
+		programFile: programFile ;
 		yourself.
 
 	stack push: programMain.

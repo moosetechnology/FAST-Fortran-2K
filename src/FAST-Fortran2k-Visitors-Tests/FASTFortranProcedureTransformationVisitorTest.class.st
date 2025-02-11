@@ -15,9 +15,9 @@ FASTFortranProcedureTransformationVisitorTest >> testCreateModule [
 	self assert: module class equals: FASTFortran2kModule.
 	self assert: module name equals: 'someName_mod'.
 	
-	self assert: module parentProgramFile isNotNil.
-	self assert: module parentProgramFile class equals: FASTFortran2kProgramFile.
-	self assert: module parentProgramFile filename equals: 'someName_mod.f90'
+	self assert: module programFile isNotNil.
+	self assert: module programFile class equals: FASTFortran2kProgramFile.
+	self assert: module programFile filename equals: 'someName_mod.f90'
 
 ]
 
@@ -130,9 +130,9 @@ FASTFortranProcedureTransformationVisitorTest >> testFunctionEmpty [
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res filename equals: 'someFile_mod.f90'.
-	self assert: res programUnit size equals: 1.
+	self assert: res programUnits size equals: 1.
 
-	res := res programUnit anyOne.
+	res := res programUnits anyOne.
 	self assert: res class equals: FASTFortran2kModule.
 	self assert: res name equals: 'someFile_mod'.
 	self assert: res statementBlock statements size equals: 1.
@@ -164,9 +164,9 @@ end someFile_mod	"
 	fastProcedures do: [ :pu | res := pu accept: visitor ].
 	
 	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res programUnit size equals: 1.
+	self assert: res programUnits size equals: 1.
 	
-	module := res programUnit anyOne.
+	module := res programUnits anyOne.
 	self assert: module class equals: FASTFortran2kModule.
 	self assert: module name equals: 'someFile_mod'.
 	self assert: module procedures size equals: 2.
@@ -200,9 +200,9 @@ end sub_mod"
 	fastProcedures do: [ :pu | res := pu accept: visitor ].
 	
 	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res programUnit size equals: 1.
-	
-	module := res programUnit anyOne.
+	self assert: res programUnits size equals: 1.
+
+	module := res programUnits anyOne.
 	self assert: module class equals: FASTFortran2kModule.
 	self assert: module procedures size equals: 2.
 
@@ -223,9 +223,9 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithCommandSegadj 
 
     res := fastProcedures anyOne accept: visitor.
     
-    self assert: res programUnit size equals: 1.
+    self assert: res programUnits size equals: 1.
 
-    res := res programUnit anyOne.
+    res := res programUnits anyOne.
 	 self assert: res class equals: FASTFortran2kModule.
 	 self assert: res statementBlock statements size equals: 1.
 	 self assert: res procedures size equals: 1.
@@ -267,9 +267,9 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatem
 	res := fastProcedures anyOne accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res programUnit size equals: 1.
+	self assert: res programUnits size equals: 1.
 
-	res := res programUnit anyOne.
+	res := res programUnits anyOne.
 
 	self assert: res class equals: FASTFortran2kModule.
 	self assert: res procedures size equals: 1.
@@ -306,9 +306,9 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatem
 	res := fastProcedures anyOne accept: visitor.
 
 	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res programUnit size equals: 1.
+	self assert: res programUnits size equals: 1.
 
-	res := res programUnit anyOne.
+	res := res programUnits anyOne.
 
 	self assert: res class equals: FASTFortran2kModule.
 	self assert: res procedures size equals: 1.
@@ -347,9 +347,9 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithPointeurDeclar
 
     res := fastProcedures anyOne accept: visitor.
     
-    self assert: res programUnit size equals: 1.
+    self assert: res programUnits size equals: 1.
 
-    res := res programUnit anyOne.
+    res := res programUnits anyOne.
     self assert: res class equals: FASTFortran2kModule.
 	 self assert: res procedures size equals: 1.
 	 self assert: res procedures anyOne class equals: FASTFortran2kSubroutine.
@@ -385,9 +385,9 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithSegment [
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res filename equals: 'someFile_mod.f90'.
-	self assert: res programUnit size equals: 1.
+	self assert: res programUnits size equals: 1.
 
-	res := res programUnit anyOne.
+	res := res programUnits anyOne.
 	self assert: res class equals: FASTFortran2kModule.
 	self assert: res name equals: 'someFile_mod'.
 	self assert: res statementBlock statements size equals: 1.
@@ -422,9 +422,9 @@ C	--------end someFile_mod.f90----------------
 
 	self assert: res class equals: FASTFortran2kProgramFile.
 	self assert: res filename equals: 'someFile_mod.f90'.
-	self assert: res programUnit size equals: 1.
+	self assert: res programUnits size equals: 1.
 
-	res := res programUnit anyOne.
+	res := res programUnits anyOne.
 	self assert: res class equals: FASTFortran2kModule.
 	self assert: res name equals: 'someFile_mod'.
 	self assert: res statementBlock statements size equals: 1.
