@@ -8,7 +8,7 @@ A fortran program unit is a sequence of statements, terminated by an END stateme
 | Relation | Origin | Opposite | Type | Comment |
 |---|
 | `invokedIn` | `FASTTNamedEntity` | `invoked` | `FASTTInvocation` | Optional invocation where this name is used|
-| `parentProgramFile` | `FASTFortran2kProgramUnit` | `programUnit` | `FASTFortran2kProgramFile` | Parent program file|
+| `programFile` | `FASTFortran2kProgramUnit` | `programUnits` | `FASTFortran2kProgramFile` | Parent program file|
 
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
@@ -34,7 +34,7 @@ Class {
 	#traits : 'FASTTBehaviouralEntity + FASTTEntity + FASTTNamedEntity + FASTTWithComments',
 	#classTraits : 'FASTTBehaviouralEntity classTrait + FASTTEntity classTrait + FASTTNamedEntity classTrait + FASTTWithComments classTrait',
 	#instVars : [
-		'#parentProgramFile => FMOne type: #FASTFortran2kProgramFile opposite: #programUnit'
+		'#programFile => FMOne type: #FASTFortran2kProgramFile opposite: #programUnits'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -51,25 +51,25 @@ FASTFortran2kProgramUnit class >> annotation [
 ]
 
 { #category : 'accessing' }
-FASTFortran2kProgramUnit >> parentProgramFile [
-	"Relation named: #parentProgramFile type: #FASTFortran2kProgramFile opposite: #programUnit"
+FASTFortran2kProgramUnit >> programFile [
+	"Relation named: #programFile type: #FASTFortran2kProgramFile opposite: #programUnits"
 
 	<generated>
 	<FMComment: 'Parent program file'>
 	<container>
-	^ parentProgramFile
+	^ programFile
 ]
 
 { #category : 'accessing' }
-FASTFortran2kProgramUnit >> parentProgramFile: anObject [
+FASTFortran2kProgramUnit >> programFile: anObject [
 
 	<generated>
-	parentProgramFile := anObject
+	programFile := anObject
 ]
 
 { #category : 'navigation' }
-FASTFortran2kProgramUnit >> parentProgramFileGroup [
+FASTFortran2kProgramUnit >> programFileGroup [
 	<generated>
-	<navigation: 'ParentProgramFile'>
-	^ MooseSpecializedGroup with: self parentProgramFile
+	<navigation: 'ProgramFile'>
+	^ MooseSpecializedGroup with: self programFile
 ]

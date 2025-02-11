@@ -9,14 +9,32 @@ I'm a derived type component
 |---|
 | `derivedTypeDefinition` | `FASTFortran2kDerivedTypeComponent` | `derivedTypeComponents` | `FASTFortran2kDerivedTypeDefinition` | |
 
+### Children
+| Relation | Origin | Opposite | Type | Comment |
+|---|
+| `derivedTypeComponentDimensions` | `FASTFortran2kDerivedTypeComponent` | `derivedTypeComponent` | `FASTFortran2kDerivedTypeComponentDimension` | |
 
+### Other
+| Relation | Origin | Opposite | Type | Comment |
+|---|
+| `comment` | `FASTFortran2kDerivedTypeComponent` | `derivedTypeComponent` | `FASTFortran2kComment` | |
+
+
+## Properties
+======================
+
+| Name | Type | Default value | Comment |
+|---|
+| `rank` | `Number` | nil | |
 
 "
 Class {
 	#name : 'FASTFortran2kDerivedTypeComponent',
-	#superclass : 'FASTFortran2kVariableDeclarationStatement',
+	#superclass : 'FASTFortran2kDerivedTypeParameter',
 	#instVars : [
-		'#derivedTypeDefinition => FMOne type: #FASTFortran2kDerivedTypeDefinition opposite: #derivedTypeComponents'
+		'#comment => FMOne type: #FASTFortran2kComment opposite: #derivedTypeComponent',
+		'#derivedTypeComponentDimensions => FMMany type: #FASTFortran2kDerivedTypeComponentDimension opposite: #derivedTypeComponent',
+		'#rank => FMProperty'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -26,10 +44,54 @@ Class {
 { #category : 'meta' }
 FASTFortran2kDerivedTypeComponent class >> annotation [
 
-	<FMClass: #DerivedTypeComponent super: #FASTFortran2kVariableDeclarationStatement>
+	<FMClass: #DerivedTypeComponent super: #FASTFortran2kDerivedTypeParameter>
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
+]
+
+{ #category : 'adding' }
+FASTFortran2kDerivedTypeComponent >> addDerivedTypeComponentDimension: anObject [
+	<generated>
+	^ self derivedTypeComponentDimensions add: anObject
+]
+
+{ #category : 'accessing' }
+FASTFortran2kDerivedTypeComponent >> comment [
+	"Relation named: #comment type: #FASTFortran2kComment opposite: #derivedTypeComponent"
+
+	<generated>
+	^ comment
+]
+
+{ #category : 'accessing' }
+FASTFortran2kDerivedTypeComponent >> comment: anObject [
+
+	<generated>
+	comment := anObject
+]
+
+{ #category : 'accessing' }
+FASTFortran2kDerivedTypeComponent >> derivedTypeComponentDimensions [
+	"Relation named: #derivedTypeComponentDimensions type: #FASTFortran2kDerivedTypeComponentDimension opposite: #derivedTypeComponent"
+
+	<generated>
+	<derived>
+	^ derivedTypeComponentDimensions
+]
+
+{ #category : 'accessing' }
+FASTFortran2kDerivedTypeComponent >> derivedTypeComponentDimensions: anObject [
+
+	<generated>
+	derivedTypeComponentDimensions value: anObject
+]
+
+{ #category : 'navigation' }
+FASTFortran2kDerivedTypeComponent >> derivedTypeComponentDimensionsGroup [
+	<generated>
+	<navigation: 'DerivedTypeComponentDimensions'>
+	^ MooseSpecializedGroup withAll: self derivedTypeComponentDimensions asSet
 ]
 
 { #category : 'accessing' }
@@ -53,4 +115,18 @@ FASTFortran2kDerivedTypeComponent >> derivedTypeDefinitionGroup [
 	<generated>
 	<navigation: 'DerivedTypeDefinition'>
 	^ MooseSpecializedGroup with: self derivedTypeDefinition
+]
+
+{ #category : 'accessing' }
+FASTFortran2kDerivedTypeComponent >> rank [
+
+	<FMProperty: #rank type: #Number>
+	<generated>
+	^ rank
+]
+
+{ #category : 'accessing' }
+FASTFortran2kDerivedTypeComponent >> rank: anObject [
+	<generated>
+	rank := anObject
 ]

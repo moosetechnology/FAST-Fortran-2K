@@ -13,7 +13,13 @@ I represent a derived type definition
 | Relation | Origin | Opposite | Type | Comment |
 |---|
 | `derivedTypeComponents` | `FASTFortran2kDerivedTypeDefinition` | `derivedTypeDefinition` | `FASTFortran2kDerivedTypeComponent` | |
+| `derivedTypeParameters` | `FASTFortran2kDerivedTypeDefinition` | `derivedTypeDefinition` | `FASTFortran2kDerivedTypeParameter` | |
 | `typeBoundProcedures` | `FASTFortran2kDerivedTypeDefinition` | `derivedTypeDefinition` | `FASTFortran2kTypeBoundProcedure` | |
+
+### Other
+| Relation | Origin | Opposite | Type | Comment |
+|---|
+| `comment` | `FASTFortran2kDerivedTypeDefinition` | `derivedTypeDefinition` | `FASTFortran2kComment` | |
 
 
 ## Properties
@@ -35,7 +41,9 @@ Class {
 	#instVars : [
 		'#superType => FMProperty',
 		'#derivedTypeComponents => FMMany type: #FASTFortran2kDerivedTypeComponent opposite: #derivedTypeDefinition',
-		'#typeBoundProcedures => FMMany type: #FASTFortran2kTypeBoundProcedure opposite: #derivedTypeDefinition'
+		'#derivedTypeParameters => FMMany type: #FASTFortran2kDerivedTypeParameter opposite: #derivedTypeDefinition',
+		'#typeBoundProcedures => FMMany type: #FASTFortran2kTypeBoundProcedure opposite: #derivedTypeDefinition',
+		'#comment => FMOne type: #FASTFortran2kComment opposite: #derivedTypeDefinition'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -58,9 +66,30 @@ FASTFortran2kDerivedTypeDefinition >> addDerivedTypeComponent: anObject [
 ]
 
 { #category : 'adding' }
+FASTFortran2kDerivedTypeDefinition >> addDerivedTypeParameter: anObject [
+	<generated>
+	^ self derivedTypeParameters add: anObject
+]
+
+{ #category : 'adding' }
 FASTFortran2kDerivedTypeDefinition >> addTypeBoundProcedure: anObject [
 	<generated>
 	^ self typeBoundProcedures add: anObject
+]
+
+{ #category : 'accessing' }
+FASTFortran2kDerivedTypeDefinition >> comment [
+	"Relation named: #comment type: #FASTFortran2kComment opposite: #derivedTypeDefinition"
+
+	<generated>
+	^ comment
+]
+
+{ #category : 'accessing' }
+FASTFortran2kDerivedTypeDefinition >> comment: anObject [
+
+	<generated>
+	comment := anObject
 ]
 
 { #category : 'accessing' }
@@ -84,6 +113,29 @@ FASTFortran2kDerivedTypeDefinition >> derivedTypeComponentsGroup [
 	<generated>
 	<navigation: 'DerivedTypeComponents'>
 	^ MooseSpecializedGroup withAll: self derivedTypeComponents asSet
+]
+
+{ #category : 'accessing' }
+FASTFortran2kDerivedTypeDefinition >> derivedTypeParameters [
+	"Relation named: #derivedTypeParameters type: #FASTFortran2kDerivedTypeParameter opposite: #derivedTypeDefinition"
+
+	<generated>
+	<derived>
+	^ derivedTypeParameters
+]
+
+{ #category : 'accessing' }
+FASTFortran2kDerivedTypeDefinition >> derivedTypeParameters: anObject [
+
+	<generated>
+	derivedTypeParameters value: anObject
+]
+
+{ #category : 'navigation' }
+FASTFortran2kDerivedTypeDefinition >> derivedTypeParametersGroup [
+	<generated>
+	<navigation: 'DerivedTypeParameters'>
+	^ MooseSpecializedGroup withAll: self derivedTypeParameters asSet
 ]
 
 { #category : 'accessing' }

@@ -22,7 +22,7 @@ FASTFortranProcedureTransformationVisitor >> createModule: moduleName [
 	
 	self model newProgramFile
 		filename: (moduleName , '.f90') ;
-		programUnit: {  module } ;
+		programUnits: {  module } ;
 		yourself.
 
 	^module
@@ -67,7 +67,7 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 
 	stack pop.
 
-	^module parentProgramFile
+	^module programFile
 ]
 
 { #category : 'visiting - programUnits' }
@@ -89,5 +89,5 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFo
 
 	stack pop.
 
-	^module parentProgramFile
+	^module programFile
 ]

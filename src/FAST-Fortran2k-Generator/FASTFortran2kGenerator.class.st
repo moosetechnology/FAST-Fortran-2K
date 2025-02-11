@@ -162,7 +162,10 @@ Class {
 		'classDeclarationStatement',
 		'sourceCodeString',
 		'formattedCodeString',
-		'derivedTypeDefinition'
+		'derivedTypeDefinition',
+		'derivedTypeComponentAccess',
+		'derivedTypeComponentDimension',
+		'derivedTypeParameter'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -221,6 +224,14 @@ FASTFortran2kGenerator >> defineClasses2k [
 	derivedTypeComponent := self
 		                        newClassNamed: #DerivedTypeComponent
 		                        comment: 'I''m a derived type component'.
+	
+	derivedTypeComponentDimension := self newClassNamed: #DerivedTypeComponentDimension.
+	derivedTypeParameter := self newClassNamed: #DerivedTypeParameter.
+	
+	derivedTypeComponentAccess := self
+		                   newClassNamed: #DerivedTypeComponentAccess
+		                   comment:
+		                   'I represent an access to object % field in derived type (therefore an expression)'.
 
 	derivedTypeDeclarationStatement := self
 		                                   newClassNamed:
@@ -725,8 +736,14 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	
 	derivedTypeDeclarationStatement --|> variableDeclarationStatement.
 	classDeclarationStatement --|> variableDeclarationStatement.
+	derivedTypeParameter --|> variableDeclarationStatement.
 	
-	derivedTypeComponent --|> variableDeclarationStatement.
+	derivedTypeComponent --|> derivedTypeParameter.
+
+	derivedTypeComponentDimension --|> abstractExpression.
+	derivedTypeComponentDimension --|> tNamedEntity.
+
+	derivedTypeComponentAccess --|> variable.
 	
 	importStatement --|> abstractStatement.
 	
@@ -802,6 +819,8 @@ FASTFortran2kGenerator >> defineProperties [
 		'End of character range for implicit rule'.
 
 	(labelReference property: #label type: #String) comment: 'The value of the label. The value is an integer literal, stored in a String'.
+	
+	(programFile property: #filename type: #String).
 
 	(returnStatement property: #alternateReturnLabel type: #String)
 		comment: 'Optional. Expression of type INTEGER or REAL'.
@@ -826,6 +845,8 @@ FASTFortran2kGenerator >> defineProperties2k [
 
 	(derivedTypeDefinition property: #superType type: #String) comment:
 		'I represent the name of the super type'.
+
+	(derivedTypeComponent property: #rank type: #Number).
 		
 	(interface property: #isAbstractInterface type: #Boolean)
 		comment: 'Im abstract ?'.
@@ -834,8 +855,6 @@ FASTFortran2kGenerator >> defineProperties2k [
 		comment: 'The source code string to export'.
 	(formattedCodeString property: #values type: #Object)
 		comment: 'Values of the variables to format the string'.
-	
-	(programFile property: #filename type: #String).
 	
 	(typeBoundProcedure property: #alias type: #String)
 		comment: 'I represent the alias name of the procedure'.
@@ -974,9 +993,9 @@ FASTFortran2kGenerator >> defineRelations [
 		'Loop control limit value')
 	<>- (abstractExpression property: #parentLoopControlLimit).
 
-	((programFile property: #programUnit) comment:
+	((programFile property: #programUnits) comment:
 		 'Program Units in a program file')
-	<>-* ((programUnit property: #parentProgramFile) comment:
+	<>-* ((programUnit property: #programFile) comment:
 			 'Parent program file').
 
 	((type property: #size) comment: 'a data size in bytes')
@@ -998,7 +1017,18 @@ FASTFortran2kGenerator >> defineRelations [
 FASTFortran2kGenerator >> defineRelations2k [
 
 	derivedTypeDefinition <>-* derivedTypeComponent.
+	derivedTypeDefinition <>-* derivedTypeParameter.
 	derivedTypeDefinition <>-* typeBoundProcedure.
+	derivedTypeDefinition - comment.
+
+	derivedTypeComponent <>-* derivedTypeComponentDimension.
+	derivedTypeComponent - comment.
+	
+	(derivedTypeComponentAccess property: #instance)
+	<>- ((variable property: #instanceIn) comment: 'Parent DerivedTypeComponentAccess in which receiver is a instance of derived type').
+
+	(derivedTypeComponentAccess property: #field)
+	<>- ((variable property: #fieldIn) comment: 'Parent DerivedTypeComponentAccess in which receiver is a field').
 	
 	importStatement  <>-* nameEntity.
 

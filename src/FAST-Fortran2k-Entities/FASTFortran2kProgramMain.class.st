@@ -38,12 +38,6 @@ FASTFortran2kProgramMain >> addInternalProcedure: anObject [
 	^ self internalProcedures add: anObject
 ]
 
-{ #category : 'helpers' }
-FASTFortran2kProgramMain >> inSameFileAs: aFASTFortran2kEntity [
-
-	^ self migratedModuleName = aFASTFortran2kEntity migratedModuleName
-]
-
 { #category : 'accessing' }
 FASTFortran2kProgramMain >> internalProcedures [
 	"Relation named: #internalProcedures type: #FASTFortran2kInternalProcedure opposite: #programMain"

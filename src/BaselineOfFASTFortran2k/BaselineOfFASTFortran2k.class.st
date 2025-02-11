@@ -27,10 +27,15 @@ BaselineOfFASTFortran2k >> defineDependencies: spec [
 				loads: #('tools');
 				repository: 'github://moosetechnology/FAST:v2/src' ] ;
 
-		baseline: 'FASTFortran'
+		baseline: 'FASTEsope'
 		with: [ spec
-				loads: #('all');
-				repository: 'github://moosetechnology/FAST-Fortran' ]
+				loads: #('default');
+				repository: 'github://moosetechnology/FAST-Esope' ];
+
+		baseline: 'CarrefourEsope'
+		with: [ spec
+				loads: #('default');
+				repository: 'github://moosetechnology/Carrefour-Esope:main' ]
 ]
 
 { #category : 'baselines' }
@@ -48,13 +53,13 @@ BaselineOfFASTFortran2k >> definePackages: spec [
 
 	spec
 		package: 'FAST-Fortran2k-Generator'
-		with: [ spec requires: #( FASTFortran ) ];
+		with: [ spec requires: #( FASTEsope ) ];
 		package: 'FAST-Fortran2k-Entities'
-		with: [ spec requires: #( FAST FASTFortran ) ];
+		with: [ spec requires: #( FAST FASTEsope ) ];
 		package: 'FAST-Fortran2k-Visitors'
-		with: [ spec requires: #( FASTFortran 'FAST-Fortran2k-Entities' ) ];
+		with: [ spec requires: #( FASTEsope 'FAST-Fortran2k-Entities' ) ];
 		package: 'Famix-Esope-Transformator'
-		with: [ spec requires: #( FASTFortran 'FAST-Fortran2k-Visitors' ) ];
+		with: [ spec requires: #( FASTEsope 'FAST-Fortran2k-Visitors' ) ];
 		package: 'FAST-Fortran2k-Visitors-Tests'
-		with: [ spec requires: #( FASTFortran 'FAST-Fortran2k-Visitors' ) ]
+		with: [ spec requires: #( FASTEsope 'FAST-Fortran2k-Visitors' ) ]
 ]
