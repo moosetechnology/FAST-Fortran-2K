@@ -29,7 +29,7 @@ BaselineOfFASTFortran2k >> defineDependencies: spec [
 
 		baseline: 'FASTEsope'
 		with: [ spec
-				loads: #('all');
+				loads: #('default');
 				repository: 'github://moosetechnology/FAST-Esope' ]
 ]
 
