@@ -30,7 +30,12 @@ BaselineOfFASTFortran2k >> defineDependencies: spec [
 		baseline: 'FASTEsope'
 		with: [ spec
 				loads: #('default');
-				repository: 'github://moosetechnology/FAST-Esope' ]
+				repository: 'github://moosetechnology/FAST-Esope' ];
+
+		baseline: 'CarrefourEsope'
+		with: [ spec
+				loads: #('default');
+				repository: 'github://moosetechnology/Carrefour-Esope:main' ]
 ]
 
 { #category : 'baselines' }
