@@ -1,7 +1,7 @@
 SmalltalkCISpec {
   #loading : [
     SCIMetacelloLoadSpec {
-      #baseline : 'FASTFortran',
+      #baseline : 'FASTFortran2k',
       #directory : 'src',
       #load : [ 'all' ]
     }
