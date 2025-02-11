@@ -162,7 +162,10 @@ Class {
 		'classDeclarationStatement',
 		'sourceCodeString',
 		'formattedCodeString',
-		'derivedTypeDefinition'
+		'derivedTypeDefinition',
+		'derivedTypeComponentAccess',
+		'derivedTypeComponentDimension',
+		'derivedTypeParameter'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -974,9 +977,9 @@ FASTFortran2kGenerator >> defineRelations [
 		'Loop control limit value')
 	<>- (abstractExpression property: #parentLoopControlLimit).
 
-	((programFile property: #programUnit) comment:
+	((programFile property: #programUnits) comment:
 		 'Program Units in a program file')
-	<>-* ((programUnit property: #parentProgramFile) comment:
+	<>-* ((programUnit property: #programFile) comment:
 			 'Parent program file').
 
 	((type property: #size) comment: 'a data size in bytes')
