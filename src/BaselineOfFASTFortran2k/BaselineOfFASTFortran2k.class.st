@@ -40,12 +40,11 @@ BaselineOfFASTFortran2k >> defineDependencies: spec [
 
 { #category : 'baselines' }
 BaselineOfFASTFortran2k >> defineGroups: spec [
-
-	^ spec
-		  group: 'default' with: #( core );
-
-		  group: 'core' with: #( 'FAST-Fortran2k-Entities' 'FAST-Fortran2k-Visitors' 'Famix-Esope-Transformator');
-		  group: 'all' with: #( core 'FAST-Fortran2k-Generator' 'FAST-Fortran2k-Visitors-Tests' )
+	
+	spec
+		group: 'default' with: #( core );
+		group: 'core' with: #( 'FAST-Fortran2k-Entities' 'FAST-Fortran2k-Visitors' 'Famix-Esope-Transformator');
+		group: 'all' with: #( core 'FAST-Fortran2k-Generator' 'FAST-Fortran2k-Visitors-Tests' )
 ]
 
 { #category : 'baselines' }
@@ -53,13 +52,13 @@ BaselineOfFASTFortran2k >> definePackages: spec [
 
 	spec
 		package: 'FAST-Fortran2k-Generator'
-		with: [ spec requires: #( FASTEsope ) ];
+		with: [ spec requires: #( 'FASTEsope' ) ];
 		package: 'FAST-Fortran2k-Entities'
-		with: [ spec requires: #( FAST FASTEsope ) ];
+		with: [ spec requires: #( 'FAST' 'FASTEsope' ) ];
 		package: 'FAST-Fortran2k-Visitors'
-		with: [ spec requires: #( FASTEsope 'FAST-Fortran2k-Entities' ) ];
+		with: [ spec requires: #( 'CarrefourEsope' 'FAST-Fortran2k-Entities' ) ];
 		package: 'Famix-Esope-Transformator'
-		with: [ spec requires: #( FASTEsope 'FAST-Fortran2k-Visitors' ) ];
+		with: [ spec requires: #( 'FASTEsope' 'CarrefourEsope' 'FAST-Fortran2k-Visitors' ) ];
 		package: 'FAST-Fortran2k-Visitors-Tests'
-		with: [ spec requires: #( FASTEsope 'FAST-Fortran2k-Visitors' ) ]
+		with: [ spec requires: #( 'Famix-Esope-Transformator' 'FAST-Fortran2k-Visitors' ) ]
 ]
