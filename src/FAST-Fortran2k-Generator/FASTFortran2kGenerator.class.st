@@ -1064,7 +1064,9 @@ FASTFortran2kGenerator >> defineRelations [
 { #category : 'definition' }
 FASTFortran2kGenerator >> defineRelations2k [
 
-	derivedTypeDefinition <>-* derivedTypeAbstractField.
+	(derivedTypeDefinition property: #fields) 
+		<>-* (derivedTypeAbstractField property: #parentDerivedType).
+
 	derivedTypeDefinition <>-* typeBoundProcedure.
 	derivedTypeDefinition - comment.
 
