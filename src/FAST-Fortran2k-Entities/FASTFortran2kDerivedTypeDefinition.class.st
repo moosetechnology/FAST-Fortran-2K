@@ -41,7 +41,7 @@ I represent a derived type definition for example:
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `derivedTypeAbstractFields` | `FASTFortran2kDerivedTypeDefinition` | `derivedTypeDefinition` | `FASTFortran2kDerivedTypeAbstractField` | |
+| `fields` | `FASTFortran2kDerivedTypeDefinition` | `parentDerivedType` | `FASTFortran2kDerivedTypeAbstractField` | |
 | `typeBoundProcedures` | `FASTFortran2kDerivedTypeDefinition` | `derivedTypeDefinition` | `FASTFortran2kTypeBoundProcedure` | |
 
 ### Other
@@ -68,7 +68,7 @@ Class {
 	#classTraits : 'FASTTNamedEntity classTrait',
 	#instVars : [
 		'#comment => FMOne type: #FASTFortran2kComment opposite: #derivedTypeDefinition',
-		'#derivedTypeAbstractFields => FMMany type: #FASTFortran2kDerivedTypeAbstractField opposite: #derivedTypeDefinition',
+		'#fields => FMMany type: #FASTFortran2kDerivedTypeAbstractField opposite: #parentDerivedType',
 		'#superType => FMProperty',
 		'#typeBoundProcedures => FMMany type: #FASTFortran2kTypeBoundProcedure opposite: #derivedTypeDefinition'
 	],
@@ -87,9 +87,9 @@ FASTFortran2kDerivedTypeDefinition class >> annotation [
 ]
 
 { #category : 'adding' }
-FASTFortran2kDerivedTypeDefinition >> addDerivedTypeAbstractField: anObject [
+FASTFortran2kDerivedTypeDefinition >> addField: anObject [
 	<generated>
-	^ self derivedTypeAbstractFields add: anObject
+	^ self fields add: anObject
 ]
 
 { #category : 'adding' }
@@ -114,26 +114,26 @@ FASTFortran2kDerivedTypeDefinition >> comment: anObject [
 ]
 
 { #category : 'accessing' }
-FASTFortran2kDerivedTypeDefinition >> derivedTypeAbstractFields [
-	"Relation named: #derivedTypeAbstractFields type: #FASTFortran2kDerivedTypeAbstractField opposite: #derivedTypeDefinition"
+FASTFortran2kDerivedTypeDefinition >> fields [
+	"Relation named: #fields type: #FASTFortran2kDerivedTypeAbstractField opposite: #parentDerivedType"
 
 	<generated>
 	<derived>
-	^ derivedTypeAbstractFields
+	^ fields
 ]
 
 { #category : 'accessing' }
-FASTFortran2kDerivedTypeDefinition >> derivedTypeAbstractFields: anObject [
+FASTFortran2kDerivedTypeDefinition >> fields: anObject [
 
 	<generated>
-	derivedTypeAbstractFields value: anObject
+	fields value: anObject
 ]
 
 { #category : 'navigation' }
-FASTFortran2kDerivedTypeDefinition >> derivedTypeAbstractFieldsGroup [
+FASTFortran2kDerivedTypeDefinition >> fieldsGroup [
 	<generated>
-	<navigation: 'DerivedTypeAbstractFields'>
-	^ MooseSpecializedGroup withAll: self derivedTypeAbstractFields asSet
+	<navigation: 'Fields'>
+	^ MooseSpecializedGroup withAll: self fields asSet
 ]
 
 { #category : 'accessing' }

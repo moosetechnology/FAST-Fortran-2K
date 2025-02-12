@@ -7,7 +7,7 @@ I represent a field (attribute, component,...) for a segment: either DerivedType
 ### Parents
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `derivedTypeDefinition` | `FASTFortran2kDerivedTypeAbstractField` | `derivedTypeAbstractFields` | `FASTFortran2kDerivedTypeDefinition` | |
+| `parentDerivedType` | `FASTFortran2kDerivedTypeAbstractField` | `fields` | `FASTFortran2kDerivedTypeDefinition` | |
 
 
 
@@ -16,7 +16,7 @@ Class {
 	#name : 'FASTFortran2kDerivedTypeAbstractField',
 	#superclass : 'FASTFortran2kVariableDeclarationStatement',
 	#instVars : [
-		'#derivedTypeDefinition => FMOne type: #FASTFortran2kDerivedTypeDefinition opposite: #derivedTypeAbstractFields'
+		'#parentDerivedType => FMOne type: #FASTFortran2kDerivedTypeDefinition opposite: #fields'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -33,24 +33,24 @@ FASTFortran2kDerivedTypeAbstractField class >> annotation [
 ]
 
 { #category : 'accessing' }
-FASTFortran2kDerivedTypeAbstractField >> derivedTypeDefinition [
-	"Relation named: #derivedTypeDefinition type: #FASTFortran2kDerivedTypeDefinition opposite: #derivedTypeAbstractFields"
+FASTFortran2kDerivedTypeAbstractField >> parentDerivedType [
+	"Relation named: #parentDerivedType type: #FASTFortran2kDerivedTypeDefinition opposite: #fields"
 
 	<generated>
 	<container>
-	^ derivedTypeDefinition
+	^ parentDerivedType
 ]
 
 { #category : 'accessing' }
-FASTFortran2kDerivedTypeAbstractField >> derivedTypeDefinition: anObject [
+FASTFortran2kDerivedTypeAbstractField >> parentDerivedType: anObject [
 
 	<generated>
-	derivedTypeDefinition := anObject
+	parentDerivedType := anObject
 ]
 
 { #category : 'navigation' }
-FASTFortran2kDerivedTypeAbstractField >> derivedTypeDefinitionGroup [
+FASTFortran2kDerivedTypeAbstractField >> parentDerivedTypeGroup [
 	<generated>
-	<navigation: 'DerivedTypeDefinition'>
-	^ MooseSpecializedGroup with: self derivedTypeDefinition
+	<navigation: 'ParentDerivedType'>
+	^ MooseSpecializedGroup with: self parentDerivedType
 ]
