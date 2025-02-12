@@ -195,7 +195,7 @@ FASTFortran2kExporterVisitorTest >> testTypeDefinition [
 	| stmt |
 	stmt := FASTFortran2kDerivedTypeDefinition new
 		        name: 'point_t';
-		        derivedTypeComponents: {
+		        fields: {
 				        (FASTFortran2kDerivedTypeComponent new
 					         type:
 						         (FASTFortran2kCharacterType new size:
