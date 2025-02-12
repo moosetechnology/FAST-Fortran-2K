@@ -165,7 +165,8 @@ Class {
 		'derivedTypeDefinition',
 		'derivedTypeComponentAccess',
 		'derivedTypeComponentDimension',
-		'derivedTypeParameter'
+		'derivedTypeParameter',
+		'derivedTypeAbstractField'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -190,6 +191,41 @@ FASTFortran2kGenerator class >> prefix [
 FASTFortran2kGenerator class >> submetamodels [
 
 	^ { FASTMetamodelGenerator }
+]
+
+{ #category : 'definition' }
+FASTFortran2kGenerator >> commentForDerivedTypeDefinition [
+
+	^ 'I represent a derived type definition for example:
+	
+	```fortran
+	!this a general commment
+	public bar
+	type :: bar
+		integer, private ::idim= 0
+		integer, private ::jdim= 0
+		
+		!idata is an integer array of rank 1
+		integer, pointer, public ::idata(:) => null()
+		
+		!jdata is an integer array of rank 2 with non-trivial expression of its dimensions
+		integer, pointer, public ::jdata(:, :) => null()
+	end type bar
+	```
+	
+	it is a translation of this esope segment definition
+	
+	```fortran
+	c this a general commment
+	segment bar
+		C idata is an integer array ofrank 1
+		integeridata(idim)
+	
+		C jdata is an integer array ofrank 2with non-trivial expression of its dimensions
+		integerjdata(jdim + 1, jdim + 2)
+	end segment
+	```
+	'
 ]
 
 { #category : 'definition' }
@@ -218,20 +254,28 @@ FASTFortran2kGenerator >> defineClasses2k [
 		                             '`class(type_name) [, pointer/allocatable/target] [, other_attributes ] :: declarators`'.
 
 	derivedTypeDefinition := self
-		               newClassNamed: #DerivedTypeDefinition
-		               comment: 'I represent a derived type definition'.
+		                         newClassNamed: #DerivedTypeDefinition
+		                         comment:
+		                         self commentForDerivedTypeDefinition.
+
+	derivedTypeAbstractField := self
+		                            newClassNamed: #DerivedTypeAbstractField
+		                            comment:
+		                            'I represent a field (attribute, component,...) for a segment: either DerivedTypeComponent and DerivedTypeParameter'.
 
 	derivedTypeComponent := self
 		                        newClassNamed: #DerivedTypeComponent
 		                        comment: 'I''m a derived type component'.
-	
-	derivedTypeComponentDimension := self newClassNamed: #DerivedTypeComponentDimension.
+
+	derivedTypeComponentDimension := self newClassNamed:
+		                                 #DerivedTypeComponentDimension.
 	derivedTypeParameter := self newClassNamed: #DerivedTypeParameter.
-	
+
 	derivedTypeComponentAccess := self
-		                   newClassNamed: #DerivedTypeComponentAccess
-		                   comment:
-		                   'I represent an access to object % field in derived type (therefore an expression)'.
+		                              newClassNamed:
+		                              #DerivedTypeComponentAccess
+		                              comment:
+		                              'I represent an access to object % field in derived type (therefore an expression)'.
 
 	derivedTypeDeclarationStatement := self
 		                                   newClassNamed:
@@ -283,9 +327,11 @@ FASTFortran2kGenerator >> defineClasses2k [
 	privateStatement := self
 		                    newClassNamed: #PrivateStatement
 		                    comment: 'Im a private statement'.
-		
+
 	sourceCodeString := self newClassNamed: #SourceCodeString comment: ''.
-	formattedCodeString := self newClassNamed: #FormattedCodeString comment: ''.
+	formattedCodeString := self
+		                       newClassNamed: #FormattedCodeString
+		                       comment: ''.
 
 
 	targetVariable := self newClassNamed: #TargetVariable comment: ''.
@@ -736,9 +782,11 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	
 	derivedTypeDeclarationStatement --|> variableDeclarationStatement.
 	classDeclarationStatement --|> variableDeclarationStatement.
-	derivedTypeParameter --|> variableDeclarationStatement.
+
+	derivedTypeAbstractField --|> variableDeclarationStatement.
 	
-	derivedTypeComponent --|> derivedTypeParameter.
+	derivedTypeComponent --|> derivedTypeAbstractField.
+	derivedTypeParameter --|> derivedTypeAbstractField.
 
 	derivedTypeComponentDimension --|> abstractExpression.
 	derivedTypeComponentDimension --|> tNamedEntity.
@@ -1016,14 +1064,15 @@ FASTFortran2kGenerator >> defineRelations [
 { #category : 'definition' }
 FASTFortran2kGenerator >> defineRelations2k [
 
-	derivedTypeDefinition <>-* derivedTypeComponent.
-	derivedTypeDefinition <>-* derivedTypeParameter.
+	(derivedTypeDefinition property: #fields) 
+		<>-* (derivedTypeAbstractField property: #parentDerivedType).
+
 	derivedTypeDefinition <>-* typeBoundProcedure.
 	derivedTypeDefinition - comment.
 
 	derivedTypeComponent <>-* derivedTypeComponentDimension.
 	derivedTypeComponent - comment.
-	
+
 	(derivedTypeComponentAccess property: #instance)
 	<>- ((variable property: #instanceIn) comment: 'Parent DerivedTypeComponentAccess in which receiver is a instance of derived type').
 

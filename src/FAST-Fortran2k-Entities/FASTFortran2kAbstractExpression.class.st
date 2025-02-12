@@ -11,8 +11,8 @@ I am the super class of all Fortran expressions
 | `assignedIn` | `FASTTExpression` | `expression` | `FASTTAssignment` | Optional assignment where this expression is used|
 | `assignementExpressionOwner` | `FASTFortran2kAbstractExpression` | `expression` | `FASTFortran2kFunctionStatement` | The AssignementExpression owner (if possible)|
 | `expressionStatementOwner` | `FASTTExpression` | `expression` | `FASTTExpressionStatement` | The expression statement that own me (if it's the case|
-| `parentArrayDimensionDeclarator` | `FASTFortran2kAbstractExpression` | `upperBound` | `FASTFortran2kArrayRange` | Parent array dimension declarator|
 | `parentArrayDimensionDeclarator` | `FASTFortran2kAbstractExpression` | `lowerBound` | `FASTFortran2kArrayRange` | Parent array dimension declarator|
+| `parentArrayDimensionDeclarator` | `FASTFortran2kAbstractExpression` | `upperBound` | `FASTFortran2kArrayRange` | Parent array dimension declarator|
 | `parentArrayExpression` | `FASTFortran2kAbstractExpression` | `indices` | `FASTFortran2kArrayVariable` | an ArrayVariable expression of which I am an indice|
 | `parentConditionalStatement` | `FASTFortran2kAbstractExpression` | `condition` | `FASTFortran2kConditionalStatement` | Parent conditional statement (if-block, if-logical, ...)|
 | `parentDataStatement` | `FASTFortran2kAbstractExpression` | `dataConstants` | `FASTFortran2kDataGroup` | |

@@ -24,7 +24,7 @@ FASTFortran2kExporterVisitorTest >> segmentBookDefinition [
 
 	^ FASTFortran2kDerivedTypeDefinition new
 		  name: 'book';
-		  derivedTypeComponents: {
+		  fields: {
 				  (FASTFortran2kDerivedTypeComponent new
 					   type: (FASTFortran2kCharacterType new size:
 								    (FASTFortran2kIntegerLiteral new primitiveValue: 40));
@@ -195,7 +195,7 @@ FASTFortran2kExporterVisitorTest >> testTypeDefinition [
 	| stmt |
 	stmt := FASTFortran2kDerivedTypeDefinition new
 		        name: 'point_t';
-		        derivedTypeComponents: {
+		        fields: {
 				        (FASTFortran2kDerivedTypeComponent new
 					         type:
 						         (FASTFortran2kCharacterType new size:

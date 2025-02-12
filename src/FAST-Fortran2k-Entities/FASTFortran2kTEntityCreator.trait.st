@@ -245,6 +245,13 @@ FASTFortran2kTEntityCreator >> newDecodeStatement [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newDerivedTypeAbstractField [
+
+	<generated>
+	^ self add: FASTFortran2kDerivedTypeAbstractField new
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newDerivedTypeComponent [
 
 	<generated>
