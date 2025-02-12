@@ -12,10 +12,7 @@
 "
 Class {
 	#name : 'FASTFortran2kDerivedTypeParameter',
-	#superclass : 'FASTFortran2kVariableDeclarationStatement',
-	#instVars : [
-		'#derivedTypeDefinition => FMOne type: #FASTFortran2kDerivedTypeDefinition opposite: #derivedTypeParameters'
-	],
+	#superclass : 'FASTFortran2kDerivedTypeAbstractField',
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
 	#tag : 'Entities'
@@ -24,31 +21,8 @@ Class {
 { #category : 'meta' }
 FASTFortran2kDerivedTypeParameter class >> annotation [
 
-	<FMClass: #DerivedTypeParameter super: #FASTFortran2kVariableDeclarationStatement>
+	<FMClass: #DerivedTypeParameter super: #FASTFortran2kDerivedTypeAbstractField>
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
-]
-
-{ #category : 'accessing' }
-FASTFortran2kDerivedTypeParameter >> derivedTypeDefinition [
-	"Relation named: #derivedTypeDefinition type: #FASTFortran2kDerivedTypeDefinition opposite: #derivedTypeParameters"
-
-	<generated>
-	<container>
-	^ derivedTypeDefinition
-]
-
-{ #category : 'accessing' }
-FASTFortran2kDerivedTypeParameter >> derivedTypeDefinition: anObject [
-
-	<generated>
-	derivedTypeDefinition := anObject
-]
-
-{ #category : 'navigation' }
-FASTFortran2kDerivedTypeParameter >> derivedTypeDefinitionGroup [
-	<generated>
-	<navigation: 'DerivedTypeDefinition'>
-	^ MooseSpecializedGroup with: self derivedTypeDefinition
 ]

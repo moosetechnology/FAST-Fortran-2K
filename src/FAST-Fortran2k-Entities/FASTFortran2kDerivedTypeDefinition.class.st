@@ -1,5 +1,34 @@
 "
-I represent a derived type definition
+I represent a derived type definition for example:
+	
+	```fortran
+	!this a general commment
+	public bar
+	type :: bar
+		integer, private ::idim= 0
+		integer, private ::jdim= 0
+		
+		!idata is an integer array of rank 1
+		integer, pointer, public ::idata(:) => null()
+		
+		!jdata is an integer array of rank 2 with non-trivial expression of its dimensions
+		integer, pointer, public ::jdata(:, :) => null()
+	end type bar
+	```
+	
+	it is a translation of this esope segment definition
+	
+	```fortran
+	c this a general commment
+	segment bar
+		C idata is an integer array ofrank 1
+		integeridata(idim)
+	
+		C jdata is an integer array ofrank 2with non-trivial expression of its dimensions
+		integerjdata(jdim + 1, jdim + 2)
+	end segment
+	```
+	
 
 ## Relations
 ======================
@@ -12,8 +41,7 @@ I represent a derived type definition
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `derivedTypeComponents` | `FASTFortran2kDerivedTypeDefinition` | `derivedTypeDefinition` | `FASTFortran2kDerivedTypeComponent` | |
-| `derivedTypeParameters` | `FASTFortran2kDerivedTypeDefinition` | `derivedTypeDefinition` | `FASTFortran2kDerivedTypeParameter` | |
+| `derivedTypeAbstractFields` | `FASTFortran2kDerivedTypeDefinition` | `derivedTypeDefinition` | `FASTFortran2kDerivedTypeAbstractField` | |
 | `typeBoundProcedures` | `FASTFortran2kDerivedTypeDefinition` | `derivedTypeDefinition` | `FASTFortran2kTypeBoundProcedure` | |
 
 ### Other
@@ -39,11 +67,10 @@ Class {
 	#traits : 'FASTTNamedEntity',
 	#classTraits : 'FASTTNamedEntity classTrait',
 	#instVars : [
+		'#comment => FMOne type: #FASTFortran2kComment opposite: #derivedTypeDefinition',
+		'#derivedTypeAbstractFields => FMMany type: #FASTFortran2kDerivedTypeAbstractField opposite: #derivedTypeDefinition',
 		'#superType => FMProperty',
-		'#derivedTypeComponents => FMMany type: #FASTFortran2kDerivedTypeComponent opposite: #derivedTypeDefinition',
-		'#derivedTypeParameters => FMMany type: #FASTFortran2kDerivedTypeParameter opposite: #derivedTypeDefinition',
-		'#typeBoundProcedures => FMMany type: #FASTFortran2kTypeBoundProcedure opposite: #derivedTypeDefinition',
-		'#comment => FMOne type: #FASTFortran2kComment opposite: #derivedTypeDefinition'
+		'#typeBoundProcedures => FMMany type: #FASTFortran2kTypeBoundProcedure opposite: #derivedTypeDefinition'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -60,15 +87,9 @@ FASTFortran2kDerivedTypeDefinition class >> annotation [
 ]
 
 { #category : 'adding' }
-FASTFortran2kDerivedTypeDefinition >> addDerivedTypeComponent: anObject [
+FASTFortran2kDerivedTypeDefinition >> addDerivedTypeAbstractField: anObject [
 	<generated>
-	^ self derivedTypeComponents add: anObject
-]
-
-{ #category : 'adding' }
-FASTFortran2kDerivedTypeDefinition >> addDerivedTypeParameter: anObject [
-	<generated>
-	^ self derivedTypeParameters add: anObject
+	^ self derivedTypeAbstractFields add: anObject
 ]
 
 { #category : 'adding' }
@@ -93,49 +114,26 @@ FASTFortran2kDerivedTypeDefinition >> comment: anObject [
 ]
 
 { #category : 'accessing' }
-FASTFortran2kDerivedTypeDefinition >> derivedTypeComponents [
-	"Relation named: #derivedTypeComponents type: #FASTFortran2kDerivedTypeComponent opposite: #derivedTypeDefinition"
+FASTFortran2kDerivedTypeDefinition >> derivedTypeAbstractFields [
+	"Relation named: #derivedTypeAbstractFields type: #FASTFortran2kDerivedTypeAbstractField opposite: #derivedTypeDefinition"
 
 	<generated>
 	<derived>
-	^ derivedTypeComponents
+	^ derivedTypeAbstractFields
 ]
 
 { #category : 'accessing' }
-FASTFortran2kDerivedTypeDefinition >> derivedTypeComponents: anObject [
+FASTFortran2kDerivedTypeDefinition >> derivedTypeAbstractFields: anObject [
 
 	<generated>
-	derivedTypeComponents value: anObject
+	derivedTypeAbstractFields value: anObject
 ]
 
 { #category : 'navigation' }
-FASTFortran2kDerivedTypeDefinition >> derivedTypeComponentsGroup [
+FASTFortran2kDerivedTypeDefinition >> derivedTypeAbstractFieldsGroup [
 	<generated>
-	<navigation: 'DerivedTypeComponents'>
-	^ MooseSpecializedGroup withAll: self derivedTypeComponents asSet
-]
-
-{ #category : 'accessing' }
-FASTFortran2kDerivedTypeDefinition >> derivedTypeParameters [
-	"Relation named: #derivedTypeParameters type: #FASTFortran2kDerivedTypeParameter opposite: #derivedTypeDefinition"
-
-	<generated>
-	<derived>
-	^ derivedTypeParameters
-]
-
-{ #category : 'accessing' }
-FASTFortran2kDerivedTypeDefinition >> derivedTypeParameters: anObject [
-
-	<generated>
-	derivedTypeParameters value: anObject
-]
-
-{ #category : 'navigation' }
-FASTFortran2kDerivedTypeDefinition >> derivedTypeParametersGroup [
-	<generated>
-	<navigation: 'DerivedTypeParameters'>
-	^ MooseSpecializedGroup withAll: self derivedTypeParameters asSet
+	<navigation: 'DerivedTypeAbstractFields'>
+	^ MooseSpecializedGroup withAll: self derivedTypeAbstractFields asSet
 ]
 
 { #category : 'accessing' }

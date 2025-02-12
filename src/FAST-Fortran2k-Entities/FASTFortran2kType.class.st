@@ -9,8 +9,8 @@ I represent Fortran Type statement
 |---|
 | `parentDeclaration` | `FASTFortran2kType` | `type` | `FASTFortran2kVariableDeclarationStatement` | Parent declaration|
 | `parentImplicitRule` | `FASTFortran2kType` | `type` | `FASTFortran2kImplicitTypingRule` | |
-| `typedFunctions` | `FASTFortran2kType` | `returnType` | `FASTFortran2kInternalFunction` | |
 | `typedFunctions` | `FASTFortran2kType` | `returnType` | `FASTFortran2kFunction` | |
+| `typedFunctions` | `FASTFortran2kType` | `returnType` | `FASTFortran2kInternalFunction` | |
 
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
