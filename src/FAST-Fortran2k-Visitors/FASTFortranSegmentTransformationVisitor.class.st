@@ -1073,7 +1073,7 @@ FASTFortranSegmentTransformationVisitor >> makeTypeDefinition: aFASTFortranSegme
 		model: self model.
 
 	aFASTFortranSegment statements do: [ :declarationStatement |
-		segment derivedTypeComponents:
+		segment fields:
 			(declarationStatement accept: visitor) ].
 
 	^segment

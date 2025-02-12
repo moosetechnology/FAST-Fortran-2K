@@ -671,7 +671,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortranDerivedType: aFASTFortran2kDeriv
 		<< aFASTFortran2kDerivedType name.
 	self newLine.
 
-	aFASTFortran2kDerivedType derivedTypeComponents do: [ :derivedTypeComponent |
+	aFASTFortran2kDerivedType fields do: [ :derivedTypeComponent |
 		derivedTypeComponent accept: self 
 	].
 
