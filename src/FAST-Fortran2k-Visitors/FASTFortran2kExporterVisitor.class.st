@@ -402,8 +402,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedType: aFASTFortran2kDer
 { #category : 'precedence' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponent: aFASTFortran2kDerivedTypeComponent [
 
-	^ self visitFASTFortranVariableDeclarationStatement:
-		  aFASTFortran2kDerivedTypeComponent
+	^ self visitFASTFortranVariableDeclarationStatement: aFASTFortran2kDerivedTypeComponent
 ]
 
 { #category : 'visiting' }
@@ -644,7 +643,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUs
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUserDefinedType: aFASTFortran2kUserDefinedType [
 
 	self
-		indented: 'type(';
+		<< 'type(';
 		<< aFASTFortran2kUserDefinedType name;
 		<< ')'
 ]
