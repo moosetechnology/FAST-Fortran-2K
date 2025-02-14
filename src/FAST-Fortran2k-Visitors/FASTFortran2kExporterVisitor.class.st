@@ -325,7 +325,7 @@ FASTFortran2kExporterVisitor >> unindented: aPrintable [
 	self output: aPrintable
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentStatement: aFASTFortran2kAssignmentStatement [ 
 	aFASTFortran2kAssignmentStatement variable accept: self.
 	self << ' = '.
@@ -338,7 +338,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kAsterisk: aFASTFortran2kAsteri
 	self << '*'
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kBinaryExpression: aFASTFortran2kBinaryExpression [ 
 	aFASTFortran2kBinaryExpression leftOperand accept: self.
 
@@ -350,7 +350,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kBinaryExpression: aFASTFortran
 	aFASTFortran2kBinaryExpression rightOperand accept: self.
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kCallStatement: aFASTFortran2kCallStatement [ 
 	self 
 		<< '      call ';
@@ -363,7 +363,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kCallStatement: aFASTFortran2kC
 		
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kCharacterLiteral: aFASTFortran2kCharacterLiteral [
 
 	self 
@@ -443,7 +443,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFuncti
 	
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCall [ 
 	self
 		<< aFASTFortran2kFunctionCall name;
@@ -453,7 +453,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFu
 	self << ' )'
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kIntegerLiteral: aFASTFortran2kIntegerLiteral [
 
 	^ self visitFASTFortranIntegerLiteral: aFASTFortran2kIntegerLiteral
@@ -489,7 +489,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kModule: aFASTFortranModule [
 		newLine
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kPrintStatement: aFASTFortran2kPrintStatement [ 
 	self
 		<< '     print '.
@@ -524,7 +524,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kRealType: aFASTFortran2kRealTy
 	^ self visitFASTFortranRealType: aFASTFortran2kRealType
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kScalarVariable: aFASTFortran2kScalarVariable [ 
 	self 
 		<< aFASTFortran2kScalarVariable name
@@ -536,7 +536,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSourceCodeString: aFASTFortran
 	self << aFASTFortran2kSourceCodeString content
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kStatementBlock: aFASTFortran2kStatementBlock [ 
 	aFASTFortran2kStatementBlock statements
 		ifNotNil:[ :statements | 
@@ -565,13 +565,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSubroutine: aFASTFortran2kSubr
 	
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUseNoRenamedStatement: aFASTFortran2kUseNoRenamedStatement [
 
 	self << aFASTFortran2kUseNoRenamedStatement name
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUseOnlyStatement: aFASTFortran2kUseOnlyStatement [ 
 	self
 		<< 'use :: ';
@@ -593,7 +593,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseOnlyStatement: aFASTFortran
 	
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUseRenamedStatement: aFASTFortran2kUseRenamedStatement [
 
 	self
@@ -602,7 +602,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseRenamedStatement: aFASTFort
 		<< aFASTFortran2kUseRenamedStatement name
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUseStatement [
 
 	self << 'use'.
@@ -706,7 +706,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortranType: aFASTFortran2kType [
 		]
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortranTypeDeclarationStatement: aFASTFortran2kTypeDeclarationStatement [
 
 	self sixSpaces.
@@ -738,7 +738,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortranUserDefinedType: aFASTFortran2kU
 	self << aFASTFortran2kUserDefinedType name
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
 
 	| comma |
@@ -758,7 +758,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortranVariableDeclarationStatement: aF
 	self newLine
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator [
 
 	^ super visitFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator
@@ -769,7 +769,7 @@ FASTFortran2kExporterVisitor >> visitFASTTEntity: aFASTTEntity [
 	^ aFASTTEntity children do: [ :child | child accept: self ]
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTTNumericalLiteral: aFASTTNumericalLiteral [
 
 	self
@@ -786,7 +786,7 @@ FASTFortran2kExporterVisitor >> visitNodeListSeparatedByCommas: aCollection [
 		separatedBy: [ self << ', ' ]
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> vititFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator [
 
 	^ aFASTFortran2kVariableDeclarator name
