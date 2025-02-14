@@ -39,11 +39,11 @@ BaselineOfFASTFortran2k >> definePackages: spec [
 
 	spec
 		package: 'FAST-Fortran2k-Generator'
-		with: [ spec requires: #( 'FAST' 'FASTFortran' 'FASTEsope' ) ];
+		with: [ spec requires: #( 'CarrefourEsope' ) ];
 		package: 'FAST-Fortran2k-Entities'
-		with: [ spec requires: #( 'FAST' 'FASTFortran' 'FASTEsope' ) ];
+		with: [ spec requires: #( 'CarrefourEsope' ) ];
 		package: 'FAST-Fortran2k-Visitors'
-		with: [ spec requires: #( 'CarrefourEsope' 'CarrefourFortran' 'FAST-Fortran2k-Entities' ) ];
+		with: [ spec requires: #( 'FAST-Fortran2k-Entities' ) ];
 		package: 'Famix-Esope-Transformator'
 		with: [ spec requires: #( 'FAST-Fortran2k-Visitors' ) ];
 		package: 'FAST-Fortran2k-Visitors-Tests'
