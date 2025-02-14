@@ -198,29 +198,27 @@ FASTFortran2kExporterVisitorTest >> testTypeDefinition [
 
 	| stmt |
 	stmt := FASTFortran2kDerivedTypeDefinition new
-		        name: 'point_t';
-		        fields: {
-				        (FASTFortran2kDerivedTypeComponent new
-					         type:
-						         (FASTFortran2kCharacterType new size:
-								          FASTFortran2kAsterisk new);
-					         declarators:
-						         { (FASTFortran2kVariableDeclarator new name: 'label') };
-					         yourself).
-				        (FASTFortran2kDerivedTypeComponent new
-					         type: FASTFortran2kRealType new;
-					         declarators: {
-							         (FASTFortran2kVariableDeclarator new name: 'x').
-							         (FASTFortran2kVariableDeclarator new name: 'y') };
-					         yourself) };
-		        yourself.
+		name: 'point_t';
+		fields: {
+			(FASTFortran2kDerivedTypeComponent new
+				type: (FASTFortran2kCharacterType new size: FASTFortran2kAsterisk new) ;
+				declarators: { (FASTFortran2kVariableDeclarator new name: 'label') } ;
+				yourself)
+			.
+			(FASTFortran2kDerivedTypeComponent new
+				type: FASTFortran2kRealType new;
+				declarators: {
+					(FASTFortran2kVariableDeclarator new name: 'x').
+					(FASTFortran2kVariableDeclarator new name: 'y') };
+				yourself) };
+		yourself.
 
 	self
 		assertExport: stmt
 		equals:
 'type :: point_t
-    character(len=*) :: label
-    real :: x, y
+  character(len=*) :: label
+  real :: x, y
 end type point_t
 '
 ]

@@ -630,7 +630,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUs
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUserDefinedType: aFASTFortran2kUserDefinedType [
 
-	self << 'type(';
+	self
+		indented: 'type(';
 		<< aFASTFortran2kUserDefinedType name;
 		<< ')'
 ]
@@ -640,6 +641,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarator: aFASTFortr
 
 	^ self visitFASTFortranVariableDeclarator:
 		  aFASTFortran2kVariableDeclarator
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortranAbstractStatement: aFASTFortranAbstractStatement [
+	"main role is to indent the line"
+
+	self outputIndentPrefix
 ]
 
 { #category : 'visiting' }
@@ -658,7 +666,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortranColon: aFASTFortran2kColon [
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortranDerivedType: aFASTFortran2kDerivedType [
 
-	self << 'type'.
+	self indented: 'type'.
 
 	aFASTFortran2kDerivedType superType ifNotNil: [ :superType |
 		self
@@ -668,16 +676,18 @@ FASTFortran2kExporterVisitor >> visitFASTFortranDerivedType: aFASTFortran2kDeriv
 
 	self
 		<< ' :: ';
-		<< aFASTFortran2kDerivedType name.
-	self newLine.
+		<< aFASTFortran2kDerivedType name ;
+		newLine.
 
+	self indent.
 	aFASTFortran2kDerivedType fields do: [ :derivedTypeComponent |
 		derivedTypeComponent accept: self 
 	].
+	self unindent.
 
 	self
-		<< 'end type ';
-		<< aFASTFortran2kDerivedType name;
+		indented: 'end type ' ;
+		<< aFASTFortran2kDerivedType name ;
 		newLine
 ]
 
