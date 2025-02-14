@@ -50,7 +50,7 @@ FASTFortran2kExporterVisitorTest >> segmentBoxedBookDefinition [
 	^ FASTFortran2kDerivedTypeDefinition new
 		  name: 'boxed_book';
 		  superType: 'segment';
-		  derivedTypeComponents: {
+		  fields: {
 				  (FASTFortran2kDerivedTypeComponent new
 					   type: (FASTFortran2kUserDefinedType new name: 'book');
 					   declarators: { (FASTFortran2kVariableDeclarator new name: 'this') };
@@ -62,7 +62,7 @@ FASTFortran2kExporterVisitorTest >> segmentBoxedBookDefinition [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testImplicitNoneStatement [
 	"
 program demo
@@ -77,13 +77,16 @@ end program demo
 					         { FASTFortran2kImplicitStatement new });
 		        yourself.
 
-	self assertExport: stmt equals: 'program demo
-      implicit none
+	self
+		assertExport: stmt
+		equals:
+'program demo
+  implicit none
 end program demo
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - program-units' }
 FASTFortran2kExporterVisitorTest >> testProgram [
 	"
 program demo
@@ -94,26 +97,29 @@ end program demo
 
 	| stmt |
 	stmt := FASTFortran2kProgramMain new
-		        name: 'demo';
-		        statementBlock:
-			        (FASTFortran2kStatementBlock new statements: {
-						         FASTFortran2kImplicitStatement new.
-						         (FASTFortran2kDerivedTypeDeclaration new
-							          type:
-								          (FASTFortran2kUserDefinedType new name: 'point_t');
-							          declarators:
-								          { (FASTFortran2kVariableDeclarator new name: 'p') };
-							          yourself) });
+		name: 'demo';
+		statementBlock:
+			(FASTFortran2kStatementBlock new
+				statements: {
+					FASTFortran2kImplicitStatement new
+					.
+					(FASTFortran2kDerivedTypeDeclaration new
+						type: (FASTFortran2kUserDefinedType new name: 'point_t') ;
+						declarators: { FASTFortran2kVariableDeclarator new name: 'p' } ;
+						yourself) } ) ;
 		        yourself.
 
-	self assertExport: stmt equals: 'program demo
-      implicit none
-      type (point_t) :: p
+	self
+		assertExport: stmt
+		equals:
+'program demo
+  implicit none
+  type (point_t) :: p
 end program demo
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - program-units' }
 FASTFortran2kExporterVisitorTest >> testProgramEmpty [
 	"
 program demo
@@ -130,21 +136,24 @@ end program demo
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - type-definitions' }
 FASTFortran2kExporterVisitorTest >> testTypeBookDefinition [
 
 	| stmt |
 	stmt := self segmentBookDefinition.
 
-	self assertExport: stmt equals: 'type :: book
-      character(len=40) :: btitle
-      integer :: bpages
-      real :: budc
+	self
+		assertExport: stmt
+		equals: 
+'type :: book
+  character(len=40) :: btitle
+  integer :: bpages
+  real :: budc
 end type book
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - type-definitions' }
 FASTFortran2kExporterVisitorTest >> testTypeBoxedBookDefinition [
 
 	| stmt |
@@ -154,71 +163,79 @@ FASTFortran2kExporterVisitorTest >> testTypeBoxedBookDefinition [
 
 	self
 		assertExport: stmt
-		equals: 'type, extends(segment) :: boxed_book
-      type(book), pointer, private :: this
+		equals:
+'type, extends(segment) :: boxed_book
+  type(book), pointer, private :: this
 end type boxed_book
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testTypeDeclarationStatement [
 
 	| stmt |
 	stmt := FASTFortran2kDerivedTypeDeclaration new
-		        type: (FASTFortran2kUserDefinedType new name: 'point_t');
-		        declarators:
-			        { (FASTFortran2kVariableDeclarator new name: 'p1') };
-		        yourself.
+		 type: (FASTFortran2kUserDefinedType new name: 'point_t') ;
+		 declarators: { (FASTFortran2kVariableDeclarator new name: 'p1') } ;
+		 yourself.
 
-	self assertExport: stmt equals: '      type (point_t) :: p1
+	self
+		assertExport: stmt
+		equals:
+'type (point_t) :: p1
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testTypeDeclarationsStatement [
 
 	| stmt |
 	stmt := FASTFortran2kDerivedTypeDeclaration new
-		        type: (FASTFortran2kUserDefinedType new name: 'point_t');
-		        declarators: {
-				        (FASTFortran2kVariableDeclarator new name: 'p1').
-				        (FASTFortran2kVariableDeclarator new name: 'p2') };
-		        yourself.
+		type: (FASTFortran2kUserDefinedType new name: 'point_t');
+		declarators: {
+			(FASTFortran2kVariableDeclarator new name: 'p1')
+			.
+			(FASTFortran2kVariableDeclarator new name: 'p2') };
+		yourself.
 
-	self assertExport: stmt equals: '      type (point_t) :: p1, p2
+	self
+		assertExport: stmt
+		equals:
+'type (point_t) :: p1, p2
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - type-definitions' }
 FASTFortran2kExporterVisitorTest >> testTypeDefinition [
 
 	| stmt |
 	stmt := FASTFortran2kDerivedTypeDefinition new
-		        name: 'point_t';
-		        fields: {
-				        (FASTFortran2kDerivedTypeComponent new
-					         type:
-						         (FASTFortran2kCharacterType new size:
-								          FASTFortran2kAsterisk new);
-					         declarators:
-						         { (FASTFortran2kVariableDeclarator new name: 'label') };
-					         yourself).
-				        (FASTFortran2kDerivedTypeComponent new
-					         type: FASTFortran2kRealType new;
-					         declarators: {
-							         (FASTFortran2kVariableDeclarator new name: 'x').
-							         (FASTFortran2kVariableDeclarator new name: 'y') };
-					         yourself) };
-		        yourself.
+		name: 'point_t';
+		fields: {
+			(FASTFortran2kDerivedTypeComponent new
+				type: (FASTFortran2kCharacterType new size: FASTFortran2kAsterisk new) ;
+				declarators: { (FASTFortran2kVariableDeclarator new name: 'label') } ;
+				yourself)
+			.
+			(FASTFortran2kDerivedTypeComponent new
+				type: FASTFortran2kRealType new;
+				declarators: {
+					(FASTFortran2kVariableDeclarator new name: 'x').
+					(FASTFortran2kVariableDeclarator new name: 'y') };
+				yourself) };
+		yourself.
 
-	self assertExport: stmt equals: 'type :: point_t
-      character(len=*) :: label
-      real :: x, y
+	self
+		assertExport: stmt
+		equals:
+'type :: point_t
+  character(len=*) :: label
+  real :: x, y
 end type point_t
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementIntrinsicSimple [
 	| stmt |
 
@@ -236,30 +253,24 @@ FASTFortran2kExporterVisitorTest >> testUseStatementIntrinsicSimple [
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithRenaming [
 
 	| stmt |
 	stmt := FASTFortran2kUseOnlyStatement new
-		        name: 'module_name';
-		        useNoRenamedStatements:
-			        { (FASTFortran2kUseNoRenamedStatement new
-				         name: 'int64';
-				         yourself) };
-		        useRenamedStatements:
-			        { (FASTFortran2kUseRenamedStatement new
-				         name: 'int32';
-				         alias: 'i4';
-				         yourself) };
-		        yourself.
+		name: 'module_name';
+		useNoRenamedStatements: { FASTFortran2kUseNoRenamedStatement new name: 'int64' } ;
+		useRenamedStatements: { FASTFortran2kUseRenamedStatement new name: 'int32' ; alias: 'i4' } ;
+		yourself.
 
 	self
 		assertExport: stmt
-		equals: 'use :: module_name, only: int64, i4 => int32
+		equals:
+'use :: module_name, only: int64, i4 => int32
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithRenamings [
 
 	| stmt |
@@ -286,7 +297,7 @@ FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithRenamings [
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithoutRenaming [
 
 	| stmt |
@@ -307,7 +318,7 @@ FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithoutRenaming [
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementSimple [
 
 	| stmt |
@@ -320,7 +331,7 @@ FASTFortran2kExporterVisitorTest >> testUseStatementSimple [
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementWithRenaming [
 	| stmt |
 
@@ -340,7 +351,7 @@ FASTFortran2kExporterVisitorTest >> testUseStatementWithRenaming [
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementWithRenamings [
 
 	| stmt |
@@ -348,21 +359,17 @@ FASTFortran2kExporterVisitorTest >> testUseStatementWithRenamings [
 	self skip: 'TODO'.
 
 	stmt := FASTFortran2kUseStatement new
-		        name: 'module_name';
-		        useRenamedStatements: {
-				        (FASTFortran2kUseRenamedStatement new
-					         name: 'output_unit';
-					         alias: 'output';
-					         yourself).
-				        (FASTFortran2kUseRenamedStatement new
-					         name: 'input_unit';
-					         alias: 'input';
-					         yourself) };
-		        yourself.
+		name: 'module_name';
+		useRenamedStatements: {
+			FASTFortran2kUseRenamedStatement new name: 'output_unit' ; alias: 'output'
+			.
+			FASTFortran2kUseRenamedStatement new name: 'input_unit' ; alias: 'input'
+		} ;
+		yourself.
 
 	self
 		assertExport: stmt
 		equals:
-			'use :: module_name, output => output_unit, input => input_unit
+'use :: module_name, output => output_unit, input => input_unit
 '
 ]
