@@ -94,21 +94,24 @@ end program demo
 
 	| stmt |
 	stmt := FASTFortran2kProgramMain new
-		        name: 'demo';
-		        statementBlock:
-			        (FASTFortran2kStatementBlock new statements: {
-						         FASTFortran2kImplicitStatement new.
-						         (FASTFortran2kDerivedTypeDeclaration new
-							          type:
-								          (FASTFortran2kUserDefinedType new name: 'point_t');
-							          declarators:
-								          { (FASTFortran2kVariableDeclarator new name: 'p') };
-							          yourself) });
+		name: 'demo';
+		statementBlock:
+			(FASTFortran2kStatementBlock new
+				statements: {
+					FASTFortran2kImplicitStatement new
+					.
+					(FASTFortran2kDerivedTypeDeclaration new
+						type: (FASTFortran2kUserDefinedType new name: 'point_t') ;
+						declarators: { FASTFortran2kVariableDeclarator new name: 'p' } ;
+						yourself) } ) ;
 		        yourself.
 
-	self assertExport: stmt equals: 'program demo
-      implicit none
-      type (point_t) :: p
+	self
+		assertExport: stmt
+		equals:
+'program demo
+  implicit none
+  type (point_t) :: p
 end program demo
 '
 ]
@@ -140,9 +143,9 @@ FASTFortran2kExporterVisitorTest >> testTypeBookDefinition [
 		assertExport: stmt
 		equals: 
 'type :: book
-      character(len=40) :: btitle
-      integer :: bpages
-      real :: budc
+  character(len=40) :: btitle
+  integer :: bpages
+  real :: budc
 end type book
 '
 ]
@@ -159,7 +162,7 @@ FASTFortran2kExporterVisitorTest >> testTypeBoxedBookDefinition [
 		assertExport: stmt
 		equals:
 'type, extends(segment) :: boxed_book
-    type(book), pointer, private :: this
+  type(book), pointer, private :: this
 end type boxed_book
 '
 ]

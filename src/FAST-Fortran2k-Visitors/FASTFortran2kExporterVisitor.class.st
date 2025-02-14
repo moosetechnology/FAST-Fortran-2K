@@ -301,6 +301,15 @@ FASTFortran2kExporterVisitor >> outputTopLevelExpression: aBlock [
 ]
 
 { #category : 'outputting' }
+FASTFortran2kExporterVisitor >> sixSpaces [ 
+	"marks the start of a new line
+	 In superclass (Fortran-77 export) lines need 6 spaces at the start.
+	 in Fortran-2k, line are indented more 'naturally' "
+
+	self outputIndentPrefix 
+]
+
+{ #category : 'outputting' }
 FASTFortran2kExporterVisitor >> space [
 
 	self output: String space
@@ -506,15 +515,15 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kPrintStatement: aFASTFortran2k
 FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramMain: aFASTFortran2kProgramNode [
 
 	self
-		<< 'program ';
-		<< aFASTFortran2kProgramNode name;
+		indented: 'program ' ;
+		<< aFASTFortran2kProgramNode name ;
 		newLine.
 	
 	self visitFASTFortranTBehaviouralEntity: aFASTFortran2kProgramNode.
 	
 	self 
-		<< 'end program ';
-		<< aFASTFortran2kProgramNode name;
+		indented: 'end program ' ;
+		<< aFASTFortran2kProgramNode name ;
 		newLine
 ]
 
@@ -537,11 +546,15 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSourceCodeString: aFASTFortran
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kStatementBlock: aFASTFortran2kStatementBlock [ 
+FASTFortran2kExporterVisitor >> visitFASTFortran2kStatementBlock: aFASTFortran2kStatementBlock [
+
 	aFASTFortran2kStatementBlock statements
-		ifNotNil:[ :statements | 
-			statements do: [ :statement | statement accept: self ]
-		] 
+		ifNotNil:[ :statements |
+			self indent.
+			statements do: [ :statement | statement accept: self ].
+			self unindent
+		].
+	
 ]
 
 { #category : 'visiting - programUnits' }
@@ -643,13 +656,6 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarator: aFASTFortr
 		  aFASTFortran2kVariableDeclarator
 ]
 
-{ #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortranAbstractStatement: aFASTFortranAbstractStatement [
-	"main role is to indent the line"
-
-	self outputIndentPrefix
-]
-
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortranAttribute: aFASTFortran2kAttribute [
 
@@ -695,10 +701,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortranDerivedType: aFASTFortran2kDeriv
 FASTFortran2kExporterVisitor >> visitFASTFortranTBehaviouralEntity: aFASTFortranTBehaviouralEntity [
 
 	aFASTFortranTBehaviouralEntity statementBlock 
-	ifNotNil: [ 
-		aFASTFortranTBehaviouralEntity statementBlock statements 
-			do: [ :statement | statement accept: self ]
-	]
+		ifNotNil: [ aFASTFortranTBehaviouralEntity statementBlock accept: self ]
 ]
 
 { #category : 'visiting' }
