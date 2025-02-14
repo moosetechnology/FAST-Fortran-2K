@@ -11,7 +11,6 @@ BaselineOfFASTFortran2k >> baseline: spec [
 	<baseline>
 	spec for: #common do: [
 		spec description: 'FAST Fortran 2003/2008'.
-		spec repository: 'github://moosetechnology/FAST-Fortran-2K:main'.
 		self defineDependencies: spec.
 		self definePackages: spec.
 		self defineGroups: spec ]
@@ -21,29 +20,8 @@ BaselineOfFASTFortran2k >> baseline: spec [
 BaselineOfFASTFortran2k >> defineDependencies: spec [
 
 	spec
-		baseline: 'FAST'
-		with: [ spec
-				loads: #('tools');
-				repository: 'github://moosetechnology/FAST:v2/src' ] ;
-
-		baseline: 'FASTFortran'
-		with: [ spec
-				loads: #('default');
-				repository: 'github://moosetechnology/FAST-Fortran' ];
-
-		baseline: 'FASTEsope'
-		with: [ spec
-				loads: #('default');
-				repository: 'github://moosetechnology/FAST-Esope' ];
-
-		baseline: 'CarrefourFortran'
-		with: [ spec
-				loads: #('default');
-				repository: 'github://moosetechnology/Carrefour-Fortran' ];
-
 		baseline: 'CarrefourEsope'
 		with: [ spec
-				loads: #('default');
 				repository: 'github://moosetechnology/Carrefour-Esope:main' ]
 ]
 
