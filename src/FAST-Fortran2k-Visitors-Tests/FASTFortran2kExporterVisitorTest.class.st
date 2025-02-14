@@ -175,12 +175,14 @@ FASTFortran2kExporterVisitorTest >> testTypeDeclarationStatement [
 
 	| stmt |
 	stmt := FASTFortran2kDerivedTypeDeclaration new
-		        type: (FASTFortran2kUserDefinedType new name: 'point_t');
-		        declarators:
-			        { (FASTFortran2kVariableDeclarator new name: 'p1') };
-		        yourself.
+		 type: (FASTFortran2kUserDefinedType new name: 'point_t') ;
+		 declarators: { (FASTFortran2kVariableDeclarator new name: 'p1') } ;
+		 yourself.
 
-	self assertExport: stmt equals: '      type (point_t) :: p1
+	self
+		assertExport: stmt
+		equals:
+'type (point_t) :: p1
 '
 ]
 
@@ -189,13 +191,17 @@ FASTFortran2kExporterVisitorTest >> testTypeDeclarationsStatement [
 
 	| stmt |
 	stmt := FASTFortran2kDerivedTypeDeclaration new
-		        type: (FASTFortran2kUserDefinedType new name: 'point_t');
-		        declarators: {
-				        (FASTFortran2kVariableDeclarator new name: 'p1').
-				        (FASTFortran2kVariableDeclarator new name: 'p2') };
-		        yourself.
+		type: (FASTFortran2kUserDefinedType new name: 'point_t');
+		declarators: {
+			(FASTFortran2kVariableDeclarator new name: 'p1')
+			.
+			(FASTFortran2kVariableDeclarator new name: 'p2') };
+		yourself.
 
-	self assertExport: stmt equals: '      type (point_t) :: p1, p2
+	self
+		assertExport: stmt
+		equals:
+'type (point_t) :: p1, p2
 '
 ]
 
