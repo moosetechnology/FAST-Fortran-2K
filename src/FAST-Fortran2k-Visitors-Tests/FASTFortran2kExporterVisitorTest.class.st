@@ -50,7 +50,7 @@ FASTFortran2kExporterVisitorTest >> segmentBoxedBookDefinition [
 	^ FASTFortran2kDerivedTypeDefinition new
 		  name: 'boxed_book';
 		  superType: 'segment';
-		  derivedTypeComponents: {
+		  fields: {
 				  (FASTFortran2kDerivedTypeComponent new
 					   type: (FASTFortran2kUserDefinedType new name: 'book');
 					   declarators: { (FASTFortran2kVariableDeclarator new name: 'this') };
@@ -77,8 +77,11 @@ end program demo
 					         { FASTFortran2kImplicitStatement new });
 		        yourself.
 
-	self assertExport: stmt equals: 'program demo
-      implicit none
+	self
+		assertExport: stmt
+		equals:
+'program demo
+  implicit none
 end program demo
 '
 ]
