@@ -258,21 +258,15 @@ FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithRenaming [
 
 	| stmt |
 	stmt := FASTFortran2kUseOnlyStatement new
-		        name: 'module_name';
-		        useNoRenamedStatements:
-			        { (FASTFortran2kUseNoRenamedStatement new
-				         name: 'int64';
-				         yourself) };
-		        useRenamedStatements:
-			        { (FASTFortran2kUseRenamedStatement new
-				         name: 'int32';
-				         alias: 'i4';
-				         yourself) };
-		        yourself.
+		name: 'module_name';
+		useNoRenamedStatements: { FASTFortran2kUseNoRenamedStatement new name: 'int64' } ;
+		useRenamedStatements: { FASTFortran2kUseRenamedStatement new name: 'int32' ; alias: 'i4' } ;
+		yourself.
 
 	self
 		assertExport: stmt
-		equals: 'use :: module_name, only: int64, i4 => int32
+		equals:
+'use :: module_name, only: int64, i4 => int32
 '
 ]
 
@@ -365,21 +359,17 @@ FASTFortran2kExporterVisitorTest >> testUseStatementWithRenamings [
 	self skip: 'TODO'.
 
 	stmt := FASTFortran2kUseStatement new
-		        name: 'module_name';
-		        useRenamedStatements: {
-				        (FASTFortran2kUseRenamedStatement new
-					         name: 'output_unit';
-					         alias: 'output';
-					         yourself).
-				        (FASTFortran2kUseRenamedStatement new
-					         name: 'input_unit';
-					         alias: 'input';
-					         yourself) };
-		        yourself.
+		name: 'module_name';
+		useRenamedStatements: {
+			FASTFortran2kUseRenamedStatement new name: 'output_unit' ; alias: 'output'
+			.
+			FASTFortran2kUseRenamedStatement new name: 'input_unit' ; alias: 'input'
+		} ;
+		yourself.
 
 	self
 		assertExport: stmt
 		equals:
-			'use :: module_name, output => output_unit, input => input_unit
+'use :: module_name, output => output_unit, input => input_unit
 '
 ]
