@@ -62,7 +62,7 @@ FASTFortran2kExporterVisitorTest >> segmentBoxedBookDefinition [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testImplicitNoneStatement [
 	"
 program demo
@@ -83,7 +83,7 @@ end program demo
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - program-units' }
 FASTFortran2kExporterVisitorTest >> testProgram [
 	"
 program demo
@@ -113,7 +113,7 @@ end program demo
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - program-units' }
 FASTFortran2kExporterVisitorTest >> testProgramEmpty [
 	"
 program demo
@@ -130,13 +130,16 @@ end program demo
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - type-definitions' }
 FASTFortran2kExporterVisitorTest >> testTypeBookDefinition [
 
 	| stmt |
 	stmt := self segmentBookDefinition.
 
-	self assertExport: stmt equals: 'type :: book
+	self
+		assertExport: stmt
+		equals: 
+'type :: book
       character(len=40) :: btitle
       integer :: bpages
       real :: budc
@@ -144,7 +147,7 @@ end type book
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - type-definitions' }
 FASTFortran2kExporterVisitorTest >> testTypeBoxedBookDefinition [
 
 	| stmt |
@@ -154,13 +157,14 @@ FASTFortran2kExporterVisitorTest >> testTypeBoxedBookDefinition [
 
 	self
 		assertExport: stmt
-		equals: 'type, extends(segment) :: boxed_book
-      type(book), pointer, private :: this
+		equals:
+'type, extends(segment) :: boxed_book
+    type(book), pointer, private :: this
 end type boxed_book
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testTypeDeclarationStatement [
 
 	| stmt |
@@ -174,7 +178,7 @@ FASTFortran2kExporterVisitorTest >> testTypeDeclarationStatement [
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testTypeDeclarationsStatement [
 
 	| stmt |
@@ -189,7 +193,7 @@ FASTFortran2kExporterVisitorTest >> testTypeDeclarationsStatement [
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - type-definitions' }
 FASTFortran2kExporterVisitorTest >> testTypeDefinition [
 
 	| stmt |
@@ -211,14 +215,17 @@ FASTFortran2kExporterVisitorTest >> testTypeDefinition [
 					         yourself) };
 		        yourself.
 
-	self assertExport: stmt equals: 'type :: point_t
-      character(len=*) :: label
-      real :: x, y
+	self
+		assertExport: stmt
+		equals:
+'type :: point_t
+    character(len=*) :: label
+    real :: x, y
 end type point_t
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementIntrinsicSimple [
 	| stmt |
 
@@ -236,7 +243,7 @@ FASTFortran2kExporterVisitorTest >> testUseStatementIntrinsicSimple [
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithRenaming [
 
 	| stmt |
@@ -259,7 +266,7 @@ FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithRenaming [
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithRenamings [
 
 	| stmt |
@@ -286,7 +293,7 @@ FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithRenamings [
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithoutRenaming [
 
 	| stmt |
@@ -307,7 +314,7 @@ FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithoutRenaming [
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementSimple [
 
 	| stmt |
@@ -320,7 +327,7 @@ FASTFortran2kExporterVisitorTest >> testUseStatementSimple [
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementWithRenaming [
 	| stmt |
 
@@ -340,7 +347,7 @@ FASTFortran2kExporterVisitorTest >> testUseStatementWithRenaming [
 '
 ]
 
-{ #category : 'running' }
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementWithRenamings [
 
 	| stmt |
