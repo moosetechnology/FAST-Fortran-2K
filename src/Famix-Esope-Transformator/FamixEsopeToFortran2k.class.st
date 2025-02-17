@@ -44,7 +44,8 @@ FamixEsopeToFortran2k >> fastModelFor: famixProgUnit in: famixProgFile [
 	famixProgUnit bindFASTModel.
 	fastProgramUnit := famixProgUnit fast.
 
-	fastProgramUnit parentProgramFile: famixProgFile fast.
+	fastProgramUnit 
+		ifNotNil: [ fastProgramUnit programFile: famixProgFile fast ].
 
 	^fastProgramUnit 
 ]
@@ -108,11 +109,13 @@ FamixEsopeToFortran2k >> run [
 
 		famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
 			fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgFile.
+			
+			fastProgramUnit ifNotNil: [ 
+				self migrateToFAST2k: fastProgramUnit.
 
-			self migrateToFAST2k: fastProgramUnit.
-
-			self flag: '#FIXME: fastProgramUnit mooseModel removeAll'
-			"fastProgramUnit mooseModel cleanAll"
+				self flag: '#FIXME: fastProgramUnit mooseModel removeAll'.
+				"fastProgramUnit mooseModel cleanAll"
+			 ]
 		]
 	].
 
