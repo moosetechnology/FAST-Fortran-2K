@@ -107,14 +107,15 @@ FamixEsopeToFortran2k >> run [
 		famixProgFile fast: (FASTFortranProgramFile new
 			filename: famixProgFile filename).
 
+		self flag: '#FIXME: includedFile vs other programUnit '.
 		famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
 			fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgFile.
 			
 			fastProgramUnit ifNotNil: [ 
 				self migrateToFAST2k: fastProgramUnit.
-
-				self flag: '#FIXME: fastProgramUnit mooseModel removeAll'.
-				"fastProgramUnit mooseModel cleanAll"
+				
+				self flag: '#FIXME: cleaning, quid revolveUses'.
+				fastProgramUnit accept: fastProgramUnit mooseModel carrefourBinderCleaner
 			 ]
 		]
 	].
