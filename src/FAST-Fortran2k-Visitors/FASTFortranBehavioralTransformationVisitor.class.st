@@ -177,6 +177,19 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDoStatement: aDoSt
 		  yourself
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranExternalStatement: aFASTFortranExternalStatement [
+	"here we know for sure this will need use statement since it is an external procedure
+	- if a use statement with this name already exists, we do nothing othewise we can create a one
+	We can ask module name with: aFASTFortranExternalStatement famix migratedModuleName
+	
+	"
+	self parentTransformator useNeeded: 
+		aFASTFortranExternalStatement famix programUnit 
+		-> aFASTFortranExternalStatement famix externalProcedure.
+	^nil
+]
+
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFortranFunctionCall [
 
@@ -241,6 +254,21 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement:
 ]
 
 { #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIfBlockStatement: aFASTFortranIfBlockStatement [
+	| ifBlockStatement |
+
+	ifBlockStatement := self model newIfBlockStatement
+		condition: (aFASTFortranIfBlockStatement condition accept: self).
+	
+	aFASTFortranIfBlockStatement thenStatementBlock
+		ifNotNil: [ :thenStatementBlock |
+			ifBlockStatement thenStatementBlock: (thenStatementBlock accept: self)
+		].
+	
+	^ifBlockStatement
+]
+
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranImplicitStatement: aFASTFortranImplicitStatement [
 
 	^nil
@@ -292,6 +320,29 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealType: aRealTyp
 		  yourself
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranReturnStatement: aFASTFortranReturnStatement [
+	| returnStatement |
+
+	returnStatement := self model newReturnStatement.
+	aFASTFortranReturnStatement expression 
+		ifNotNil: [:expression | 	
+			returnStatement expression: (expression accept: self) 
+		].
+
+	aFASTFortranReturnStatement alternateReturnLabel 
+		ifNotNil: [:alternateReturnLabel | 	
+			returnStatement alternateReturnLabel: (alternateReturnLabel accept: self) 
+		].
+
+	aFASTFortranReturnStatement label 
+		ifNotNil: [:label | 	
+			returnStatement label: (label accept: self) 
+		].
+	
+	^returnStatement
+]
+
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranScalarVariable: aScalarVariableNode [
 
@@ -336,6 +387,18 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclaratio
 		  type: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
 		  mooseModel: self model;
 		  yourself
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranWriteStatement: aFASTFortranWriteStatement [
+
+	^self model newWriteStatement
+		ioParameters: (aFASTFortranWriteStatement ioParameters 
+			collect: [ :ioParameter | ioParameter accept: self ]);
+		arguments:
+			(aFASTFortranWriteStatement arguments collect: [ :arg |
+				arg accept: self ]);
+		yourself
 ]
 
 { #category : 'visiting' }
