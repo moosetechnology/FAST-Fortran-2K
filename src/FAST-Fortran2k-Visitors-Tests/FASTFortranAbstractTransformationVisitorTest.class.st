@@ -47,7 +47,7 @@ FASTFortranAbstractTransformationVisitorTest >> functionEmpty [
 		name: 'fct' ;
 		statementBlock: FASTFortranStatementBlock new ;
 		famix: famix ;
-		parentProgramFile: fastProgramFile }.
+		programFile: fastProgramFile }.
 		
 ]
 
@@ -118,7 +118,7 @@ FASTFortranAbstractTransformationVisitorTest >> programEmpty [
 	fastMainProgram := FASTFortranProgramMain new 
 		name: 'demo' ; 
 		statementBlock: FASTFortranStatementBlock new ; 
-		parentProgramFile: fastProgramFile ;
+		programFile: fastProgramFile ;
 		famix: (FamixF77PUMain new
 			name: 'demo' ;
 			programFile: famixProgramFile) ;
@@ -338,7 +338,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithProcedureInvoked [
 		yourself
 	).
 
-	fastProgramFile programUnit: { fastProcedures . fastMainProgram }.
+	fastProgramFile programUnits: { fastProcedures . fastMainProgram }.
 
 ]
 
@@ -485,7 +485,7 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineEmpty [
 		name: 'sub' ;
 		statementBlock: FASTFortranStatementBlock new ;
 		famix: famix ;
-		parentProgramFile: fastProgramFile }
+		programFile: fastProgramFile }
 		
 ]
 
