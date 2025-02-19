@@ -294,6 +294,14 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement:
 ]
 
 { #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranGoToStatement: aFASTFortranGoToStatement [
+
+	^self model newGoToStatement
+		labelReferences: (self visitFASTFortranList: aFASTFortranGoToStatement labelReferences);
+		yourself
+]
+
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIfBlockStatement: aFASTFortranIfBlockStatement [
 	| ifBlockStatement |
 
@@ -334,6 +342,14 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerLiteral: an
 	^ self model newIntegerLiteral
 		  primitiveValue: anIntegerLiteralNode primitiveValue;
 		  yourself
+]
+
+{ #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLabelReference: aFASTFortranLabelReference [
+
+	^self model newLabelReference
+		label: aFASTFortranLabelReference label;
+		yourself.
 ]
 
 { #category : 'visiting - expressions' }

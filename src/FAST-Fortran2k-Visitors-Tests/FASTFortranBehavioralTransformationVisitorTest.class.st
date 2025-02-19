@@ -176,6 +176,22 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kExternalStatemen
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kGoToStatement [
+	| stmt res entity |
+
+	stmt := self gotoStatement: 100.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kGoToStatement.
+	self assert: res labelReferences size equals: 1.
+	
+	entity := res labelReferences anyOne.
+	self assert: entity class equals: FASTFortran2kLabelReference.
+	self assert: entity label equals: '100'
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kIfBlockStatement [
 
 	| stmt res entity |
