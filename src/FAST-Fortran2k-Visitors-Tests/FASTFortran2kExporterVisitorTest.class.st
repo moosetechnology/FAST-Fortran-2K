@@ -26,7 +26,7 @@ FASTFortran2kExporterVisitorTest >> segmentBookDefinition [
 		  name: 'book';
 		  fields: {
 				  (FASTFortran2kDerivedTypeComponent new
-					   type: (FASTFortran2kCharacterType new size:
+					   declaredType: (FASTFortran2kCharacterType new size:
 								    (FASTFortran2kIntegerLiteral new primitiveValue: 40));
 					   declarators:
 						   { (FASTFortran2kVariableDeclarator new name: 'btitle') };
@@ -104,7 +104,7 @@ end program demo
 					FASTFortran2kImplicitStatement new
 					.
 					(FASTFortran2kDerivedTypeDeclaration new
-						type: (FASTFortran2kUserDefinedType new name: 'point_t') ;
+						declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
 						declarators: { FASTFortran2kVariableDeclarator new name: 'p' } ;
 						yourself) } ) ;
 		        yourself.
@@ -175,7 +175,7 @@ FASTFortran2kExporterVisitorTest >> testTypeDeclarationStatement [
 
 	| stmt |
 	stmt := FASTFortran2kDerivedTypeDeclaration new
-		 type: (FASTFortran2kUserDefinedType new name: 'point_t') ;
+		 declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
 		 declarators: { (FASTFortran2kVariableDeclarator new name: 'p1') } ;
 		 yourself.
 
@@ -191,7 +191,7 @@ FASTFortran2kExporterVisitorTest >> testTypeDeclarationsStatement [
 
 	| stmt |
 	stmt := FASTFortran2kDerivedTypeDeclaration new
-		type: (FASTFortran2kUserDefinedType new name: 'point_t');
+		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t');
 		declarators: {
 			(FASTFortran2kVariableDeclarator new name: 'p1')
 			.
@@ -213,12 +213,12 @@ FASTFortran2kExporterVisitorTest >> testTypeDefinition [
 		name: 'point_t';
 		fields: {
 			(FASTFortran2kDerivedTypeComponent new
-				type: (FASTFortran2kCharacterType new size: FASTFortran2kAsterisk new) ;
+				declaredType: (FASTFortran2kCharacterType new size: FASTFortran2kAsterisk new) ;
 				declarators: { (FASTFortran2kVariableDeclarator new name: 'label') } ;
 				yourself)
 			.
 			(FASTFortran2kDerivedTypeComponent new
-				type: FASTFortran2kRealType new;
+				declaredType: FASTFortran2kRealType new;
 				declarators: {
 					(FASTFortran2kVariableDeclarator new name: 'x').
 					(FASTFortran2kVariableDeclarator new name: 'y') };
