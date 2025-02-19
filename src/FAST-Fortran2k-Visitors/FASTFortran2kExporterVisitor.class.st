@@ -133,7 +133,7 @@ FASTFortran2kExporterVisitor >> export [
 			toFilename := programFile filename.
 			toFilename asFileReference 
 				writeStreamDo: [ :aStream | 
-					programFile programUnit do: [ :programUnit | 
+					programFile programUnits do: [ :programUnit | 
 						programUnit accept: self.
 						aStream << self outputStream contents.
 
@@ -428,8 +428,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFormattedCodeString: aFASTFort
 
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFunction [ 
-	aFASTFortran2kFunction returnType 
-		ifNotNil: [ :returnTyppe | returnTyppe accept: self ].
+	aFASTFortran2kFunction declaredType 
+		ifNotNil: [ :declaredType | declaredType accept: self ].
 	
 	self
 		<< ' function '
