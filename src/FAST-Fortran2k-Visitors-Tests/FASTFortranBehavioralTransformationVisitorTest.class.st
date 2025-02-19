@@ -65,6 +65,94 @@ FASTFortranBehavioralTransformationVisitorTest >> testDoStatement [
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kArrayFieldAccessElement [
+	| stmt res |
+
+	self programEmpty.
+
+	stmt := FASTFortranFieldAccess new 
+		pointer: (self scalarVariable: 'aPtr');
+		field: (self arrayVariable: 'aField' indice: 2);
+		yourself.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kDerivedTypeComponentAccess.
+	self assert: res instance class equals: FASTFortran2kScalarVariable.
+	self assert: res instance name equals: 'aPtr'.
+	self assert: res field class equals: FASTFortran2kArrayVariable.
+	self assert: res field name equals: 'aField'.
+	self assert: res field indices size equals: 1.
+	self assert: res field indices anyOne class equals: FASTFortran2kIntegerLiteral.
+	self assert: res field indices anyOne primitiveValue equals: 2.
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kArrayFieldAccessSize [
+	| stmt res expression argument |
+
+	self programEmpty.
+
+	expression := FASTFortranArrayVariable new
+		name: 'aField' ;
+		indices: { self unary: '/' operand: (self integerLiteral: 2) };
+		yourself.
+
+	stmt := FASTFortranFieldAccess new 
+		pointer: (self scalarVariable: 'aPtr');
+		field: expression;
+		yourself.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kFunctionCall.
+	self assert: res name equals: 'size'.
+	self assert: res arguments size equals: 2.
+
+	argument := res arguments first.
+	self assert: argument class equals: FASTFortran2kDerivedTypeComponentAccess.
+	self assert: argument instance class equals: FASTFortran2kScalarVariable.
+	self assert: argument field class equals: FASTFortran2kScalarVariable.
+
+	argument := res arguments second.
+	self assert: argument class equals: FASTFortran2kIntegerLiteral.
+	self assert: argument primitiveValue equals: 2.
+	
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kArrayVariable [
+	| stmt res indice |
+
+	stmt := self arrayVariable: #b indice: '1'.
+	
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kArrayVariable.
+	self assert: res name equals: 'b'.
+	self assert: res indices size equals: 1.
+	
+	indice := res indices anyOne.
+	
+	self assert: indice class equals: FASTFortran2kIntegerLiteral.
+	self assert: indice primitiveValue equals: '1'
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kAsterisk [
+	| stmt res |
+
+	stmt := FASTFortranAsterisk new.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kAsterisk.
+
+	
+	
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kExternalStatement [
 	| stmt res |
 
@@ -135,6 +223,31 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kIfBlockStatement
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kIfLogicalStatement [
+
+	| stmt res entity |
+	stmt := self
+		logicalIf: (self binary: '.lt.' left: #x right: 5)
+		statement: (self assignementStatement: #x value: 5).
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kIfLogicalStatement.
+
+	entity := res condition.
+	self assert: entity class equals: FASTFortran2kBinaryExpression.
+	self assert: entity operator equals: '.lt.'.
+	self assert: entity leftOperand class equals: FASTFortran2kScalarVariable.
+	self assert: entity rightOperand class equals: FASTFortran2kIntegerLiteral.
+
+	entity := res statement.
+	self assert: entity class equals: FASTFortran2kAssignmentStatement.
+	self assert: entity variable name equals: 'x'.
+	self assert: entity expression class equals: FASTFortran2kIntegerLiteral.
+
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kReturnStatement [
 
 	| stmt res |
@@ -145,6 +258,43 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kReturnStatement 
 	self assert: res class equals: FASTFortran2kReturnStatement.
 	self assert: res expression class equals: FASTFortran2kIntegerLiteral.
 	self assert: res expression primitiveValue equals: '2'
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kScalarFieldAccess [
+	| stmt res |
+
+	self programEmpty.
+
+	stmt := FASTFortranFieldAccess new 
+		pointer: (self scalarVariable: 'aPtr');
+		field: (self scalarVariable: 'aField');
+		yourself.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kDerivedTypeComponentAccess.
+	self assert: res instance class equals: FASTFortran2kScalarVariable.
+	self assert: res instance name equals: 'aPtr'.
+	self assert: res field class equals: FASTFortran2kScalarVariable.
+	self assert: res field name equals: 'aField'.
+]
+
+{ #category : 'tests-expression' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kUnaryExpression [
+	| res expression |
+
+	self programEmpty.
+
+	expression := self unary: '/' operand: (self integerLiteral: 2).
+
+	res := expression accept: visitor.
+
+	self assert: res class equals: FASTFortran2kUnaryExpression.
+	self assert: res operator equals: '/'.
+	self assert: res expression class equals: FASTFortran2kIntegerLiteral.
+	self assert: res expression primitiveValue equals: 2.
+	
 ]
 
 { #category : 'tests-statement' }

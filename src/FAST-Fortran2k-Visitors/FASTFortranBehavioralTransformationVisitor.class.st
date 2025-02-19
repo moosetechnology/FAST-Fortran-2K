@@ -86,6 +86,16 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSe
 	]
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranArrayVariable: aFASTFortranArrayVariable [
+
+	^self model newArrayVariable
+		name: aFASTFortranArrayVariable name;
+		indices: (self visitFASTFortranList: aFASTFortranArrayVariable indices);
+		yourself
+		
+]
+
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentExpression: anAssignmentExpressionNode [
 
@@ -186,6 +196,42 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranExternalStatement:
 	^nil
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFieldAccess: aFASTFortranFieldAccess [
+
+	^ aFASTFortranFieldAccess field isArrayVariable
+		ifTrue: [ 
+			((aFASTFortranFieldAccess field indices size = 1)
+				and: [ (aFASTFortranFieldAccess field indices anyOne class = FASTFortranUnaryExpression) 
+				and: [ aFASTFortranFieldAccess field indices anyOne operator asLowercase = '/' ]]
+			) 
+			ifTrue: [ 
+				self model newFunctionCall
+					name: 'size';
+					arguments: { 
+						self model newDerivedTypeComponentAccess
+							instance: (aFASTFortranFieldAccess pointer accept: self);
+							field: (self model newScalarVariable name: aFASTFortranFieldAccess field name);
+							yourself.
+
+						(aFASTFortranFieldAccess field indices anyOne expression accept: self)
+					};
+					yourself
+			] ifFalse: [ 
+				self model newDerivedTypeComponentAccess
+					instance: (aFASTFortranFieldAccess pointer accept: self);
+					field: (aFASTFortranFieldAccess field accept: self);
+					yourself.
+			]
+		]
+		ifFalse: [ 
+			self model newDerivedTypeComponentAccess
+				instance: (aFASTFortranFieldAccess pointer accept: self);
+				field: (aFASTFortranFieldAccess field accept: self);
+				yourself.
+		]
+]
+
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFortranFunctionCall [
 
@@ -265,6 +311,15 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIfBlockStatement: 
 		].
 	
 	^ifBlockStatement
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIfLogicalStatement: aFASTFortranIfLogicalStatement [
+
+	^self model newIfLogicalStatement 
+		condition: (aFASTFortranIfLogicalStatement condition accept: self);
+		statement: (aFASTFortranIfLogicalStatement statement accept: self);
+		yourself
 ]
 
 { #category : 'visiting - statements' }
@@ -375,6 +430,15 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 		].
 
 	^f2kStatementBlock
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranUnaryExpression: aFASTFortranUnaryExpression [
+
+	^self model newUnaryExpression 
+		expression: (aFASTFortranUnaryExpression expression accept: self);
+		operator: aFASTFortranUnaryExpression operator;
+		yourself.
 ]
 
 { #category : 'visiting - statements' }
