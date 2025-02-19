@@ -175,6 +175,12 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterType: aFA
 ]
 
 { #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCloseStatement: aFASTFortranCloseStatement [
+
+	^self model newCloseStatement
+]
+
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranContinueStatement: aFASTFortranContinueStatement [
 
 	^self model newContinueStatement

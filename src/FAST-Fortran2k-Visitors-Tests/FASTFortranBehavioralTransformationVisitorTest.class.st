@@ -153,6 +153,18 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kAsterisk [
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kCloseStatement [
+	| stmt res |
+
+	stmt := FASTFortranCloseStatement new.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kCloseStatement.
+
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kContinueStatement [
 	| stmt res |
 
