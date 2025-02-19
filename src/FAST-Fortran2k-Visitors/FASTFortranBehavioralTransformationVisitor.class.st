@@ -271,9 +271,8 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement:
 	fct returnType: (aFunctionStatementNode famix declaredType accept: self).
 
 	fct	 parameters: (aFunctionStatementNode parameters collect: [:parameter | 
-			FASTFortran2kScalarVariable new 
-				name: parameter name; 
-				mooseModel: self model;
+			self model newScalarVariable 
+				name: parameter name;
 				yourself
 			]).
 
@@ -282,7 +281,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement:
 	aFunctionStatementNode parameters do: [:parameter |
 		fct statementBlock addStatement: (
 			self model newVariableDeclarationStatement
-				type: (parameter famixParameter declaredType accept: self);
+				declaredType: (parameter famixParameter declaredType accept: self);
 				declarators: { self model newVariableDeclarator 
 					name:  parameter name;
 					yourself 
@@ -511,7 +510,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranUnaryExpression: a
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
 
 	^self model newVariableDeclarationStatement 
-		type: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
+		declaredType: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
 		declarators: (self visitFASTFortranList: aFASTFortranVariableDeclarationStatement declarators);
 		yourself
 		
