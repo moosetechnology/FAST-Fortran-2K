@@ -259,10 +259,15 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIfBlockStatement: 
 
 	ifBlockStatement := self model newIfBlockStatement
 		condition: (aFASTFortranIfBlockStatement condition accept: self).
-	
+
 	aFASTFortranIfBlockStatement thenStatementBlock
 		ifNotNil: [ :thenStatementBlock |
 			ifBlockStatement thenStatementBlock: (thenStatementBlock accept: self)
+		].
+
+	aFASTFortranIfBlockStatement elseStatementBlock
+		ifNotNil: [ :elseStatementBlock |
+			ifBlockStatement elseStatementBlock: (elseStatementBlock accept: self)
 		].
 	
 	^ifBlockStatement
