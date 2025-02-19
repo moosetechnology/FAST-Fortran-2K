@@ -1,15 +1,3 @@
-"
-## Relations
-======================
-
-### Parents
-| Relation | Origin | Opposite | Type | Comment |
-|---|
-| `derivedTypeDefinition` | `FASTFortran2kDerivedTypeParameter` | `derivedTypeParameters` | `FASTFortran2kDerivedTypeDefinition` | |
-
-
-
-"
 Class {
 	#name : 'FASTFortran2kDerivedTypeParameter',
 	#superclass : 'FASTFortran2kDerivedTypeAbstractField',

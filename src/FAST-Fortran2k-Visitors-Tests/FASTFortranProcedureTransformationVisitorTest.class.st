@@ -358,8 +358,8 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithPointeurDeclar
 
 	 self assert: stmt statements size equals: 1.
 	 self assert: stmt statements anyOne class equals: FASTFortran2kDerivedTypeDeclaration.
-	 self assert: stmt statements anyOne type class equals: FASTFortran2kUserDefinedType.
-	 self assert: stmt statements anyOne type name equals: 'foo'.	
+	 self assert: stmt statements anyOne declaredType class equals: FASTFortran2kUserDefinedType.
+	 self assert: stmt statements anyOne declaredType name equals: 'foo'.	
 	 self assert: stmt statements anyOne declarators size equals: 1.
 	 self assert: stmt statements anyOne declarators anyOne class equals: FASTFortran2kVariableDeclarator.
 	 self assert: stmt statements anyOne declarators anyOne name equals: 'f'.

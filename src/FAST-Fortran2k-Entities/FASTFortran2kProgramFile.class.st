@@ -1,5 +1,5 @@
 "
-An entity that can contain fortran program units and comments
+Program Units in a program file
 
 ## Relations
 ======================
@@ -8,7 +8,8 @@ An entity that can contain fortran program units and comments
 | Relation | Origin | Opposite | Type | Comment |
 |---|
 | `comments` | `FASTTWithComments` | `container` | `FASTTComment` | list of comments defined in the entity|
-| `programUnits` | `FASTFortran2kProgramFile` | `programFile` | `FASTFortran2kProgramUnit` | Program Units in a program file|
+| `declarations` | `FASTFortran2kTWithDeclarations` | `fortranDeclarationOwner` | `FASTFortran2kTDeclaration` | The elements I declare|
+| `programUnits` | `FASTFortran2kProgramFile` | `programFile` | `FASTFortran2kProgramUnit` | |
 
 
 ## Properties
@@ -22,8 +23,8 @@ An entity that can contain fortran program units and comments
 Class {
 	#name : 'FASTFortran2kProgramFile',
 	#superclass : 'FASTFortran2kEntity',
-	#traits : 'FASTTWithComments',
-	#classTraits : 'FASTTWithComments classTrait',
+	#traits : 'FASTFortran2kTWithDeclarations + FASTTWithComments',
+	#classTraits : 'FASTFortran2kTWithDeclarations classTrait + FASTTWithComments classTrait',
 	#instVars : [
 		'#filename => FMProperty',
 		'#programUnits => FMMany type: #FASTFortran2kProgramUnit opposite: #programFile'
@@ -67,7 +68,6 @@ FASTFortran2kProgramFile >> programUnits [
 	"Relation named: #programUnits type: #FASTFortran2kProgramUnit opposite: #programFile"
 
 	<generated>
-	<FMComment: 'Program Units in a program file'>
 	<derived>
 	^ programUnits
 ]
