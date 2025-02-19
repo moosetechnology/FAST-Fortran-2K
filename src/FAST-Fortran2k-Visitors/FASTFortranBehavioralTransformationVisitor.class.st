@@ -311,8 +311,10 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranGoToStatement: aFA
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIOParameter: aFASTFortranIOParameter [
 
-	self flag: 'shouldBeImplemented'.
-	^self model newAbstractIOStatement 
+	^self model newIOParameter
+		name: aFASTFortranIOParameter name;
+		expression: (aFASTFortranIOParameter expression accept: self);
+		yourself
 ]
 
 { #category : 'visiting - statements' }

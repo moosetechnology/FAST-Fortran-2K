@@ -303,8 +303,6 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kImpliedDoExpress
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kOpenStatement [
 	| stmt res entity |
 
-	self skip: #TODO.
-
 	stmt := FASTFortranOpenStatement new
 		ioParameters: {
 			self integerLiteral: '3' .
@@ -318,17 +316,17 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kOpenStatement [
 	self assert: res ioParameters size equals: 3.
 
 	entity := res ioParameters first.
-	self assert: entity class equals: FASTFortran2kCharacterLiteral.
+	self assert: entity class equals: FASTFortran2kIntegerLiteral.
 	self assert: entity primitiveValue equals: '3'.
 
 	entity := res ioParameters second.
-	self assert: entity class equals: FASTFortranIOParameter.
+	self assert: entity class equals: FASTFortran2kIOParameter.
 	self assert: entity name equals: 'file'.
 	self assert: entity expression class equals: FASTFortran2kCharacterLiteral.
 	self assert: entity expression primitiveValue equals: 'projectA/data.test'.
 
 	entity := res ioParameters third.
-	self assert: entity class equals: FASTFortranIOParameter.
+	self assert: entity class equals: FASTFortran2kIOParameter.
 	self assert: entity name equals: 'err'.
 	self assert: entity expression class equals: FASTFortran2kIntegerLiteral.
 	self assert: entity expression primitiveValue equals: '99'.
