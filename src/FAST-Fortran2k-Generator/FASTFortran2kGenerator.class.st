@@ -166,7 +166,13 @@ Class {
 		'derivedTypeComponentAccess',
 		'derivedTypeComponentDimension',
 		'derivedTypeParameter',
-		'derivedTypeAbstractField'
+		'derivedTypeAbstractField',
+		'tDeclaration',
+		'tDeclaredType',
+		'tWithDeclarations',
+		'functionTypeDeclarationStatement',
+		'fieldAccess',
+		'ioParameter'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -225,6 +231,26 @@ FASTFortran2kGenerator >> commentForDerivedTypeDefinition [
 		integerjdata(jdim + 1, jdim + 2)
 	end segment
 	```
+	'
+]
+
+{ #category : 'definition' }
+FASTFortran2kGenerator >> commentForIOParameter [
+	^'I represent a specifier keywords used in I/O statement (open, write, read, close, ...).
+
+where the most common specifiers are:
+
+```fortran
+    [UNIT=]  u
+    IOSTAT=  ios
+    ERR=     err
+    FILE=    fname
+    STATUS=  sta
+    ACCESS=  acc
+    FORM=    frm
+    RECL=    rl
+```
+	
 	'
 ]
 
@@ -462,6 +488,11 @@ f77 allows the BYTE type as an array index, just as it allows the REAL type, but
 		                       comment:
 		                       'I represent Fortran Double Precision type, synonym of REAL*8'.
 
+	fieldAccess := self
+		                   newClassNamed: #FieldAccess
+		                   comment:
+		                   'I represent an access to pointer.field in Esope (therefore an expression)'.
+
 	impliedDoExpression := self
 		                   newClassNamed: #ImpliedDoExpression
 		                   comment:
@@ -599,6 +630,7 @@ FASTFortran2kGenerator >> defineFASTClasses [
 
 	conditionalStatement := self newClassNamed: #ConditionalStatement comment: 'I represent a fortran statement with a condition: if-block, if-logical'.
 
+	ioParameter := self newClassNamed: #IOParameter comment: self commentForIOParameter.
 ]
 
 { #category : 'definition' }
@@ -610,6 +642,7 @@ FASTFortran2kGenerator >> defineHierarchy [
 
 	programUnit --|> tEntity.
 	programUnit --|> tBehaviouralEntity.
+	programUnit --|> tWithDeclarations.
 	programUnit --|> tNamedEntity.
 	subprogram --|> programUnit.
 	mainprogram --|> programUnit.
@@ -617,19 +650,21 @@ FASTFortran2kGenerator >> defineHierarchy [
 	procedure --|> tWithParameters.
 	blockData --|> subprogram.
 	function --|> procedure.
+	function --|> tDeclaredType.
 	subroutine --|> procedure.
 
 	programFile --|> tWithComments.
+	programFile --|> tWithDeclarations.
 	programUnit --|> tWithComments.
 
 	"other entities"
 	comment --|> tEntity.
-	comment --|> tComment. 
+	comment --|> tComment.
 
 	"FORTRAN STATEMENTS"
 	abstractStatement --|> tStatement.
 	abstractIOStatement --|> abstractStatement.
-	acceptStatement  --|> abstractStatement.
+	acceptStatement --|> abstractStatement.
 	assignmentStatement --|> abstractStatement.
 	assignmentStatement --|> tAssignment.
 	automaticStatement --|> abstractStatement.
@@ -664,6 +699,9 @@ FASTFortran2kGenerator >> defineHierarchy [
 	functionStatement --|> abstractStatement.
 	functionStatement --|> tWithParameters.
 	functionStatement --|> tNamedEntity.
+	functionTypeDeclarationStatement --|> abstractStatement.
+	functionTypeDeclarationStatement --|> tNamedEntity.
+	functionTypeDeclarationStatement --|> tDeclaredType.
 	goToStatement --|> abstractStatement.
 	goToStatement --|> tWithLabelReferences.
 	goToAssignedStatement --|> abstractStatement.
@@ -695,11 +733,12 @@ FASTFortran2kGenerator >> defineHierarchy [
 	returnStatement --|> tReturnStatement.
 	rewindStatement --|> abstractIOStatement.
 	saveStatement --|> abstractStatement.
-	statementBlock --|> tStatementBlock. 
-	statementBlock --|> tWithComments. 
+	statementBlock --|> tStatementBlock.
+	statementBlock --|> tWithComments.
 	staticStatement --|> abstractStatement.
 	stopStatement --|> abstractStatement.
 	unionStatement --|> abstractStatement.
+	variableDeclarationStatement --|> tDeclaredType.
 	variableDeclarationStatement --|> abstractStatement.
 	variableDeclarationStatement --|> tWithDeclarators.
 	virtualStatement --|> abstractStatement.
@@ -725,13 +764,14 @@ FASTFortran2kGenerator >> defineHierarchy [
 	characterConstant --|> abstractLiteral.
 	characterConstant --|> tCharacterLiteral.
 	characterConstant --|> tFormat.
-	commonGroup  --|> tWithDeclarators.
-	commonGroup  --|> tNamedEntity.
+	commonGroup --|> tWithDeclarators.
+	commonGroup --|> tNamedEntity.
 	complexConstant --|> numericalConstant.
 	dataGroup --|> tVariableGroup.
 	doubleComplexConstant --|> numericalConstant.
 	doublePrecisionConstant --|> numericalConstant.
 	equivalenceGroup --|> tVariableGroup.
+	fieldAccess --|> variable.
 	functionCall --|> abstractExpression.
 	functionCall --|> tWithArguments.
 	impliedDoExpression --|> tWithLoopControl.
@@ -739,7 +779,9 @@ FASTFortran2kGenerator >> defineHierarchy [
 	impliedDoExpression --|> tVariableGroup.
 	integerConstant --|> numericalConstant.
 	integerConstant --|> tFormat.
-	numericalConstant  --|> abstractLiteral.
+	ioParameter --|> tNamedEntity.
+	ioParameter --|> tIOParameter.
+	numericalConstant --|> abstractLiteral.
 	numericalConstant --|> tNumericalLiteral.
 	realConstant --|> numericalConstant.
 	scalarVariable --|> variable.
@@ -762,7 +804,7 @@ FASTFortran2kGenerator >> defineHierarchy [
 	logicalType --|> type.
 	realType --|> type.
 
-	asterisk --|> integerConstant.  "used as type size"
+	asterisk --|> integerConstant. "used as type size"
 	asterisk --|> tEntryArgument.
 	asterisk --|> tFormat.
 
@@ -867,7 +909,7 @@ FASTFortran2kGenerator >> defineProperties [
 		'End of character range for implicit rule'.
 
 	(labelReference property: #label type: #String) comment: 'The value of the label. The value is an integer literal, stored in a String'.
-	
+
 	(programFile property: #filename type: #String).
 
 	(returnStatement property: #alternateReturnLabel type: #String)
@@ -943,8 +985,21 @@ FASTFortran2kGenerator >> defineRelations [
 	(dataGroup property: #dataConstants)
 	<>-* (abstractExpression property: #parentDataStatement).
 
+	(fieldAccess property: #pointer)
+	<>- ((variable property: #pointerIn) comment: 'Parent FieldAccess in which receiver is a pointer').
+
+	(fieldAccess property: #field)
+	<>- ((variable property: #fieldIn) comment: 'Parent FieldAccess in which receiver is a field').
+
 	(impliedDoExpression property: #variables)
 	<>-* (tVariableEntity property: #parentImpliedExpression).
+	
+	
+	((tWithDeclarations property: #declarations) comment:
+		 'The elements I declare')
+	<>-* ((tDeclaration property: #fortranDeclarationOwner) comment:
+			 'The element that declares me').
+	
 
 	(tVariableGroup property: #variables)
 	<>-* (variable property: #parentVariableGroup).
@@ -961,7 +1016,7 @@ FASTFortran2kGenerator >> defineRelations [
 		 'Expression assigned to the variable declared')
 	<>- (abstractExpression property: #variableDeclaratorOwner) .
 
-	((variableDeclarationStatement property: #type) comment: 'type')
+	((tDeclaredType property: #declaredType) comment: 'type')
 	<>-
 	((type property: #parentDeclaration) comment: 'Parent declaration').
 
@@ -976,9 +1031,6 @@ FASTFortran2kGenerator >> defineRelations [
 
 	(entryStatement property: #entryArguments)
 	<>-* (tEntryArgument property: #entryStatement).
-
-	(function property: #returnType)
-	<>- (type property: #typedFunctions).
 
 	((functionStatement property: #expression) comment:
 		 'Expression thats being assigned upon declaration to the var')
@@ -1041,10 +1093,8 @@ FASTFortran2kGenerator >> defineRelations [
 		'Loop control limit value')
 	<>- (abstractExpression property: #parentLoopControlLimit).
 
-	((programFile property: #programUnits) comment:
-		 'Program Units in a program file')
-	<>-* ((programUnit property: #programFile) comment:
-			 'Parent program file').
+	(programFile comment: 'Program Units in a program file')
+	<>-* (programUnit comment: 'Parent program file').
 
 	((type property: #size) comment: 'a data size in bytes')
 	<>- (abstractExpression property: #parentTypeSize).
@@ -1056,6 +1106,11 @@ FASTFortran2kGenerator >> defineRelations [
 		 'the label(s) referenced')
 	<>-* ((labelReference property: #referencer) comment:
 			 'A statement (like goto) referencing this label').
+
+	((ioParameter property: #expression) comment: 
+		'value of the parameter (keyword argument)')
+	<>- ((tExpression property: #ioSpecifier) comment: 
+		'name of the parameter (keyword argument)').
 			
 	self defineRelations2k.
 
@@ -1205,6 +1260,8 @@ FASTFortran2kGenerator >> defineStatements [
 		                     newClassNamed: #FunctionStatement
 		                     comment:
 		                     'I represent a function statement - a function-like declaration, made in a single statement'.
+		
+	functionTypeDeclarationStatement := self newClassNamed: #FunctionTypeDeclarationStatement  comment: 'I represent a return type declaration statement'.
 
 	goToStatement := self
 		                 newClassNamed: #GoToStatement
@@ -1326,9 +1383,7 @@ FASTFortran2kGenerator >> defineStatements [
 	"NOT IN THE 77 STANDARD"
 	exitStatement := self
 		                 newClassNamed: #ExitStatement
-		                 comment: 'I represent Fortran90 Exit statement'.
-
-	
+		                 comment: 'I represent Fortran90 Exit statement'
 ]
 
 { #category : 'definition' }
@@ -1344,6 +1399,8 @@ FASTFortran2kGenerator >> defineTraits [
 	tBooleanLiteral := self remoteTrait: #TBooleanLiteral withPrefix: #FAST.
 	tCharacterLiteral := self remoteTrait: #TCharacterLiteral withPrefix: #FAST.
 	tComment := self remoteTrait: #TComment withPrefix: #FAST.
+	tDeclaration := self newTraitNamed: #TDeclaration comment: 'I am a declaration in fortran'.
+	tDeclaredType := self newTraitNamed: #TDeclaredType comment: 'I am the declared type of a function or variable'.
 	tExpression := self remoteTrait: #TExpression withPrefix: #FAST. 
 	tNamedEntity := self remoteTrait: #TNamedEntity withPrefix: #FAST.
 	tNumericalLiteral := self remoteTrait: #TNumericalLiteral withPrefix: #FAST.
@@ -1360,6 +1417,7 @@ FASTFortran2kGenerator >> defineTraits [
 	tFormat := self newTraitNamed: #TFormat comment: 'I represent a format description (eg. in Format or Print statement)'.
 	tIOParameter := self newTraitNamed: #TIOParameter comment: 'I represent a parameter to an IO-statement (read or write)'.
 	tVariableGroup := self newTraitNamed: #TVariableGroup comment: 'I represent an entity with several variables like in a DataStatement or an EquivalenceStatement'.
+	tWithDeclarations := self newTraitNamed: #TWithDeclarations comment: 'I have declarations'.
 	tWithDeclarators := self newTraitNamed: #TWithDeclarators comment: 'I represent a declaration with several variable declarators'.
 	tWithFormat := self newTraitNamed: #TWithFormat comment: 'I represent a statement with a format (format, print)'.
 	tWithLabelReferences := self newTraitNamed: #TWithLabelReferences comment: 'I represent a statement (various kind of goto) that can have label references'.

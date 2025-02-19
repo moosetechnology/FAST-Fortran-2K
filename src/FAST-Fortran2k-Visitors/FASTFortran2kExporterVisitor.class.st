@@ -723,7 +723,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortranTypeDeclarationStatement: aFASTF
 
 	self sixSpaces.
 	self << 'type ('.
-	self visitFASTFortranUserDefinedType: aFASTFortran2kTypeDeclarationStatement type.
+	self visitFASTFortranUserDefinedType: aFASTFortran2kTypeDeclarationStatement declaredType.
 	self << ')'.
 	self << ' :: '.
 
@@ -757,7 +757,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortranVariableDeclarationStatement: aF
 
 	self visitFASTFortranAbstractStatement:
 		aFASTFortranVariableDeclarationStatement.
-	aFASTFortranVariableDeclarationStatement type accept: self.
+	aFASTFortranVariableDeclarationStatement declaredType accept: self.
 
 	comma := ''.
 	"aFASTFortranVariableDeclarationStatement isPointer ifTrue: [ self << comma ; << ' pointer'. comma := ',' ].

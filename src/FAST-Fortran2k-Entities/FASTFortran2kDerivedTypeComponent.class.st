@@ -27,9 +27,9 @@ Class {
 	#name : 'FASTFortran2kDerivedTypeComponent',
 	#superclass : 'FASTFortran2kDerivedTypeAbstractField',
 	#instVars : [
-		'#comment => FMOne type: #FASTFortran2kComment opposite: #derivedTypeComponent',
+		'#rank => FMProperty',
 		'#derivedTypeComponentDimensions => FMMany type: #FASTFortran2kDerivedTypeComponentDimension opposite: #derivedTypeComponent',
-		'#rank => FMProperty'
+		'#comment => FMOne type: #FASTFortran2kComment opposite: #derivedTypeComponent'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',

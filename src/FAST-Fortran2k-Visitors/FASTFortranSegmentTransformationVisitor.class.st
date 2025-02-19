@@ -996,7 +996,7 @@ FASTFortranSegmentTransformationVisitor >> makeProceduresDimensions: aFASTFortra
 						<<   '			call check_post_condition('; << procedureName ; <<' >= 0, ''bar::'; << procedureName ; <<''', '''; << procedureName; << ' >= 0'')'; cr. 
 			self flag: #FIXME. "call ignore(jdim, 'jdim', 'bar::idata_dim1')"
 			procedure := FASTFortran2kFunction new
-				returnType: FASTFortran2kIntegerType new;
+				declaredType: FASTFortran2kIntegerType new;
 				name: procedureName;
 				parameters: (parameters collect: [ :parameter |
 					FASTFortran2kScalarVariable new name: parameter ]);

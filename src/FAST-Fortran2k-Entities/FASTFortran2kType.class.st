@@ -7,10 +7,9 @@ I represent Fortran Type statement
 ### Parents
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `parentDeclaration` | `FASTFortran2kType` | `type` | `FASTFortran2kVariableDeclarationStatement` | Parent declaration|
+| `parentDeclaration` | `FASTFortran2kType` | `declaredType` | `FASTFortran2kTDeclaredType` | Parent declaration|
 | `parentImplicitRule` | `FASTFortran2kType` | `type` | `FASTFortran2kImplicitTypingRule` | |
 | `typedFunctions` | `FASTFortran2kType` | `returnType` | `FASTFortran2kInternalFunction` | |
-| `typedFunctions` | `FASTFortran2kType` | `returnType` | `FASTFortran2kFunction` | |
 
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
@@ -24,10 +23,10 @@ Class {
 	#name : 'FASTFortran2kType',
 	#superclass : 'FASTFortran2kEntity',
 	#instVars : [
-		'#parentDeclaration => FMOne type: #FASTFortran2kVariableDeclarationStatement opposite: #type',
-		'#typedFunctions => FMOne type: #FASTFortran2kFunction opposite: #returnType',
+		'#parentDeclaration => FMOne type: #FASTFortran2kTDeclaredType opposite: #declaredType',
 		'#parentImplicitRule => FMOne type: #FASTFortran2kImplicitTypingRule opposite: #type',
-		'#size => FMOne type: #FASTFortran2kAbstractExpression opposite: #parentTypeSize'
+		'#size => FMOne type: #FASTFortran2kAbstractExpression opposite: #parentTypeSize',
+		'#typedFunctions => FMOne type: #FASTFortran2kInternalFunction opposite: #returnType'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -45,7 +44,7 @@ FASTFortran2kType class >> annotation [
 
 { #category : 'accessing' }
 FASTFortran2kType >> parentDeclaration [
-	"Relation named: #parentDeclaration type: #FASTFortran2kVariableDeclarationStatement opposite: #type"
+	"Relation named: #parentDeclaration type: #FASTFortran2kTDeclaredType opposite: #declaredType"
 
 	<generated>
 	<FMComment: 'Parent declaration'>
@@ -117,7 +116,7 @@ FASTFortran2kType >> sizeGroup [
 
 { #category : 'accessing' }
 FASTFortran2kType >> typedFunctions [
-	"Relation named: #typedFunctions type: #FASTFortran2kFunction opposite: #returnType"
+	"Relation named: #typedFunctions type: #FASTFortran2kInternalFunction opposite: #returnType"
 
 	<generated>
 	<container>

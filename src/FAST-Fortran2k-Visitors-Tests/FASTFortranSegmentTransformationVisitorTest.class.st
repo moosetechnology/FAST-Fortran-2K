@@ -33,7 +33,7 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentToDerivedTypeInMo
 	
 	stmt := f2ksegment fields anyOne.
 	self assert: stmt class equals: FASTFortran2kDerivedTypeComponent.
-	self assert: stmt type class equals: FASTFortran2kIntegerType.
+	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
 	self assert: stmt declarators size equals: 1.
 	
 	stmt := stmt declarators first.
@@ -68,14 +68,14 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToD
 	
 	stmt := f2ksegment fields first.
 	self assert: stmt class equals: FASTFortran2kDerivedTypeComponent.
-	self assert: stmt type class equals: FASTFortran2kIntegerType.
+	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
 	self assert: stmt declarators size equals: 1.
 	self assert: stmt declarators anyOne class equals: FASTFortran2kVariableDeclarator.
 	self assert: stmt declarators anyOne name equals: 'N'.
 	
 	stmt := f2ksegment fields second.
 	self assert: stmt class equals: FASTFortran2kDerivedTypeComponent.
-	self assert: stmt type class equals: FASTFortran2kIntegerType.
+	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
 	self assert: stmt declarators size equals: 1.
 	
 	stmt := stmt declarators first.

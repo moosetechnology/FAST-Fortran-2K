@@ -1,5 +1,5 @@
 "
-A fortran program unit is a sequence of statements, terminated by an END statement. Every program unit is either a main program or a subprogram. If a program is to be executable, it must have a main program
+Parent program file
 
 ## Relations
 ======================
@@ -8,12 +8,13 @@ A fortran program unit is a sequence of statements, terminated by an END stateme
 | Relation | Origin | Opposite | Type | Comment |
 |---|
 | `invokedIn` | `FASTTNamedEntity` | `invoked` | `FASTTInvocation` | Optional invocation where this name is used|
-| `programFile` | `FASTFortran2kProgramUnit` | `programUnits` | `FASTFortran2kProgramFile` | Parent program file|
+| `programFile` | `FASTFortran2kProgramUnit` | `programUnits` | `FASTFortran2kProgramFile` | |
 
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
 | `comments` | `FASTTWithComments` | `container` | `FASTTComment` | list of comments defined in the entity|
+| `declarations` | `FASTFortran2kTWithDeclarations` | `fortranDeclarationOwner` | `FASTFortran2kTDeclaration` | The elements I declare|
 | `parameters` | `FASTTWithParameters` | `parameterOwner` | `FASTTVariableEntity` | My parameters|
 | `statementBlock` | `FASTTBehaviouralEntity` | `fastBehaviouralParent` | `FASTTStatementBlock` | Statements block of the behavioural entity|
 
@@ -31,8 +32,8 @@ A fortran program unit is a sequence of statements, terminated by an END stateme
 Class {
 	#name : 'FASTFortran2kProgramUnit',
 	#superclass : 'FASTFortran2kEntity',
-	#traits : 'FASTTBehaviouralEntity + FASTTEntity + FASTTNamedEntity + FASTTWithComments',
-	#classTraits : 'FASTTBehaviouralEntity classTrait + FASTTEntity classTrait + FASTTNamedEntity classTrait + FASTTWithComments classTrait',
+	#traits : 'FASTFortran2kTWithDeclarations + FASTTBehaviouralEntity + FASTTEntity + FASTTNamedEntity + FASTTWithComments',
+	#classTraits : 'FASTFortran2kTWithDeclarations classTrait + FASTTBehaviouralEntity classTrait + FASTTEntity classTrait + FASTTNamedEntity classTrait + FASTTWithComments classTrait',
 	#instVars : [
 		'#programFile => FMOne type: #FASTFortran2kProgramFile opposite: #programUnits'
 	],
@@ -55,7 +56,6 @@ FASTFortran2kProgramUnit >> programFile [
 	"Relation named: #programFile type: #FASTFortran2kProgramFile opposite: #programUnits"
 
 	<generated>
-	<FMComment: 'Parent program file'>
 	<container>
 	^ programFile
 ]
