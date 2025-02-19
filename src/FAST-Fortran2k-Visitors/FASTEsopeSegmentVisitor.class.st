@@ -13,7 +13,7 @@ FASTEsopeSegmentVisitor >> visitDeclarationDimension: aFASTExpression [
 		ifFalse: [ ^ nil ].
 
 	^ self model newDerivedTypeComponent
-		type: self model newIntegerType;
+		declaredType: self model newIntegerType;
 		declarators: { (self model newVariableDeclarator name: aFASTExpression upperBound name) };
 		yourself
 ]
@@ -32,7 +32,7 @@ FASTEsopeSegmentVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFo
 
 	variableDeclaration := self model newDerivedTypeComponent.
 
-	variableDeclaration type:
+	variableDeclaration declaredType:
 		(aFASTFortranVariableDeclarationStatement declaredType accept: self).
 	variableDeclaration declarators:
 		(aFASTFortranVariableDeclarationStatement declarators collect: [

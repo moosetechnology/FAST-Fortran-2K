@@ -56,7 +56,7 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 
 	function := self model newFunction
 		name: aFASTFortranFunction name ;
-		returnType: (aFASTFortranFunction famix declaredType accept: self);
+		declaredType: (aFASTFortranFunction famix declaredType accept: self);
 		module: module ;
 		yourself.
 

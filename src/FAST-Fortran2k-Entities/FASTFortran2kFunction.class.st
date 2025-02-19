@@ -7,7 +7,7 @@ I represent a Fortran Function
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `returnType` | `FASTFortran2kFunction` | `typedFunctions` | `FASTFortran2kType` | |
+| `declaredType` | `FASTFortran2kTDeclaredType` | `parentDeclaration` | `FASTFortran2kType` | type|
 
 
 
@@ -15,9 +15,8 @@ I represent a Fortran Function
 Class {
 	#name : 'FASTFortran2kFunction',
 	#superclass : 'FASTFortran2kProcedure',
-	#instVars : [
-		'#returnType => FMOne type: #FASTFortran2kType opposite: #typedFunctions'
-	],
+	#traits : 'FASTFortran2kTDeclaredType',
+	#classTraits : 'FASTFortran2kTDeclaredType classTrait',
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
 	#tag : 'Entities'
@@ -30,26 +29,4 @@ FASTFortran2kFunction class >> annotation [
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
-]
-
-{ #category : 'accessing' }
-FASTFortran2kFunction >> returnType [
-	"Relation named: #returnType type: #FASTFortran2kType opposite: #typedFunctions"
-
-	<generated>
-	^ returnType
-]
-
-{ #category : 'accessing' }
-FASTFortran2kFunction >> returnType: anObject [
-
-	<generated>
-	returnType := anObject
-]
-
-{ #category : 'navigation' }
-FASTFortran2kFunction >> returnTypeGroup [
-	<generated>
-	<navigation: 'ReturnType'>
-	^ MooseSpecializedGroup with: self returnType
 ]
