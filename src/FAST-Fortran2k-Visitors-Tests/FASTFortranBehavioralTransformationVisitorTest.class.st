@@ -64,6 +64,110 @@ FASTFortranBehavioralTransformationVisitorTest >> testDoStatement [
 	self assert: loopControl init expression class equals: FASTFortran2kIntegerLiteral.
 ]
 
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kExternalStatement [
+	| stmt res |
+
+	self programEmpty.
+
+	stmt := (self externalStatement: 'mypnt').
+	fastMainProgram statementBlock addStatement: stmt.
+	stmt famix: (
+		FamixF77ExternalDeclaration new 
+			name: 'mypnt'; 
+			programUnit: fastMainProgram famix; 
+			yourself
+	).
+
+	res := stmt accept: visitor.
+
+	self assert: res isNil.
+	self assert: visitor parentTransformator usesNeeded size equals: 1.
+	self assert: visitor parentTransformator usesNeeded anyOne key equals: fastMainProgram famix.
+	self assert: visitor parentTransformator usesNeeded anyOne value isNil.
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kIfBlockStatement [
+
+	| stmt res entity |
+	stmt := self
+		ifBlock: (self binary: '.le.' left: #x right: 5)
+		then: { self returnStatement: nil } 
+		else: { self assignementStatement: #x value: 5 }.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kIfBlockStatement.
+
+	entity := res condition.
+	self assert: entity class equals: FASTFortran2kBinaryExpression.
+	self assert: entity operator equals: '.le.'.
+	self assert: entity leftOperand class equals: FASTFortran2kScalarVariable.
+	self assert: entity rightOperand class equals: FASTFortran2kIntegerLiteral.
+
+	entity := res thenStatementBlock.
+	self assert: entity statements size equals: 1.
+	self assert: entity statements anyOne class equals: FASTFortran2kReturnStatement.
+	self assert: entity statements anyOne expression isNil.
+
+	entity := res elseStatementBlock.
+	self assert: entity statements size equals: 1.
+	self assert: entity statements anyOne class equals: FASTFortran2kAssignmentStatement.
+	self assert: entity statements anyOne variable name equals: 'x'.
+	self assert: entity statements anyOne expression class equals: FASTFortran2kIntegerLiteral.
+
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kIfBlockStatementEmpty [
+
+	| stmt res |
+	stmt := self ifBlock: (self binary: '.gt.' left: #y right: 5) then: #() else:  #().
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kIfBlockStatement.
+	self assert: res condition class equals: FASTFortran2kBinaryExpression.
+	self assert: res condition operator equals: '.gt.'.
+	self assert: res thenStatementBlock statements size equals: 0.
+	self assert: res elseStatementBlock statements size equals: 0.
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kReturnStatement [
+
+	| stmt res |
+	stmt := self returnStatement: 2.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kReturnStatement.
+	self assert: res expression class equals: FASTFortran2kIntegerLiteral.
+	self assert: res expression primitiveValue equals: '2'
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kWriteStatement [
+	| stmt res entity |
+
+	stmt := self writeStatement: #( 'message' ).
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kWriteStatement.
+	self assert: res ioParameters size equals: 2.
+	self assert: res arguments size equals: 1.
+
+	entity := res arguments anyOne.
+	self assert: entity class equals: FASTFortran2kCharacterLiteral.
+	self assert: entity primitiveValue equals: 'message'.
+
+	self assert: res ioParameters first class equals: FASTFortran2kAsterisk.
+	self assert: res ioParameters second class equals: FASTFortran2kAsterisk.
+
+]
+
 { #category : 'running' }
 FASTFortranBehavioralTransformationVisitorTest >> visitorClass [ 
 
