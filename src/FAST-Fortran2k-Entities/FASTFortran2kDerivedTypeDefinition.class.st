@@ -67,10 +67,10 @@ Class {
 	#traits : 'FASTTNamedEntity',
 	#classTraits : 'FASTTNamedEntity classTrait',
 	#instVars : [
-		'#comment => FMOne type: #FASTFortran2kComment opposite: #derivedTypeDefinition',
-		'#fields => FMMany type: #FASTFortran2kDerivedTypeAbstractField opposite: #parentDerivedType',
 		'#superType => FMProperty',
-		'#typeBoundProcedures => FMMany type: #FASTFortran2kTypeBoundProcedure opposite: #derivedTypeDefinition'
+		'#fields => FMMany type: #FASTFortran2kDerivedTypeAbstractField opposite: #parentDerivedType',
+		'#typeBoundProcedures => FMMany type: #FASTFortran2kTypeBoundProcedure opposite: #derivedTypeDefinition',
+		'#comment => FMOne type: #FASTFortran2kComment opposite: #derivedTypeDefinition'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',

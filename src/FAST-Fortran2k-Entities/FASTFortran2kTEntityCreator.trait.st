@@ -399,6 +399,13 @@ FASTFortran2kTEntityCreator >> newExternalStatement [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newFieldAccess [
+
+	<generated>
+	^ self add: FASTFortran2kFieldAccess new
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newFormatStatement [
 
 	<generated>
@@ -434,6 +441,13 @@ FASTFortran2kTEntityCreator >> newFunctionStatement [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newFunctionTypeDeclarationStatement [
+
+	<generated>
+	^ self add: FASTFortran2kFunctionTypeDeclarationStatement new
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newGoToAssignedStatement [
 
 	<generated>
@@ -459,6 +473,13 @@ FASTFortran2kTEntityCreator >> newIModuleProcedureSummary [
 
 	<generated>
 	^ self add: FASTFortran2kIModuleProcedureSummary new
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newIOParameter [
+
+	<generated>
+	^ self add: FASTFortran2kIOParameter new
 ]
 
 { #category : 'entity creation' }

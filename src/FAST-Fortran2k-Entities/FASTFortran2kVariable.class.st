@@ -9,6 +9,7 @@ an abstract Fortran Variable, could be an array or a scalar
 |---|
 | `entryStatement` | `FASTFortran2kTEntryArgument` | `entryArguments` | `FASTFortran2kEntryStatement` | |
 | `fieldIn` | `FASTFortran2kVariable` | `field` | `FASTFortran2kDerivedTypeComponentAccess` | Parent DerivedTypeComponentAccess in which receiver is a field|
+| `fieldIn` | `FASTFortran2kVariable` | `field` | `FASTFortran2kFieldAccess` | Parent FieldAccess in which receiver is a field|
 | `instanceIn` | `FASTFortran2kVariable` | `instance` | `FASTFortran2kDerivedTypeComponentAccess` | Parent DerivedTypeComponentAccess in which receiver is a instance of derived type|
 | `invokedIn` | `FASTTNamedEntity` | `invoked` | `FASTTInvocation` | Optional invocation where this name is used|
 | `parameterOwner` | `FASTTVariableEntity` | `parameters` | `FASTTWithParameters` | parameterOwner|
@@ -17,6 +18,7 @@ an abstract Fortran Variable, could be an array or a scalar
 | `parentIOStatement` | `FASTFortran2kTIOParameter` | `ioParameters` | `FASTFortran2kAbstractIOStatement` | |
 | `parentImpliedExpression` | `FASTTVariableEntity` | `variables` | `FASTFortran2kImpliedDoExpression` | |
 | `parentVariableGroup` | `FASTFortran2kVariable` | `variables` | `FASTFortran2kTVariableGroup` | |
+| `pointerIn` | `FASTFortran2kVariable` | `pointer` | `FASTFortran2kFieldAccess` | Parent FieldAccess in which receiver is a pointer|
 
 
 ## Properties
@@ -35,9 +37,10 @@ Class {
 	#traits : 'FASTFortran2kTEntryArgument + FASTFortran2kTFormat + FASTTVariableEntity',
 	#classTraits : 'FASTFortran2kTEntryArgument classTrait + FASTFortran2kTFormat classTrait + FASTTVariableEntity classTrait',
 	#instVars : [
+		'#pointerIn => FMOne type: #FASTFortran2kFieldAccess opposite: #pointer',
+		'#fieldIn => FMOne type: #FASTFortran2kFieldAccess opposite: #field',
 		'#parentVariableGroup => FMOne type: #FASTFortran2kTVariableGroup opposite: #variables',
-		'#instanceIn => FMOne type: #FASTFortran2kDerivedTypeComponentAccess opposite: #instance',
-		'#fieldIn => FMOne type: #FASTFortran2kDerivedTypeComponentAccess opposite: #field'
+		'#instanceIn => FMOne type: #FASTFortran2kDerivedTypeComponentAccess opposite: #instance'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -55,10 +58,10 @@ FASTFortran2kVariable class >> annotation [
 
 { #category : 'accessing' }
 FASTFortran2kVariable >> fieldIn [
-	"Relation named: #fieldIn type: #FASTFortran2kDerivedTypeComponentAccess opposite: #field"
+	"Relation named: #fieldIn type: #FASTFortran2kFieldAccess opposite: #field"
 
 	<generated>
-	<FMComment: 'Parent DerivedTypeComponentAccess in which receiver is a field'>
+	<FMComment: 'Parent FieldAccess in which receiver is a field'>
 	<container>
 	<derived>
 	^ fieldIn
@@ -124,4 +127,29 @@ FASTFortran2kVariable >> parentVariableGroupGroup [
 	<generated>
 	<navigation: 'ParentVariableGroup'>
 	^ MooseSpecializedGroup with: self parentVariableGroup
+]
+
+{ #category : 'accessing' }
+FASTFortran2kVariable >> pointerIn [
+	"Relation named: #pointerIn type: #FASTFortran2kFieldAccess opposite: #pointer"
+
+	<generated>
+	<FMComment: 'Parent FieldAccess in which receiver is a pointer'>
+	<container>
+	<derived>
+	^ pointerIn
+]
+
+{ #category : 'accessing' }
+FASTFortran2kVariable >> pointerIn: anObject [
+
+	<generated>
+	pointerIn := anObject
+]
+
+{ #category : 'navigation' }
+FASTFortran2kVariable >> pointerInGroup [
+	<generated>
+	<navigation: 'PointerIn'>
+	^ MooseSpecializedGroup with: self pointerIn
 ]
