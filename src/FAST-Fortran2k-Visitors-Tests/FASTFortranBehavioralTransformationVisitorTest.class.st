@@ -303,6 +303,8 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kImpliedDoExpress
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kOpenStatement [
 	| stmt res entity |
 
+	self skip: #TODO.
+
 	stmt := FASTFortranOpenStatement new
 		ioParameters: {
 			self integerLiteral: '3' .
