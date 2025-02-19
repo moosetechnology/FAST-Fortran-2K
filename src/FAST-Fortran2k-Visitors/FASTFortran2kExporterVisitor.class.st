@@ -335,6 +335,13 @@ FASTFortran2kExporterVisitor >> unindented: aPrintable [
 ]
 
 { #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentExpression: aFASTFortran2kAssignmentExpression [
+
+	self visitFASTFortranAssignmentExpression:
+		aFASTFortran2kAssignmentExpression
+]
+
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentStatement: aFASTFortran2kAssignmentStatement [ 
 	aFASTFortran2kAssignmentStatement variable accept: self.
 	self << ' = '.
@@ -357,6 +364,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kBinaryExpression: aFASTFortran
 		<< ' '.
 
 	aFASTFortran2kBinaryExpression rightOperand accept: self.
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kBooleanLiteral: aFASTFortran2kBooleanLiteral [
+
+	self visitFASTFortranBooleanLiteral: aFASTFortran2kBooleanLiteral
 ]
 
 { #category : 'visiting - statements' }
@@ -385,6 +398,19 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kCharacterLiteral: aFASTFortran
 FASTFortran2kExporterVisitor >> visitFASTFortran2kCharacterType: aFASTFortran2kCharacterType [
 
 	^ self visitFASTFortranCharacterType: aFASTFortran2kCharacterType
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kCloseStatement: aFASTFortran2kCloseStatement [
+
+	self visitFASTFortranCloseStatement: aFASTFortran2kCloseStatement
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kContinueStatement: aFASTFortran2kContinueStatement [
+
+	self visitFASTFortranContinueStatement:
+		aFASTFortran2kContinueStatement
 ]
 
 { #category : 'precedence' }
@@ -417,6 +443,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDefinition: aFASTFo
 
 	^ self visitFASTFortranDerivedType:
 		  aFASTFortran2kDerivedTypeDefinition
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kDoStatement: aFASTFortran2kDoStatement [
+
+	self visitFASTFortranDoStatement: aFASTFortran2kDoStatement
 ]
 
 { #category : 'visiting' }
@@ -461,6 +493,52 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFu
 	self << ' )'
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kGoToStatement: aFASTFortran2kGoToStatement [
+
+	self visitFASTFortranGoToStatement: aFASTFortran2kGoToStatement
+]
+
+{ #category : 'precedence' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kIfBlockStatement: aFASTFortran2kIfBlockStatement [
+	"note: can we have a label on an else line ?"
+
+	self
+		visitFASTFortranAbstractStatement: aFASTFortran2kIfBlockStatement;
+		<< 'if ';
+		outputExpression: [
+			aFASTFortran2kIfBlockStatement condition accept: self ]
+		inParentheses: true;
+		<< ' then';
+		newLine.
+	aFASTFortran2kIfBlockStatement thenStatementBlock accept: self.
+	aFASTFortran2kIfBlockStatement elseStatementBlock ifNotNil: [
+		:statementBlock |
+		self
+			sixSpaces;
+			<< 'else';
+			newLine.
+		statementBlock accept: self ].
+	self
+		sixSpaces;
+		<< 'end if';
+		newLine
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kIfLogicalStatement: aFASTFortran2kIfLogicalStatement [
+
+	self visitFASTFortranIfLogicalStatement:
+		aFASTFortran2kIfLogicalStatement
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kImpliedDoExpression: aFASTFortran2kImpliedDoExpression [
+
+	self visitFASTFortranImpliedDoExpression:
+		aFASTFortran2kImpliedDoExpression
+]
+
 { #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kIntegerLiteral: aFASTFortran2kIntegerLiteral [
 
@@ -471,6 +549,19 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kIntegerLiteral: aFASTFortran2k
 FASTFortran2kExporterVisitor >> visitFASTFortran2kIntegerType: aFASTFortran2kIntegerType [
 
 	^ self visitFASTFortranIntegerType: aFASTFortran2kIntegerType
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kLabelReference: aFASTFortran2kLabelReference [
+
+	self visitFASTFortranLabelReference: aFASTFortran2kLabelReference
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kLoopControlExpression: aFASTFortran2kLoopControlExpression [
+
+	self visitFASTFortranLoopControlExpression:
+		aFASTFortran2kLoopControlExpression
 ]
 
 { #category : 'visiting - programUnits' }
@@ -495,6 +586,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kModule: aFASTFortranModule [
 	self
 		<< ('end module ' , moduleName);
 		newLine
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kOpenStatement: aFASTFortran2kOpenStatement [
+
+	self visitFASTFortranOpenStatement: aFASTFortran2kOpenStatement
 ]
 
 { #category : 'visiting - statements' }
@@ -526,10 +623,28 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramMain: aFASTFortran2kPro
 		newLine
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kReadStatement: aFASTFortran2kReadStatement [
+
+	self visitFASTFortranReadStatement: aFASTFortran2kReadStatement
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kRealLiteral: aFASTFortran2kRealLiteral [
+
+	self visitFASTFortranRealLiteral: aFASTFortran2kRealLiteral
+]
+
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kRealType: aFASTFortran2kRealType [
 
 	^ self visitFASTFortranRealType: aFASTFortran2kRealType
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kReturnStatement: aFASTFortran2kReturnStatement [
+
+	self visitFASTFortranReturnStatement: aFASTFortran2kReturnStatement
 ]
 
 { #category : 'visiting - expressions' }
@@ -556,6 +671,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kStatementBlock: aFASTFortran2k
 	
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kStopStatement: aFASTFortran2kStopStatement [
+
+	self visitFASTFortranStopStatement: aFASTFortran2kStopStatement
+]
+
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kSubroutine: aFASTFortran2kSubroutine [ 
 	self
@@ -575,6 +696,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSubroutine: aFASTFortran2kSubr
 		
 	
 	
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kUnaryExpression: aFASTFortran2kUnaryExpression [
+
+	self visitFASTFortranUnaryExpression: aFASTFortran2kUnaryExpression
 ]
 
 { #category : 'visiting - statements' }
@@ -648,11 +775,43 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUserDefinedType: aFASTFortran2
 		<< ')'
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kVariable: aFASTFortran2kVariable [
+	self visitFASTFortranVariable: aFASTFortran2kVariable 
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarationStatement: aFASTFortran2kVariableDeclarationStatement [
+
+	| comma |
+
+	self visitFASTFortranAbstractStatement:
+		aFASTFortran2kVariableDeclarationStatement.
+	aFASTFortran2kVariableDeclarationStatement declaredType accept: self.
+
+	comma := ''.
+	"aFASTFortranVariableDeclarationStatement isPointer ifTrue: [ self << comma ; << ' pointer'. comma := ',' ].
+	aFASTFortranVariableDeclarationStatement visibility ifNotNil: [ :viz | self << comma ; << viz. comma := ',' ]. "
+	self flag: #TODO. "aFASTFortranVariableDeclarationStatement isTarget ifTrue: [ :viz | self << comma ; << ' target'. comma := ',' ]. "
+	
+	self << ' :: '.
+	self visitNodeListSeparatedByCommas:
+		aFASTFortran2kVariableDeclarationStatement declarators.
+	self newLine
+]
+
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarator: aFASTFortran2kVariableDeclarator [
 
 	^ self visitFASTFortranVariableDeclarator:
 		  aFASTFortran2kVariableDeclarator
+]
+
+{ #category : 'precedence' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kWriteStatement: aFASTFortran2kWriteStatement [
+
+	self
+		visitFASTFortranWriteStatement: aFASTFortran2kWriteStatement
 ]
 
 { #category : 'visiting' }
@@ -701,6 +860,17 @@ FASTFortran2kExporterVisitor >> visitFASTFortranTBehaviouralEntity: aFASTFortran
 
 	aFASTFortranTBehaviouralEntity statementBlock 
 		ifNotNil: [ aFASTFortranTBehaviouralEntity statementBlock accept: self ]
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortranTReturnStatement: aFASTFortranTReturnStatement [
+
+	self
+		visitFASTFortranAbstractStatement: aFASTFortranTReturnStatement;
+		<< 'return '.
+	aFASTFortranTReturnStatement expression ifNotNil: [ :expr |
+		expr accept: self ].
+	self newLine
 ]
 
 { #category : 'visiting' }
