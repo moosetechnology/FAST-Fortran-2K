@@ -40,7 +40,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 	| esopeDeclarator callerProgramUnit pointerDeclaredType |
 
 	esopeDeclarator := FASTFortran2kDerivedTypeDeclaration new 
-		type: (FASTFortran2kUserDefinedType new 
+		declaredType: (FASTFortran2kUserDefinedType new 
 			name: aFASTEsopePointerDeclarator pointedTypeName;
 			mooseModel: self model;
 			yourself
@@ -217,7 +217,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement:
 	aFunctionStatementNode parameters do: [:parameter |
 		fct statementBlock addStatement: (
 			FASTFortran2kVariableDeclarationStatement new
-				type: (parameter famixParameter declaredType accept: self);
+				declaredType: (parameter famixParameter declaredType accept: self);
 				declarators: { FASTFortran2kVariableDeclarator new 
 					name:  parameter name; 
 					mooseModel: self model; 
@@ -333,7 +333,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
 
 	^ FASTFortran2kVariableDeclarationStatement new
-		  type: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
+		  declaredType: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
 		  mooseModel: self model;
 		  yourself
 ]

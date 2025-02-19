@@ -32,12 +32,12 @@ FASTFortran2kExporterVisitorTest >> segmentBookDefinition [
 						   { (FASTFortran2kVariableDeclarator new name: 'btitle') };
 					   yourself).
 				  (FASTFortran2kDerivedTypeComponent new
-					   type: FASTFortran2kIntegerType new;
+					   declaredType: FASTFortran2kIntegerType new;
 					   declarators:
 						   { (FASTFortran2kVariableDeclarator new name: 'bpages') };
 					   yourself).
 				  (FASTFortran2kDerivedTypeComponent new
-					   type: FASTFortran2kRealType new;
+					   declaredType: FASTFortran2kRealType new;
 					   declarators:
 						   { (FASTFortran2kVariableDeclarator new name: 'budc') };
 					   yourself) };
