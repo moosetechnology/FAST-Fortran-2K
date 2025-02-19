@@ -1,6 +1,12 @@
 Extension { #name : 'FamixF77IntrinsicRoutine' }
 
 { #category : '*FAST-Fortran2k-Visitors' }
+FamixF77IntrinsicRoutine >> migratedModuleName [
+
+	^''
+]
+
+{ #category : '*FAST-Fortran2k-Visitors' }
 FamixF77IntrinsicRoutine >> needsUseForProcedure: aFASTFortran2kProcedure [
 
 	^false

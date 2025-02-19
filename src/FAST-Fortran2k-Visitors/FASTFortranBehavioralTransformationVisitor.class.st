@@ -86,6 +86,16 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSe
 	]
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranArrayVariable: aFASTFortranArrayVariable [
+
+	^self model newArrayVariable
+		name: aFASTFortranArrayVariable name;
+		indices: (self visitFASTFortranList: aFASTFortranArrayVariable indices);
+		yourself
+		
+]
+
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentExpression: anAssignmentExpressionNode [
 
@@ -96,13 +106,12 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentExpressi
 ]
 
 { #category : 'visiting - statements' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentStatement: anAssignmentStatementNode [
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentStatement: aFASTFortranAssignmentStatement [
 
-	^ FASTFortran2kAssignmentStatement new
-		  variable: (anAssignmentStatementNode variable accept: self);
-		  expression: (anAssignmentStatementNode expression accept: self);
+	^ self model newAssignmentStatement 
+		  variable: (aFASTFortranAssignmentStatement variable accept: self);
+		  expression: (aFASTFortranAssignmentStatement expression accept: self);
 		  "migrateFrom: anAssignmentStatementNode;"
-		  mooseModel: self model;
 		  yourself
 ]
 
@@ -136,12 +145,9 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCallStatement: aFA
 
 	| callStatement callerProgramUnit calledProgramFile |
 
-	callStatement := FASTFortran2kCallStatement new
+	callStatement := self model newCallStatement
 		name: aFASTFortranCallStatement name;
-		arguments: (aFASTFortranCallStatement arguments
-				collect: [ :argument | argument accept: self ]
-		);
-		mooseModel: self model;
+		arguments: (self visitFASTFortranList: aFASTFortranCallStatement arguments);
 		yourself.
 
 	callerProgramUnit := stack top.
@@ -169,12 +175,69 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterType: aFA
 ]
 
 { #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranContinueStatement: aFASTFortranContinueStatement [
+
+	^self model newContinueStatement
+		label: aFASTFortranContinueStatement label;
+		yourself
+]
+
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDoStatement: aDoStatementNode [
 
 	^self model newDoStatement
 		  loopControl: (aDoStatementNode loopControl accept: self) ;
 		  statementBlock: (aDoStatementNode statementBlock accept: self) ;
 		  yourself
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranExternalStatement: aFASTFortranExternalStatement [
+	"here we know for sure this will need use statement since it is an external procedure
+	- if a use statement with this name already exists, we do nothing othewise we can create a one
+	We can ask module name with: aFASTFortranExternalStatement famix migratedModuleName
+	
+	"
+	self parentTransformator useNeeded: 
+		aFASTFortranExternalStatement famix programUnit 
+		-> aFASTFortranExternalStatement famix externalProcedure.
+	^nil
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFieldAccess: aFASTFortranFieldAccess [
+
+	^ aFASTFortranFieldAccess field isArrayVariable
+		ifTrue: [ 
+			((aFASTFortranFieldAccess field indices size = 1)
+				and: [ (aFASTFortranFieldAccess field indices anyOne class = FASTFortranUnaryExpression) 
+				and: [ aFASTFortranFieldAccess field indices anyOne operator asLowercase = '/' ]]
+			) 
+			ifTrue: [ 
+				self model newFunctionCall
+					name: 'size';
+					arguments: { 
+						self model newDerivedTypeComponentAccess
+							instance: (aFASTFortranFieldAccess pointer accept: self);
+							field: (self model newScalarVariable name: aFASTFortranFieldAccess field name);
+							yourself.
+
+						(aFASTFortranFieldAccess field indices anyOne expression accept: self)
+					};
+					yourself
+			] ifFalse: [ 
+				self model newDerivedTypeComponentAccess
+					instance: (aFASTFortranFieldAccess pointer accept: self);
+					field: (aFASTFortranFieldAccess field accept: self);
+					yourself.
+			]
+		]
+		ifFalse: [ 
+			self model newDerivedTypeComponentAccess
+				instance: (aFASTFortranFieldAccess pointer accept: self);
+				field: (aFASTFortranFieldAccess field accept: self);
+				yourself.
+		]
 ]
 
 { #category : 'visiting - expressions' }
@@ -201,43 +264,84 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement:
 
 	| fct |
 	fct := FASTFortran2kInternalFunction new
-		name: aFunctionStatementNode name.
-	
+		name: aFunctionStatementNode name;
+		mooseModel: self model;
+		yourself.
+
 	fct returnType: (aFunctionStatementNode famix declaredType accept: self).
-		
+
 	fct	 parameters: (aFunctionStatementNode parameters collect: [:parameter | 
-			FASTFortran2kScalarVariable new 
-				name: parameter name; 
-				mooseModel: self model;
+			self model newScalarVariable 
+				name: parameter name;
 				yourself
 			]).
-		
-	fct statementBlock: FASTFortran2kStatementBlock new.
+
+	fct statementBlock: self model  newStatementBlock.
 
 	aFunctionStatementNode parameters do: [:parameter |
 		fct statementBlock addStatement: (
-			FASTFortran2kVariableDeclarationStatement new
+			self model newVariableDeclarationStatement
 				declaredType: (parameter famixParameter declaredType accept: self);
-				declarators: { FASTFortran2kVariableDeclarator new 
-					name:  parameter name; 
-					mooseModel: self model; 
+				declarators: { self model newVariableDeclarator 
+					name:  parameter name;
 					yourself 
 				};
-				mooseModel: self model;
 				yourself
 		)
 	].
 
-	
 	fct statementBlock addStatement:	(	
-			FASTFortran2kAssignmentStatement new
-				variable: (FASTFortran2kVariable new name: aFunctionStatementNode name);
+			self model newAssignmentStatement
+				variable: (self model newVariable name: aFunctionStatementNode name);
 				expression: (aFunctionStatementNode expression accept: self);
-				mooseModel: self model;
 				yourself
 			).
 		
 	^fct
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranGoToStatement: aFASTFortranGoToStatement [
+
+	^self model newGoToStatement
+		labelReferences: (self visitFASTFortranList: aFASTFortranGoToStatement labelReferences);
+		yourself
+]
+
+{ #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIOParameter: aFASTFortranIOParameter [
+
+	self flag: 'shouldBeImplemented'.
+	^self model newAbstractIOStatement 
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIfBlockStatement: aFASTFortranIfBlockStatement [
+	| ifBlockStatement |
+
+	ifBlockStatement := self model newIfBlockStatement
+		condition: (aFASTFortranIfBlockStatement condition accept: self).
+
+	aFASTFortranIfBlockStatement thenStatementBlock
+		ifNotNil: [ :thenStatementBlock |
+			ifBlockStatement thenStatementBlock: (thenStatementBlock accept: self)
+		].
+
+	aFASTFortranIfBlockStatement elseStatementBlock
+		ifNotNil: [ :elseStatementBlock |
+			ifBlockStatement elseStatementBlock: (elseStatementBlock accept: self)
+		].
+	
+	^ifBlockStatement
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIfLogicalStatement: aFASTFortranIfLogicalStatement [
+
+	^self model newIfLogicalStatement 
+		condition: (aFASTFortranIfLogicalStatement condition accept: self);
+		statement: (aFASTFortranIfLogicalStatement statement accept: self);
+		yourself
 ]
 
 { #category : 'visiting - statements' }
@@ -247,11 +351,28 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranImplicitStatement:
 ]
 
 { #category : 'visiting - expressions' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranImpliedDoExpression: aFASTFortranImpliedDoExpression [ 
+
+	^self model newImpliedDoExpression
+		loopControl: (aFASTFortranImpliedDoExpression loopControl accept: self);
+		variables: (self visitFASTFortranList: aFASTFortranImpliedDoExpression variables);
+		yourself
+]
+
+{ #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerLiteral: anIntegerLiteralNode [
 
 	^ self model newIntegerLiteral
 		  primitiveValue: anIntegerLiteralNode primitiveValue;
 		  yourself
+]
+
+{ #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLabelReference: aFASTFortranLabelReference [
+
+	^self model newLabelReference
+		label: aFASTFortranLabelReference label;
+		yourself.
 ]
 
 { #category : 'visiting - expressions' }
@@ -265,14 +386,30 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLoopControlExpress
 ]
 
 { #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranOpenStatement: aFASTFortranOpenStatement [
+
+	^self model newOpenStatement
+		ioParameters: (self visitFASTFortranList: aFASTFortranOpenStatement ioParameters);
+		yourself
+]
+
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranPrintStatement: aFASTFortranPrintStatement [
 
 	^ self model newPrintStatement
 		  format: (aFASTFortranPrintStatement format accept: self);
-		  arguments:
-			  (aFASTFortranPrintStatement arguments collect: [ :arg |
-					   arg accept: self ]);
+		  arguments: (self visitFASTFortranList: aFASTFortranPrintStatement arguments);
 		  yourself
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranReadStatement: aFASTFortranReadStatement [
+
+	^self model newReadStatement
+		ioParameters: (self visitFASTFortranList: aFASTFortranReadStatement ioParameters);
+		arguments:
+			(self visitFASTFortranList: aFASTFortranReadStatement arguments);
+		yourself
 ]
 
 { #category : 'visiting - expressions' }
@@ -290,6 +427,29 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealType: aRealTyp
 	^ FASTFortran2kRealType new
 		  mooseModel: self model;
 		  yourself
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranReturnStatement: aFASTFortranReturnStatement [
+	| returnStatement |
+
+	returnStatement := self model newReturnStatement.
+	aFASTFortranReturnStatement expression 
+		ifNotNil: [:expression | 	
+			returnStatement expression: (expression accept: self) 
+		].
+
+	aFASTFortranReturnStatement alternateReturnLabel 
+		ifNotNil: [:alternateReturnLabel | 	
+			returnStatement alternateReturnLabel: (alternateReturnLabel accept: self) 
+		].
+
+	aFASTFortranReturnStatement label 
+		ifNotNil: [:label | 	
+			returnStatement label: (label accept: self) 
+		].
+	
+	^returnStatement
 ]
 
 { #category : 'visiting - expressions' }
@@ -330,12 +490,40 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 ]
 
 { #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStopStatement: aFASTFortranStopStatement [
+
+	^self model newStopStatement
+		displayArgument: (aFASTFortranStopStatement displayArgument);
+		yourself
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranUnaryExpression: aFASTFortranUnaryExpression [
+
+	^self model newUnaryExpression 
+		expression: (aFASTFortranUnaryExpression expression accept: self);
+		operator: aFASTFortranUnaryExpression operator;
+		yourself.
+]
+
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
 
-	^ FASTFortran2kVariableDeclarationStatement new
-		  declaredType: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
-		  mooseModel: self model;
-		  yourself
+	^self model newVariableDeclarationStatement 
+		declaredType: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
+		declarators: (self visitFASTFortranList: aFASTFortranVariableDeclarationStatement declarators);
+		yourself
+		
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranWriteStatement: aFASTFortranWriteStatement [
+
+	^self model newWriteStatement
+		ioParameters: (self visitFASTFortranList: aFASTFortranWriteStatement ioParameters);
+		arguments:
+			(self visitFASTFortranList: aFASTFortranWriteStatement arguments);
+		yourself
 ]
 
 { #category : 'visiting' }
