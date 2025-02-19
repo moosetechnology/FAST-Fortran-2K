@@ -153,6 +153,18 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kAsterisk [
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kContinueStatement [
+	| stmt res |
+
+	stmt := FASTFortranContinueStatement new label: '42'.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kContinueStatement.
+	self assert: res label equals: '42'
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kExternalStatement [
 	| stmt res |
 
@@ -263,6 +275,86 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kIfLogicalStateme
 
 ]
 
+{ #category : 'tests-expression' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kImpliedDoExpression [
+	| res expression entity |
+
+	self programEmpty.
+
+	expression := FASTFortranImpliedDoExpression new
+		loopControl: (self loopControlInit: #(i 1) increment: 1 limit: #max) ;
+		variables: (self scalarVariables: #(v)) .
+
+	res := expression accept: visitor.
+
+	self assert: res class equals: FASTFortran2kImpliedDoExpression.
+
+	entity := res loopControl.
+	self assert: entity class equals: FASTFortran2kLoopControlExpression.
+	self assert: entity init class equals: FASTFortran2kAssignmentExpression.
+	self assert: entity init variable class equals: FASTFortran2kScalarVariable.
+	self assert: entity init expression class equals: FASTFortran2kIntegerLiteral.
+	self assert: entity increment class equals: FASTFortran2kIntegerLiteral.
+	self assert: entity limit class equals: FASTFortran2kScalarVariable.
+	
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kOpenStatement [
+	| stmt res entity |
+
+	stmt := FASTFortranOpenStatement new
+		ioParameters: {
+			self integerLiteral: '3' .
+			self ioParameter: #file value: 'projectA/data.test'.
+			self ioParameter: #err value: 99
+		}.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kOpenStatement.
+	self assert: res ioParameters size equals: 3.
+
+	entity := res ioParameters first.
+	self assert: entity class equals: FASTFortran2kCharacterLiteral.
+	self assert: entity primitiveValue equals: '3'.
+
+	entity := res ioParameters second.
+	self assert: entity class equals: FASTFortranIOParameter.
+	self assert: entity name equals: 'file'.
+	self assert: entity expression class equals: FASTFortran2kCharacterLiteral.
+	self assert: entity expression primitiveValue equals: 'projectA/data.test'.
+
+	entity := res ioParameters third.
+	self assert: entity class equals: FASTFortranIOParameter.
+	self assert: entity name equals: 'err'.
+	self assert: entity expression class equals: FASTFortran2kIntegerLiteral.
+	self assert: entity expression primitiveValue equals: '99'.
+
+
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kReadStatement [
+	| stmt res entity |
+
+	stmt := self readStatement: #( 'x' ).
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kReadStatement.
+	self assert: res ioParameters size equals: 2.
+	self assert: res arguments size equals: 1.
+
+	entity := res arguments anyOne.
+	self assert: entity class equals: FASTFortran2kCharacterLiteral.
+	self assert: entity primitiveValue equals: 'x'.
+
+	self assert: res ioParameters first class equals: FASTFortran2kAsterisk.
+	self assert: res ioParameters second class equals: FASTFortran2kAsterisk.
+
+]
+
 { #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kReturnStatement [
 
@@ -294,6 +386,20 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kScalarFieldAcces
 	self assert: res instance name equals: 'aPtr'.
 	self assert: res field class equals: FASTFortran2kScalarVariable.
 	self assert: res field name equals: 'aField'.
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kStopStatement [
+
+	| stmt res |
+	stmt := FASTFortranStopStatement new
+		displayArgument: '''error''' ;
+		yourself.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kStopStatement.
+	self assert: res displayArgument equals: '''error'''.
 ]
 
 { #category : 'tests-expression' }

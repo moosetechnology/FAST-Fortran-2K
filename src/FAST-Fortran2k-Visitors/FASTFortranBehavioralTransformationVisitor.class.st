@@ -175,6 +175,14 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterType: aFA
 ]
 
 { #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranContinueStatement: aFASTFortranContinueStatement [
+
+	^self model newContinueStatement
+		label: aFASTFortranContinueStatement label;
+		yourself
+]
+
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDoStatement: aDoStatementNode [
 
 	^self model newDoStatement
@@ -301,6 +309,13 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranGoToStatement: aFA
 		yourself
 ]
 
+{ #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIOParameter: aFASTFortranIOParameter [
+
+	self flag: 'shouldBeImplemented'.
+	^self model newAbstractIOStatement 
+]
+
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIfBlockStatement: aFASTFortranIfBlockStatement [
 	| ifBlockStatement |
@@ -337,6 +352,15 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranImplicitStatement:
 ]
 
 { #category : 'visiting - expressions' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranImpliedDoExpression: aFASTFortranImpliedDoExpression [ 
+
+	^self model newImpliedDoExpression
+		loopControl: (aFASTFortranImpliedDoExpression loopControl accept: self);
+		variables: (self visitFASTFortranList: aFASTFortranImpliedDoExpression variables);
+		yourself
+]
+
+{ #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerLiteral: anIntegerLiteralNode [
 
 	^ self model newIntegerLiteral
@@ -363,12 +387,30 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLoopControlExpress
 ]
 
 { #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranOpenStatement: aFASTFortranOpenStatement [
+
+	^self model newOpenStatement
+		ioParameters: (self visitFASTFortranList: aFASTFortranOpenStatement ioParameters);
+		yourself
+]
+
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranPrintStatement: aFASTFortranPrintStatement [
 
 	^ self model newPrintStatement
 		  format: (aFASTFortranPrintStatement format accept: self);
 		  arguments: (self visitFASTFortranList: aFASTFortranPrintStatement arguments);
 		  yourself
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranReadStatement: aFASTFortranReadStatement [
+
+	^self model newReadStatement
+		ioParameters: (self visitFASTFortranList: aFASTFortranReadStatement ioParameters);
+		arguments:
+			(self visitFASTFortranList: aFASTFortranReadStatement arguments);
+		yourself
 ]
 
 { #category : 'visiting - expressions' }
@@ -446,6 +488,14 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 		].
 
 	^f2kStatementBlock
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStopStatement: aFASTFortranStopStatement [
+
+	^self model newStopStatement
+		displayArgument: (aFASTFortranStopStatement displayArgument);
+		yourself
 ]
 
 { #category : 'visiting - statements' }
