@@ -8,8 +8,8 @@ an abstract Fortran Variable, could be an array or a scalar
 | Relation | Origin | Opposite | Type | Comment |
 |---|
 | `entryStatement` | `FASTFortran2kTEntryArgument` | `entryArguments` | `FASTFortran2kEntryStatement` | |
-| `fieldIn` | `FASTFortran2kVariable` | `field` | `FASTFortran2kDerivedTypeComponentAccess` | Parent DerivedTypeComponentAccess in which receiver is a field|
 | `fieldIn` | `FASTFortran2kVariable` | `field` | `FASTFortran2kFieldAccess` | Parent FieldAccess in which receiver is a field|
+| `fieldIn` | `FASTFortran2kVariable` | `field` | `FASTFortran2kDerivedTypeComponentAccess` | Parent DerivedTypeComponentAccess in which receiver is a field|
 | `instanceIn` | `FASTFortran2kVariable` | `instance` | `FASTFortran2kDerivedTypeComponentAccess` | Parent DerivedTypeComponentAccess in which receiver is a instance of derived type|
 | `invokedIn` | `FASTTNamedEntity` | `invoked` | `FASTTInvocation` | Optional invocation where this name is used|
 | `parameterOwner` | `FASTTVariableEntity` | `parameters` | `FASTTWithParameters` | parameterOwner|

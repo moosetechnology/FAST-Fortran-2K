@@ -22,18 +22,16 @@ A fortran comment
 | Name | Type | Default value | Comment |
 |---|
 | `content` | `String` | nil | Content of the comment as a String|
-| `content` | `String` | nil | Determines a content of a comment|
 | `endPos` | `Number` | nil | |
 | `startPos` | `Number` | nil | |
 
 "
 Class {
 	#name : 'FASTFortran2kComment',
-	#superclass : 'FASTFortran2kEntity',
+	#superclass : 'FASTFortran2kAbstractStatement',
 	#traits : 'FASTTComment + FASTTEntity',
 	#classTraits : 'FASTTComment classTrait + FASTTEntity classTrait',
 	#instVars : [
-		'#content => FMProperty',
 		'#derivedTypeDefinition => FMOne type: #FASTFortran2kDerivedTypeDefinition opposite: #comment',
 		'#derivedTypeComponent => FMOne type: #FASTFortran2kDerivedTypeComponent opposite: #comment'
 	],
@@ -45,25 +43,10 @@ Class {
 { #category : 'meta' }
 FASTFortran2kComment class >> annotation [
 
-	<FMClass: #Comment super: #FASTFortran2kEntity>
+	<FMClass: #Comment super: #FASTFortran2kAbstractStatement>
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
-]
-
-{ #category : 'accessing' }
-FASTFortran2kComment >> content [
-
-	<FMProperty: #content type: #String>
-	<generated>
-	<FMComment: 'Determines a content of a comment'>
-	^ content
-]
-
-{ #category : 'accessing' }
-FASTFortran2kComment >> content: anObject [
-	<generated>
-	content := anObject
 ]
 
 { #category : 'accessing' }

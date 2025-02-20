@@ -678,13 +678,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kStatementBlock: aFASTFortran2k
 			self indent.
 			statements do: [ :statement | statement accept: self ].
 			self unindent
-		].
-
-	self flag: '#FIXME: this not work, make comment as a statatement'.
-	aFASTFortran2kStatementBlock comments
-		ifNotNil:[ :comments |
-			comments do: [ :comment | comment accept: self ].
-		].
+		]
 	
 ]
 
