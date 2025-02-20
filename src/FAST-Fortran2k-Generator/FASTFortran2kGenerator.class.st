@@ -328,11 +328,11 @@ FASTFortran2kGenerator >> defineClasses2k [
 		                     comment: 'I represent a internal procedure'.
 
 	internalFunction := self
-		                    newAbstractClassNamed: #InternalFunction
+		                    newClassNamed: #InternalFunction
 		                    comment: 'I represent a internal procedure'.
 
 	internalSubroutine := self
-		                      newAbstractClassNamed: #InternalSubroutine
+		                      newClassNamed: #InternalSubroutine
 		                      comment: 'I represent a internal procedure'.
 
 	importStatement := self newClassNamed: #ImportStatement comment: ''.
