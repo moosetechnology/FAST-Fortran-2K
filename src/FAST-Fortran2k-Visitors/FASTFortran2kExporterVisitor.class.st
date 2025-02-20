@@ -6,8 +6,8 @@ Note: Inherits from FASTFortranExporterVisitor and not FASTFortran2kAbstractVisi
 Class {
 	#name : 'FASTFortran2kExporterVisitor',
 	#superclass : 'FASTFortranExporterVisitor',
-	#traits : 'FASTTExporter',
-	#classTraits : 'FASTTExporter classTrait',
+	#traits : 'FASTFortran2kTTraitVisitor',
+	#classTraits : 'FASTFortran2kTTraitVisitor classTrait',
 	#instVars : [
 		'modelIn'
 	],
@@ -335,6 +335,12 @@ FASTFortran2kExporterVisitor >> unindented: aPrintable [
 ]
 
 { #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kArrayVariable: aFASTFortran2kArrayVariable [
+
+	self visitFASTFortranArrayVariable: aFASTFortran2kArrayVariable
+]
+
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentExpression: aFASTFortran2kAssignmentExpression [
 
 	self visitFASTFortranAssignmentExpression:
@@ -440,6 +446,15 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedType: aFASTFortran2kDer
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponent: aFASTFortran2kDerivedTypeComponent [
 
 	^ self visitFASTFortranVariableDeclarationStatement: aFASTFortran2kDerivedTypeComponent
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponentAccess: aFASTFortran2kDerivedTypeComponentAccess [
+
+	self acceptMeIfNotNil: aFASTFortran2kDerivedTypeComponentAccess instance.
+	self << ' % '.
+	self acceptMeIfNotNil: aFASTFortran2kDerivedTypeComponentAccess field.
+
 ]
 
 { #category : 'visiting' }
