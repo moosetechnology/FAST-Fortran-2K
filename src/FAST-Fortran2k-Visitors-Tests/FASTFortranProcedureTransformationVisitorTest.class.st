@@ -10,14 +10,14 @@ FASTFortranProcedureTransformationVisitorTest >> testCreateModule [
 
 	| module |
 
-	module := visitor createModule: 'someName_mod'.
+	module := visitor createModule: '/not/normalized/someName_mod'.
 
 	self assert: module class equals: FASTFortran2kModule.
 	self assert: module name equals: 'someName_mod'.
 	
 	self assert: module programFile isNotNil.
 	self assert: module programFile class equals: FASTFortran2kProgramFile.
-	self assert: module programFile filename equals: 'someName_mod.f90'
+	self assert: module programFile filename equals: '/not/normalized/someName_mod.f90'
 
 ]
 
