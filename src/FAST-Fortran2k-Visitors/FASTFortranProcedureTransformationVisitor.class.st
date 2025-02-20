@@ -11,9 +11,12 @@ Class {
 { #category : 'helpers - segment' }
 FASTFortranProcedureTransformationVisitor >> createModule: moduleName [
 
-	| module |
+	| module normalizedModuleName |
+	
+	normalizedModuleName := ($/ split: moduleName) last.
+	
 	module := self model newModule
-		name: moduleName ;
+		name: normalizedModuleName ;
 		statementBlock: (self model newStatementBlock
 			addStatement: self model newImplicitStatement ;
 			yourself ) ;
@@ -21,9 +24,8 @@ FASTFortranProcedureTransformationVisitor >> createModule: moduleName [
 	
 	
 	self model newProgramFile
-		filename: (moduleName , '.f90') ;
-		programUnits: {  module } ;
-		yourself.
+		filename: (normalizedModuleName , '.f90') ;
+		programUnits: {  module }.
 
 	^module
 
