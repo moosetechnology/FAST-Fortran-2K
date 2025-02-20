@@ -660,6 +660,7 @@ FASTFortran2kGenerator >> defineHierarchy [
 	"other entities"
 	comment --|> tEntity.
 	comment --|> tComment.
+	comment --|> abstractStatement.
 
 	"FORTRAN STATEMENTS"
 	abstractStatement --|> tStatement.
@@ -894,9 +895,6 @@ FASTFortran2kGenerator >> defineProperties [
 
 	(callStatement property: #name type: #String) comment:
 		'Name of called entity (a subroutine)'.
-
-	(comment property: #content type: #String) comment:
-		'Determines a content of a comment'.
 
 	(formatStatement property: #formatDescription type: #String).
 
