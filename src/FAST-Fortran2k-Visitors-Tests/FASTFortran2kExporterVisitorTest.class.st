@@ -63,13 +63,28 @@ FASTFortran2kExporterVisitorTest >> segmentBoxedBookDefinition [
 ]
 
 { #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testAssignmentStatement [
+
+	| stmt |
+
+	stmt := FASTFortran2kAssignmentStatement new
+		variable: (FASTFortran2kScalarVariable new name: 'x') ;
+		expression: (FASTFortran2kIntegerLiteral new primitiveValue: '1') ;
+		yourself.
+
+	self assertExport: stmt equals: 'x = 1
+'
+]
+
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testCommentStatement [
 
 	| stmt |
 
 	stmt := FASTFortran2kComment new content: 'a comment'.
 
-	self assertExport: stmt equals: '! a comment'
+	self assertExport: stmt equals: '! a comment
+'
 ]
 
 { #category : 'testing - statements' }

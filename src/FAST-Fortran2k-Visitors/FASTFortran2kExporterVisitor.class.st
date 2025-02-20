@@ -342,10 +342,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentExpression: aFASTFor
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentStatement: aFASTFortran2kAssignmentStatement [ 
+FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentStatement: aFASTFortran2kAssignmentStatement [
+
 	aFASTFortran2kAssignmentStatement variable accept: self.
 	self << ' = '.
 	aFASTFortran2kAssignmentStatement expression accept: self.
+	self newLine
 ]
 
 { #category : 'visiting' }
@@ -411,7 +413,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kComment: aFASTFortran2kComment
 
 	self 
 		<< '! ';
-		<< aFASTFortran2kComment content
+		<< aFASTFortran2kComment content;
+		newLine
 ]
 
 { #category : 'visiting - statements' }
