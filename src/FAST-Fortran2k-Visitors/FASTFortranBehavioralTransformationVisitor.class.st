@@ -498,9 +498,6 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 						]
 			 	]
 		].
-	
-	aFASTFortranStatementBlock comments
-		do: [ :comment | f2kStatementBlock addComment: (comment accept: self) ].
 
 	^f2kStatementBlock
 ]
