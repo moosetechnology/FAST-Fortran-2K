@@ -180,6 +180,14 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCloseStatement: aF
 	^self model newCloseStatement
 ]
 
+{ #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranComment: aCommentNode [
+
+	^ self model newComment
+		  content: aCommentNode content;
+		  yourself
+]
+
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranContinueStatement: aFASTFortranContinueStatement [
 
