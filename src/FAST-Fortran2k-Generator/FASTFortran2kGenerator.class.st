@@ -849,6 +849,7 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	internalProcedure --|> tWithComments.
 
 	internalFunction --|> internalProcedure.
+	internalFunction --|> tDeclaredType.
 	internalSubroutine --|> internalProcedure.
 	
 	module --|> programUnit.
@@ -1145,9 +1146,6 @@ FASTFortran2kGenerator >> defineRelations2k [
 	privateStatement <>-* nameEntity.
 	useStatement <>-* useRenamedStatement.
 	useOnlyStatement <>-* useNoRenamedStatement.
-
-	(internalFunction property: #returnType)
-	<>- (type property: #typedFunctions).
 
 	interface <>-* interfaceProcedure.
 
