@@ -51,7 +51,7 @@ FASTFortranProcedureTransformationVisitorTest >> testEsopeTwoSegmentsInTwoModule
 
 		"
 --- someFile.seg ----
-   subroutine _$fakesubroutine
+   subroutine _$someFile_seg
 	segment foo
 	end segment
 
@@ -87,7 +87,7 @@ end module bar_mod
 	segment_foo := self segment: 'foo' attributes: #().
 	segment_bar := self segment: 'bar' attributes: #().
 
-	fastFakesubroutine := self subroutine: '_$fakesubroutine'.
+	fastFakesubroutine := self subroutine: '_$someFile_seg'.
 	fastFakesubroutine statementBlock: (self statementBlock: {segment_foo . segment_bar }).
 	
 	fastProgramFile addProgramUnit: fastFakesubroutine.
@@ -101,9 +101,9 @@ end module bar_mod
 	
 	self assert: f2ksegment name equals: 'foo'.
 	
-	self assert: f2ksegment derivedTypeComponents size equals: 1.
+	self assert: f2ksegment fields size equals: 1.
 	
-	stmt := f2ksegment derivedTypeComponents anyOne.
+	stmt := f2ksegment fields anyOne.
 	self assert: stmt class equals: FASTFortran2kDerivedTypeComponent.
 	self assert: stmt type class equals: FASTFortran2kIntegerType.
 	self assert: stmt declarators size equals: 1.
