@@ -406,6 +406,14 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kCloseStatement: aFASTFortran2k
 	self visitFASTFortranCloseStatement: aFASTFortran2kCloseStatement
 ]
 
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kComment: aFASTFortran2kComment [
+
+	self 
+		<< '! ';
+		<< aFASTFortran2kComment content
+]
+
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kContinueStatement: aFASTFortran2kContinueStatement [
 

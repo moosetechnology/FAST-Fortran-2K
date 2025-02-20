@@ -63,6 +63,16 @@ FASTFortran2kExporterVisitorTest >> segmentBoxedBookDefinition [
 ]
 
 { #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testCommentStatement [
+
+	| stmt |
+
+	stmt := FASTFortran2kComment new content: 'a comment'.
+
+	self assertExport: stmt equals: '! a comment'
+]
+
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testImplicitNoneStatement [
 	"
 program demo
