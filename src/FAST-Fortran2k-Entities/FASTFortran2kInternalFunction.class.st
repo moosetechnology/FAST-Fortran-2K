@@ -7,7 +7,7 @@ I represent a internal procedure
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `returnType` | `FASTFortran2kInternalFunction` | `typedFunctions` | `FASTFortran2kType` | |
+| `declaredType` | `FASTFortran2kTDeclaredType` | `parentDeclaration` | `FASTFortran2kType` | type|
 
 
 
@@ -15,9 +15,8 @@ I represent a internal procedure
 Class {
 	#name : 'FASTFortran2kInternalFunction',
 	#superclass : 'FASTFortran2kInternalProcedure',
-	#instVars : [
-		'#returnType => FMOne type: #FASTFortran2kType opposite: #typedFunctions'
-	],
+	#traits : 'FASTFortran2kTDeclaredType',
+	#classTraits : 'FASTFortran2kTDeclaredType classTrait',
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
 	#tag : 'Entities'
@@ -30,26 +29,4 @@ FASTFortran2kInternalFunction class >> annotation [
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
-]
-
-{ #category : 'accessing' }
-FASTFortran2kInternalFunction >> returnType [
-	"Relation named: #returnType type: #FASTFortran2kType opposite: #typedFunctions"
-
-	<generated>
-	^ returnType
-]
-
-{ #category : 'accessing' }
-FASTFortran2kInternalFunction >> returnType: anObject [
-
-	<generated>
-	returnType := anObject
-]
-
-{ #category : 'navigation' }
-FASTFortran2kInternalFunction >> returnTypeGroup [
-	<generated>
-	<navigation: 'ReturnType'>
-	^ MooseSpecializedGroup with: self returnType
 ]
