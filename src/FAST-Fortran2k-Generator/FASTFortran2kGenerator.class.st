@@ -172,7 +172,8 @@ Class {
 		'tWithDeclarations',
 		'functionTypeDeclarationStatement',
 		'fieldAccess',
-		'ioParameter'
+		'ioParameter',
+		'functionReturnStatement'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -631,6 +632,8 @@ FASTFortran2kGenerator >> defineFASTClasses [
 	conditionalStatement := self newClassNamed: #ConditionalStatement comment: 'I represent a fortran statement with a condition: if-block, if-logical'.
 
 	ioParameter := self newClassNamed: #IOParameter comment: self commentForIOParameter.
+
+	functionReturnStatement := self newClassNamed: #FunctionReturnStatement comment: 'I represent a return (not related to return keyword) for a function'.
 ]
 
 { #category : 'definition' }
@@ -703,6 +706,8 @@ FASTFortran2kGenerator >> defineHierarchy [
 	functionTypeDeclarationStatement --|> abstractStatement.
 	functionTypeDeclarationStatement --|> tNamedEntity.
 	functionTypeDeclarationStatement --|> tDeclaredType.
+	functionReturnStatement --|> tNamedEntity. "we use the name to track the function name"
+	functionReturnStatement --|> tReturnStatement. "not the same as return statement (the keyword)"
 	goToStatement --|> abstractStatement.
 	goToStatement --|> tWithLabelReferences.
 	goToAssignedStatement --|> abstractStatement.
