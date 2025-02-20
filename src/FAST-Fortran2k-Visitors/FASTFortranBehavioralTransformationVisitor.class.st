@@ -175,6 +175,20 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterType: aFA
 ]
 
 { #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCloseStatement: aFASTFortranCloseStatement [
+
+	^self model newCloseStatement
+]
+
+{ #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranComment: aCommentNode [
+
+	^ self model newComment
+		  content: aCommentNode content;
+		  yourself
+]
+
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranContinueStatement: aFASTFortranContinueStatement [
 
 	^self model newContinueStatement
@@ -308,11 +322,13 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranGoToStatement: aFA
 		yourself
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIOParameter: aFASTFortranIOParameter [
 
-	self flag: 'shouldBeImplemented'.
-	^self model newAbstractIOStatement 
+	^self model newIOParameter
+		name: aFASTFortranIOParameter name;
+		expression: (aFASTFortranIOParameter expression accept: self);
+		yourself
 ]
 
 { #category : 'visiting - statements' }
@@ -485,6 +501,9 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 						]
 			 	]
 		].
+	
+	aFASTFortranStatementBlock comments
+		do: [ :comment | f2kStatementBlock addComment: (comment accept: self) ].
 
 	^f2kStatementBlock
 ]

@@ -16,14 +16,6 @@ FASTFortranAbstractTransformationVisitor >> initialize [
 	stack := Stack new
 ]
 
-{ #category : 'visiting' }
-FASTFortranAbstractTransformationVisitor >> visitFASTFortranComment: aCommentNode [
-
-	^ self model newComment
-		  content: aCommentNode content;
-		  yourself
-]
-
 { #category : 'visiting - expressions' }
 FASTFortranAbstractTransformationVisitor >> visitFASTFortranIntegerType: aFASTFortranIntegerType [
 

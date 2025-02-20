@@ -12,8 +12,9 @@ Class {
 FASTFortranProcedureTransformationVisitor >> createModule: moduleName [
 
 	| module |
+	
 	module := self model newModule
-		name: moduleName ;
+		name: (($/ split: moduleName) last) ;
 		statementBlock: (self model newStatementBlock
 			addStatement: self model newImplicitStatement ;
 			yourself ) ;
@@ -22,8 +23,7 @@ FASTFortranProcedureTransformationVisitor >> createModule: moduleName [
 	
 	self model newProgramFile
 		filename: (moduleName , '.f90') ;
-		programUnits: {  module } ;
-		yourself.
+		programUnits: {  module }.
 
 	^module
 
