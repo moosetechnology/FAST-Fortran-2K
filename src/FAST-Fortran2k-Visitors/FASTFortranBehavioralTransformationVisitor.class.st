@@ -27,6 +27,12 @@ FASTFortranBehavioralTransformationVisitor >> parentTransformator: anObject [
 ]
 
 { #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsopeIncludeStatement [ 
+
+	^nil
+]
+
+{ #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarationStatement: aFASTEsopePointerDeclarationStatement [
 
 	^aFASTEsopePointerDeclarationStatement pointerDeclarators 
@@ -58,6 +64,12 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 ]
 
 { #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegact: aFASTEsopeSegact [ 
+
+	^nil
+]
+
+{ #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegadj: aFASTEsopeSegadj [ 
 	^aFASTEsopeSegadj variables collect:  [ :variable | | anEsopeCommandCall argument |
 		argument := variable accept: self.
@@ -69,6 +81,12 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegadj: aFASTEsopeSe
 		self flag: '#TODO: add others arguments from segment dimensional expressions'.
 		anEsopeCommandCall
 	]
+]
+
+{ #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegdes: aFASTEsopeSegdes [ 
+
+	^nil
 ]
 
 { #category : 'visiting' }
@@ -84,6 +102,12 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSe
 		self flag: '#TODO: add others arguments from segment dimensional expressions'.
 		anEsopeCommandCall
 	]
+]
+
+{ #category : 'visiting - programUnits' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
+
+	^nil
 ]
 
 { #category : 'visiting - statements' }
