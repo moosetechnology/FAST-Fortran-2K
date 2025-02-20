@@ -87,6 +87,18 @@ FASTFortran2kExporterVisitorTest >> testCommentStatement [
 '
 ]
 
+{ #category : 'testing - expressions' }
+FASTFortran2kExporterVisitorTest >> testDerivedTypeComponentAccess [
+	| expr |
+
+	expr := FASTFortran2kDerivedTypeComponentAccess new
+		instance: (FASTFortran2kScalarVariable new name: 'ptr') ;
+		field: (FASTFortran2kScalarVariable new name: 'att') ;
+		yourself.
+
+	self assertExport: expr equals: 'ptr % att'
+]
+
 { #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testImplicitNoneStatement [
 	"
