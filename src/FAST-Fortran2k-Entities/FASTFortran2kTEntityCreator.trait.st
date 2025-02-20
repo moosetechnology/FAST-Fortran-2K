@@ -434,6 +434,13 @@ FASTFortran2kTEntityCreator >> newFunctionCall [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newFunctionReturnStatement [
+
+	<generated>
+	^ self add: FASTFortran2kFunctionReturnStatement new
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newFunctionStatement [
 
 	<generated>
