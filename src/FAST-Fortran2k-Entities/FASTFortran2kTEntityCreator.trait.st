@@ -581,6 +581,20 @@ FASTFortran2kTEntityCreator >> newInterfaceProcedure [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newInternalFunction [
+
+	<generated>
+	^ self add: FASTFortran2kInternalFunction new
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newInternalSubroutine [
+
+	<generated>
+	^ self add: FASTFortran2kInternalSubroutine new
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newIntrinsicStatement [
 
 	<generated>

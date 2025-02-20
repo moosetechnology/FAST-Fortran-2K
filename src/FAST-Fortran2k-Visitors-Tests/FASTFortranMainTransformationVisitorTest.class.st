@@ -91,7 +91,7 @@ end program demo
 	entity := res internalProcedures first.
 	self assert: entity class equals: FASTFortran2kInternalFunction.
 	self assert: entity name equals: 'fct'.
-	self assert: entity returnType class equals: FASTFortran2kRealType.
+	self assert: entity declaredType class equals: FASTFortran2kRealType.
 	self assert: entity statementBlock statements size equals: 2.
 	self assert: entity parameters size equals: 1.
 	
@@ -142,7 +142,7 @@ end program demo
 	entity := res internalProcedures first.
 	self assert: entity class equals: FASTFortran2kInternalFunction.
 	self assert: entity name equals: 'fct'.
-	self assert: entity returnType class equals: FASTFortran2kRealType.
+	self assert: entity declaredType class equals: FASTFortran2kRealType.
 	self assert: entity statementBlock statements size equals: 1.
 	self assert: entity parameters size equals: 0.
 	

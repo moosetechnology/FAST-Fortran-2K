@@ -275,14 +275,11 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionCall: aFAS
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement: aFunctionStatementNode [
 
-
 	| fct |
-	fct := FASTFortran2kInternalFunction new
+	fct := self model newInternalFunction
 		name: aFunctionStatementNode name;
-		mooseModel: self model;
+		declaredType: (aFunctionStatementNode famix declaredType accept: self)
 		yourself.
-
-	fct returnType: (aFunctionStatementNode famix declaredType accept: self).
 
 	fct	 parameters: (aFunctionStatementNode parameters collect: [:parameter | 
 			self model newScalarVariable 

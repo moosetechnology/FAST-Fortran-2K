@@ -9,7 +9,6 @@ I represent Fortran Type statement
 |---|
 | `parentDeclaration` | `FASTFortran2kType` | `declaredType` | `FASTFortran2kTDeclaredType` | Parent declaration|
 | `parentImplicitRule` | `FASTFortran2kType` | `type` | `FASTFortran2kImplicitTypingRule` | |
-| `typedFunctions` | `FASTFortran2kType` | `returnType` | `FASTFortran2kInternalFunction` | |
 
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
@@ -25,8 +24,7 @@ Class {
 	#instVars : [
 		'#parentDeclaration => FMOne type: #FASTFortran2kTDeclaredType opposite: #declaredType',
 		'#parentImplicitRule => FMOne type: #FASTFortran2kImplicitTypingRule opposite: #type',
-		'#size => FMOne type: #FASTFortran2kAbstractExpression opposite: #parentTypeSize',
-		'#typedFunctions => FMOne type: #FASTFortran2kInternalFunction opposite: #returnType'
+		'#size => FMOne type: #FASTFortran2kAbstractExpression opposite: #parentTypeSize'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -112,28 +110,4 @@ FASTFortran2kType >> sizeGroup [
 	<generated>
 	<navigation: 'Size'>
 	^ MooseSpecializedGroup with: self size
-]
-
-{ #category : 'accessing' }
-FASTFortran2kType >> typedFunctions [
-	"Relation named: #typedFunctions type: #FASTFortran2kInternalFunction opposite: #returnType"
-
-	<generated>
-	<container>
-	<derived>
-	^ typedFunctions
-]
-
-{ #category : 'accessing' }
-FASTFortran2kType >> typedFunctions: anObject [
-
-	<generated>
-	typedFunctions := anObject
-]
-
-{ #category : 'navigation' }
-FASTFortran2kType >> typedFunctionsGroup [
-	<generated>
-	<navigation: 'TypedFunctions'>
-	^ MooseSpecializedGroup with: self typedFunctions
 ]
