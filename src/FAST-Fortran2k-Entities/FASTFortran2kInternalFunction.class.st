@@ -29,15 +29,7 @@ FASTFortran2kInternalFunction class >> annotation [
 	<FMClass: #InternalFunction super: #FASTFortran2kInternalProcedure>
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
-	<abstract>
 	^ self
-]
-
-{ #category : 'testing' }
-FASTFortran2kInternalFunction class >> isAbstract [
-
-	<generated>
-	^ self == FASTFortran2kInternalFunction
 ]
 
 { #category : 'accessing' }
