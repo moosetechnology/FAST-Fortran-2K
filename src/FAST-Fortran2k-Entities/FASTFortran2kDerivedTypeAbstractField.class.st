@@ -9,12 +9,19 @@ I represent a field (attribute, component,...) for a segment: either DerivedType
 |---|
 | `parentDerivedType` | `FASTFortran2kDerivedTypeAbstractField` | `fields` | `FASTFortran2kDerivedTypeDefinition` | |
 
+### Children
+| Relation | Origin | Opposite | Type | Comment |
+|---|
+| `declaredType` | `FASTFortran2kTDeclaredType` | `parentDeclaration` | `FASTFortran2kType` | type|
+
 
 
 "
 Class {
 	#name : 'FASTFortran2kDerivedTypeAbstractField',
-	#superclass : 'FASTFortran2kVariableDeclarationStatement',
+	#superclass : 'FASTFortran2kVariableDeclarator',
+	#traits : 'FASTFortran2kTDeclaredType',
+	#classTraits : 'FASTFortran2kTDeclaredType classTrait',
 	#instVars : [
 		'#parentDerivedType => FMOne type: #FASTFortran2kDerivedTypeDefinition opposite: #fields'
 	],
@@ -26,7 +33,7 @@ Class {
 { #category : 'meta' }
 FASTFortran2kDerivedTypeAbstractField class >> annotation [
 
-	<FMClass: #DerivedTypeAbstractField super: #FASTFortran2kVariableDeclarationStatement>
+	<FMClass: #DerivedTypeAbstractField super: #FASTFortran2kVariableDeclarator>
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
