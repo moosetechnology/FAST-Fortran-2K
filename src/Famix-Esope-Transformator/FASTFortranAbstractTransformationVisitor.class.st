@@ -16,6 +16,21 @@ FASTFortranAbstractTransformationVisitor >> initialize [
 	stack := Stack new
 ]
 
+{ #category : 'accessing' }
+FASTFortranAbstractTransformationVisitor >> model [
+
+	self subclassResponsibility 
+]
+
+{ #category : 'instance creation' }
+FASTFortranAbstractTransformationVisitor >> newStatement: fastFortran2kStatementClass tracingBackTo: famixStatementEntity [
+
+	^fastFortran2kStatementClass new
+		mooseModel: self model ;
+		attributeAt: #backTrace put: famixStatementEntity ;
+		yourself
+]
+
 { #category : 'visiting - expressions' }
 FASTFortranAbstractTransformationVisitor >> visitFASTFortranIntegerType: aFASTFortranIntegerType [
 
