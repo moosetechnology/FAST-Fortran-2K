@@ -1086,7 +1086,7 @@ FASTFortranSegmentTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegm
 	segmentName := aFASTEsopeSegmentNode name.
 
 	module := self model newModule name: segmentName , '_mod'.
-	module addProcedure: (self makeProcedureSegini2: aFASTEsopeSegmentNode).
+	"module addProcedure: (self makeProcedureSegini2: aFASTEsopeSegmentNode)."
 	module procedures addAll:
 		(self makeProceduresDimensions: aFASTEsopeSegmentNode).
 

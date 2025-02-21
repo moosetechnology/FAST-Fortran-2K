@@ -371,6 +371,23 @@ FASTFortranAbstractTransformationVisitorTest >> segment: aName attributes: aDecl
 		yourself
 ]
 
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> segmentCommand: aCommandName with: aCollection [
+	
+	| segmentCommand  |
+	aCollection ifEmpty: [ ^nil ].
+
+	segmentCommand := FASTEsopeSegini new.
+	aCollection do: [ :varName | | var |
+		var := self scalarVariable: varName.
+		var famixVariable: (FamixF77Variable new name: varName).
+		var segCommand: segmentCommand.
+		segmentCommand addVariable: var.
+	].
+
+	^segmentCommand
+]
+
 { #category : 'running' }
 FASTFortranAbstractTransformationVisitorTest >> setUp [ 
 
