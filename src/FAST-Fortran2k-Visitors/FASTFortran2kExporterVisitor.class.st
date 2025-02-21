@@ -548,7 +548,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDecodeStatement: aFASTFortran2
 	self newLine
 ]
 
-{ #category : 'precedence' }
+{ #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedType: aFASTFortran2kDerivedType [
 
 	self << ('type :: ', aFASTFortran2kDerivedType name).
@@ -567,7 +567,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeAbstractField: aFAS
 
 ]
 
-{ #category : 'precedence' }
+{ #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponent: aFASTFortran2kDerivedTypeComponent [
 
 	^ self visitFASTFortranVariableDeclarationStatement: aFASTFortran2kDerivedTypeComponent
@@ -820,7 +820,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kIfArithmeticStatement: aFASTFo
 	self newLine
 ]
 
-{ #category : 'precedence' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kIfBlockStatement: aFASTFortran2kIfBlockStatement [
 	"note: can we have a label on an else line ?"
 
@@ -1429,7 +1429,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVolatileStatement: aFASTFortra
 	self newLine
 ]
 
-{ #category : 'precedence' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kWriteStatement: aFASTFortran2kWriteStatement [
 
 	self visitFASTFortranWriteStatement: aFASTFortran2kWriteStatement
