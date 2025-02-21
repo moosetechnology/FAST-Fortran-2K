@@ -1,8 +1,9 @@
 Class {
 	#name : 'FASTFortranArrayRangeVisitor',
-	#superclass : 'FASTFortranTransformationVisitor',
-	#category : 'Famix-Esope-Transformator',
-	#package : 'Famix-Esope-Transformator'
+	#superclass : 'FASTFortranBehavioralTransformationVisitor',
+	#category : 'Famix-Esope-Transformator-Segment',
+	#package : 'Famix-Esope-Transformator',
+	#tag : 'Segment'
 }
 
 { #category : 'visiting' }

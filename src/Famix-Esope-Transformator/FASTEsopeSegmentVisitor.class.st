@@ -1,8 +1,12 @@
+"
+Creates a derived type from a segment
+"
 Class {
 	#name : 'FASTEsopeSegmentVisitor',
-	#superclass : 'FASTFortranTransformationVisitor',
-	#category : 'Famix-Esope-Transformator',
-	#package : 'Famix-Esope-Transformator'
+	#superclass : 'FASTFortranBehavioralTransformationVisitor',
+	#category : 'Famix-Esope-Transformator-Segment',
+	#package : 'Famix-Esope-Transformator',
+	#tag : 'Segment'
 }
 
 { #category : 'visiting - statements' }
@@ -12,9 +16,9 @@ FASTEsopeSegmentVisitor >> visitDeclarationDimension: aFASTExpression [
 	aFASTExpression upperBound class = FASTFortranScalarVariable
 		ifFalse: [ ^ nil ].
 
-	^ self model newDerivedTypeComponent
-		declaredType: self model newIntegerType;
-		declarators: { (self model newVariableDeclarator name: aFASTExpression upperBound name) };
+	^FASTFortran2kDerivedTypeComponent new
+		declaredType: FASTFortran2kIntegerType new ;
+		declarators: { (FASTFortran2kVariableDeclarator new name: aFASTExpression upperBound name) };
 		yourself
 ]
 

@@ -1,8 +1,12 @@
+"
+Gets the dimensions of a Segment
+"
 Class {
 	#name : 'FASTEsopeSegmentDimensionsVisitor',
-	#superclass : 'FASTFortranTransformationVisitor',
-	#category : 'Famix-Esope-Transformator',
-	#package : 'Famix-Esope-Transformator'
+	#superclass : 'FASTFortranBehavioralTransformationVisitor',
+	#category : 'Famix-Esope-Transformator-Segment',
+	#package : 'Famix-Esope-Transformator',
+	#tag : 'Segment'
 }
 
 { #category : 'as yet unclassified' }

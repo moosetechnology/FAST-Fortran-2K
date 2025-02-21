@@ -31,12 +31,6 @@ FASTFortranAbstractTransformationVisitor >> newStatement: fastFortran2kStatement
 		yourself
 ]
 
-{ #category : 'visiting - expressions' }
-FASTFortranAbstractTransformationVisitor >> visitFASTFortranIntegerType: aFASTFortranIntegerType [
-
-	^ self model newIntegerType
-]
-
 { #category : 'visiting - helpers' }
 FASTFortranAbstractTransformationVisitor >> visitFASTFortranList: list [
 

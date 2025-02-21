@@ -1037,20 +1037,6 @@ FASTFortranSegmentTransformationVisitor >> makeProgramUnit: programUnits [
 ]
 
 { #category : 'helpers - segment' }
-FASTFortranSegmentTransformationVisitor >> makeSegmentModuleProlog [
-
-	^ self model newSourceCodeString content: '
-	use ignore_m
-	use contract_m
-	use segment_m
-	use str_m
-
-	implicit none
-	private
-'
-]
-
-{ #category : 'helpers - segment' }
 FASTFortranSegmentTransformationVisitor >> makeSegmentTypeName: segmentName [
 
 	^ FASTFortran2kFormattedCodeString new
@@ -1070,7 +1056,7 @@ FASTFortranSegmentTransformationVisitor >> makeTypeDefinition: aFASTFortranSegme
 		           name: aFASTFortranSegment name.
 
 	visitor := FASTEsopeSegmentVisitor new
-		model: self model.
+		parentTransformator: self.
 
 	aFASTFortranSegment statements do: [ :declarationStatement |
 		segment fields:
@@ -1082,10 +1068,14 @@ FASTFortranSegmentTransformationVisitor >> makeTypeDefinition: aFASTFortranSegme
 { #category : 'visiting' }
 FASTFortranSegmentTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
 
-	| module segmentName |
-	segmentName := aFASTEsopeSegmentNode name.
+	^FASTFortranDerivedTypeFactory new
+		name: aFASTEsopeSegmentNode name ;
+		fields: aFASTEsopeSegmentNode statements ;
+		model: self model ;
 
-	module := self model newModule name: segmentName , '_mod'.
+		createModule.
+
+	"module := self model newModule name: segmentName , '_mod'.
 	module addProcedure: (self makeProcedureSegini2: aFASTEsopeSegmentNode).
 	module procedures addAll:
 		(self makeProceduresDimensions: aFASTEsopeSegmentNode).
@@ -1113,7 +1103,7 @@ FASTFortranSegmentTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegm
 				 (self makeProcedureSeglik: aFASTEsopeSegmentNode).
 				 (self makeProcedureSegloc: segmentName).
 				 (self makeProcedureBoxed: segmentName) }).
-	^ module
+	^ module"
 ]
 
 { #category : 'visiting' }
