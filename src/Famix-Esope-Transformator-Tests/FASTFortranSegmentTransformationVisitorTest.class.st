@@ -34,11 +34,9 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentToDerivedTypeInMo
 	stmt := f2ksegment fields anyOne.
 	self assert: stmt class equals: FASTFortran2kDerivedTypeComponent.
 	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
-	self assert: stmt declarators size equals: 1.
-	
-	stmt := stmt declarators first.
-	self assert: stmt class equals: FASTFortran2kVariableDeclarator.
 	self assert: stmt name equals: 'bar'.
+	self assert: stmt rank equals: 0.
+	
 ]
 
 { #category : 'running' }
@@ -67,20 +65,15 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToD
 	self assert: f2ksegment fields size equals: 2.
 	
 	stmt := f2ksegment fields first.
-	self assert: stmt class equals: FASTFortran2kDerivedTypeComponent.
+	self assert: stmt class equals: FASTFortran2kDerivedTypeParameter.
 	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
-	self assert: stmt declarators size equals: 1.
-	self assert: stmt declarators anyOne class equals: FASTFortran2kVariableDeclarator.
-	self assert: stmt declarators anyOne name equals: 'N'.
+	self assert: stmt name equals: 'N'.
 	
 	stmt := f2ksegment fields second.
 	self assert: stmt class equals: FASTFortran2kDerivedTypeComponent.
 	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
-	self assert: stmt declarators size equals: 1.
-	
-	stmt := stmt declarators first.
-	self assert: stmt class equals: FASTFortran2kVariableDeclarator.
 	self assert: stmt name equals: 'bar'.
+	self assert: stmt rank equals: 1.
 ]
 
 { #category : 'running' }

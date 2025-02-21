@@ -831,7 +831,8 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	derivedTypeDeclarationStatement --|> variableDeclarationStatement.
 	classDeclarationStatement --|> variableDeclarationStatement.
 
-	derivedTypeAbstractField --|> variableDeclarationStatement.
+	derivedTypeAbstractField --|> variableDeclarator.
+	derivedTypeAbstractField --|> tDeclaredType.
 	
 	derivedTypeComponent --|> derivedTypeAbstractField.
 	derivedTypeParameter --|> derivedTypeAbstractField.

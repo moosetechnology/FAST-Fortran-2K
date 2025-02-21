@@ -570,7 +570,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeAbstractField: aFAS
 { #category : 'precedence' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponent: aFASTFortran2kDerivedTypeComponent [
 
-	^ self visitFASTFortranVariableDeclarationStatement: aFASTFortran2kDerivedTypeComponent
+	self indented: ''.
+	aFASTFortran2kDerivedTypeComponent declaredType accept: self.
+	self << ' :: '.
+	self visitFASTFortranVariableDeclarator: aFASTFortran2kDerivedTypeComponent.
+	self 
+		newLine
 ]
 
 { #category : 'visiting' }
@@ -1437,6 +1442,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVolatileStatement: aFASTFortra
 FASTFortran2kExporterVisitor >> visitFASTFortran2kWriteStatement: aFASTFortran2kWriteStatement [
 
 	self visitFASTFortranWriteStatement: aFASTFortran2kWriteStatement
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortranAbstractStatement: aFASTFortranAbstractStatement [
+
+	self indented: ''
 ]
 
 { #category : 'visiting' }
