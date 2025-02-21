@@ -34,9 +34,9 @@ FASTEsopeSegmentVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFo
 
 	variableDeclaration declaredType:
 		(aFASTFortranVariableDeclarationStatement declaredType accept: self).
+
 	variableDeclaration declarators:
-		(aFASTFortranVariableDeclarationStatement declarators collect: [
-			 :declartor | "thenReject: #isNil" declartor accept: self ]).
+		(self visitFASTFortranList: aFASTFortranVariableDeclarationStatement declarators).
 	declarationStatements add: variableDeclaration.
 
 	^ declarationStatements
