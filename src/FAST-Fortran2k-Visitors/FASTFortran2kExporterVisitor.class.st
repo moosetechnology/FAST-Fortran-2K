@@ -9,7 +9,8 @@ Class {
 	#traits : 'FASTFortran2kTTraitVisitor',
 	#classTraits : 'FASTFortran2kTTraitVisitor classTrait',
 	#instVars : [
-		'modelIn'
+		'modelIn',
+		'currentLine'
 	],
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
@@ -104,13 +105,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kArrayRange: aFASTFortran2kArra
 
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kArrayVariable: aFASTFortran2kArrayVariable [
 
 	self visitFASTFortranArrayVariable: aFASTFortran2kArrayVariable
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentExpression: aFASTFortran2kAssignmentExpression [
 
 	self visitFASTFortranAssignmentExpression: aFASTFortran2kAssignmentExpression
@@ -162,7 +163,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kBlockData: aFASTFortran2kBlock
 
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kBooleanLiteral: aFASTFortran2kBooleanLiteral [
 
 	self visitFASTFortranBooleanLiteral: aFASTFortran2kBooleanLiteral
@@ -590,7 +591,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kImplicitTypingRule: aFASTFortr
 
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kImpliedDoExpression: aFASTFortran2kImpliedDoExpression [
 
 	self visitFASTFortranImpliedDoExpression: aFASTFortran2kImpliedDoExpression
@@ -664,7 +665,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kLogicalType: aFASTFortran2kLog
 
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kLoopControlExpression: aFASTFortran2kLoopControlExpression [
 
 	self visitFASTFortranLoopControlExpression: aFASTFortran2kLoopControlExpression
@@ -841,7 +842,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kReadStatement: aFASTFortran2kR
 	self visitFASTFortranReadStatement: aFASTFortran2kReadStatement
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kRealLiteral: aFASTFortran2kRealLiteral [
 
 	self visitFASTFortranRealLiteral: aFASTFortran2kRealLiteral
@@ -1029,7 +1030,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kTypePBFinal: aFASTFortran2kTyp
 
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUnaryExpression: aFASTFortran2kUnaryExpression [
 
 	self visitFASTFortranUnaryExpression: aFASTFortran2kUnaryExpression
@@ -1112,7 +1113,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUserDefinedType: aFASTFortran2
 		<< ')'
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kVariable: aFASTFortran2kVariable [
 
 	self visitFASTFortranVariable: aFASTFortran2kVariable 
