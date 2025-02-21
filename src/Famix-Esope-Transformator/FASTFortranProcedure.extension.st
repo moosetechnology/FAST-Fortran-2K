@@ -1,6 +1,6 @@
 Extension { #name : 'FASTFortranProcedure' }
 
-{ #category : '*FAST-Fortran2k-Visitors' }
+{ #category : '*Famix-Esope-Transformator' }
 FASTFortranProcedure >> transformationVisitorClass [
 
 	^FASTFortranProcedureTransformationVisitor 

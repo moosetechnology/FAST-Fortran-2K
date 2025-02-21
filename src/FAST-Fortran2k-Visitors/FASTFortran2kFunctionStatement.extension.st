@@ -7,9 +7,3 @@ FASTFortran2kFunctionStatement >> accept: aVisitor [
 	^ aVisitor visitFASTFortran2kFunctionStatement: self.
 
 ]
-
-{ #category : '*FAST-Fortran2k-Visitors' }
-FASTFortran2kFunctionStatement >> migratedModuleName [
-
-	^self statementContainer fastBehaviouralParent migratedModuleName
-]

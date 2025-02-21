@@ -1,6 +1,6 @@
 Extension { #name : 'FamixEsopeIntrinsicProcedure' }
 
-{ #category : '*FAST-Fortran2k-Visitors' }
+{ #category : '*Famix-Esope-Transformator' }
 FamixEsopeIntrinsicProcedure >> migratedModuleName [
 
 	^'str_mod'

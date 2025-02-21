@@ -1,18 +1,18 @@
 Extension { #name : 'FamixF77IntrinsicRoutine' }
 
-{ #category : '*FAST-Fortran2k-Visitors' }
+{ #category : '*Famix-Esope-Transformator' }
 FamixF77IntrinsicRoutine >> migratedModuleName [
 
 	^''
 ]
 
-{ #category : '*FAST-Fortran2k-Visitors' }
+{ #category : '*Famix-Esope-Transformator' }
 FamixF77IntrinsicRoutine >> needsUseForProcedure: aFASTFortran2kProcedure [
 
 	^false
 ]
 
-{ #category : '*FAST-Fortran2k-Visitors' }
+{ #category : '*Famix-Esope-Transformator' }
 FamixF77IntrinsicRoutine >> needsUseForProgramMain: aFASTFortran2kProgramMain [
 
 	^false

@@ -1,12 +1,12 @@
 Extension { #name : 'FamixEsopeSegment' }
 
-{ #category : '*FAST-Fortran2k-Visitors' }
+{ #category : '*Famix-Esope-Transformator' }
 FamixEsopeSegment >> migratedModuleName [
 
 	^self name, '_mod'
 ]
 
-{ #category : '*FAST-Fortran2k-Visitors' }
+{ #category : '*Famix-Esope-Transformator' }
 FamixEsopeSegment >> needsUseForModule: aFASTFortran2kModule [
 
 	^aFASTFortran2kModule statementBlock statements noneSatisfy: [ :modStatement |
@@ -14,13 +14,13 @@ FamixEsopeSegment >> needsUseForModule: aFASTFortran2kModule [
 		[modStatement name = self name] ]
 ]
 
-{ #category : '*FAST-Fortran2k-Visitors' }
+{ #category : '*Famix-Esope-Transformator' }
 FamixEsopeSegment >> needsUseForProcedure: aFASTFortran2kProcedure [
 
 	^true
 ]
 
-{ #category : '*FAST-Fortran2k-Visitors' }
+{ #category : '*Famix-Esope-Transformator' }
 FamixEsopeSegment >> needsUseForProgramMain: aFASTFortran2kProgramMain [
 
 	^true

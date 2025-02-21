@@ -1,6 +1,6 @@
 Extension { #name : 'FASTEsopeSegment' }
 
-{ #category : '*FAST-Fortran2k-Visitors' }
+{ #category : '*Famix-Esope-Transformator' }
 FASTEsopeSegment >> transformationVisitorClass [
 
 	^FASTFortranSegmentTransformationVisitor 

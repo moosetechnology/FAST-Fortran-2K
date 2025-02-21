@@ -1,6 +1,6 @@
 Extension { #name : 'FamixF77ProgramUnit' }
 
-{ #category : '*FAST-Fortran2k-Visitors' }
+{ #category : '*Famix-Esope-Transformator' }
 FamixF77ProgramUnit >> migratedModuleName [
 
 	^(($. split: self programFile filename) first, '_mod')  

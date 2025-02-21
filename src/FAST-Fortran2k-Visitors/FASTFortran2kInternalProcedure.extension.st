@@ -7,9 +7,3 @@ FASTFortran2kInternalProcedure >> accept: aVisitor [
 	^ aVisitor visitFASTFortran2kInternalProcedure: self.
 
 ]
-
-{ #category : '*FAST-Fortran2k-Visitors' }
-FASTFortran2kInternalProcedure >> needsUseFor: aFamix77Entity [
-1halt.
-	^false
-]

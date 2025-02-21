@@ -1,12 +1,12 @@
 Extension { #name : 'FamixEsopePointer' }
 
-{ #category : '*FAST-Fortran2k-Visitors' }
+{ #category : '*Famix-Esope-Transformator' }
 FamixEsopePointer >> migratedModuleName [
 
 	^ self declaredType name, '_mod'
 ]
 
-{ #category : '*FAST-Fortran2k-Visitors' }
+{ #category : '*Famix-Esope-Transformator' }
 FamixEsopePointer >> needsUseForProgramMain: aFASTFortran2kProgramMain [
 
 	^ true

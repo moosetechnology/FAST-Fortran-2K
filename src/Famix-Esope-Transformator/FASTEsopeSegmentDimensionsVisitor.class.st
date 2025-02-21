@@ -1,8 +1,8 @@
 Class {
 	#name : 'FASTEsopeSegmentDimensionsVisitor',
 	#superclass : 'FASTFortranTransformationVisitor',
-	#category : 'FAST-Fortran2k-Visitors',
-	#package : 'FAST-Fortran2k-Visitors'
+	#category : 'Famix-Esope-Transformator',
+	#package : 'Famix-Esope-Transformator'
 }
 
 { #category : 'as yet unclassified' }

@@ -1,6 +1,6 @@
 Extension { #name : 'FamixF77ExternalDeclaration' }
 
-{ #category : '*FAST-Fortran2k-Visitors' }
+{ #category : '*Famix-Esope-Transformator' }
 FamixF77ExternalDeclaration >> migratedModuleName [
 
 	^ self externalProcedure migratedModuleName
