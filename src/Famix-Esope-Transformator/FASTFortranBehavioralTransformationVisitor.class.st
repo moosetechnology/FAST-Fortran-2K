@@ -536,7 +536,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStopStatement: aFA
 		yourself
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranUnaryExpression: aFASTFortranUnaryExpression [
 
 	^self model newUnaryExpression 
