@@ -40,7 +40,11 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandMayDimensionn
 		variable famixVariable 
 			ifNotNil: [ :famixVariable |
 				famixVariable declaredType 
-					ifNotNil: [ :accesses | accesses do: [ :access | ] ]
+					ifNotNil: [ :declaredType | 
+						declaredType accesses do: [ :access | 
+							self flag: '#TODO'.
+						] 
+					]
 			]
 	].
 
@@ -69,14 +73,17 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandSimple: aFAST
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsopeIncludeStatement [ 
 	
-	"self model newUseStatement 
+	self flag: '#TODO: 
+	
+	self model newUseStatement 
 		name: (aFASTEsopeIncludeStatement famixInclude included migratedModuleName)"
 	"an include can be a use
 	- local variable in includedFile must be a local variable where the file is included
 	- segment or programUnit in includedFile must be moved in their own module
 	for exemple see: user.seg file in bookstore
-	"
-	self shouldBeImplemented
+	'.
+
+	^nil
 ]
 
 { #category : 'visiting - esope' }
