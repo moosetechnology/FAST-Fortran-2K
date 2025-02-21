@@ -178,6 +178,28 @@ FASTFortran2kExporterVisitorTest >> testDerivedTypeComponentAccess [
 ]
 
 { #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testEmptyLineBetween2Statements [
+
+	| stmt |
+	self skip.
+
+	stmt := FASTFortran2kStatementBlock new.
+	stmt addStatement: (self declarationStatement: #integer variables: #(x) ).
+	stmt addStatement: (self declarationStatement: #integer variables: #(y) ).
+	self setBacktraceLines: 1@5 to: stmt.
+	self setBacktraceLines: 2@2 to: stmt statements first.
+	self setBacktraceLines: 4@4 to: stmt statements second.
+
+	self
+		assertExport: stmt
+		equals:
+'  integer :: x
+
+  integer :: y
+'
+]
+
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testImplicitNoneStatement [
 	"
 program demo
