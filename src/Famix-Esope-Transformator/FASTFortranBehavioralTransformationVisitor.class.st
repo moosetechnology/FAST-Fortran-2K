@@ -69,14 +69,15 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandSimple: aFAST
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsopeIncludeStatement [ 
 	
-	"self model newUseStatement 
+	self flag: '#TODO: 
+	
+	self model newUseStatement 
 		name: (aFASTEsopeIncludeStatement famixInclude included migratedModuleName)"
 	"an include can be a use
 	- local variable in includedFile must be a local variable where the file is included
 	- segment or programUnit in includedFile must be moved in their own module
 	for exemple see: user.seg file in bookstore
-	"
-	self shouldBeImplemented
+	'
 ]
 
 { #category : 'visiting - esope' }

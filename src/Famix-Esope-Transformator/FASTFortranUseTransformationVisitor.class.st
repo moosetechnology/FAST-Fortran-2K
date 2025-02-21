@@ -27,6 +27,13 @@ FASTFortranUseTransformationVisitor >> useNeeded: anAssociation [
 ]
 
 { #category : 'visiting' }
+FASTFortranUseTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsopeIncludeStatement [ 
+
+	self parentTransformator useNeeded: 
+		aFASTEsopeIncludeStatement famixInclude includedBy -> aFASTEsopeIncludeStatement famixInclude included
+]
+
+{ #category : 'visiting' }
 FASTFortranUseTransformationVisitor >> visitFASTEsopePointerDeclarationStatement: aFASTEsopePointerDeclarationStatement [
 
 	self visitFASTFortranList: aFASTEsopePointerDeclarationStatement pointerDeclarators
