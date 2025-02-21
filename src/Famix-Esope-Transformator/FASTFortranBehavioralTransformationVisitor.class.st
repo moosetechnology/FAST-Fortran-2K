@@ -483,11 +483,23 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerLiteral: an
 ]
 
 { #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerType: aFASTFortranIntegerType [
+
+	^ self model newIntegerType
+]
+
+{ #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLabelReference: aFASTFortranLabelReference [
 
 	^self model newLabelReference
 		label: aFASTFortranLabelReference label;
 		yourself.
+]
+
+{ #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLogicalType: aFASTFortranLogicalType [
+
+	^ self model newLogicalType
 ]
 
 { #category : 'visiting - expressions' }
