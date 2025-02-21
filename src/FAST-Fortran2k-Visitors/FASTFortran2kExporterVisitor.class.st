@@ -50,6 +50,24 @@ FASTFortran2kExporterVisitor >> model: anObject [
 ]
 
 { #category : 'outputting' }
+FASTFortran2kExporterVisitor >> newLine [
+
+	super newLine.
+	currentLine := currentLine + 1
+]
+
+{ #category : 'outputting' }
+FASTFortran2kExporterVisitor >> resetCurrentLine [
+
+	currentLine := 0
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> skipLinesTo: famixEntity [
+
+]
+
+{ #category : 'outputting' }
 FASTFortran2kExporterVisitor >> upToSixSpaces: preceedingSize [
 	"no more mandatory six spaces at the begining of line in Fortran 2k
 	 but the method is called by superclass: FASTFortranExporterVisitor
@@ -463,6 +481,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFormattedCodeString: aFASTFort
 
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFunction [ 
+	self resetCurrentLine.
 
 	aFASTFortran2kFunction declaredType 
 		ifNotNil: [ :declaredType | declaredType accept: self ].
@@ -680,6 +699,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kMapStatement: aFASTFortran2kMa
 FASTFortran2kExporterVisitor >> visitFASTFortran2kModule: aFASTFortranModule [
 
 	| moduleName |
+	self resetCurrentLine.
+
 	moduleName := aFASTFortranModule name.
 
 	self
@@ -808,6 +829,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramFile: aFASTFortran2kPro
 
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramMain: aFASTFortran2kProgramNode [
+	self resetCurrentLine.
 
 	self
 		indented: 'program ' ;
@@ -921,6 +943,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSubprogram: aFASTFortran2kSubp
 
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kSubroutine: aFASTFortran2kSubroutine [ 
+	self resetCurrentLine.
+
 	self
 		indented: 'subroutine ';
 		<< aFASTFortran2kSubroutine name.
@@ -1160,6 +1184,16 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVolatileStatement: aFASTFortra
 FASTFortran2kExporterVisitor >> visitFASTFortran2kWriteStatement: aFASTFortran2kWriteStatement [
 
 	self visitFASTFortranWriteStatement: aFASTFortran2kWriteStatement
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortranAbstractStatement: aFASTFortranAbstractStatement [
+	"Checking line numbers  to add possible 'gap' lines (empty lines)"
+
+	aFASTFortranAbstractStatement backTrace
+		ifNotNil: [ :famixEntity | self skipLinesTo: famixEntity ].
+
+	super visitFASTFortranAbstractStatement: aFASTFortranAbstractStatement
 ]
 
 { #category : 'visiting' }
