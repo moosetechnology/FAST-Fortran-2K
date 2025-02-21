@@ -47,17 +47,14 @@ FASTFortranAbstractTransformationVisitor >> visitFASTFortranList: list [
 FASTFortranAbstractTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
 
 	| varDeclarator |
-
-	varDeclarator :=  (self
-		newStatement: FASTFortran2kVariableDeclarator
-		tracingBackTo: aFASTFortranVariableDeclarator famixDeclaration ).
+	varDeclarator := self model newVariableDeclarator
+		  name: aFASTFortranVariableDeclarator name;
+		  yourself.
 		
-	varDeclarator
-		name: aFASTFortranVariableDeclarator name ;
-		dimensions:
-			(varDeclarator dimensions collect: [ :dimension | 
-				dimension accept: self
-			]).
+	varDeclarator dimensions:
+		(varDeclarator dimensions collect: [ :dimension | 
+			dimension accept: self
+		]).
 
 	^varDeclarator 
 ]

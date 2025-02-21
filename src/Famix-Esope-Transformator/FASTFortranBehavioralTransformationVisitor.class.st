@@ -8,6 +8,29 @@ Class {
 	#package : 'Famix-Esope-Transformator'
 }
 
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> makeVirtualBackTrace: fastDeclarators [
+
+	| virtualBackTrace |
+	virtualBackTrace := FamixVirtualBackTrace new.
+	virtualBackTrace startLine:
+		(fastDeclarators detectMin: [ :declarator |
+			declarator famixDeclaration
+				ifNil: [ 0 ]
+				ifNotNil: [ :famix |  famix sourceAnchor 
+					ifNil: [ 0 ]
+					ifNotNil: [ :anchor | anchor startLine ] ] ]).
+	virtualBackTrace startLine:
+		(fastDeclarators detectMax: [ :declarator |
+			declarator  famixDeclaration
+				ifNil: [ 0 ]
+				ifNotNil: [ :famix |  famix sourceAnchor 
+					ifNil: [ 0 ]
+					ifNotNil: [ :anchor | anchor endLine ] ] ]).
+
+	^virtualBackTrace
+]
+
 { #category : 'accessing' }
 FASTFortranBehavioralTransformationVisitor >> model [
 
@@ -549,7 +572,8 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclaratio
 
 	^self model newVariableDeclarationStatement 
 		declaredType: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
-		declarators: (self visitFASTFortranList: aFASTFortranVariableDeclarationStatement declarators);
+		declarators: (self visitFASTFortranList: aFASTFortranVariableDeclarationStatement declarators) ;
+		backTrace: (self makeVirtualBackTrace: aFASTFortranVariableDeclarationStatement declarators) ;
 		yourself
 		
 ]
