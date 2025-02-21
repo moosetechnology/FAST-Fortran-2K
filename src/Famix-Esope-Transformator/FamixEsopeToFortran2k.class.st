@@ -88,14 +88,16 @@ FamixEsopeToFortran2k >> migrateToFAST2k: aFASTProgramUnit [
 
 { #category : 'running' }
 FamixEsopeToFortran2k >> resolveUses: usesNeeded [
+
 	"usesNeeded is a collection of associations:
 	 - user -- a FamixF77ProgramUnit
 	 - needed -- a FamixF77ProgramUnit or FamixEsopeSegment"
 
-	usesNeeded do: [ :association | | source target | 1halt.
+	usesNeeded do: [ :association | | source target |
 		source := association key.
 		target := association value.
-		source fast attributeAt: source fast name ifAbsentPut: target migratedModuleName
+		source fast statementBlock statements 
+			addFirst: (self fast2kModel newUseStatement name: target migratedModuleName)
 	]
 ]
 
