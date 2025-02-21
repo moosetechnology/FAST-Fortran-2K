@@ -179,6 +179,15 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegsup: aFASTEsopeSe
 ]
 
 { #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranArrayRange: aFASTFortranArrayRange [
+
+	^self model newArrayRange
+		lowerBound: (aFASTFortranArrayRange lowerBound accept: self);
+		upperBound: (aFASTFortranArrayRange upperBound accept: self);
+		yourself
+]
+
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranArrayVariable: aFASTFortranArrayVariable [
 
 	^self model newArrayVariable
