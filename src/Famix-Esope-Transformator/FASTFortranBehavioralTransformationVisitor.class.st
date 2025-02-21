@@ -132,11 +132,10 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentExpressi
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentStatement: aFASTFortranAssignmentStatement [
 
-	^ self model newAssignmentStatement 
-		  variable: (aFASTFortranAssignmentStatement variable accept: self);
-		  expression: (aFASTFortranAssignmentStatement expression accept: self);
-		  "migrateFrom: anAssignmentStatementNode;"
-		  yourself
+	^(self newStatement: FASTFortran2kAssignmentStatement tracingBackTo: aFASTFortranAssignmentStatement famix)
+		variable: (aFASTFortranAssignmentStatement variable accept: self);
+		expression: (aFASTFortranAssignmentStatement expression accept: self);
+		yourself
 ]
 
 { #category : 'visiting' }

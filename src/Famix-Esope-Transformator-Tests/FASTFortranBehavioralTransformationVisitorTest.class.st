@@ -139,6 +139,22 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kArrayVariable [
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kAssignementStatement [
+	| stmt res |
+
+	self skip: 'firts, need to correct binding of FASTAssignement to FamixAccess'.
+
+	stmt := FASTFortranAssignmentStatement new.
+	stmt famix: FamixF77Access new.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kAssignmentStatement.
+	self assert: (self backTrace: res) isNotNil.
+	self assert: (self backTrace: res) class equals: FamixF77Access.
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kAsterisk [
 	| stmt res |
 
