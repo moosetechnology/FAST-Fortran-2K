@@ -78,9 +78,9 @@ FamixEsopeToFortran2k >> migrateToFAST2k: aFASTProgramUnit [
 	visitor := self transformationVisitor: aFASTProgramUnit transformationVisitorClass.
 	aFASTProgramUnit accept: visitor.
 
-	visitor := FASTFortranUseTransformationVisitor new
+	"visitor := FASTFortranUseTransformationVisitor new
 		parentTransformator: self.
-	aFASTProgramUnit accept: visitor.
+	aFASTProgramUnit accept: visitor."
 
 	^visitor parentTransformator fast2kModel
 
@@ -110,17 +110,17 @@ FamixEsopeToFortran2k >> run [
 		self flag: '#FIXME: includedFile vs other programUnit '.
 		famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
 			fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgFile.
-			
+
 			fastProgramUnit ifNotNil: [ 
 				self migrateToFAST2k: fastProgramUnit.
 				
-				self flag: '#FIXME: cleaning, quid revolveUses'.
-				fastProgramUnit accept: fastProgramUnit mooseModel carrefourBinderCleaner
+				"self flag: '#FIXME: cleaning, quid revolveUses'.
+				fastProgramUnit accept: fastProgramUnit mooseModel carrefourBinderCleaner"
 			 ]
 		]
 	].
 
-	self resolveUses: usesNeeded.
+	"self resolveUses: usesNeeded."
 
 	self exportFAST2k
 ]
