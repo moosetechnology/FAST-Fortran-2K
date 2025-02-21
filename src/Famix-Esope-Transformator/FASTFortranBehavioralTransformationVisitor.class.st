@@ -271,8 +271,9 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterLiteral: 
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterType: aFASTFortranCharacterType [
 
-	^ FASTFortran2kCharacterType new size:
-		  (aFASTFortranCharacterType size accept: self)
+	^self model newCharacterType
+		size: (aFASTFortranCharacterType size accept: self);
+		yourself
 ]
 
 { #category : 'visiting - statements' }
@@ -538,9 +539,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealLiteral: aReal
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealType: aRealTypeNode [
 
-	^ FASTFortran2kRealType new
-		  mooseModel: self model;
-		  yourself
+	^ self model newRealType
 ]
 
 { #category : 'visiting - statements' }
