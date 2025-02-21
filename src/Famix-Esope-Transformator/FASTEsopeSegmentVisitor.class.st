@@ -12,32 +12,33 @@ FASTEsopeSegmentVisitor >> visitDeclarationDimension: aFASTExpression [
 	aFASTExpression upperBound class = FASTFortranScalarVariable
 		ifFalse: [ ^ nil ].
 
-	^ self model newDerivedTypeComponent
+	^ self model newDerivedTypeParameter
+		name: aFASTExpression upperBound name;
 		declaredType: self model newIntegerType;
-		declarators: { (self model newVariableDeclarator name: aFASTExpression upperBound name) };
 		yourself
 ]
 
 { #category : 'visiting - statements' }
 FASTEsopeSegmentVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
 
-	| declarationStatements variableDeclaration |
-	declarationStatements := OrderedCollection new.
+	| derivedTypeComponents derivedTypeParameters |
 
-	aFASTFortranVariableDeclarationStatement declarators do: [
-		:declarator |
-		declarator dimensions do: [ :declarationDimension |
-			(self visitDeclarationDimension: declarationDimension) ifNotNil: [
-				:f2kDim | declarationStatements add: f2kDim ] ] ].
+	derivedTypeParameters := 
+		aFASTFortranVariableDeclarationStatement declarators flatCollect: [ :declarator |
+			declarator dimensions collect: [ :declaratorDimension |
+			(self visitDeclarationDimension: declaratorDimension) 
+				ifNotNil: [ :f2kDim | f2kDim ] 
+			] 
+		].
 
-	variableDeclaration := self model newDerivedTypeComponent.
+	derivedTypeComponents := 
+		aFASTFortranVariableDeclarationStatement declarators collect: [ :declarator |
+			self model newDerivedTypeComponent
+				name: declarator name;
+				declaredType: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
+				rank: declarator dimensions size;
+				yourself
+		].
 
-	variableDeclaration declaredType:
-		(aFASTFortranVariableDeclarationStatement declaredType accept: self).
-	variableDeclaration declarators:
-		(aFASTFortranVariableDeclarationStatement declarators collect: [
-			 :declartor | "thenReject: #isNil" declartor accept: self ]).
-	declarationStatements add: variableDeclaration.
-
-	^ declarationStatements
+	^ derivedTypeParameters , derivedTypeComponents
 ]

@@ -26,20 +26,17 @@ FASTFortran2kExporterVisitorTest >> segmentBookDefinition [
 		  name: 'book';
 		  fields: {
 				  (FASTFortran2kDerivedTypeComponent new
+						name: 'btitle';
 					   declaredType: (FASTFortran2kCharacterType new size:
 								    (FASTFortran2kIntegerLiteral new primitiveValue: 40));
-					   declarators:
-						   { (FASTFortran2kVariableDeclarator new name: 'btitle') };
 					   yourself).
 				  (FASTFortran2kDerivedTypeComponent new
+						name: 'bpages';
 					   declaredType: FASTFortran2kIntegerType new;
-					   declarators:
-						   { (FASTFortran2kVariableDeclarator new name: 'bpages') };
 					   yourself).
 				  (FASTFortran2kDerivedTypeComponent new
+						name: 'budc';
 					   declaredType: FASTFortran2kRealType new;
-					   declarators:
-						   { (FASTFortran2kVariableDeclarator new name: 'budc') };
 					   yourself) };
 		  yourself
 ]
@@ -250,15 +247,13 @@ FASTFortran2kExporterVisitorTest >> testTypeDefinition [
 		name: 'point_t';
 		fields: {
 			(FASTFortran2kDerivedTypeComponent new
+				name: 'label';
 				declaredType: (FASTFortran2kCharacterType new size: FASTFortran2kAsterisk new) ;
-				declarators: { (FASTFortran2kVariableDeclarator new name: 'label') } ;
 				yourself)
 			.
 			(FASTFortran2kDerivedTypeComponent new
 				declaredType: FASTFortran2kRealType new;
-				declarators: {
-					(FASTFortran2kVariableDeclarator new name: 'x').
-					(FASTFortran2kVariableDeclarator new name: 'y') };
+				name: 'x';
 				yourself) };
 		yourself.
 
@@ -267,7 +262,7 @@ FASTFortran2kExporterVisitorTest >> testTypeDefinition [
 		equals:
 'type :: point_t
   character(len=*) :: label
-  real :: x, y
+  real :: x
 end type point_t
 '
 ]

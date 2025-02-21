@@ -32,7 +32,7 @@ FASTFortranAbstractTransformationVisitor >> visitFASTFortranList: list [
 FASTFortranAbstractTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
 
 	| varDeclarator |
-	varDeclarator := FASTFortran2kVariableDeclarator new
+	varDeclarator := self model newVariableDeclarator
 		  name: aFASTFortranVariableDeclarator name;
 		  yourself.
 		
