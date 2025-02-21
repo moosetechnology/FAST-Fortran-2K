@@ -77,7 +77,9 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeIncludeStatement: aF
 	- local variable in includedFile must be a local variable where the file is included
 	- segment or programUnit in includedFile must be moved in their own module
 	for exemple see: user.seg file in bookstore
-	'
+	'.
+
+	^nil
 ]
 
 { #category : 'visiting - esope' }
