@@ -8,7 +8,7 @@ Class {
 	#package : 'Famix-Esope-Transformator'
 }
 
-{ #category : 'visiting - statements' }
+{ #category : 'private' }
 FASTFortranBehavioralTransformationVisitor >> makeVirtualBackTrace: fastDeclarators [
 
 	| virtualBackTrace |

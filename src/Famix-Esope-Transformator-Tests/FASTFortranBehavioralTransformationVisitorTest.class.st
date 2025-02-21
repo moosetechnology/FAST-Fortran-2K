@@ -8,7 +8,7 @@ Class {
 	#package : 'Famix-Esope-Transformator-Tests'
 }
 
-{ #category : 'running' }
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testArrayDeclaration [
 	| stmt dst |
 	stmt := self arrayDeclaration: 'v' dimensions: #( #('1' '10') ).
@@ -20,10 +20,11 @@ FASTFortranBehavioralTransformationVisitorTest >> testArrayDeclaration [
 		equals: FASTFortran2kVariableDeclarationStatement.
 ]
 
-{ #category : 'running' }
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementLiteralValue [
 	| stmt res |
 	stmt := self assignementStatement: #aVar value: (self logicalLiteral: '.true.').
+	stmt famix: (FamixF77Access new).
 	
 	res := stmt accept: visitor.
 	
@@ -33,9 +34,12 @@ FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementLitera
 	
 	self assert: res variable name equals: 'aVar'.
 	self assert: res expression primitiveValue equals: '.true.'.
+
+	self assert: res backTrace isNotNil.
+	self assert: res backTrace class equals: FamixF77Access.
 ]
 
-{ #category : 'running' }
+{ #category : 'tests' }
 FASTFortranBehavioralTransformationVisitorTest >> testComment [
 	| cmt dst |
 	cmt := self comment: 'This is a comment'.
@@ -136,22 +140,6 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kArrayVariable [
 	
 	self assert: indice class equals: FASTFortran2kIntegerLiteral.
 	self assert: indice primitiveValue equals: '1'
-]
-
-{ #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kAssignementStatement [
-	| stmt res |
-
-	self skip: 'firts, need to correct binding of FASTAssignement to FamixAccess'.
-
-	stmt := FASTFortranAssignmentStatement new.
-	stmt famix: FamixF77Access new.
-
-	res := stmt accept: visitor.
-
-	self assert: res class equals: FASTFortran2kAssignmentStatement.
-	self assert: res backTrace isNotNil.
-	self assert: res backTrace class equals: FamixF77Access.
 ]
 
 { #category : 'tests-statement' }
@@ -509,6 +497,29 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kWriteStatement [
 	self assert: res ioParameters first class equals: FASTFortran2kAsterisk.
 	self assert: res ioParameters second class equals: FASTFortran2kAsterisk.
 
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testMakeVirtualBackTrace [
+
+	| fastDeclarators backtrace |
+	fastDeclarators := { 
+		FASTFortranVariableDeclarator new
+			famixDeclaration: (FamixF77Variable new
+				sourceAnchor: (FamixF77IndexedFileAnchor new startLine: 5 ; endLine: 5) ) .
+		FASTFortranVariableDeclarator new
+			famixDeclaration: (FamixF77Variable new
+				sourceAnchor: (FamixF77IndexedFileAnchor new startLine: 3 ; endLine: 3) ) .
+		FASTFortranVariableDeclarator new
+			famixDeclaration: (FamixF77Variable new
+				sourceAnchor: (FamixF77IndexedFileAnchor new startLine: 7 ; endLine: 7) )
+	}.
+
+	backtrace := visitor makeVirtualBackTrace: fastDeclarators.
+
+	self assert: backtrace class equals: FamixVirtualBackTrace.
+	self assert: backtrace startLine equals: 3.
+	self assert: backtrace endLine equals: 3.
 ]
 
 { #category : 'running' }
