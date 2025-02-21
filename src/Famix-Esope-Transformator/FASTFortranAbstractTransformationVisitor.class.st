@@ -27,7 +27,7 @@ FASTFortranAbstractTransformationVisitor >> newStatement: fastFortran2kStatement
 
 	^fastFortran2kStatementClass new
 		mooseModel: self model ;
-		attributeAt: #backTrace put: famixStatementEntity ;
+		backTrace: famixStatementEntity ;
 		yourself
 ]
 

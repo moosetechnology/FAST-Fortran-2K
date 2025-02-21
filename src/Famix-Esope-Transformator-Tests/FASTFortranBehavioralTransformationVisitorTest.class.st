@@ -150,8 +150,8 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kAssignementState
 	res := stmt accept: visitor.
 
 	self assert: res class equals: FASTFortran2kAssignmentStatement.
-	self assert: (self backTrace: res) isNotNil.
-	self assert: (self backTrace: res) class equals: FamixF77Access.
+	self assert: res backTrace isNotNil.
+	self assert: res backTrace class equals: FamixF77Access.
 ]
 
 { #category : 'tests-statement' }
@@ -189,8 +189,8 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kCallStatementNoA
 		detect: [:fast2kstatement | fast2kstatement class = FASTFortran2kCallStatement].
 	self assert: res name equals: 'subrtn'.
 
-	self assert: (self backTrace: res) isNotNil.
-	self assert: (self backTrace: res) class equals: FamixF77Invocation.
+	self assert: res backTrace isNotNil.
+	self assert: res backTrace class equals: FamixF77Invocation.
 ]
 
 { #category : 'tests-statement' }
@@ -486,8 +486,8 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kVariableDeclarat
 		detect: [:fast2kstatement | fast2kstatement class = FASTFortran2kVariableDeclarationStatement].
 	self assert: res declarators anyOne name equals: 'str'.
 
-	self assert: (self backTrace: res declarators anyOne) isNotNil.
-	self assert: (self backTrace: res declarators anyOne) class equals: FamixF77Variable.
+	self assert: res backTrace isNotNil.
+	self assert: res backTrace class equals: FamixVirtualBackTrace.
 ]
 
 { #category : 'tests-statement' }
