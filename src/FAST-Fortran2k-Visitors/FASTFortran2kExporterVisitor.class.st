@@ -845,7 +845,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kIfBlockStatement: aFASTFortran
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kIfLogicalStatement: aFASTFortran2kIfLogicalStatement [
 
-	self visitFASTFortranIfLogicalStatement: FASTFortran2kIfLogicalStatement
+	self visitFASTFortranIfLogicalStatement: aFASTFortran2kIfLogicalStatement
 ]
 
 { #category : 'visiting' }
