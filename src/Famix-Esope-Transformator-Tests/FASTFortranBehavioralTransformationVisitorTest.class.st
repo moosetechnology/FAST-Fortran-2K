@@ -457,6 +457,24 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kUnaryExpression 
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kVariableDeclarationStatement [
+	| res |
+
+	self programWithDeclarationStatement.
+	fastMainProgram statementBlock statements anyOne declarators anyOne
+		famixDeclaration: (FamixF77Variable new name: 'str').
+
+	res := fastMainProgram accept: visitor.
+
+	res := res programUnits anyOne statementBlock statements
+		detect: [:fast2kstatement | fast2kstatement class = FASTFortran2kVariableDeclarationStatement].
+	self assert: res declarators anyOne name equals: 'str'.
+
+	self assert: (self backTrace: res declarators anyOne) isNotNil.
+	self assert: (self backTrace: res declarators anyOne) class equals: FamixF77Variable.
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kWriteStatement [
 	| stmt res entity |
 
