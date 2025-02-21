@@ -1,22 +1,83 @@
 Class {
 	#name : 'FASTFortran2kExporterVisitorTest',
-	#superclass : 'FASTFortranAbstractVisitorTest',
+	#superclass : 'TestCase',
+	#instVars : [
+		'visitor'
+	],
 	#category : 'FAST-Fortran2k-Visitors-Tests',
 	#package : 'FAST-Fortran2k-Visitors-Tests'
 }
 
 { #category : 'running' }
 FASTFortran2kExporterVisitorTest >> assertExport: anEntity equals: expectedString [
-	| generated |
+
 	anEntity accept: visitor.
-	generated := visitor outputStream contents.
-	self assert: generated equals: expectedString
+	self assert: visitor outputStream contents equals: expectedString
+]
+
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> characterType: dimension [
+	^FASTFortran2kCharacterType new
+		size: (self typeSize: dimension) ;
+		yourself
+]
+
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> declarationStatement: typeDescription variables: aCollection [
+	"Bulk declaration of several variables"
+
+	^FASTFortran2kVariableDeclarationStatement new
+		declaredType: (self makeType: typeDescription) ;
+		declarators: (self variableDeclarators: aCollection)  ;
+		yourself
+]
+
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> integerLiteral: value [
+	^FASTFortran2kIntegerLiteral new
+		primitiveValue: value ;
+		yourself
+]
+
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> integerType: dimension [
+	^FASTFortran2kIntegerType new
+		size: (self typeSize: dimension) ;
+		yourself
+]
+
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> logicalType: dimension [
+	^FASTFortran2kLogicalType new
+]
+
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> makeType: typeDescription [
+	"typeDescription can be a FamixType, a symbol (eg. #integer) or a pair: #(character '*')"
+
+	| helper pair |
+
+	typeDescription isMooseEntity ifTrue: [ ^typeDescription ].
+
+	pair := typeDescription isSymbol
+		ifTrue: [ { typeDescription . nil } ]
+		ifFalse: [ typeDescription ].
+
+	helper := (pair first asString , 'Type:') asSymbol.
+	^self perform: helper with: pair second.	
 ]
 
 { #category : 'running' }
 FASTFortran2kExporterVisitorTest >> newVisitor [
 
 	^FASTFortran2kExporterVisitor new
+]
+
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> realType: dimension [
+	^FASTFortran2kRealType new
+		size: (self typeSize: dimension) ;
+		yourself
 ]
 
 { #category : 'running' }
@@ -60,6 +121,23 @@ FASTFortran2kExporterVisitorTest >> segmentBoxedBookDefinition [
 					)
 			};
 		  yourself
+]
+
+{ #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> setBacktraceLines: aPoint to: aFASTStatementEntity [
+
+	| famixEntity |
+	famixEntity := Mock new.
+	famixEntity stub startLine willReturn: aPoint x.
+	famixEntity stub endLine willReturn: aPoint y.
+	aFASTStatementEntity backTrace: famixEntity
+]
+
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> setUp [
+	super setUp.
+
+	visitor := self newVisitor
 ]
 
 { #category : 'testing - statements' }
@@ -409,4 +487,23 @@ FASTFortran2kExporterVisitorTest >> testUseStatementWithRenamings [
 		equals:
 'use :: module_name, output => output_unit, input => input_unit
 '
+]
+
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> typeSize: dimension [
+	dimension isNumber ifTrue: [ ^self integerLiteral: dimension asString ].
+	dimension = '*' ifTrue: [ ^FASTFortran2kAsterisk new ].
+	^nil
+]
+
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> variableDeclarator: aName [
+	^FASTFortran2kVariableDeclarator new
+		name: aName ;
+		yourself
+]
+
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> variableDeclarators: aCollectionOfString [
+	^aCollectionOfString collect: [ :aString | self variableDeclarator: aString ]
 ]
