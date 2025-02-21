@@ -40,7 +40,11 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandMayDimensionn
 		variable famixVariable 
 			ifNotNil: [ :famixVariable |
 				famixVariable declaredType 
-					ifNotNil: [ :accesses | accesses do: [ :access | ] ]
+					ifNotNil: [ :declaredType | 
+						declaredType accesses do: [ :access | 
+							self flag: '#TODO'.
+						] 
+					]
 			]
 	].
 
@@ -69,14 +73,17 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandSimple: aFAST
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsopeIncludeStatement [ 
 	
-	"self model newUseStatement 
+	self flag: '#TODO: 
+	
+	self model newUseStatement 
 		name: (aFASTEsopeIncludeStatement famixInclude included migratedModuleName)"
 	"an include can be a use
 	- local variable in includedFile must be a local variable where the file is included
 	- segment or programUnit in includedFile must be moved in their own module
 	for exemple see: user.seg file in bookstore
-	"
-	self shouldBeImplemented
+	'.
+
+	^nil
 ]
 
 { #category : 'visiting - esope' }
@@ -172,6 +179,15 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegsup: aFASTEsopeSe
 ]
 
 { #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranArrayRange: aFASTFortranArrayRange [
+
+	^self model newArrayRange
+		lowerBound: (aFASTFortranArrayRange lowerBound accept: self);
+		upperBound: (aFASTFortranArrayRange upperBound accept: self);
+		yourself
+]
+
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranArrayVariable: aFASTFortranArrayVariable [
 
 	^self model newArrayVariable
@@ -255,8 +271,9 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterLiteral: 
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterType: aFASTFortranCharacterType [
 
-	^ FASTFortran2kCharacterType new size:
-		  (aFASTFortranCharacterType size accept: self)
+	^self model newCharacterType
+		size: (aFASTFortranCharacterType size accept: self);
+		yourself
 ]
 
 { #category : 'visiting - statements' }
@@ -466,11 +483,23 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerLiteral: an
 ]
 
 { #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerType: aFASTFortranIntegerType [
+
+	^ self model newIntegerType
+]
+
+{ #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLabelReference: aFASTFortranLabelReference [
 
 	^self model newLabelReference
 		label: aFASTFortranLabelReference label;
 		yourself.
+]
+
+{ #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLogicalType: aFASTFortranLogicalType [
+
+	^ self model newLogicalType
 ]
 
 { #category : 'visiting - expressions' }
@@ -522,9 +551,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealLiteral: aReal
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealType: aRealTypeNode [
 
-	^ FASTFortran2kRealType new
-		  mooseModel: self model;
-		  yourself
+	^ self model newRealType
 ]
 
 { #category : 'visiting - statements' }

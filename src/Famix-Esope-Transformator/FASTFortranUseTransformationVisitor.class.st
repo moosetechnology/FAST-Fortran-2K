@@ -27,6 +27,21 @@ FASTFortranUseTransformationVisitor >> useNeeded: anAssociation [
 ]
 
 { #category : 'visiting' }
+FASTFortranUseTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsopeIncludeStatement [ 
+
+	| programUnit |
+	programUnit := aFASTEsopeIncludeStatement famixInclude includedBy.
+	
+	aFASTEsopeIncludeStatement famixInclude included types
+		ifNotNil: [ :types |
+			types do: [ :type |
+				self parentTransformator useNeeded:  programUnit -> type
+			]
+		]
+	
+]
+
+{ #category : 'visiting' }
 FASTFortranUseTransformationVisitor >> visitFASTEsopePointerDeclarationStatement: aFASTEsopePointerDeclarationStatement [
 
 	self visitFASTFortranList: aFASTEsopePointerDeclarationStatement pointerDeclarators
@@ -62,6 +77,16 @@ FASTFortranUseTransformationVisitor >> visitFASTFortranCallStatement: aFASTFortr
 		ifFalse: [ self useNeeded: (caller -> called) ].
 
 	super visitFASTFortranCallStatement: aFASTFortranCallStatement
+]
+
+{ #category : 'visiting' }
+FASTFortranUseTransformationVisitor >> visitFASTFortranFieldAccess: aFASTFortranFieldAccess [ 
+	|  pointer pointed |
+
+	pointer := aFASTFortranFieldAccess pointer famixVariable parentBehaviouralEntity.
+	pointed := aFASTFortranFieldAccess pointer famixVariable declaredType.
+	
+	self useNeeded: (pointer -> pointed)
 ]
 
 { #category : 'visiting - expressions' }
