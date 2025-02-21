@@ -79,6 +79,16 @@ FASTFortranUseTransformationVisitor >> visitFASTFortranCallStatement: aFASTFortr
 	super visitFASTFortranCallStatement: aFASTFortranCallStatement
 ]
 
+{ #category : 'visiting' }
+FASTFortranUseTransformationVisitor >> visitFASTFortranFieldAccess: aFASTFortranFieldAccess [ 
+	|  pointer pointed |
+
+	pointer := aFASTFortranFieldAccess pointer famixVariable parentBehaviouralEntity.
+	pointed := aFASTFortranFieldAccess pointer famixVariable declaredType.
+	
+	self useNeeded: (pointer -> pointed)
+]
+
 { #category : 'visiting - expressions' }
 FASTFortranUseTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFortranFunctionCall [
 
