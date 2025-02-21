@@ -1,8 +1,8 @@
 Class {
 	#name : 'FASTFortranProcedureTransformationVisitorTest',
 	#superclass : 'FASTFortranAbstractTransformationVisitorTest',
-	#category : 'FAST-Fortran2k-Visitors-Tests',
-	#package : 'FAST-Fortran2k-Visitors-Tests'
+	#category : 'Famix-Esope-Transformator-Tests',
+	#package : 'Famix-Esope-Transformator-Tests'
 }
 
 { #category : 'tests' }
