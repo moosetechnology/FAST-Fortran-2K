@@ -11,6 +11,12 @@ Class {
 	#package : 'Famix-Esope-Transformator-Tests'
 }
 
+{ #category : 'running' }
+FASTFortranAbstractTransformationVisitorTest >> backTrace: aFASTF2kEntity [
+
+	^aFASTF2kEntity attributeAt: #backTrace ifAbsent: [ nil ]
+]
+
 { #category : 'setup' }
 FASTFortranAbstractTransformationVisitorTest >> esopeCommandClass: esopeCommandClass pointers: associations [
 	| variables |

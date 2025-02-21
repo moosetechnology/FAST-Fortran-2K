@@ -169,10 +169,12 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCallStatement: aFA
 
 	| callStatement callerProgramUnit calledProgramFile |
 
-	callStatement := self model newCallStatement
+	callStatement := (self
+		newStatement: FASTFortran2kCallStatement
+		tracingBackTo: aFASTFortranCallStatement famix).
+	callStatement
 		name: aFASTFortranCallStatement name;
-		arguments: (self visitFASTFortranList: aFASTFortranCallStatement arguments);
-		yourself.
+		arguments: (self visitFASTFortranList: aFASTFortranCallStatement arguments).
 
 	callerProgramUnit := stack top.
 	calledProgramFile := aFASTFortranCallStatement famix candidates anyOne.

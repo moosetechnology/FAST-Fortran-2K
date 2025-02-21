@@ -153,6 +153,31 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kAsterisk [
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kCallStatementNoArguments [
+	| stmt res invok |
+
+	self programEmpty.
+	self subroutineEmpty.
+
+	stmt := FASTFortranCallStatement new name: 'subrtn'.
+	fastMainProgram statementBlock addStatement: stmt.
+	invok := FamixF77Invocation new
+		sender: fastMainProgram famix ;
+		candidates: { fastProcedures anyOne famix }.
+	stmt famix: invok.
+
+
+	res := fastMainProgram accept: visitor.
+
+	res := res programUnits anyOne statementBlock statements
+		detect: [:fast2kstatement | fast2kstatement class = FASTFortran2kCallStatement].
+	self assert: res name equals: 'subrtn'.
+
+	self assert: (self backTrace: res) isNotNil.
+	self assert: (self backTrace: res) class equals: FamixF77Invocation.
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kCloseStatement [
 	| stmt res |
 
@@ -454,6 +479,8 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kWriteStatement [
 
 { #category : 'running' }
 FASTFortranBehavioralTransformationVisitorTest >> visitorClass [ 
+	"Some visit need a Program Unit container (in the visitor's stack)
+	 In this case, the test must use a FamixF77PUMain"
 
-	^FASTFortranBehavioralTransformationVisitor 
+	^FASTFortranMainTransformationVisitor 
 ]
