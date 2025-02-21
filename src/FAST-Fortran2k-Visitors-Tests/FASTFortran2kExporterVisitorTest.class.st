@@ -181,7 +181,6 @@ FASTFortran2kExporterVisitorTest >> testDerivedTypeComponentAccess [
 FASTFortran2kExporterVisitorTest >> testEmptyLineBetween2Statements [
 
 	| stmt |
-	self skip.
 
 	stmt := FASTFortran2kStatementBlock new.
 	stmt addStatement: (self declarationStatement: #integer variables: #(x) ).

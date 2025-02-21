@@ -37,6 +37,14 @@ FASTFortran2kExporterVisitor >> export [
 		]
 ]
 
+{ #category : 'initialization' }
+FASTFortran2kExporterVisitor >> initialize [ 
+
+	super initialize.
+
+	self resetCurrentLine 
+]
+
 { #category : 'accessing' }
 FASTFortran2kExporterVisitor >> model [
 
@@ -65,6 +73,11 @@ FASTFortran2kExporterVisitor >> resetCurrentLine [
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> skipLinesTo: famixEntity [
 
+	(currentLine > 0)
+		ifTrue: [
+			(famixEntity startLine - currentLine) timesRepeat: [ self newLine ] ].
+
+	currentLine := famixEntity endLine
 ]
 
 { #category : 'outputting' }
