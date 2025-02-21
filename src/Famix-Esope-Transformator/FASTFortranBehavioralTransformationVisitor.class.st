@@ -40,7 +40,11 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandMayDimensionn
 		variable famixVariable 
 			ifNotNil: [ :famixVariable |
 				famixVariable declaredType 
-					ifNotNil: [ :accesses | accesses do: [ :access | ] ]
+					ifNotNil: [ :declaredType | 
+						declaredType accesses do: [ :access | 
+							self flag: '#TODO'.
+						] 
+					]
 			]
 	].
 
