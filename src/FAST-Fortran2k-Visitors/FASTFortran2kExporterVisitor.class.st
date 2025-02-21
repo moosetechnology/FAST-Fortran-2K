@@ -1364,14 +1364,18 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUs
 
 	aFASTFortran2kUseStatement useRenamedStatements 
 		ifNotNil: [:useRenamedStatement | 
-			self << ', '.
-			self visitNodeListSeparatedByCommas: useRenamedStatement
+			useRenamedStatement ifNotEmpty: [ 
+				self << ', '.
+				self visitNodeListSeparatedByCommas: useRenamedStatement
+			]
 		].
 
 	aFASTFortran2kUseStatement useNoRenamedStatements 
 		ifNotNil: [ :onlyList |
-			self << ', only: '.
-			self visitNodeListSeparatedByCommas: onlyList.
+			onlyList ifNotEmpty: [ 
+				self << ', only: '.
+				self visitNodeListSeparatedByCommas: onlyList
+			]
 		].
 
 	self newLine
