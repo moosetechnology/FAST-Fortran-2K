@@ -956,7 +956,7 @@ FASTFortran2kGenerator >> defineProperties2k [
 	(modifier property: #token type: #String) comment:
 		'The modifier value'.
 
-	(derivedTypeComponent property: #rank type: #Number).
+	(derivedTypeComponent property: #rank type: #Number defaultValue: 0).
 		
 	(interface property: #isAbstractInterface type: #Boolean)
 		comment: 'Im abstract ?'.
