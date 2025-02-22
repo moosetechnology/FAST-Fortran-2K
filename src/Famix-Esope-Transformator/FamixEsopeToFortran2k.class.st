@@ -76,6 +76,7 @@ FamixEsopeToFortran2k >> migrateToFAST2k: aFASTProgramUnit [
 	| visitor |
 
 	visitor := self transformationVisitor: aFASTProgramUnit transformationVisitorClass.
+	visitor filename: aFASTProgramUnit programFile filename.
 	aFASTProgramUnit accept: visitor.
 
 	"visitor := FASTFortranUseTransformationVisitor new

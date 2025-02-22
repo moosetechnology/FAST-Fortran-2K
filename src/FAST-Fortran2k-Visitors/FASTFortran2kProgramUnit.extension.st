@@ -7,3 +7,15 @@ FASTFortran2kProgramUnit >> accept: aVisitor [
 	^ aVisitor visitFASTFortran2kProgramUnit: self.
 
 ]
+
+{ #category : '*FAST-Fortran2k-Visitors' }
+FASTFortran2kProgramUnit >> backTrace [
+
+	^self attributeAt: #backTrace ifAbsent: [ nil ]
+]
+
+{ #category : '*FAST-Fortran2k-Visitors' }
+FASTFortran2kProgramUnit >> backTrace: anObject [
+
+	^self attributeAt: #backTrace put: anObject
+]

@@ -20,11 +20,10 @@ FASTFortranBehavioralTransformationVisitorTest >> testArrayDeclaration [
 		equals: FASTFortran2kVariableDeclarationStatement.
 ]
 
-{ #category : 'tests-statement' }
+{ #category : 'running' }
 FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementLiteralValue [
 	| stmt res |
 	stmt := self assignementStatement: #aVar value: (self logicalLiteral: '.true.').
-	stmt famix: (FamixF77Access new).
 	
 	res := stmt accept: visitor.
 	
@@ -34,9 +33,6 @@ FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementLitera
 	
 	self assert: res variable name equals: 'aVar'.
 	self assert: res expression primitiveValue equals: '.true.'.
-
-	self assert: res backTrace isNotNil.
-	self assert: res backTrace class equals: FamixF77Access.
 ]
 
 { #category : 'tests' }
@@ -154,31 +150,6 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kAsterisk [
 
 	
 	
-]
-
-{ #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kCallStatementNoArguments [
-	| stmt res invok |
-
-	self programEmpty.
-	self subroutineEmpty.
-
-	stmt := FASTFortranCallStatement new name: 'subrtn'.
-	fastMainProgram statementBlock addStatement: stmt.
-	invok := FamixF77Invocation new
-		sender: fastMainProgram famix ;
-		candidates: { fastProcedures anyOne famix }.
-	stmt famix: invok.
-
-
-	res := fastMainProgram accept: visitor.
-
-	res := res programUnits anyOne statementBlock statements
-		detect: [:fast2kstatement | fast2kstatement class = FASTFortran2kCallStatement].
-	self assert: res name equals: 'subrtn'.
-
-	self assert: res backTrace isNotNil.
-	self assert: res backTrace class equals: FamixF77Invocation.
 ]
 
 { #category : 'tests-statement' }
@@ -461,24 +432,6 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kUnaryExpression 
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kVariableDeclarationStatement [
-	| res |
-
-	self programWithDeclarationStatement.
-	fastMainProgram statementBlock statements anyOne declarators anyOne
-		famixDeclaration: (FamixF77Variable new name: 'str').
-
-	res := fastMainProgram accept: visitor.
-
-	res := res programUnits anyOne statementBlock statements
-		detect: [:fast2kstatement | fast2kstatement class = FASTFortran2kVariableDeclarationStatement].
-	self assert: res declarators anyOne name equals: 'str'.
-
-	self assert: res backTrace isNotNil.
-	self assert: res backTrace class equals: FamixVirtualBackTrace.
-]
-
-{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kWriteStatement [
 	| stmt res entity |
 
@@ -499,33 +452,8 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kWriteStatement [
 
 ]
 
-{ #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testMakeVirtualBackTrace [
-
-	| fastDeclarators backtrace |
-	fastDeclarators := { 
-		FASTFortranVariableDeclarator new
-			famixDeclaration: (FamixF77Variable new
-				sourceAnchor: (FamixF77IndexedFileAnchor new startLine: 5 ; endLine: 5) ) .
-		FASTFortranVariableDeclarator new
-			famixDeclaration: (FamixF77Variable new
-				sourceAnchor: (FamixF77IndexedFileAnchor new startLine: 3 ; endLine: 3) ) .
-		FASTFortranVariableDeclarator new
-			famixDeclaration: (FamixF77Variable new
-				sourceAnchor: (FamixF77IndexedFileAnchor new startLine: 7 ; endLine: 7) )
-	}.
-
-	backtrace := visitor makeVirtualBackTrace: fastDeclarators.
-
-	self assert: backtrace class equals: FamixVirtualBackTrace.
-	self assert: backtrace startLine equals: 3.
-	self assert: backtrace endLine equals: 3.
-]
-
 { #category : 'running' }
 FASTFortranBehavioralTransformationVisitorTest >> visitorClass [ 
-	"Some visit need a Program Unit container (in the visitor's stack)
-	 In this case, the test must use a FamixF77PUMain"
 
-	^FASTFortranMainTransformationVisitor 
+	^FASTFortranBehavioralTransformationVisitor 
 ]

@@ -2,11 +2,38 @@ Class {
 	#name : 'FASTFortranAbstractTransformationVisitor',
 	#superclass : 'FASTFortranVisitor',
 	#instVars : [
-		'stack'
+		'stack',
+		'filename'
 	],
 	#category : 'Famix-Esope-Transformator',
 	#package : 'Famix-Esope-Transformator'
 }
+
+{ #category : 'accessing' }
+FASTFortranAbstractTransformationVisitor >> filename [
+
+	^filename
+]
+
+{ #category : 'accessing' }
+FASTFortranAbstractTransformationVisitor >> filename: aString [
+
+	filename := aString 
+]
+
+{ #category : 'instance creation' }
+FASTFortranAbstractTransformationVisitor >> fortran2k: fastFortran2kClass traceBack: fortranEntity [
+
+	| fortran2kEntity |
+	fortran2kEntity := fastFortran2kClass new
+		mooseModel: self model ;
+		yourself.
+	fortranEntity startPos
+		ifNil: [ fortran2kEntity startPos: 0 ; endPos: 0 ]
+		ifNotNil: [ fortran2kEntity startPos: fortranEntity startPos ; endPos: fortranEntity endPos ].
+
+	^fortran2kEntity
+]
 
 { #category : 'initialization' }
 FASTFortranAbstractTransformationVisitor >> initialize [
@@ -22,13 +49,10 @@ FASTFortranAbstractTransformationVisitor >> model [
 	self subclassResponsibility 
 ]
 
-{ #category : 'instance creation' }
-FASTFortranAbstractTransformationVisitor >> newStatement: fastFortran2kStatementClass tracingBackTo: famixStatementEntity [
+{ #category : 'accessing - private tests' }
+FASTFortranAbstractTransformationVisitor >> stack [
 
-	^fastFortran2kStatementClass new
-		mooseModel: self model ;
-		backTrace: famixStatementEntity ;
-		yourself
+	^stack
 ]
 
 { #category : 'visiting - expressions' }
