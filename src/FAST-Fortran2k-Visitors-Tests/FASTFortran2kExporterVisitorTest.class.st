@@ -49,11 +49,12 @@ FASTFortran2kExporterVisitorTest >> segmentBoxedBookDefinition [
 		  superType: 'segment';
 		  fields: {
 				  (FASTFortran2kDerivedTypeComponent new
-					   type: (FASTFortran2kUserDefinedType new name: 'book');
-					   declarators: { (FASTFortran2kVariableDeclarator new name: 'this') };
-"						isPointer: true;"
-"						isPrivate: true;"
-					   yourself
+						name: 'this';
+					   declaredType: (FASTFortran2kUserDefinedType new name: 'book');
+						modifiers: { 
+							FASTFortran2kModifier new token: 'pointer' .
+							FASTFortran2kModifier new token: 'private'
+						};yourself
 					)
 			};
 		  yourself
