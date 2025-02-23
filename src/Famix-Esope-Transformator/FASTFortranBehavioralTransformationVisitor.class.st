@@ -47,8 +47,62 @@ FASTFortranBehavioralTransformationVisitor >> parentTransformator: anObject [
 	parentTransformator := anObject
 ]
 
-{ #category : 'visiting' }
+{ #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandMayDimensionned: aFASTEsopeSegCommand named: aSymbol [
+	| anEsopeCommandCall |
+
+	aFASTEsopeSegCommand variables do:  [ :variable | 
+		anEsopeCommandCall := self model newCallStatement
+			name: aSymbol;
+			addArgument: (variable accept: self);
+			yourself.
+		
+		self flag: '#TODO: add others arguments from segment dimensional expressions'.
+		variable famixVariable 
+			ifNotNil: [ :famixVariable |
+				famixVariable declaredType 
+					ifNotNil: [ :declaredType | 
+						declaredType accesses do: [ :access | 
+							self flag: '#TODO'.
+						] 
+					]
+			]
+	].
+
+	^anEsopeCommandCall
+]
+
+{ #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandNonMigrated: aFASTEsopeSegCommand [
+
+	^nil
+]
+
+{ #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandSimple: aFASTEsopeSegCommand named: aName [
+
+	^aFASTEsopeSegCommand variables 
+		collect:  [ :variable |
+			self model newCallStatement
+				name: aName;
+				addArgument: (variable accept: self);
+				yourself.
+		]
+
+]
+
+{ #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsopeIncludeStatement [ 
+	
+	self flag: '#TODO: 
+	
+	self model newUseStatement 
+		name: (aFASTEsopeIncludeStatement famixInclude included migratedModuleName)"
+	"an include can be a use
+	- local variable in includedFile must be a local variable where the file is included
+	- segment or programUnit in includedFile must be moved in their own module
+	for exemple see: user.seg file in bookstore
+	'.
 
 	^nil
 ]
@@ -68,7 +122,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarationSt
 	
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: aFASTEsopePointerDeclarator [ 
 	
 	| esopeDeclarator callerProgramUnit pointerDeclaredType |
@@ -91,51 +145,75 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 	^esopeDeclarator
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegact: aFASTEsopeSegact [ 
 
-	^nil
+	^self visitFASTEsopeCommandNonMigrated: aFASTEsopeSegact
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegadj: aFASTEsopeSegadj [ 
-	^aFASTEsopeSegadj variables collect:  [ :variable | | anEsopeCommandCall argument |
-		argument := variable accept: self.
-		anEsopeCommandCall := self model newCallStatement
-			name: 'segadj';
-			addArgument: argument;
-			yourself.
-		
-		self flag: '#TODO: add others arguments from segment dimensional expressions'.
-		anEsopeCommandCall
-	]
+
+	^self visitFASTEsopeCommandMayDimensionned: aFASTEsopeSegadj named: 'segadj'
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - esope' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegcop: aFASTEsopeSegcop [
+
+	"muts be migrated as call segcop (p, q)
+	the semantics of this object is:
+		segini p=q, which will first allocate memory space for p and copy the contents of q into p
+	"
+	self shouldBeImplemented
+]
+
+{ #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegdes: aFASTEsopeSegdes [ 
 
-	^nil
+	^self visitFASTEsopeCommandNonMigrated: aFASTEsopeSegdes
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSegini [ 
-	
-	^aFASTEsopeSegini variables collect:  [ :variable | | anEsopeCommandCall argument |
-		argument := variable accept: self.
-		anEsopeCommandCall := self model newCallStatement
-			name: 'segini';
-			addArgument: argument;
-			yourself.
-		
-		self flag: '#TODO: add others arguments from segment dimensional expressions'.
-		anEsopeCommandCall
-	]
+
+	^self visitFASTEsopeCommandMayDimensionned: aFASTEsopeSegini named: 'segini'
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
 
 	^nil
+]
+
+{ #category : 'visiting - esope' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegmov: aFASTEsopeSegmov [
+
+	"muts be migrated as call segmov (p, q)
+	the semantics of this object is:
+		segact p=q, which copies the contents of q into p, without first allocating memory
+	"
+	self shouldBeImplemented
+]
+
+{ #category : 'visiting - esope' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegprt: aFASTEsopeSegprt [ 
+
+	^self visitFASTEsopeCommandSimple: aFASTEsopeSegprt named: 'segprt'
+]
+
+{ #category : 'visiting - esope' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegsup: aFASTEsopeSegsup [
+
+	^self visitFASTEsopeCommandSimple: aFASTEsopeSegsup named: 'segsup'
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranArrayRange: aFASTFortranArrayRange [
+
+	^self model newArrayRange
+		lowerBound: (aFASTFortranArrayRange lowerBound accept: self);
+		upperBound: (aFASTFortranArrayRange upperBound accept: self);
+		yourself
 ]
 
 { #category : 'visiting - expressions' }
@@ -227,8 +305,9 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterLiteral: 
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterType: aFASTFortranCharacterType [
 
-	^ FASTFortran2kCharacterType new size:
-		  (aFASTFortranCharacterType size accept: self)
+	^self model newCharacterType
+		size: (aFASTFortranCharacterType size accept: self);
+		yourself
 ]
 
 { #category : 'visiting - statements' }
@@ -458,11 +537,23 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerLiteral: an
 ]
 
 { #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerType: aFASTFortranIntegerType [
+
+	^ self model newIntegerType
+]
+
+{ #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLabelReference: aFASTFortranLabelReference [
 
 	^self model newLabelReference
 		label: aFASTFortranLabelReference label;
 		yourself.
+]
+
+{ #category : 'visiting' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLogicalType: aFASTFortranLogicalType [
+
+	^ self model newLogicalType
 ]
 
 { #category : 'visiting - expressions' }
@@ -523,9 +614,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealLiteral: aReal
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealType: aRealTypeNode [
 
-	^ FASTFortran2kRealType new
-		  mooseModel: self model;
-		  yourself
+	^ self model newRealType
 ]
 
 { #category : 'visiting - statements' }

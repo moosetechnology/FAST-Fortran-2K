@@ -7,3 +7,9 @@ FASTFortran2kUseStatement >> accept: aVisitor [
 	^ aVisitor visitFASTFortran2kUseStatement: self.
 
 ]
+
+{ #category : '*FAST-Fortran2k-Visitors' }
+FASTFortran2kUseStatement >> useNoRenamedStatements [
+
+	^#()
+]
