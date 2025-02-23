@@ -55,9 +55,16 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeIncludeStatement: aF
 
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarationStatement: aFASTEsopePointerDeclarationStatement [
+	"FASTEsopePointerDeclarator do not have start/en-pos (see FAST-Esope/issue #20)
+	 As a work around, we put the position of the FASTEsopePointerDeclarationStatement into each (usually 1)
+	 pointerDeclarator"
 
 	^aFASTEsopePointerDeclarationStatement pointerDeclarators 
-		collect: [ :pointerDeclarator | pointerDeclarator accept: self ].
+		collect: [ :pointerDeclarator |
+			(pointerDeclarator accept: self)
+				startPos: aFASTEsopePointerDeclarationStatement startPos ;
+				endPos: aFASTEsopePointerDeclarationStatement endPos
+		].
 	
 ]
 

@@ -140,6 +140,18 @@ FASTFortran2kExporterVisitorTest >> setUp [
 	visitor := self newVisitor
 ]
 
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> stubFile [
+
+	| stubFile |
+	stubFile := Mock named: 'fortranSource.f'.
+	stubFile stub asFileReference willReturn: stubFile.
+	stubFile stub readStream willReturn: stubFile.
+	stubFile stub contents willReturn: ''.
+
+	^stubFile
+]
+
 { #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testAssignmentStatement [
 
@@ -185,10 +197,11 @@ FASTFortran2kExporterVisitorTest >> testEmptyLineBetween2Statements [
 	stmt := FASTFortran2kStatementBlock new.
 	stmt addStatement: (self declarationStatement: #integer variables: #(x) ).
 	stmt addStatement: (self declarationStatement: #integer variables: #(y) ).
-	self setBacktraceLines: 1@5 to: stmt.
-	self setBacktraceLines: 2@2 to: stmt statements first.
-	self setBacktraceLines: 4@4 to: stmt statements second.
-
+	stmt statements first
+		startPos: 1 ; endPos: 10.
+	stmt statements second
+		startPos: 15 ; endPos: 25.
+	visitor linesDescription: { 12 -> false . 14 -> true . 30 -> false }.
 	self
 		assertExport: stmt
 		equals:
@@ -208,10 +221,11 @@ end program demo
 
 	| stmt |
 	stmt := FASTFortran2kProgramMain new
-		        name: 'demo';
-		        statementBlock: (FASTFortranStatementBlock new statements:
-					         { FASTFortran2kImplicitStatement new });
-		        yourself.
+		name: 'demo';
+		statementBlock: (FASTFortranStatementBlock new statements:
+			{ FASTFortran2kImplicitStatement new });
+		backTrace: self stubFile ;
+		yourself.
 
 	self
 		assertExport: stmt
@@ -243,7 +257,8 @@ end program demo
 						declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
 						declarators: { FASTFortran2kVariableDeclarator new name: 'p' } ;
 						yourself) } ) ;
-		        yourself.
+		backTrace: self stubFile ;
+		yourself.
 
 	self
 		assertExport: stmt
@@ -264,8 +279,9 @@ end program demo
 
 	| stmt |
 	stmt := FASTFortran2kProgramMain new
-		        name: 'demo';
-		        yourself.
+		name: 'demo';
+		backTrace: self stubFile ;
+		yourself.
 
 	self assertExport: stmt equals: 'program demo
 end program demo

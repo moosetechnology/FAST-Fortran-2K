@@ -56,6 +56,12 @@ FASTFortran2kExporterVisitor >> initialize [
 	linesDescription := #().
 ]
 
+{ #category : 'accessing - private tests' }
+FASTFortran2kExporterVisitor >> linesDescription: aCollection [
+
+	linesDescription := aCollection
+]
+
 { #category : 'accessing' }
 FASTFortran2kExporterVisitor >> model [
 
@@ -98,7 +104,7 @@ FASTFortran2kExporterVisitor >> skipLine: entity [
 	| previousLine |
 	entity startPos ifNil: [ ^self ].
 
-	previousLine := (0 -> true).
+	previousLine := (0 -> false).
 	linesDescription do: [ :lineDescriptor |
 		(lineDescriptor key > entity startPos)
 			ifTrue: [
@@ -879,6 +885,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramFile: aFASTFortran2kPro
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramMain: aFASTFortran2kProgramNode [
 
+	self setLineDescriptions: aFASTFortran2kProgramNode backTrace.
+
 	self
 		indented: 'program ' ;
 		<< aFASTFortran2kProgramNode name ;
@@ -990,6 +998,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSubprogram: aFASTFortran2kSubp
 
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kSubroutine: aFASTFortran2kSubroutine [ 
+
+	self setLineDescriptions: aFASTFortran2kSubroutine backTrace.
 
 	self
 		indented: 'subroutine ';
@@ -1283,7 +1293,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortranType: aFASTFortran2kType [
 
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortranTypeDeclarationStatement: aFASTFortran2kTypeDeclarationStatement [
-1halt.
+
 	self skipLine: aFASTFortran2kTypeDeclarationStatement.
 
 	self indented: 'type ('.
@@ -1315,6 +1325,27 @@ FASTFortran2kExporterVisitor >> visitFASTFortranUsedEntityRenamed: anEntity [
 FASTFortran2kExporterVisitor >> visitFASTFortranUserDefinedType: aFASTFortran2kUserDefinedType [
 
 	self << aFASTFortran2kUserDefinedType name
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
+
+	| comma |
+
+	self skipLine: aFASTFortranVariableDeclarationStatement.
+
+	self indented: ''.
+	aFASTFortranVariableDeclarationStatement declaredType accept: self.
+
+	comma := ''.
+	"aFASTFortranVariableDeclarationStatement isPointer ifTrue: [ self << comma ; << ' pointer'. comma := ',' ].
+	aFASTFortranVariableDeclarationStatement visibility ifNotNil: [ :viz | self << comma ; << viz. comma := ',' ]. "
+	self flag: #TODO. "aFASTFortranVariableDeclarationStatement isTarget ifTrue: [ :viz | self << comma ; << ' target'. comma := ',' ]. "
+	
+	self << ' :: '.
+	self visitNodeListSeparatedByCommas:
+		aFASTFortranVariableDeclarationStatement declarators.
+	self newLine
 ]
 
 { #category : 'visiting - statements' }
