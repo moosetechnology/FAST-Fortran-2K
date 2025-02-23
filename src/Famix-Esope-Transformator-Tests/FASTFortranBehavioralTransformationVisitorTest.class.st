@@ -8,7 +8,7 @@ Class {
 	#package : 'Famix-Esope-Transformator-Tests'
 }
 
-{ #category : 'running' }
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testArrayDeclaration [
 	| stmt dst |
 	stmt := self arrayDeclaration: 'v' dimensions: #( #('1' '10') ).
@@ -35,7 +35,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementLitera
 	self assert: res expression primitiveValue equals: '.true.'.
 ]
 
-{ #category : 'running' }
+{ #category : 'tests' }
 FASTFortranBehavioralTransformationVisitorTest >> testComment [
 	| cmt dst |
 	cmt := self comment: 'This is a comment'.

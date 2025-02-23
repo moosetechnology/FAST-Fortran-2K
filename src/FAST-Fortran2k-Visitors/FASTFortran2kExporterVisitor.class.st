@@ -9,118 +9,22 @@ Class {
 	#traits : 'FASTFortran2kTTraitVisitor',
 	#classTraits : 'FASTFortran2kTTraitVisitor classTrait',
 	#instVars : [
-		'modelIn'
+		'modelIn',
+		'linesDescription'
 	],
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
 }
 
 { #category : 'outputting' }
-FASTFortran2kExporterVisitor >> << aPrintable [
-	"syntactical sugar"
+FASTFortran2kExporterVisitor >> end: programUnit named: aName [
 
-	self output: aPrintable
-]
-
-{ #category : 'precedence' }
-FASTFortran2kExporterVisitor >> defaultOperatorsPrecedence [
-	"operatorsPrecedence is a dictionary: operator -> precedence for all possible operators
-	Higher number means higher precedence
-	the same operator can be entered in different forms (eg: #add and #'+')
-	
-	The value here are examples but should be correct for many languages.
-	They fit C/Java operators definition.
-	The gaps in precedence values allow to introduce other operators if needed.
-	And the precedences value can also be changed.
-
-	The last one (#topLevelExpression) is introduced to deal with expressions within other expressions
-	For example in `1 * someFunction(2 + 3)` , '*' has no precedence over '+', but because the check
-	(see #lowerPrecedence:) uses a global expression stack, it could get confused.
-	The solution is to push #topLevelExpression on the stack at the start of a new expression (here
-	'2 + 3')"
-
-	^{
-		"unary postfix operators"
-		#'unary++' -> 120 .
-		#'unary--' -> 120 .
-
-		"unary prefix operators
-		 cannot be just the operator itself because '-' would be confused with the binary '-'"
-		#'++unary' -> 110 .
-		#'--unary' -> 110 .
-		#'+unary' -> 110 .
-		#'-unary' -> 110 .
-
-		#'!' -> 110 .
-		#'!unary' -> 110.
-		#not -> 110 .
-		
-		"cast"
-		#cast -> 100 .
-
-		"multiplicative operators"
-		#'*' -> 90 .
-		#times -> 90 .
-		#'/' -> 90 .
-		#divide -> 90 .
-		#'%' -> 90 .
-		#mod -> 90 .
-	
-		"stringConcatenationOperator -- needed to deal with: String+(i+1)"
-		#concat -> 80 .
-
-		"additive operators"
-		#'+' -> 70 .
-		#add -> 70 .
-		#'-' -> 70 .
-		#minus -> 70 .
-
-		"relational operators"
-		#'<' -> 60 .
-		#lt -> 60 .
-		#lessThan -> 60 .
-
-		#'>' -> 60 .
-		#gt -> 60 .
-		#greaterThan -> 60 .
-
-		#'<=' -> 60 .
-		#le -> 60 .
-		#lessEqual -> 60 .
-
-		#'>=' -> 60 .
-		#ge -> 60 .
-		#greaterEqual -> 60 .
-
-		"equality operators"
-		#'==' -> 50 .
-		#eq -> 50 .
-		#equal -> 50 .
-
-		#'!=' -> 50 .
-		#ne -> 50 .
-		#notEqual -> 50 .
-
-		"logical And operators"
-		#'&&' -> 40 .
-		#and -> 40 .
-
-		"logical Or operators"
-		#'||' -> 30 .
-		#or -> 30 .
-
-		"ternary operator"
-		#'?:' -> 20 .
-
-		"assignment operators"
-		#'=' ->  10 .
-		#'+=' -> 10 .
-		#'-=' -> 10 .
-		#'*=' -> 10 .
-		#'/=' -> 10 .
-
-		#topLevelExpression -> 0
-	}
+	self
+		indented: 'end ' ;
+		<< programUnit ;
+		<< String space ;
+		<< aName;
+		newLine
 ]
 
 { #category : 'exporting' }
@@ -144,63 +48,18 @@ FASTFortran2kExporterVisitor >> export [
 		]
 ]
 
-{ #category : 'precedence' }
-FASTFortran2kExporterVisitor >> expressionContextOperator [
-	"lazy accessor"
+{ #category : 'initialization' }
+FASTFortran2kExporterVisitor >> initialize [ 
 
-	^expressionContextOperator ifNil: [ expressionContextOperator := Stack new ].
+	super initialize.
 
+	linesDescription := #().
 ]
 
-{ #category : 'outputting' }
-FASTFortran2kExporterVisitor >> indent [
+{ #category : 'accessing - private tests' }
+FASTFortran2kExporterVisitor >> linesDescription: aCollection [
 
-	^indentLevel := self indentLevel + 1
-]
-
-{ #category : 'accessing' }
-FASTFortran2kExporterVisitor >> indentLevel [
-
-	^ indentLevel ifNil: [ indentLevel := 0 ]
-]
-
-{ #category : 'outputting' }
-FASTFortran2kExporterVisitor >> indentSize [
-
-	^  indentSize ifNil: [ indentSize := 2 ]
-]
-
-{ #category : 'accessing' }
-FASTFortran2kExporterVisitor >> indentSize: anObject [
-
-	indentSize := anObject
-]
-
-{ #category : 'outputting' }
-FASTFortran2kExporterVisitor >> indented: aPrintable [
-
-	self outputIndentPrefix.
-	self unindented: aPrintable
-]
-
-{ #category : 'precedence' }
-FASTFortran2kExporterVisitor >> languageOperatorsPrecedence [
-	"this methods gives a chance to redefine precedence in different languages
-
-	specific language exporters should redefine it and make changes to the #operatorsPrecedence Dictionary"
-
-]
-
-{ #category : 'precedence' }
-FASTFortran2kExporterVisitor >> lowerPrecedence: operator [
-	"check whether #operator has lower precedence than a surounding expression (top of
-	expressionContextOperator)
-	If so, the current expression will need to be parenthesized"
-
-	^self expressionContextOperator
-		ifEmpty: [ false ]
-		ifNotEmpty: [ :operatorStack |
-			(self operatorPrecedence: operator) < (self operatorPrecedence: operatorStack top)]
+	linesDescription := aCollection
 ]
 
 { #category : 'accessing' }
@@ -216,122 +75,57 @@ FASTFortran2kExporterVisitor >> model: anObject [
 ]
 
 { #category : 'outputting' }
-FASTFortran2kExporterVisitor >> newLine [
+FASTFortran2kExporterVisitor >> setLineDescriptions: aFilename [
+	"For each line, creates a description consisting of 
+	 last-position in the line -> whether the line is empty"
 
-	self outputStream cr
-]
+	| filecontent spaces |
 
-{ #category : 'precedence' }
-FASTFortran2kExporterVisitor >> operatorPrecedence: operator [
+	spaces := String tab , String space.
+	filecontent := aFilename asFileReference readStream contents.
 
-	^self operatorsPrecedence at: operator asSymbol
-]
-
-{ #category : 'precedence' }
-FASTFortran2kExporterVisitor >> operatorsPrecedence [
-	"lazy accessor"
-
-	^operatorsPrecedence ifNil: [
-			operatorsPrecedence := Dictionary newFrom: self defaultOperatorsPrecedence.
-			self languageOperatorsPrecedence.
-			operatorsPrecedence ]
-]
-
-{ #category : 'outputting' }
-FASTFortran2kExporterVisitor >> output: aPrintable [
-
-	self outputStream << aPrintable
-]
-
-{ #category : 'precedence' }
-FASTFortran2kExporterVisitor >> outputExpression: aBlock inParentheses: aBoolean [
-	"executes aBlock to output some expression, putting it within parenthesis if needed"
-
-	aBoolean ifTrue: [ self output: '(' ].
-	aBlock value.
-	aBoolean ifTrue: [ self output: ')' ]
-]
-
-{ #category : 'precedence' }
-FASTFortran2kExporterVisitor >> outputExpression: aBlock withOperator: operator [
-	"execute aBlock possibly putting parenthesis around the result depending on the precedence of #operator
-	 But before executing a block, we need to push the operator on the context stack so that 
-	 precedence of possible sub-expressions be compared to it"
-
-	self
-		outputExpression: [
-			self expressionContextOperator push: operator.
-			aBlock value.
-			self expressionContextOperator pop
-		]
-		 inParentheses: (self lowerPrecedence: operator)
+	"heuristic to guess the number of lines, assuming an average of 20 characters per line"
+	linesDescription := OrderedCollection new: (filecontent size // 20).
+	
+	filecontent lineIndicesDo: [ :start :end :endWithCr || emptyLine |
+		emptyLine := true.
+		filecontent from: start to: end do: [ :char |
+			(spaces includes: char) ifFalse: [ emptyLine := false ] ].
+		linesDescription add: (endWithCr -> emptyLine)
+	]
 ]
 
 { #category : 'outputting' }
-FASTFortran2kExporterVisitor >> outputIndentPrefix [
-	"prints indentation spaces"
+FASTFortran2kExporterVisitor >> skipLine: entity [
+	"if line before anEntity is empty then produce an empty line
+	 For this, we need the end position of the 2 lines before the entity (line-1 and line-2)
+	 (and difference should be < 2 because the carriage-return is included"
 
-	self spaces: self indentLevel * self indentSize
+	| previousLine |
+	entity startPos ifNil: [ ^self ].
+
+	previousLine := (0 -> false).
+	linesDescription do: [ :lineDescriptor |
+		(lineDescriptor key > entity startPos)
+			ifTrue: [
+				previousLine value ifTrue: [ self newLine ].
+				^self
+			].
+		previousLine := lineDescriptor 
+	]
+
 ]
 
 { #category : 'outputting' }
-FASTFortran2kExporterVisitor >> outputStream [
-	"lazy accessor"
+FASTFortran2kExporterVisitor >> upToSixSpaces: preceedingSize [
+	"no more mandatory six spaces at the begining of line in Fortran 2k
+	 but the method is called by superclass: FASTFortranExporterVisitor
+	 We keep the ide of the indent level"
 
-	^outputStream ifNil: [ outputStream := WriteStream on: '' ]
-]
-
-{ #category : 'outputting' }
-FASTFortran2kExporterVisitor >> outputStream: anOutputStream [
-
-	^ outputStream := anOutputStream
-]
-
-{ #category : 'precedence' }
-FASTFortran2kExporterVisitor >> outputTopLevelExpression: aBlock [
-	"Execute aBlock to output an expression.
-	 Puts special symbol on the expressionContextOperator stack to indicate the start of a
-	 new expression
-
-	See comment in #initializeOperatorsPrecedence"
-
-	self expressionContextOperator push: #topLevelExpression.
-	aBlock value.
-	self expressionContextOperator pop
-]
-
-{ #category : 'outputting' }
-FASTFortran2kExporterVisitor >> sixSpaces [ 
-	"marks the start of a new line
-	 In superclass (Fortran-77 export) lines need 6 spaces at the start.
-	 in Fortran-2k, line are indented more 'naturally' "
-
-	self outputIndentPrefix 
-]
-
-{ #category : 'outputting' }
-FASTFortran2kExporterVisitor >> space [
-
-	self output: String space
-]
-
-{ #category : 'outputting' }
-FASTFortran2kExporterVisitor >> spaces: n [
-
-	n timesRepeat: [ self space ]
-]
-
-{ #category : 'outputting' }
-FASTFortran2kExporterVisitor >> unindent [
-
-	(self indentLevel <= 0) ifTrue: [ ^indentLevel := 0 ].
-	^indentLevel := self indentLevel - 1
-]
-
-{ #category : 'outputting' }
-FASTFortran2kExporterVisitor >> unindented: aPrintable [
-
-	self output: aPrintable
+	| nbSpaces |
+	nbSpaces := (self indentLevel * 2) - preceedingSize.
+	self spaces: nbSpaces
+	
 ]
 
 { #category : 'visiting' }
@@ -378,13 +172,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kArrayRange: aFASTFortran2kArra
 
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kArrayVariable: aFASTFortran2kArrayVariable [
 
 	self visitFASTFortranArrayVariable: aFASTFortran2kArrayVariable
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentExpression: aFASTFortran2kAssignmentExpression [
 
 	self visitFASTFortranAssignmentExpression: aFASTFortran2kAssignmentExpression
@@ -392,6 +186,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentExpression: aFASTFor
 
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentStatement: aFASTFortran2kAssignmentStatement [
+
+	self skipLine: aFASTFortran2kAssignmentStatement.
 
 	self indented: ''.
 	aFASTFortran2kAssignmentStatement variable accept: self.
@@ -436,7 +232,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kBlockData: aFASTFortran2kBlock
 
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kBooleanLiteral: aFASTFortran2kBooleanLiteral [
 
 	self visitFASTFortranBooleanLiteral: aFASTFortran2kBooleanLiteral
@@ -449,6 +245,10 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kByteType: aFASTFortran2kByteTy
 
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kCallStatement: aFASTFortran2kCallStatement [ 
+
+
+	self skipLine: aFASTFortran2kCallStatement.
+
 	self indented: 'call ';
 		<< aFASTFortran2kCallStatement name.
 
@@ -488,6 +288,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kCloseStatement: aFASTFortran2k
 
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kComment: aFASTFortran2kComment [
+
+	self skipLine: aFASTFortran2kComment.
 
 	self 
 		indented: '! ';
@@ -548,7 +350,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDecodeStatement: aFASTFortran2
 	self newLine
 ]
 
-{ #category : 'precedence' }
+{ #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedType: aFASTFortran2kDerivedType [
 
 	self << ('type :: ', aFASTFortran2kDerivedType name).
@@ -567,7 +369,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeAbstractField: aFAS
 
 ]
 
-{ #category : 'precedence' }
+{ #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponent: aFASTFortran2kDerivedTypeComponent [
 
 	^ self visitFASTFortranVariableDeclarationStatement: aFASTFortran2kDerivedTypeComponent
@@ -737,6 +539,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFormattedCodeString: aFASTFort
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFunction [ 
 
+	self setLineDescriptions: aFASTFortran2kFunction backTrace.
+
 	aFASTFortran2kFunction declaredType 
 		ifNotNil: [ :declaredType | declaredType accept: self ].
 	
@@ -752,10 +556,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFuncti
 
 	self 
 		newLine;
-		<< 'end function ';
-		<< aFASTFortran2kFunction name;
-		newLine
-	
+		end: 'function' named: aFASTFortran2kFunction name
 ]
 
 { #category : 'visiting - expressions' }
@@ -820,9 +621,11 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kIfArithmeticStatement: aFASTFo
 	self newLine
 ]
 
-{ #category : 'precedence' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kIfBlockStatement: aFASTFortran2kIfBlockStatement [
 	"note: can we have a label on an else line ?"
+
+	self skipLine: aFASTFortran2kIfBlockStatement.
 
 	self
 		indented: 'if ';
@@ -864,7 +667,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kImplicitTypingRule: aFASTFortr
 
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kImpliedDoExpression: aFASTFortran2kImpliedDoExpression [
 
 	self visitFASTFortranImpliedDoExpression: aFASTFortran2kImpliedDoExpression
@@ -938,7 +741,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kLogicalType: aFASTFortran2kLog
 
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kLoopControlExpression: aFASTFortran2kLoopControlExpression [
 
 	self visitFASTFortranLoopControlExpression: aFASTFortran2kLoopControlExpression
@@ -953,6 +756,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kMapStatement: aFASTFortran2kMa
 FASTFortran2kExporterVisitor >> visitFASTFortran2kModule: aFASTFortranModule [
 
 	| moduleName |
+
 	moduleName := aFASTFortranModule name.
 
 	self
@@ -972,10 +776,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kModule: aFASTFortranModule [
 			newLine.
 	].
 	
-	self
-		<< 'end module ' ;
-		<< moduleName;
-		newLine
+	self end: 'module' named: moduleName
 ]
 
 { #category : 'visiting' }
@@ -1050,6 +851,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kPragmaStatement: aFASTFortran2
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kPrintStatement: aFASTFortran2kPrintStatement [ 
 
+	self skipLine: aFASTFortran2kPrintStatement.
+
 	self indented: 'print '.
 	
 	aFASTFortran2kPrintStatement format accept: self.
@@ -1082,6 +885,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramFile: aFASTFortran2kPro
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramMain: aFASTFortran2kProgramNode [
 
+	self setLineDescriptions: aFASTFortran2kProgramNode backTrace.
+
 	self
 		indented: 'program ' ;
 		<< aFASTFortran2kProgramNode name ;
@@ -1089,10 +894,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramMain: aFASTFortran2kPro
 	
 	self visitFASTFortranTBehaviouralEntity: aFASTFortran2kProgramNode.
 	
-	self 
-		indented: 'end program ' ;
-		<< aFASTFortran2kProgramNode name ;
-		newLine
+	self end: 'program' named: aFASTFortran2kProgramNode name
 ]
 
 { #category : 'visiting' }
@@ -1115,7 +917,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kReadStatement: aFASTFortran2kR
 	self visitFASTFortranReadStatement: aFASTFortran2kReadStatement
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kRealLiteral: aFASTFortran2kRealLiteral [
 
 	self visitFASTFortranRealLiteral: aFASTFortran2kRealLiteral
@@ -1166,6 +968,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSourceCodeString: aFASTFortran
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kStatementBlock: aFASTFortran2kStatementBlock [
 
+	self skipLine: aFASTFortran2kStatementBlock.
+
 	self indent.
 	aFASTFortran2kStatementBlock statements
 		ifNotNil:[ :statements |
@@ -1194,6 +998,9 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSubprogram: aFASTFortran2kSubp
 
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kSubroutine: aFASTFortran2kSubroutine [ 
+
+	self setLineDescriptions: aFASTFortran2kSubroutine backTrace.
+
 	self
 		indented: 'subroutine ';
 		<< aFASTFortran2kSubroutine name.
@@ -1204,10 +1011,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSubroutine: aFASTFortran2kSubr
 
 	self visitFASTFortranTBehaviouralEntity: aFASTFortran2kSubroutine.
 	
-	self 
-		<< 'end subroutine ';
-		<< aFASTFortran2kSubroutine name;
-		newLine
+	self  end: 'subroutine' named: aFASTFortran2kSubroutine name
 		
 	
 	
@@ -1303,7 +1107,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kTypePBFinal: aFASTFortran2kTyp
 
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUnaryExpression: aFASTFortran2kUnaryExpression [
 
 	self visitFASTFortranUnaryExpression: aFASTFortran2kUnaryExpression
@@ -1322,7 +1126,10 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseNoRenamedStatement: aFASTFo
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kUseOnlyStatement: aFASTFortran2kUseOnlyStatement [ 
+FASTFortran2kExporterVisitor >> visitFASTFortran2kUseOnlyStatement: aFASTFortran2kUseOnlyStatement [
+
+	self skipLine: aFASTFortran2kUseOnlyStatement.
+
 	self
 		indented: 'use :: ';
 		<< aFASTFortran2kUseOnlyStatement name;
@@ -1346,6 +1153,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseOnlyStatement: aFASTFortran
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUseRenamedStatement: aFASTFortran2kUseRenamedStatement [
 
+	self skipLine: aFASTFortran2kUseRenamedStatement.
+
 	self
 		<< aFASTFortran2kUseRenamedStatement alias;
 		<< ' => ';
@@ -1354,6 +1163,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseRenamedStatement: aFASTFort
 
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUseStatement [
+
+	self skipLine: aFASTFortran2kUseStatement.
 
 	self << 'use'.
 	"aFASTFortran2kUseStatement isIntrinsic ifTrue: [
@@ -1390,7 +1201,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUserDefinedType: aFASTFortran2
 		<< ')'
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kVariable: aFASTFortran2kVariable [
 
 	self visitFASTFortranVariable: aFASTFortran2kVariable 
@@ -1401,7 +1212,9 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarationStatement: 
 
 	| comma |
 
-	self visitFASTFortranAbstractStatement: aFASTFortran2kVariableDeclarationStatement.
+	self skipLine: aFASTFortran2kVariableDeclarationStatement.
+
+	self indented: ''.
 	aFASTFortran2kVariableDeclarationStatement declaredType accept: self.
 
 	comma := ''.
@@ -1433,10 +1246,19 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVolatileStatement: aFASTFortra
 	self newLine
 ]
 
-{ #category : 'precedence' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kWriteStatement: aFASTFortran2kWriteStatement [
 
 	self visitFASTFortranWriteStatement: aFASTFortran2kWriteStatement
+]
+
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortranAbstractStatement: aFASTFortranAbstractStatement [
+	"Checking line numbers  to add possible 'gap' lines (empty lines)"
+
+	self skipLine: aFASTFortranAbstractStatement .
+
+	super visitFASTFortranAbstractStatement: aFASTFortranAbstractStatement
 ]
 
 { #category : 'visiting' }
@@ -1458,17 +1280,6 @@ FASTFortran2kExporterVisitor >> visitFASTFortranTBehaviouralEntity: aFASTFortran
 		ifNotNil: [ aFASTFortranTBehaviouralEntity statementBlock accept: self ]
 ]
 
-{ #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortranTReturnStatement: aFASTFortranTReturnStatement [
-
-	self
-		visitFASTFortranAbstractStatement: aFASTFortranTReturnStatement;
-		<< 'return '.
-	aFASTFortranTReturnStatement expression ifNotNil: [ :expr |
-		expr accept: self ].
-	self newLine
-]
-
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortranType: aFASTFortran2kType [
 
@@ -1486,6 +1297,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortranType: aFASTFortran2kType [
 
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortranTypeDeclarationStatement: aFASTFortran2kTypeDeclarationStatement [
+
+	self skipLine: aFASTFortran2kTypeDeclarationStatement.
 
 	self indented: 'type ('.
 	self visitFASTFortranUserDefinedType: aFASTFortran2kTypeDeclarationStatement declaredType.
@@ -1523,8 +1336,9 @@ FASTFortran2kExporterVisitor >> visitFASTFortranVariableDeclarationStatement: aF
 
 	| comma |
 
-	self visitFASTFortranAbstractStatement:
-		aFASTFortranVariableDeclarationStatement.
+	self skipLine: aFASTFortranVariableDeclarationStatement.
+
+	self indented: ''.
 	aFASTFortranVariableDeclarationStatement declaredType accept: self.
 
 	comma := ''.
@@ -1541,7 +1355,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortranVariableDeclarationStatement: aF
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator [
 
-	^ super visitFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator
+	^super visitFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator
 ]
 
 { #category : 'visiting' }

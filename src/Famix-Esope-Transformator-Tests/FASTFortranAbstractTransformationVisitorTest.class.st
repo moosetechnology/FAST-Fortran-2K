@@ -152,7 +152,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithDeclarationStatement 
 	end"
 
 	self programEmpty.
-	fastMainProgram 	statementBlock addStatement: (self declarationStatement: #str type: #(character 20) ).
+	fastMainProgram statementBlock addStatement: (self declarationStatement: #str type: #(character 20) ).
 
 ]
 
