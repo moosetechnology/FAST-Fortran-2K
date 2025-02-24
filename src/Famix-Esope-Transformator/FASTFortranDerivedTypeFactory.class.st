@@ -661,6 +661,53 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegmov [
 ]
 
 { #category : 'helper-segCommands' }
+FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
+	| segsup thisParameter if |
+
+	segsup := model newSubroutine
+		name: name , '_segsup'.
+
+	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'this' ;
+		derivedTypeFactory: self).
+
+	segsup addParameter: (model newScalarVariable name: 'this').
+	
+	segsup initBody.
+	segsup addComment: '## Delete ("supprimer" in French) the given "this" segment'.
+
+	segsup addStatement: (thisParameter createSeginiFieldDeclaration).
+	segsup addStatement: model newEmptyStatement.
+
+	if := model newIfBlockStatement new.
+	if condition: (model newFunctionCall
+		name: 'associated';
+		addArgument: (model newScalarVariable name: 'this');
+		yourself
+	).
+	if thenStatementBlock: (model newStatementBlock).
+	self components do: [ :fieldFactory |
+		if thenStatementBlock addStatement: (model newFormattedCodeString
+			content: 'deallocate(this%{1})' ;
+			values: { fieldFactory name } )
+	].
+	
+	if thenStatementBlock addStatement: (model newFunctionCallStatement
+			name: 'deallocate';
+			addArgument: (model newScalarVariable name: 'this');
+			yourself
+	).
+	if thenStatementBlock addStatement: (model newFunctionCallStatement
+			name: 'nullify';
+			addArgument: (model newScalarVariable name: 'this');
+			yourself
+	).
+	segsup addStatement: if.
+
+	^segsup
+]
+
+{ #category : 'helper-segCommands' }
 FASTFortranDerivedTypeFactory >> makeSegCall: segCommand arguments: arguments [
 
 	| stmt |
