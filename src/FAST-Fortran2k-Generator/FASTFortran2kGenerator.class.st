@@ -847,6 +847,8 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	derivedTypeDefinition --|> tStatementBlock.
 	derivedTypeDefinition --|> tNamedEntity.
 
+	derivedTypeComponentAccess --|> variable.
+	
 	emptyStatement --|> abstractStatement.
 
 	formattedCodeString --|> sourceCodeString.
@@ -962,7 +964,7 @@ FASTFortran2kGenerator >> defineProperties2k [
 	(formattedCodeString property: #values type: #Object)
 		comment: 'Values of the variables to format the string'.
 
-	((tWithModifiers property: #modifiers type: #Object)
+	((tWithModifiers property: #modifiers type: #Object defaultValue: #())
 		comment: 'A collection of modifiers (strings)').
 
 	(typeBoundProcedure property: #alias type: #String)
