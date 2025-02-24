@@ -29,6 +29,33 @@ FASTFortranDerivedTypeComponentFieldFactory >> asFieldAccess [
 	]
 ]
 
+{ #category : 'converting' }
+FASTFortranDerivedTypeComponentFieldFactory >> asVariableDeclaration [
+
+	| stmt declarator |
+	stmt := self model newVariableDeclarationStatement.
+	stmt declaredType: (type accept: (FASTFortranBehavioralTransformationVisitor new parentTransformator: self)).
+
+	declarator := self model newVariableDeclarator.
+	declarator name: name.
+	1 to: rank do: [ :i | declarator addDimension: self model newArrayRange ].
+
+	stmt addDeclarator: declarator.
+
+	^stmt
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> createSegadjTemporaryDeclaration [
+
+	| stmt |
+	stmt := self asVariableDeclaration.
+	stmt addModifier: 'pointer'.
+	stmt declarators anyOne name: ('ooo_' , name).
+
+	^stmt
+]
+
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> createSeginiFieldInitialization [
 	"creates 2 statements:
@@ -67,13 +94,12 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSeginiFieldInitialization [
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> createSegmentFieldDeclaration [
 
-	^self model newDerivedTypeComponent
-		name: name ;
-		rank: rank ;
-		declaredType: (type accept: (FASTFortranBehavioralTransformationVisitor new parentTransformator: self))
+	^self asVariableDeclaration
+		addModifier: 'public' ;
+		yourself.
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 FASTFortranDerivedTypeComponentFieldFactory >> fieldDeclarator: aFastFortranVariableDeclarator [
 
 	name := aFastFortranVariableDeclarator name.

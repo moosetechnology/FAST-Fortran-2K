@@ -80,6 +80,25 @@ FASTFortranDerivedTypeFieldFactoryTest >> testComponentAsFieldAccessNoRank [
 ]
 
 { #category : 'tests' }
+FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegadjComponentTemporaryDeclaration [
+
+	| fast2k factory |
+	factory := self makeFactory: FASTFortranDerivedTypeComponentFieldFactory.
+	factory
+		type: fastModel newIntegerType ;
+		fieldDeclarator: (fastModel newVariableDeclarator
+			name: 'x' ;
+			dimensions: {  fastModel newArrayRange } ).
+
+	fast2k := factory createSegadjTemporaryDeclaration.
+
+	self assert: fast2k class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType.
+	self assert: fast2k declarators anyOne name equals: 'ooo_x'.
+	self assert: fast2k declarators anyOne dimensions size equals: 1.
+]
+
+{ #category : 'tests' }
 FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiComponentInitialization [
 
 	| fast2k factory paramFactory |

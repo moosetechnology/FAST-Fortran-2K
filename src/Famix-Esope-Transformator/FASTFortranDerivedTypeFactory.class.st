@@ -433,6 +433,65 @@ FASTFortranDerivedTypeFactory >> makeProcedureIgnore [
 ]
 
 { #category : 'helper-segCommands' }
+FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
+
+	| paramFactories componentFactories segadj thisParameter |
+
+	paramFactories := fields collect: #isSegmentParameter.
+	componentFactories := fields reject: #isSegmentParameter.
+
+	segadj := model newSubroutine
+		name: name , '_segadj'.
+
+	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'this' ;
+		derivedTypeFactory: self).
+
+	segadj addParameter: (model newScalarVariable name: 'this').
+	paramFactories do: [ :param |
+		segadj addParameter: (model newScalarVariable name: param name)
+	].
+
+	segadj initBody.
+	segadj addComment: '## Adjust the given "this" segment'.
+	segadj addComment: '## using the given parameters'.
+	
+	segadj addStatement: (thisParameter createSegadjFieldDeclaration).
+	paramFactories do: [ :paramFactory |
+		segadj addStatement: (paramFactory createSegadjFieldDeclaration)
+	].
+	segadj addStatement: model newEmptyStatement.
+
+	segadj addStatement: thisParameter createSeginiFieldInitialization.
+	paramFactories do: [ :paramFactory |
+		segadj addStatement: paramFactory createSeginiFieldInitialization.
+	].
+	segadj addStatement: model newEmptyStatement.
+
+	1 to: self rankMax do: [ :i |
+		segadj addStatement: (model newSourceCodeString content: ('integer :: ooo_dim' , i asString ))
+	].
+	1 to: self rankMax do: [ :i |
+		segadj addStatement: (model newSourceCodeString content: ('integer :: ooo_stop' , i asString ))
+	].
+
+	self components do: [ :componentFactory |
+		segadj addStatement: componentFactory createSegadjTemporaryDeclaration
+	].
+	segadj addStatement: (model newSourceCodeString content: 'logical :: ooo_eq_dims').
+	segadj addStatement: (model newSourceCodeString content: 'logical :: ooo_eq_pars').
+	segadj addStatement: model newEmptyStatement.
+
+	segadj addStatement: (model newFormattedCodeString
+		content: 'call check_pre_condition(associated(this), ''{1}_segadj'', ''associated(this)'')' ;
+		value: { name } ).
+	segadj addStatement: model newEmptyStatement.
+
+	segadj addStatement: self makeSegadjIfStatement.
+
+]
+
+{ #category : 'helper-segCommands' }
 FASTFortranDerivedTypeFactory >> makeProcedureSegcop [
 
 	| segcop thisParameter thatParameter paramFactories |
@@ -525,7 +584,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 	].
 
 	segini addStatement: (model newFormattedCodeString
-		content: 'call check_pre_condition(associated(this), ''{1}_seg'', ''associated(this)'')' ;
+		content: 'call check_pre_condition(associated(this), ''{1}_segini'', ''associated(this)'')' ;
 		value: { name } ).
 ]
 
@@ -691,4 +750,10 @@ FASTFortranDerivedTypeFactory >> parameters [
 FASTFortranDerivedTypeFactory >> privateFields: componentFactories [
 
 	fields := componentFactories 
+]
+
+{ #category : 'accessing' }
+FASTFortranDerivedTypeFactory >> rankMax [
+
+	^(self components collect: #rank) max
 ]
