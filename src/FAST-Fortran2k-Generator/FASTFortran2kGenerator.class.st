@@ -173,7 +173,12 @@ Class {
 		'functionTypeDeclarationStatement',
 		'fieldAccess',
 		'ioParameter',
-		'functionReturnStatement'
+		'functionReturnStatement',
+		'tModifier',
+		'tWithModifiers',
+		'modifier',
+		'emptyStatement',
+		'functionCallStatement'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -253,6 +258,41 @@ where the most common specifiers are:
 ```
 	
 	'
+]
+
+{ #category : 'definition' }
+FASTFortran2kGenerator >> commentForModifier [
+
+	^ '
+I represent a modifier for an entity. This entity can be:
+ - a declaration (variable, typeDefinition, typeDeclaration, function)
+
+
+possible value for [Modifier (*Attribute*)](https://staff.cs.manchester.ac.uk/~fumie/internal/RikenDocuments/Fortran_Language_Reference_en.pdf#%5B%7B%22num%22%3A813%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2Cnull%2C700.94073%2Cnull%5D) are:
+
+  - **allocatable**: *the data object is an allocatable variable, but is to have memory allocated for it as specified during execution of the program*
+  - **asynchronous**: *asynchronous input/output is used to handle variable*
+  - **automatic**: *the data object to be on the stack*
+  - **bind**: *the variable or common block is a C language variable with an external association and is interoperable*
+  - **changeentry**: *the name is that of an external procedure except Fortran program*
+  - **codimension**: *the data object is a coarray*
+  - **contiguous**: *the array pointer or assumed shape array is CONTIGUOUS*
+  - **dimension**: *the data object is an array*
+  - **external**: *the name is that of an external procedure, a dummy procedure, or procedure pointer, and it can be used as an actual argument*
+  - **intent**: *the dummy argument shall neither be defined nor become undefined in the procedure (INTENT(IN)), shall be defined before a reference and any actual argument that becomes associated with such a dummy argument shall be definable (INTENT(OUT)), or is intended for use both to receive data from and to return data to the invoking scoping unit (INTENT(INOUT))*
+  - **intrinsic**: *the name is that of an intrinsic procedure*
+  - **optional**: *the dummy argument need not have a corresponding actual argument in a reference to the procedure in which the dummy argument appears*
+  - **parameter**: *the data object is a named constant*
+  - **pointer**: *the data object is a pointer*
+  - **private**: *The named data object, a procedure or a type in a MODULE program unit is accessible only in the current module*
+  - **protected**: *The named variable is specified in a MODULE program unit, the part in the useful range by use association where the variable can be modified is limited*
+  - **public**: *The named data object, a procedure or a type in a MODULE program unit is accessible in a program unit that uses that module*
+  - **save**: *The data object retains its value, definition status, association status, and allocation status after a RETURN or END statement*
+  - **static**: *The data object to be in static memory*
+  - **target**: *The data object that is to be associated with a pointer*
+  - **value**: *The dummy argument to be associated with a definable temporary area whose initial value is that of the actual argument. Neither the value nor the changes in the definition status for the dummy argument influence the actual argument*
+  - **volatile**: *The data object is prevented optimization*
+'
 ]
 
 { #category : 'definition' }
@@ -388,7 +428,13 @@ FASTFortran2kGenerator >> defineClasses2k [
 
 	userDefinedType := self
 		                   newClassNamed: #UserDefinedType
-		                   comment: 'I represent a user defined type'
+		                   comment: 'I represent a user defined type'.
+
+	modifier := self newClassNamed: #Modifier comment: self commentForModifier.
+
+	emptyStatement := self newClassNamed: #EmptyStatement comment: 'I represent an empty statement, maybe useful to add empty line'.
+
+	functionCallStatement := self newClassNamed: #FunctionCallStatement comment: 'I represent a function call statement'.
 ]
 
 { #category : 'definition' }
@@ -825,18 +871,25 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	nameEntity --|> tNamedEntity.
 
 	derivedTypeDefinition --|> type.
+	derivedTypeDefinition --|> tWithModifiers.
+	derivedTypeDefinition --|> tWithComments.
 	derivedTypeDefinition --|> tNamedEntity.
 	derivedTypeDefinition --|> abstractStatement.
 	
 	derivedTypeDeclarationStatement --|> variableDeclarationStatement.
 	classDeclarationStatement --|> variableDeclarationStatement.
+	variableDeclarator --|> tWithModifiers.
 
-	derivedTypeAbstractField --|> variableDeclarationStatement.
+	derivedTypeAbstractField --|> tExpression.
+	derivedTypeAbstractField --|> tDeclaredType.
+	derivedTypeAbstractField --|> tNamedEntity.
+	derivedTypeAbstractField --|> tWithModifiers.
 	
 	derivedTypeComponent --|> derivedTypeAbstractField.
+	derivedTypeComponent --|> tWithComments.
 	derivedTypeParameter --|> derivedTypeAbstractField.
 
-	derivedTypeComponentDimension --|> abstractExpression.
+	derivedTypeComponentDimension --|> tExpression.
 	derivedTypeComponentDimension --|> tNamedEntity.
 
 	derivedTypeComponentAccess --|> variable.
@@ -880,6 +933,7 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	typeBPFinal --|> typeBoundProcedure.
 	
 	useStatement --|> tNamedEntity.
+	useStatement --|> tWithModifiers.
 	useStatement --|> abstractStatement.
 	
 	useRenamedStatement --|> tNamedEntity.
@@ -889,8 +943,11 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	
 	userDefinedType --|> type.
 	userDefinedType  --|> tNamedEntity.
-	
 
+	modifier --|> tModifier.
+	emptyStatement --|> abstractStatement.
+	functionStatement --|> functionCall.
+	functionStatement --|> #TStatement.
 ]
 
 { #category : 'definition' }
@@ -940,7 +997,10 @@ FASTFortran2kGenerator >> defineProperties2k [
 	(derivedTypeDefinition property: #superType type: #String) comment:
 		'I represent the name of the super type'.
 
-	(derivedTypeComponent property: #rank type: #Number).
+	(modifier property: #token type: #String) comment:
+		'The modifier value'.
+
+	(derivedTypeComponent property: #rank type: #Number defaultValue: 0).
 		
 	(interface property: #isAbstractInterface type: #Boolean)
 		comment: 'Im abstract ?'.
@@ -1123,13 +1183,20 @@ FASTFortran2kGenerator >> defineRelations [
 { #category : 'definition' }
 FASTFortran2kGenerator >> defineRelations2k [
 
-	(derivedTypeDefinition property: #fields) 
-		<>-* (derivedTypeAbstractField property: #parentDerivedType).
+	((derivedTypeDefinition property: #fields)
+		comment: 'My field')
+	<>-* ((derivedTypeAbstractField property: #fieldOwner)
+		comment: 'The owner of the field').
 
-	derivedTypeDefinition <>-* typeBoundProcedure.
-	derivedTypeDefinition - comment.
+	((derivedTypeDefinition property: #methods)
+		comment: 'My type bound procedure')
+	<>-* ((typeBoundProcedure property: #methodOwner)
+		comment: 'The owner of the type bound procedure').
 
-	derivedTypeComponent <>-* derivedTypeComponentDimension.
+	((derivedTypeComponent property: #dimensions)
+		comment: 'My dimension')
+	<>-* ((derivedTypeComponentDimension property: #dimensionOwner)
+		comment: 'The owner of the dimension').
 	derivedTypeComponent - comment.
 
 	(derivedTypeComponentAccess property: #instance)
@@ -1151,6 +1218,11 @@ FASTFortran2kGenerator >> defineRelations2k [
 	useOnlyStatement <>-* useNoRenamedStatement.
 
 	interface <>-* interfaceProcedure.
+
+	((tWithModifiers property: #modifiers)
+		comment: 'My modifiers')
+	<>-* ((tModifier property: #modifierOwner)
+		comment: 'The owner of the modifier').
 
 	((tPointerAssignment property: #variable) comment:
 		 'An assigned variable (lhs of assignment)')
@@ -1439,5 +1511,8 @@ FASTFortran2kGenerator >> defineTraits2k [
 
 	tPointerAssignment := builder
 		                      newTraitNamed: #TPointerAssignment
-		                      comment: 'self commentForTPointerAssignment'
+		                      comment: 'self commentForTPointerAssignment'.
+
+	tModifier := self newTraitNamed: #TModifier comment: 'TModifier'.
+	tWithModifiers := self newTraitNamed: #TWithModifiers comment: 'TWithModifiers'.
 ]
