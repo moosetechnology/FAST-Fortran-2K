@@ -104,7 +104,7 @@ end module bar_mod
 	self assert: f2ksegment fields size equals: 1.
 	
 	stmt := f2ksegment fields anyOne.
-	self assert: stmt class equals: FASTFortran2kDerivedTypeComponent.
+	self assert: stmt class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: stmt type class equals: FASTFortran2kIntegerType.
 	self assert: stmt declarators size equals: 1.
 	
@@ -357,7 +357,7 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithPointeurDeclar
 	 stmt := 	res procedures anyOne statementBlock.
 
 	 self assert: stmt statements size equals: 1.
-	 self assert: stmt statements anyOne class equals: FASTFortran2kDerivedTypeDeclaration.
+	 self assert: stmt statements anyOne class equals: FASTFortran2kVariableDeclarationStatement.
 	 self assert: stmt statements anyOne declaredType class equals: FASTFortran2kUserDefinedType.
 	 self assert: stmt statements anyOne declaredType name equals: 'foo'.	
 	 self assert: stmt statements anyOne declarators size equals: 1.

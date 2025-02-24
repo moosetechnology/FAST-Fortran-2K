@@ -484,7 +484,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
 
 	segadj addStatement: (model newFormattedCodeString
 		content: 'call check_pre_condition(associated(this), ''{1}_segadj'', ''associated(this)'')' ;
-		value: { name } ).
+		values: { name } ).
 	segadj addStatement: model newEmptyStatement.
 
 	segadj addStatement: self makeSegadjIfStatement.
@@ -525,7 +525,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegcop [
 
 	segcop addStatement: (model newFormattedCodeString
 		content: 'call check_pre_condition(associated(this), ''{1}_segcop'', ''associated(this)'')' ;
-		value: { name } ).
+		values: { name } ).
 	segcop addStatement: model newEmptyStatement.
 
 	self makeSegCall: 'par' arguments: { thisParameter } , paramFactories.
@@ -535,10 +535,10 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegcop [
 
 	segcop addStatement: (model newFormattedCodeString
 		content: 'call check_post_condition(associated(that), ''{1}_segcop'', ''associated(that)'')' ;
-		value: { name } ).
+		values: { name } ).
 	segcop addStatement: (model newFormattedCodeString
 		content: 'call check_post_condition(.not. associated(this, that), ''{1}_segcop'', ''.not. associated(this, that)'')' ;
-		value: { name } ).
+		values: { name } ).
 
 ]
 
@@ -585,7 +585,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 
 	segini addStatement: (model newFormattedCodeString
 		content: 'call check_pre_condition(associated(this), ''{1}_segini'', ''associated(this)'')' ;
-		value: { name } ).
+		values: { name } ).
 ]
 
 { #category : 'helpers-codeString' }
@@ -636,13 +636,13 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegmov [
 
 	segmov addStatement: (model newFormattedCodeString
 		content: 'call check_pre_condition(associated(this), ''{1}_segmov'', ''associated(this)'')' ;
-		value: { name } ).
+		values: { name } ).
 	segmov addStatement: (model newFormattedCodeString
 		content: 'call check_pre_condition(associated(that), ''{1}_segmov'', ''associated(that)'')' ;
-		value: { name } ).
+		values: { name } ).
 	segmov addStatement: (model newFormattedCodeString
 		content: 'call check_pre_condition(seglik(this,that), ''{1}_segmov'', ''seglik(this,that)'')' ;
-		value: { name } ).
+		values: { name } ).
 	segmov addStatement: model newEmptyStatement.
 
 	if := model newIfBlockStatement.
@@ -656,7 +656,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegmov [
 	(fields reject: #isSegmentParameter) do: [ :fieldFactory |
 		if thenStatementBlock addStatement: (model newFormattedCodeString
 			content: 'that%{1} := this%{1}' ;
-			value: { fieldFactory asFieldAccess } )
+			values: { fieldFactory asFieldAccess } )
 	].
 	segmov addStatement: if.
 ]
@@ -711,7 +711,7 @@ FASTFortranDerivedTypeFactory >> makeTypeDefinition [
 
 	fields do: [ :fieldFactory |
 		fieldFactory createSegmentFieldDeclaration
-			ifNotNil: [ :declStatement | segment addField: declStatement ]
+			ifNotNil: [ :declStatement | segment addStatement: declStatement ]
 		]
 
 ]
@@ -755,5 +755,7 @@ FASTFortranDerivedTypeFactory >> privateFields: componentFactories [
 { #category : 'accessing' }
 FASTFortranDerivedTypeFactory >> rankMax [
 
-	^(self components collect: #rank) max
+	^(self components collect: #rank)
+		ifEmpty: [ 0 ]
+		ifNotEmpty: [ :collection | collection max ]
 ]

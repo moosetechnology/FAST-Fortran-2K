@@ -191,13 +191,10 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiThisFieldInitializatio
 	fast2k := factory createSeginiFieldInitialization.
 
 	self assert: fast2k class equals: FASTFortran2kFunctionCallStatement.
-
-	self assert: fast2k variable class equals: FASTFortran2kDerivedTypeComponentAccess.
-	self assert: fast2k variable instance name equals: 'this'.
-	self assert: fast2k variable field name equals: 'x'.
-
-	self assert: fast2k expression class equals: FASTFortran2kScalarVariable.
-	self assert: fast2k expression name equals: 'x'.
+	self assert: fast2k name equals: 'allocate'.
+	self assert: fast2k arguments size equals: 1.
+	self assert: fast2k arguments anyOne class equals: FASTFortran2kScalarVariable.
+	self assert: fast2k arguments anyOne name equals: 'this'.
 ]
 
 { #category : 'tests' }
@@ -213,10 +210,12 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegmentComponentDeclaration 
 
 	fast2k := factory createSegmentFieldDeclaration.
 
-	self assert: fast2k class equals: FASTFortran2kDerivedTypeComponent.
-	self assert: fast2k name equals: 'x'.
-	self assert: fast2k rank equals: 0.
-	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType
+	self assert: fast2k class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType.
+	
+	self assert: fast2k declarators size equals: 1.
+	self assert: fast2k declarators anyOne name equals: 'x'.
+	self assert: fast2k declarators anyOne dimensions size equals: 0.
 ]
 
 { #category : 'tests' }
@@ -233,8 +232,8 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegmentParameterDeclaration 
 	self assert: fast2k declarators size equals: 1.
 	self assert: fast2k declarators anyOne name equals: 'x'.
 
-	"self assert: fast2k modifiers size equals: 1.
-	self assert: fast2k modifiers anyOne equals: nil."
+	self assert: fast2k modifiers size equals: 1.
+	self assert: fast2k modifiers anyOne equals: 'private'.
 
 	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType
 ]

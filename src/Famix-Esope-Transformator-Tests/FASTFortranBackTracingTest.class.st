@@ -78,7 +78,7 @@ FASTFortranBackTracingTest >> testDerivedTypeDeclaration [
 
 	self assert: res size equals: 1.
 	res := res anyOne.
-	self assert: res class equals: FASTFortran2kDerivedTypeDeclaration.
+	self assert: res class equals: FASTFortran2kVariableDeclarationStatement.
 
 	self assert: res startPos equals: 12.
 	self assert: res endPos equals: 33. 

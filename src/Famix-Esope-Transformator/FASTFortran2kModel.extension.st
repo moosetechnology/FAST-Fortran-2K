@@ -17,13 +17,6 @@ FASTFortran2kModel >> newComplexType [
 ]
 
 { #category : '*Famix-Esope-Transformator' }
-FASTFortran2kModel >> newEmptyStatement [
-
-	^FASTFortran2kCommonStatement new
-		content: ''
-]
-
-{ #category : '*Famix-Esope-Transformator' }
 FASTFortran2kModel >> newIntegerType [
 
 	^(self allWithType: FASTFortran2kIntegerType)

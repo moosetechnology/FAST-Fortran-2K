@@ -50,7 +50,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSegadjTemporaryDeclaration 
 
 	| stmt |
 	stmt := self asVariableDeclaration.
-	stmt addModifier: 'pointer'.
+	stmt modifiers: #( pointer ).
 	stmt declarators anyOne name: ('ooo_' , name).
 
 	^stmt
@@ -95,7 +95,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSeginiFieldInitialization [
 FASTFortranDerivedTypeComponentFieldFactory >> createSegmentFieldDeclaration [
 
 	^self asVariableDeclaration
-		addModifier: 'public' ;
+		modifiers: #( public ) ;
 		yourself.
 ]
 

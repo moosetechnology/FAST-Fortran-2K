@@ -32,7 +32,7 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentToDerivedTypeInMo
 	self assert: f2ksegment fields size equals: 1.
 	
 	stmt := f2ksegment fields anyOne.
-	self assert: stmt class equals: FASTFortran2kDerivedTypeComponent.
+	self assert: stmt class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
 	self assert: stmt name equals: 'bar'.
 	self assert: stmt rank equals: 0.

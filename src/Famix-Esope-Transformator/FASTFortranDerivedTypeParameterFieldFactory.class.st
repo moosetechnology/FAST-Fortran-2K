@@ -43,7 +43,7 @@ FASTFortranDerivedTypeParameterFieldFactory >> createSeginiFieldInitialization [
 FASTFortranDerivedTypeParameterFieldFactory >> createSegmentFieldDeclaration [
 
 	^self model newVariableDeclarationStatement
-		"addModifier: 'private' ;"
+		modifiers: #( private) ;
 		addDeclarator: (self model newVariableDeclarator name: name) ;
 		declaredType: self model newIntegerType
 ]

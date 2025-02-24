@@ -21,7 +21,8 @@ FASTFortranDerivedTypeThisFieldFactory >> createSeginiFieldInitialization [
 
 	^self model newFunctionCallStatement
 		name: 'allocate' ;
-		addArgument: (self model newScalarVariable name: name)
+		addArgument: (self model newScalarVariable name: name) ;
+		yourself
 		
 ]
 

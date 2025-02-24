@@ -127,10 +127,9 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 	
 	| esopeDeclarator callerProgramUnit pointerDeclaredType |
 
-	esopeDeclarator := FASTFortran2kDerivedTypeDeclaration new 
-		declaredType: (FASTFortran2kUserDefinedType new 
+	esopeDeclarator := self model newVariableDeclarationStatement
+		declaredType: (self model newUserDefinedType  
 			name: aFASTEsopePointerDeclarator pointedTypeName;
-			mooseModel: self model;
 			yourself
 		);
 		addDeclarator: (aFASTEsopePointerDeclarator variableDeclarator accept: self);
