@@ -82,6 +82,21 @@ FASTFortranDerivedTypeFactory >> makeBoxedTypeDefinition [
 		  values: (Dictionary with: #segmentName -> name)
 ]
 
+{ #category : 'helper-segCommands' }
+FASTFortranDerivedTypeFactory >> makeCheckPostCondition: segcommand segmentName: segName parameters: parametersCollection [
+
+	| checkPostCondition |
+	checkPostCondition := model newCallStatement
+		name: 'check_post_condition'.
+	checkPostCondition addArgument: (model newFunctionCall
+		name: 'associated' ;
+		addArgument: (model newScalarVariable name: 'this') ).
+	checkPostCondition addArgument: (model newCharacterLiteral primitiveValue: segName).
+	checkPostCondition addArgument: (model newCharacterLiteral primitiveValue: 'associated(this)').
+
+	^checkPostCondition
+]
+
 { #category : 'helpers-codeString' }
 FASTFortranDerivedTypeFactory >> makeContainsStatement [
 
@@ -420,10 +435,61 @@ FASTFortranDerivedTypeFactory >> makeProcedureIgnore [
 		  values: (Dictionary with: #segmentName -> name)
 ]
 
-{ #category : 'helpers-codeString' }
+{ #category : 'helper-segCommands' }
+FASTFortranDerivedTypeFactory >> makeProcedureSegcop [
+
+	| segcop thisParameter thatParameter paramFactories |
+
+	paramFactories := fields collect: #isSegmentParameter.
+
+	segcop := model newSubroutine
+		name: name , '_segcop'.
+
+	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'this' ;
+		derivedTypeFactory: self).
+	thatParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'that' ;
+		derivedTypeFactory: self).
+
+	segcop addParameter: (model newScalarVariable name: 'this').
+	segcop addParameter: (model newScalarVariable name: 'that').
+
+	segcop initBody.
+	segcop addComment: '## Copy "this" segment to a new "that" segment'.
+
+	segcop addStatement: (thisParameter createSeginiFieldDeclaration).
+	segcop addStatement: (thatParameter createSeginiFieldDeclaration).
+	segcop addStatement: model newEmptyStatement.
+
+	paramFactories do: [ :paramFactory |
+		segcop addStatement: (paramFactory createSeginiFieldDeclaration)
+	].
+	segcop addStatement: model newEmptyStatement.
+
+	segcop addStatement: (model newFormattedCodeString
+		content: 'call check_pre_condition(associated(this), ''{1}_segcop'', ''associated(this)'')' ;
+		value: { name } ).
+	segcop addStatement: model newEmptyStatement.
+
+	self makeSegCall: 'par' arguments: { thisParameter } , paramFactories.
+	self makeSegCall: 'ini' arguments: { thatParameter } , paramFactories.
+	self makeSegCall: 'mov' arguments: { thisParameter . thatParameter }.
+	segcop addStatement: model newEmptyStatement.
+
+	segcop addStatement: (model newFormattedCodeString
+		content: 'call check_post_condition(associated(that), ''{1}_segcop'', ''associated(that)'')' ;
+		value: { name } ).
+	segcop addStatement: (model newFormattedCodeString
+		content: 'call check_post_condition(.not. associated(this, that), ''{1}_segcop'', ''.not. associated(this, that)'')' ;
+		value: { name } ).
+
+]
+
+{ #category : 'helper-segCommands' }
 FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 
-	| paramFactories componentFactories segini checkPostCondition |
+	| paramFactories componentFactories segini thisParameter |
 
 	paramFactories := fields collect: #isSegmentParameter.
 	componentFactories := fields reject: #isSegmentParameter.
@@ -431,38 +497,39 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 	segini := model newSubroutine
 		name: name , '_segini'.
 
+	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'this' ;
+		derivedTypeFactory: self).
+
+	segini addParameter: (model newScalarVariable name: 'this').
 	paramFactories do: [ :param |
-		segini addParameter: (model newScalarVariable
-			name: param name)
+		segini addParameter: (model newScalarVariable name: param name)
 	].
 
 	segini initBody.
 	segini addComment: '## Initialize a new "this" segment with default values'.
 	segini addComment: '## using the given parameters'.
 	
+	segini addStatement: (thisParameter createSeginiFieldDeclaration).
 	paramFactories do: [ :paramFactory |
 		segini addStatement: (paramFactory createSeginiFieldDeclaration)
 	].
 	segini addStatement: model newEmptyStatement.
 
+	segini addStatement: thisParameter createSeginiFieldInitialization.
 	paramFactories do: [ :paramFactory |
 		segini addStatement: paramFactory createSeginiFieldInitialization.
 	].
 	segini addStatement: model newEmptyStatement.
 
 	componentFactories do: [ :compFact |
-		segini addComment: '-- this%' , compFact name.
+		segini addComment: ('-- this%' , compFact name).
 		compFact createSeginiFieldInitialization do: [:stmt | segini addStatement: stmt ].
 	].
 
-	checkPostCondition := model newCallStatement
-		name: 'check_post_condition'.
-	checkPostCondition addArgument: (model newFunctionCall
-		name: 'associated' ;
-		addArgument: (model newScalarVariable name: 'this') ).
-	checkPostCondition addArgument: (model newCharacterLiteral primitiveValue: segini name).
-	checkPostCondition addArgument: (model newCharacterLiteral primitiveValue: 'associated(this)').
-	segini addStatement: checkPostCondition 
+	segini addStatement: (model newFormattedCodeString
+		content: 'call check_pre_condition(associated(this), ''{1}_seg'', ''associated(this)'')' ;
+		value: { name } ).
 ]
 
 { #category : 'helpers-codeString' }
@@ -483,6 +550,74 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegmentType [
     end subroutine {segmentName}_seg_type
 ';
 		  values: (Dictionary with: #segmentName -> name)
+]
+
+{ #category : 'helper-segCommands' }
+FASTFortranDerivedTypeFactory >> makeProcedureSegmov [
+
+	| segmov thisParameter thatParameter if |
+
+	segmov := model newSubroutine
+		name: name , '_segmov'.
+
+	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'this' ;
+		derivedTypeFactory: self).
+	thatParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'that' ;
+		derivedTypeFactory: self).
+
+	segmov addParameter: (model newScalarVariable name: 'this').
+	segmov addParameter: (model newScalarVariable name: 'that').
+
+	segmov initBody.
+	segmov addComment: '## Copy data from "this" segment to an existing "that" segment'.
+	segmov addComment: '## "that" must have same dimensions than "this"'.
+
+	segmov addStatement: (thisParameter createSeginiFieldDeclaration).
+	segmov addStatement: (thatParameter createSeginiFieldDeclaration).
+	segmov addStatement: model newEmptyStatement.
+
+	segmov addStatement: (model newFormattedCodeString
+		content: 'call check_pre_condition(associated(this), ''{1}_segmov'', ''associated(this)'')' ;
+		value: { name } ).
+	segmov addStatement: (model newFormattedCodeString
+		content: 'call check_pre_condition(associated(that), ''{1}_segmov'', ''associated(that)'')' ;
+		value: { name } ).
+	segmov addStatement: (model newFormattedCodeString
+		content: 'call check_pre_condition(seglik(this,that), ''{1}_segmov'', ''seglik(this,that)'')' ;
+		value: { name } ).
+	segmov addStatement: model newEmptyStatement.
+
+	if := model newIfBlockStatement.
+	if condition: (model newUnaryExpression
+		operator: '.not.' ;
+		expression: (model newFunctionCall
+			name: 'associated' ;
+			addArgument: (model newScalarVariable name: 'this') ;
+			addArgument: (model newScalarVariable name: 'that')) ).
+	if thenStatementBlock: (model newStatementBlock).
+	(fields reject: #isSegmentParameter) do: [ :fieldFactory |
+		if thenStatementBlock addStatement: (model newFormattedCodeString
+			content: 'that%{1} := this%{1}' ;
+			value: { fieldFactory asFieldAccess } )
+	].
+	segmov addStatement: if.
+]
+
+{ #category : 'helper-segCommands' }
+FASTFortranDerivedTypeFactory >> makeSegCall: segCommand arguments: arguments [
+
+	| stmt |
+	stmt := model newCallStatement
+		name: (name , '_seg' , segCommand).
+
+	arguments do: [ :arg |
+		stmt addArgument: (model newScalarVariable
+			name: arg name)
+	].
+
+	^stmt
 ]
 
 { #category : 'helpers-codeString' }

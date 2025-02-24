@@ -32,6 +32,54 @@ FASTFortranDerivedTypeFieldFactoryTest >> setUp [
 ]
 
 { #category : 'tests' }
+FASTFortranDerivedTypeFieldFactoryTest >> testComponentAsFieldAccess1Rank [
+
+	| string factory |
+	factory := self makeFactory: FASTFortranDerivedTypeComponentFieldFactory.
+	factory 
+		type: fastModel newIntegerType ;
+		fieldDeclarator: (fastModel newVariableDeclarator
+			name: 'x' ;
+			dimensions: {  fastModel newArrayRange } ).
+
+	string := factory asFieldAccess.
+
+	self assert: string equals: 'x(:)'
+]
+
+{ #category : 'tests' }
+FASTFortranDerivedTypeFieldFactoryTest >> testComponentAsFieldAccess3Rank [
+
+	| string factory |
+	factory := self makeFactory: FASTFortranDerivedTypeComponentFieldFactory.
+	factory 
+		type: fastModel newIntegerType ;
+		fieldDeclarator: (fastModel newVariableDeclarator
+			name: 'x' ;
+			dimensions: { fastModel newArrayRange . fastModel newArrayRange . fastModel newArrayRange } ).
+
+	string := factory asFieldAccess.
+
+	self assert: string equals: 'x(:,:,:)'
+]
+
+{ #category : 'tests' }
+FASTFortranDerivedTypeFieldFactoryTest >> testComponentAsFieldAccessNoRank [
+
+	| string factory |
+	factory := self makeFactory: FASTFortranDerivedTypeComponentFieldFactory.
+	factory 
+		type: fastModel newIntegerType ;
+		fieldDeclarator: (fastModel newVariableDeclarator
+			name: 'x' ;
+			dimensions: #() ).
+
+	string := factory asFieldAccess.
+
+	self assert: string equals: 'x'
+]
+
+{ #category : 'tests' }
 FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiParameterDeclaration [
 
 	| fast2k factory |
@@ -68,7 +116,8 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiParameterInitializatio
 FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiThisFieldDeclaration [
 
 	| fast2k factory |
-	factory := self makeFactory: FASTFortranDerivedTypeThisFieldFactory.
+	factory := (self makeFactory: FASTFortranDerivedTypeThisFieldFactory)
+		name: 'this'.
 	factory derivedTypeFactory: FASTFortranDerivedTypeFactory new.
 	factory derivedTypeFactory model: fast2kModel.
 	factory derivedTypeFactory fields: #().
@@ -89,11 +138,12 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiThisFieldDeclaration [
 FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiThisFieldInitialization [
 
 	| fast2k factory |
-	factory := self makeFactory: FASTFortranDerivedTypeThisFieldFactory.
+	factory := (self makeFactory: FASTFortranDerivedTypeThisFieldFactory)
+		name: 'this'.
 
 	fast2k := factory createSeginiFieldInitialization.
 
-	self assert: fast2k class equals: FASTFortran2kFunctionCall.
+	self assert: fast2k class equals: FASTFortran2kFunctionCallStatement.
 
 	self assert: fast2k variable class equals: FASTFortran2kDerivedTypeComponentAccess.
 	self assert: fast2k variable instance name equals: 'this'.
@@ -117,7 +167,7 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegmentComponentDeclaration 
 	fast2k := factory createSegmentFieldDeclaration.
 
 	self assert: fast2k class equals: FASTFortran2kDerivedTypeComponent.
-	self assert: fast2k declarators anyOne name equals: 'x'.
+	self assert: fast2k name equals: 'x'.
 	self assert: fast2k rank equals: 0.
 	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType
 ]

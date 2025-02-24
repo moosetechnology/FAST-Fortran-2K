@@ -9,11 +9,25 @@ Class {
 	#tag : 'Segment'
 }
 
+{ #category : 'converting' }
+FASTFortranDerivedTypeComponentFieldFactory >> asFieldAccess [
+
+	^String streamContents: [ :stream |
+		stream << name.
+		(rank > 0)
+			ifTrue: [
+				stream << '(:'.
+				2 to: rank do: [ :i | stream << ',:' ].
+				stream << ')'
+			]
+	]
+]
+
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> createSegmentFieldDeclaration [
 
 	^self model newDerivedTypeComponent
-		addDeclarator: (self model newVariableDeclarator name: name) ;
+		name: name ;
 		rank: rank ;
 		declaredType: (type accept: (FASTFortranBehavioralTransformationVisitor new parentTransformator: self))
 ]

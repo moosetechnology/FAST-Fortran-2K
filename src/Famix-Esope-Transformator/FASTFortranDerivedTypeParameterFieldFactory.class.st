@@ -7,6 +7,14 @@ Class {
 }
 
 { #category : 'entity-creation' }
+FASTFortranDerivedTypeParameterFieldFactory >> createSegcopFieldDeclaration [
+
+	^self model newVariableDeclarationStatement
+		addDeclarator: (self model newVariableDeclarator name: name) ;
+		declaredType: self model newIntegerType
+]
+
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeParameterFieldFactory >> createSeginiFieldDeclaration [
 
 	^self model newVariableDeclarationStatement
@@ -44,10 +52,4 @@ FASTFortranDerivedTypeParameterFieldFactory >> isSegmentParameter [
 FASTFortranDerivedTypeParameterFieldFactory >> isSegmentThisParameter [
 
 	^false
-]
-
-{ #category : 'accessing' }
-FASTFortranDerivedTypeParameterFieldFactory >> name: aString [
-
-	super name: aString.
 ]

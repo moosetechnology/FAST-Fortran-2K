@@ -16,9 +16,9 @@ FASTEsopeSegmentVisitor >> visitDeclarationDimension: aFASTExpression [
 	aFASTExpression upperBound class = FASTFortranScalarVariable
 		ifFalse: [ ^ nil ].
 
-	^FASTFortran2kDerivedTypeComponent new
-		declaredType: FASTFortran2kIntegerType new ;
-		declarators: { (FASTFortran2kVariableDeclarator new name: aFASTExpression upperBound name) };
+	^ self model newDerivedTypeParameter
+		name: aFASTExpression upperBound name;
+		declaredType: self model newIntegerType;
 		yourself
 ]
 

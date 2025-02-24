@@ -12,7 +12,7 @@ FASTFortranDerivedTypeThisFieldFactory >> createSeginiFieldDeclaration [
 	^self model newVariableDeclarationStatement 
 		"addModifier: 'pointer' ;
 		addModifier: 'intent(inout)' ;"
-		addDeclarator: (self model newVariableDeclarator name: 'this') ;
+		addDeclarator: (self model newVariableDeclarator name: name) ;
 		declaredType: (self model newUserDefinedType name: self derivedTypeFactory name)
 ]
 
@@ -21,7 +21,7 @@ FASTFortranDerivedTypeThisFieldFactory >> createSeginiFieldInitialization [
 
 	^self model newFunctionCallStatement
 		name: 'allocate' ;
-		addArgument: (self model newScalarVariable name: 'this')
+		addArgument: (self model newScalarVariable name: name)
 		
 ]
 
