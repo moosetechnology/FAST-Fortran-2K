@@ -350,6 +350,13 @@ FASTFortran2kTEntityCreator >> newElseStatement [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newEmptyStatement [
+
+	<generated>
+	^ self add: FASTFortran2kEmptyStatement new
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newEncodeStatement [
 
 	<generated>
@@ -431,6 +438,13 @@ FASTFortran2kTEntityCreator >> newFunctionCall [
 
 	<generated>
 	^ self add: FASTFortran2kFunctionCall new
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newFunctionCallStatement [
+
+	<generated>
+	^ self add: FASTFortran2kFunctionCallStatement new
 ]
 
 { #category : 'entity creation' }
