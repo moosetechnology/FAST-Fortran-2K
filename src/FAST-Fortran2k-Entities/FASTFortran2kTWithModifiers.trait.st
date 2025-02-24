@@ -1,21 +1,18 @@
 "
 TWithModifiers
 
-## Relations
+## Properties
 ======================
 
-### Children
-| Relation | Origin | Opposite | Type | Comment |
+| Name | Type | Default value | Comment |
 |---|
-| `modifiers` | `FASTFortran2kTWithModifiers` | `modifierOwner` | `FASTFortran2kTModifier` | My modifiers|
-
-
+| `modifiers` | `Object` | #() | A collection of modifiers (strings)|
 
 "
 Trait {
 	#name : 'FASTFortran2kTWithModifiers',
 	#instVars : [
-		'#modifiers => FMMany type: #FASTFortran2kTModifier opposite: #modifierOwner'
+		'#modifiers => FMProperty defaultValue: #()'
 	],
 	#category : 'FAST-Fortran2k-Entities-Traits',
 	#package : 'FAST-Fortran2k-Entities',
@@ -31,32 +28,17 @@ FASTFortran2kTWithModifiers classSide >> annotation [
 	^ self
 ]
 
-{ #category : 'adding' }
-FASTFortran2kTWithModifiers >> addModifier: anObject [
-	<generated>
-	^ self modifiers add: anObject
-]
-
 { #category : 'accessing' }
 FASTFortran2kTWithModifiers >> modifiers [
-	"Relation named: #modifiers type: #FASTFortran2kTModifier opposite: #modifierOwner"
 
+	<FMProperty: #modifiers type: #Object defaultValue: #()>
 	<generated>
-	<FMComment: 'My modifiers'>
-	<derived>
-	^ modifiers
+	<FMComment: 'A collection of modifiers (strings)'>
+	^ modifiers ifNil: [ modifiers := #() ]
 ]
 
 { #category : 'accessing' }
 FASTFortran2kTWithModifiers >> modifiers: anObject [
-
 	<generated>
-	modifiers value: anObject
-]
-
-{ #category : 'navigation' }
-FASTFortran2kTWithModifiers >> modifiersGroup [
-	<generated>
-	<navigation: 'Modifiers'>
-	^ MooseSpecializedGroup withAll: self modifiers asSet
+	modifiers := anObject
 ]

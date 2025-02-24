@@ -36,15 +36,15 @@ I represent a derived type definition for example:
 ### Parents
 | Relation | Origin | Opposite | Type | Comment |
 |---|
+| `fastBehaviouralParent` | `FASTTStatementBlock` | `statementBlock` | `FASTTBehaviouralEntity` | Behavioural entity containing the statement block.|
 | `invokedIn` | `FASTTNamedEntity` | `invoked` | `FASTTInvocation` | Optional invocation where this name is used|
+| `statementContainer` | `FASTTStatement` | `statements` | `FASTTStatementBlock` | Block containing this statement.|
 
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `comments` | `FASTTWithComments` | `container` | `FASTTComment` | list of comments defined in the entity|
-| `fields` | `FASTFortran2kDerivedTypeDefinition` | `fieldOwner` | `FASTFortran2kDerivedTypeAbstractField` | My field|
 | `methods` | `FASTFortran2kDerivedTypeDefinition` | `methodOwner` | `FASTFortran2kTypeBoundProcedure` | My type bound procedure|
-| `modifiers` | `FASTFortran2kTWithModifiers` | `modifierOwner` | `FASTFortran2kTModifier` | My modifiers|
+| `statements` | `FASTTStatementBlock` | `statementContainer` | `FASTTStatement` | Statements enclosed in this block|
 
 
 ## Properties
@@ -53,6 +53,7 @@ I represent a derived type definition for example:
 | Name | Type | Default value | Comment |
 |---|
 | `endPos` | `Number` | nil | |
+| `modifiers` | `Object` | #() | A collection of modifiers (strings)|
 | `name` | `String` | nil | |
 | `startPos` | `Number` | nil | |
 | `superType` | `String` | nil | I represent the name of the super type|
@@ -61,12 +62,11 @@ I represent a derived type definition for example:
 Class {
 	#name : 'FASTFortran2kDerivedTypeDefinition',
 	#superclass : 'FASTFortran2kAbstractStatement',
-	#traits : 'FASTFortran2kTWithModifiers + FASTTNamedEntity + FASTTWithComments',
-	#classTraits : 'FASTFortran2kTWithModifiers classTrait + FASTTNamedEntity classTrait + FASTTWithComments classTrait',
+	#traits : 'FASTFortran2kTWithModifiers + FASTTNamedEntity + FASTTStatementBlock',
+	#classTraits : 'FASTFortran2kTWithModifiers classTrait + FASTTNamedEntity classTrait + FASTTStatementBlock classTrait',
 	#instVars : [
-		'#fields => FMMany type: #FASTFortran2kDerivedTypeAbstractField opposite: #fieldOwner',
-		'#methods => FMMany type: #FASTFortran2kTypeBoundProcedure opposite: #methodOwner',
-		'#superType => FMProperty'
+		'#superType => FMProperty',
+		'#methods => FMMany type: #FASTFortran2kTypeBoundProcedure opposite: #methodOwner'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -83,39 +83,9 @@ FASTFortran2kDerivedTypeDefinition class >> annotation [
 ]
 
 { #category : 'adding' }
-FASTFortran2kDerivedTypeDefinition >> addField: anObject [
-	<generated>
-	^ self fields add: anObject
-]
-
-{ #category : 'adding' }
 FASTFortran2kDerivedTypeDefinition >> addMethod: anObject [
 	<generated>
 	^ self methods add: anObject
-]
-
-{ #category : 'accessing' }
-FASTFortran2kDerivedTypeDefinition >> fields [
-	"Relation named: #fields type: #FASTFortran2kDerivedTypeAbstractField opposite: #fieldOwner"
-
-	<generated>
-	<FMComment: 'My field'>
-	<derived>
-	^ fields
-]
-
-{ #category : 'accessing' }
-FASTFortran2kDerivedTypeDefinition >> fields: anObject [
-
-	<generated>
-	fields value: anObject
-]
-
-{ #category : 'navigation' }
-FASTFortran2kDerivedTypeDefinition >> fieldsGroup [
-	<generated>
-	<navigation: 'Fields'>
-	^ MooseSpecializedGroup withAll: self fields asSet
 ]
 
 { #category : 'accessing' }

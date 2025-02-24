@@ -5,7 +5,7 @@
 "
 Class {
 	#name : 'FASTFortran2kClassDeclarationStatement',
-	#superclass : 'FASTFortran2kVariableDeclarationStatement',
+	#superclass : 'FASTFortran2kEntity',
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
 	#tag : 'Entities'
@@ -14,7 +14,7 @@ Class {
 { #category : 'meta' }
 FASTFortran2kClassDeclarationStatement class >> annotation [
 
-	<FMClass: #ClassDeclarationStatement super: #FASTFortran2kVariableDeclarationStatement>
+	<FMClass: #ClassDeclarationStatement super: #FASTFortran2kEntity>
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self

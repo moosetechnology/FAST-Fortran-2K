@@ -17,8 +17,8 @@ Class {
 	#name : 'FASTFortran2kDerivedTypeComponentAccess',
 	#superclass : 'FASTFortran2kVariable',
 	#instVars : [
-		'#instance => FMOne type: #FASTFortran2kVariable opposite: #instanceIn',
-		'#field => FMOne type: #FASTFortran2kVariable opposite: #fieldIn'
+		'#field => FMOne type: #FASTFortran2kVariable opposite: #fieldIn',
+		'#instance => FMOne type: #FASTFortran2kVariable opposite: #instanceIn'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',

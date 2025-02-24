@@ -245,20 +245,6 @@ FASTFortran2kTEntityCreator >> newDecodeStatement [
 ]
 
 { #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newDerivedTypeAbstractField [
-
-	<generated>
-	^ self add: FASTFortran2kDerivedTypeAbstractField new
-]
-
-{ #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newDerivedTypeComponent [
-
-	<generated>
-	^ self add: FASTFortran2kDerivedTypeComponent new
-]
-
-{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newDerivedTypeComponentAccess [
 
 	<generated>
@@ -266,31 +252,10 @@ FASTFortran2kTEntityCreator >> newDerivedTypeComponentAccess [
 ]
 
 { #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newDerivedTypeComponentDimension [
-
-	<generated>
-	^ self add: FASTFortran2kDerivedTypeComponentDimension new
-]
-
-{ #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newDerivedTypeDeclaration [
-
-	<generated>
-	^ self add: FASTFortran2kDerivedTypeDeclaration new
-]
-
-{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newDerivedTypeDefinition [
 
 	<generated>
 	^ self add: FASTFortran2kDerivedTypeDefinition new
-]
-
-{ #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newDerivedTypeParameter [
-
-	<generated>
-	^ self add: FASTFortran2kDerivedTypeParameter new
 ]
 
 { #category : 'entity creation' }
@@ -648,13 +613,6 @@ FASTFortran2kTEntityCreator >> newMapStatement [
 
 	<generated>
 	^ self add: FASTFortran2kMapStatement new
-]
-
-{ #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newModifier [
-
-	<generated>
-	^ self add: FASTFortran2kModifier new
 ]
 
 { #category : 'entity creation' }

@@ -15,7 +15,6 @@ Part of a variable declaration: name of the variable + optional initial value
 |---|
 | `dimensions` | `FASTFortran2kVariableDeclarator` | `parentVariableDeclarator` | `FASTFortran2kArrayRange` | Possible dimensions in case this is an array declaration|
 | `expression` | `FASTFortran2kVariableDeclarator` | `variableDeclaratorOwner` | `FASTFortran2kAbstractExpression` | Expression assigned to the variable declared|
-| `modifiers` | `FASTFortran2kTWithModifiers` | `modifierOwner` | `FASTFortran2kTModifier` | My modifiers|
 
 
 ## Properties
@@ -31,12 +30,12 @@ Part of a variable declaration: name of the variable + optional initial value
 Class {
 	#name : 'FASTFortran2kVariableDeclarator',
 	#superclass : 'FASTFortran2kEntity',
-	#traits : 'FASTFortran2kTWithModifiers + FASTTNamedEntity',
-	#classTraits : 'FASTFortran2kTWithModifiers classTrait + FASTTNamedEntity classTrait',
+	#traits : 'FASTTNamedEntity',
+	#classTraits : 'FASTTNamedEntity classTrait',
 	#instVars : [
 		'#dimensions => FMMany type: #FASTFortran2kArrayRange opposite: #parentVariableDeclarator',
-		'#expression => FMOne type: #FASTFortran2kAbstractExpression opposite: #variableDeclaratorOwner',
-		'#parentDeclaration => FMOne type: #FASTFortran2kTWithDeclarators opposite: #declarators'
+		'#parentDeclaration => FMOne type: #FASTFortran2kTWithDeclarators opposite: #declarators',
+		'#expression => FMOne type: #FASTFortran2kAbstractExpression opposite: #variableDeclaratorOwner'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',

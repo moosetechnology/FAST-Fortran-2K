@@ -42,7 +42,7 @@ Class {
 { #category : 'meta' }
 FASTFortran2kFunctionStatement class >> annotation [
 
-	<FMClass: #FunctionStatement super: #FASTFortran2kFunctionCall>
+	<FMClass: #FunctionStatement super: #FASTFortran2kAbstractStatement>
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
