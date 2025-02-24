@@ -587,6 +587,35 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 		values: { name } ).
 ]
 
+{ #category : 'helper-segCommands' }
+FASTFortranDerivedTypeFactory >> makeProcedureSegloc [
+	| segloc  |
+
+	segloc := model newFunction
+		name: name , '_segloc'.
+	
+	segloc initBody.
+
+	segloc addStatement: (model newFormattedCodeString 
+		content: '
+        ! ## Return a location of the "this" pointer
+        ! ## just to trace pointers during debug,
+        ! ## should not be use for other purpose !!!
+
+        use, intrinsic :: iso_fortran_env, only : int64
+        use, intrinsic :: iso_c_binding, only : c_loc
+
+        type(bar), pointer, intent(in) :: this
+        integer(int64) :: this_loc
+
+        this_loc = transfer(c_loc(this), this_loc)
+		';
+		values: { name }
+	).
+
+	^segloc
+]
+
 { #category : 'helpers-codeString' }
 FASTFortranDerivedTypeFactory >> makeProcedureSegmentType [
 
