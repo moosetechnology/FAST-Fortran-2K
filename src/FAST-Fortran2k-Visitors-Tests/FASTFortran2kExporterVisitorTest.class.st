@@ -85,18 +85,18 @@ FASTFortran2kExporterVisitorTest >> segmentBookDefinition [
 
 	^ FASTFortran2kDerivedTypeDefinition new
 		  name: 'book';
-		  fields: {
-				  (FASTFortran2kDerivedTypeComponent new
-						name: 'btitle';
+		  statements: {
+				  (FASTFortran2kVariableDeclarationStatement new
+						addDeclarator: (FASTFortran2kVariableDeclarator new name: 'btitle');
 					   declaredType: (FASTFortran2kCharacterType new size:
 								    (FASTFortran2kIntegerLiteral new primitiveValue: 40));
 					   yourself).
-				  (FASTFortran2kDerivedTypeComponent new
-						name: 'bpages';
+				  (FASTFortran2kVariableDeclarationStatement new
+						addDeclarator: (FASTFortran2kVariableDeclarator new name: 'bpages');
 					   declaredType: FASTFortran2kIntegerType new;
 					   yourself).
-				  (FASTFortran2kDerivedTypeComponent new
-						name: 'budc';
+				  (FASTFortran2kVariableDeclarationStatement new
+						addDeclarator: (FASTFortran2kVariableDeclarator new name: 'budc');
 					   declaredType: FASTFortran2kRealType new;
 					   yourself) };
 		  yourself
@@ -108,14 +108,12 @@ FASTFortran2kExporterVisitorTest >> segmentBoxedBookDefinition [
 	^ FASTFortran2kDerivedTypeDefinition new
 		  name: 'boxed_book';
 		  superType: 'segment';
-		  fields: {
-				  (FASTFortran2kDerivedTypeComponent new
-						name: 'this';
+		  statements: {
+				  (FASTFortran2kVariableDeclarationStatement new
+						addDeclarator: (FASTFortran2kVariableDeclarator new name: 'this');
 					   declaredType: (FASTFortran2kUserDefinedType new name: 'book');
-						modifiers: { 
-							FASTFortran2kModifier new token: 'pointer' .
-							FASTFortran2kModifier new token: 'private'
-						};yourself
+						modifiers: #( pointer private ) ;
+						yourself
 					)
 			};
 		  yourself
@@ -251,7 +249,7 @@ end program demo
 				statements: {
 					FASTFortran2kImplicitStatement new
 					.
-					(FASTFortran2kDerivedTypeDeclaration new
+					(FASTFortran2kVariableDeclarationStatement new
 						declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
 						declarators: { FASTFortran2kVariableDeclarator new name: 'p' } ;
 						yourself) } ) ;
@@ -324,7 +322,7 @@ end type boxed_book
 FASTFortran2kExporterVisitorTest >> testTypeDeclarationStatement [
 
 	| stmt |
-	stmt := FASTFortran2kDerivedTypeDeclaration new
+	stmt := FASTFortran2kVariableDeclarationStatement new
 		 declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
 		 declarators: { (FASTFortran2kVariableDeclarator new name: 'p1') } ;
 		 yourself.
@@ -340,7 +338,7 @@ FASTFortran2kExporterVisitorTest >> testTypeDeclarationStatement [
 FASTFortran2kExporterVisitorTest >> testTypeDeclarationsStatement [
 
 	| stmt |
-	stmt := FASTFortran2kDerivedTypeDeclaration new
+	stmt := FASTFortran2kVariableDeclarationStatement new
 		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t');
 		declarators: {
 			(FASTFortran2kVariableDeclarator new name: 'p1')
@@ -361,15 +359,15 @@ FASTFortran2kExporterVisitorTest >> testTypeDefinition [
 	| stmt |
 	stmt := FASTFortran2kDerivedTypeDefinition new
 		name: 'point_t';
-		fields: {
-			(FASTFortran2kDerivedTypeComponent new
-				name: 'label';
+		statements: {
+			(FASTFortran2kVariableDeclarationStatement new
+						addDeclarator: (FASTFortran2kVariableDeclarator new name: 'label') ;
 				declaredType: (FASTFortran2kCharacterType new size: FASTFortran2kAsterisk new) ;
 				yourself)
 			.
-			(FASTFortran2kDerivedTypeComponent new
+			(FASTFortran2kVariableDeclarationStatement new
+				addDeclarator: (FASTFortran2kVariableDeclarator new name: 'x') ;
 				declaredType: FASTFortran2kRealType new;
-				name: 'x';
 				yourself) };
 		yourself.
 
