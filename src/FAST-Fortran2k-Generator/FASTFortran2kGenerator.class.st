@@ -945,6 +945,9 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	userDefinedType  --|> tNamedEntity.
 
 	modifier --|> tModifier.
+	emptyStatement --|> abstractStatement.
+	functionStatement --|> functionCall.
+	functionStatement --|> #TStatement.
 ]
 
 { #category : 'definition' }
