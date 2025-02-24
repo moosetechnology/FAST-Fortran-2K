@@ -13,8 +13,8 @@ I represent a Fortran ""implied do"" expression
 | Relation | Origin | Opposite | Type | Comment |
 |---|
 | `loopControl` | `FASTFortran2kTWithLoopControl` | `parentLoop` | `FASTFortran2kLoopControlExpression` | loop control|
-| `variables` | `FASTFortran2kTVariableGroup` | `parentVariableGroup` | `FASTFortran2kVariable` | |
 | `variables` | `FASTFortran2kImpliedDoExpression` | `parentImpliedExpression` | `FASTTVariableEntity` | |
+| `variables` | `FASTFortran2kTVariableGroup` | `parentVariableGroup` | `FASTFortran2kVariable` | |
 
 
 

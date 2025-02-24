@@ -637,6 +637,13 @@ FASTFortran2kTEntityCreator >> newMapStatement [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newModifier [
+
+	<generated>
+	^ self add: FASTFortran2kModifier new
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newModule [
 
 	<generated>

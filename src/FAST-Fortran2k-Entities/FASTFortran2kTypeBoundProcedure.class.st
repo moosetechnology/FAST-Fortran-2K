@@ -7,8 +7,8 @@ Im a type-bound-procedure
 ### Parents
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `derivedTypeDefinition` | `FASTFortran2kTypeBoundProcedure` | `typeBoundProcedures` | `FASTFortran2kDerivedTypeDefinition` | |
 | `invokedIn` | `FASTTNamedEntity` | `invoked` | `FASTTInvocation` | Optional invocation where this name is used|
+| `methodOwner` | `FASTFortran2kTypeBoundProcedure` | `methods` | `FASTFortran2kDerivedTypeDefinition` | The owner of the type bound procedure|
 
 
 ## Properties
@@ -31,7 +31,7 @@ Class {
 	#instVars : [
 		'#alias => FMProperty',
 		'#interface => FMProperty',
-		'#derivedTypeDefinition => FMOne type: #FASTFortran2kDerivedTypeDefinition opposite: #typeBoundProcedures'
+		'#methodOwner => FMOne type: #FASTFortran2kDerivedTypeDefinition opposite: #methods'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -63,29 +63,6 @@ FASTFortran2kTypeBoundProcedure >> alias: anObject [
 ]
 
 { #category : 'accessing' }
-FASTFortran2kTypeBoundProcedure >> derivedTypeDefinition [
-	"Relation named: #derivedTypeDefinition type: #FASTFortran2kDerivedTypeDefinition opposite: #typeBoundProcedures"
-
-	<generated>
-	<container>
-	^ derivedTypeDefinition
-]
-
-{ #category : 'accessing' }
-FASTFortran2kTypeBoundProcedure >> derivedTypeDefinition: anObject [
-
-	<generated>
-	derivedTypeDefinition := anObject
-]
-
-{ #category : 'navigation' }
-FASTFortran2kTypeBoundProcedure >> derivedTypeDefinitionGroup [
-	<generated>
-	<navigation: 'DerivedTypeDefinition'>
-	^ MooseSpecializedGroup with: self derivedTypeDefinition
-]
-
-{ #category : 'accessing' }
 FASTFortran2kTypeBoundProcedure >> interface [
 
 	<FMProperty: #interface type: #String>
@@ -98,4 +75,28 @@ FASTFortran2kTypeBoundProcedure >> interface [
 FASTFortran2kTypeBoundProcedure >> interface: anObject [
 	<generated>
 	interface := anObject
+]
+
+{ #category : 'accessing' }
+FASTFortran2kTypeBoundProcedure >> methodOwner [
+	"Relation named: #methodOwner type: #FASTFortran2kDerivedTypeDefinition opposite: #methods"
+
+	<generated>
+	<FMComment: 'The owner of the type bound procedure'>
+	<container>
+	^ methodOwner
+]
+
+{ #category : 'accessing' }
+FASTFortran2kTypeBoundProcedure >> methodOwner: anObject [
+
+	<generated>
+	methodOwner := anObject
+]
+
+{ #category : 'navigation' }
+FASTFortran2kTypeBoundProcedure >> methodOwnerGroup [
+	<generated>
+	<navigation: 'MethodOwner'>
+	^ MooseSpecializedGroup with: self methodOwner
 ]

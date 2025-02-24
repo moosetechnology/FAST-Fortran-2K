@@ -602,7 +602,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponentDimension:
 
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDeclaration: aFASTFortran2kDerivedTypeDeclaration [
-1halt.
+
 	^ self visitFASTFortranTypeDeclarationStatement: aFASTFortran2kDerivedTypeDeclaration
 ]
 
