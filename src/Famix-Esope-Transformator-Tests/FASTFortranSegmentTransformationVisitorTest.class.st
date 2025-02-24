@@ -84,6 +84,18 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToD
 ]
 
 { #category : 'running' }
+FASTFortranSegmentTransformationVisitorTest >> testEsopeTF2kSegini [
+	| dst segCommand |
+	segCommand := self segmentCommand: 'segini' with: { #v }.
+
+	dst := segCommand accept: visitor.
+
+	self assert: dst class equals: FASTFortran2kCallStatement.
+	self assert: dst name equals: 'segini'.
+	self assert: dst arguments size equals: 1
+]
+
+{ #category : 'running' }
 FASTFortranSegmentTransformationVisitorTest >> testFunctionWithSegment [
 	"
 	integer fct()

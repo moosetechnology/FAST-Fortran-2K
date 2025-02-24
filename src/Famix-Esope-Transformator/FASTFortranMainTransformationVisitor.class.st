@@ -30,6 +30,7 @@ FASTFortranMainTransformationVisitor >> visitFASTFortranProgramMain: aProgramNod
 	programMain := self model newProgramMain 
 		name: aProgramNode name;
 		programFile: programFile ;
+		backTrace: aProgramNode programFile filename ;
 		yourself.
 
 	stack push: programMain.

@@ -52,6 +52,7 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 		name: aFASTFortranFunction name ;
 		declaredType: (aFASTFortranFunction famix declaredType accept: self);
 		module: module ;
+		backTrace: aFASTFortranFunction programFile filename ;
 		yourself.
 
 	stack push: function.
@@ -74,6 +75,7 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFo
 	subrtn := self model newSubroutine
 		name: aFASTFortranSubroutine name ;
 		module: module ;
+		backTrace: aFASTFortranSubroutine programFile filename ;
 		yourself.
 
 	stack push: subrtn.
