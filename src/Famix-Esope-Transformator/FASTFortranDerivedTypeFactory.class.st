@@ -52,7 +52,7 @@ FASTFortranDerivedTypeFactory >> fields: fastFortranDeclarations [
 
 	fields := fastFortranDeclarations flatCollect: [ :fastVariableDeclaration |
 		fastVariableDeclaration declarators collect: [ :fastVariableDeclarator |
-			FASTFortranDerivedTypeFieldFactory new
+			FASTFortranDerivedTypeComponentFieldFactory new
 				derivedTypeFactory: self ;
 				type: fastVariableDeclaration declaredType ;
 				fieldDeclarator: fastVariableDeclarator
@@ -423,45 +423,46 @@ FASTFortranDerivedTypeFactory >> makeProcedureIgnore [
 { #category : 'helpers-codeString' }
 FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 
-	| segxxx routineParams routineParamsDeclarations localParamsDims allocateSegmentAttributes segmentDimensions aFASTFortranSegment tmpStream |
-	self ensureEmptyStream.
+	| paramFactories componentFactories segini checkPostCondition |
+
+	paramFactories := fields collect: #isSegmentParameter.
+	componentFactories := fields reject: #isSegmentParameter.
+
+	segini := model newSubroutine
+		name: name , '_segini'.
+
+	paramFactories do: [ :param |
+		segini addParameter: (model newScalarVariable
+			name: param name)
+	].
+
+	segini initBody.
+	segini addComment: '## Initialize a new "this" segment with default values'.
+	segini addComment: '## using the given parameters'.
 	
-	segmentDimensions := self computeSegmentsDimensions: aFASTFortranSegment.
-	routineParams := self computeRoutineParams: segmentDimensions.
-	routineParamsDeclarations := self computeRoutineParamsDeclarations: segmentDimensions.
-	localParamsDims := self computeLocalParamsDims: segmentDimensions.
+	paramFactories do: [ :paramFactory |
+		segini addStatement: (paramFactory createSeginiFieldDeclaration)
+	].
+	segini addStatement: model newEmptyStatement.
 
-	allocateSegmentAttributes := self computeAllocateSegmentAttributes: aFASTFortranSegment.
+	paramFactories do: [ :paramFactory |
+		segini addStatement: paramFactory createSeginiFieldInitialization.
+	].
+	segini addStatement: model newEmptyStatement.
 
-	tmpStream << '
-	subroutine {segmentName}_segini(this {routineParams})
-		! ## Initialize a new "this" segment with default values
-		! ## using the given parameters
-		type({segmentName}, pointer, intent(inout) :: this
-		{routineParamsDeclarations}
-	
-		{localParamsDims}
-	
-		allocate(this)
-		{allocateSegmentAttributes}
+	componentFactories do: [ :compFact |
+		segini addComment: '-- this%' , compFact name.
+		compFact createSeginiFieldInitialization do: [:stmt | segini addStatement: stmt ].
+	].
 
-		call check_post_condition(associated(this), ''{segmentName}_segini'', ''associated(this)'')
-	end subroutine {segmentName}_segini
-'.
-
-	segxxx := self model newFormattedCodeString
-		          content: tmpStream contents;
-		          values: { 
-						#segmentName -> aFASTFortranSegment name. 
-						#routineParams -> routineParams. 
-						#routineParamsDeclarations -> routineParamsDeclarations. 
-						#localParamsDims -> localParamsDims. 
-						#allocateSegmentAttributes -> allocateSegmentAttributes. 
-					} asDictionary.
-						
-
-	self ensureEmptyStream.
-	^ segxxx
+	checkPostCondition := model newCallStatement
+		name: 'check_post_condition'.
+	checkPostCondition addArgument: (model newFunctionCall
+		name: 'associated' ;
+		addArgument: (model newScalarVariable name: 'this') ).
+	checkPostCondition addArgument: (model newCharacterLiteral primitiveValue: segini name).
+	checkPostCondition addArgument: (model newCharacterLiteral primitiveValue: 'associated(this)').
+	segini addStatement: checkPostCondition 
 ]
 
 { #category : 'helpers-codeString' }
@@ -514,17 +515,32 @@ FASTFortranDerivedTypeFactory >> makeSegmentTypeName [
 FASTFortranDerivedTypeFactory >> makeTypeDefinition [
 
 	| segment |
-	segment := self model newDerivedTypeDefinition
+	segment := model newDerivedTypeDefinition
 		           name: name.
 
-	fields do: [ :fieldFactory | segment addField: fieldFactory createComponentDeclaration ]
+	fields do: [ :fieldFactory |
+		fieldFactory createSegmentFieldDeclaration
+			ifNotNil: [ :declStatement | segment addField: declStatement ]
+		]
 
+]
+
+{ #category : 'accessing' }
+FASTFortranDerivedTypeFactory >> model [
+
+	^model
 ]
 
 { #category : 'accessing' }
 FASTFortranDerivedTypeFactory >> model: anObject [
 
 	model := anObject
+]
+
+{ #category : 'accessing' }
+FASTFortranDerivedTypeFactory >> name [
+
+	^name
 ]
 
 { #category : 'accessing' }
