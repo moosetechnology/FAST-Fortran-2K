@@ -10,6 +10,12 @@ Class {
 }
 
 { #category : 'converting' }
+FASTFortranDerivedTypeComponentFieldFactory >> asDefaultValue [
+
+	^'segment_' , type name , '_default_value'
+]
+
+{ #category : 'converting' }
 FASTFortranDerivedTypeComponentFieldFactory >> asFieldAccess [
 
 	^String streamContents: [ :stream |
@@ -21,6 +27,41 @@ FASTFortranDerivedTypeComponentFieldFactory >> asFieldAccess [
 				stream << ')'
 			]
 	]
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> createSeginiFieldInitialization [
+	"creates 2 statements:
+	 - allocate(this%idata(idata_dim1(idim,jdim))
+	 - this%idata(:) = segment_integer_default_value"
+
+	| line1 line2 |
+	line1 := String streamContents: [ :stream |
+		stream
+			<< 'allocate(this%' ;
+			<< name ;
+			<< '(' ;
+			<< name ;
+			<< '_dim' ;
+			<< (self derivedTypeFactory components indexOf: self) asString ;
+			<< '('.
+			self derivedTypeFactory parameters
+				do: [ :param | stream << param name]
+				separatedBy: [ stream << ',' ].
+			stream << '))'.
+	].
+
+	line2 := String streamContents: [ :stream |
+		stream
+			<< 'this%' ;
+			<< self asFieldAccess ;
+			<< ' = ' ;
+			<< self asDefaultValue
+	].
+
+	^{
+		self model newSourceCodeString content: line1 .
+		self model newSourceCodeString content: line2 }
 ]
 
 { #category : 'entity-creation' }

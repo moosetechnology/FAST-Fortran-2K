@@ -7,3 +7,9 @@ FASTFortran2kCharacterType >> accept: aVisitor [
 	^ aVisitor visitFASTFortran2kCharacterType: self.
 
 ]
+
+{ #category : '*FAST-Fortran2k-Visitors' }
+FASTFortran2kCharacterType >> name [ 
+
+	^'character'
+]

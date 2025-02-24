@@ -7,6 +7,12 @@ Class {
 }
 
 { #category : 'entity-creation' }
+FASTFortranDerivedTypeParameterFieldFactory >> createSegadjFieldDeclaration [
+
+	^self createSeginiFieldDeclaration
+]
+
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeParameterFieldFactory >> createSegcopFieldDeclaration [
 
 	^self model newVariableDeclarationStatement

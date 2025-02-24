@@ -80,6 +80,34 @@ FASTFortranDerivedTypeFieldFactoryTest >> testComponentAsFieldAccessNoRank [
 ]
 
 { #category : 'tests' }
+FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiComponentInitialization [
+
+	| fast2k factory paramFactory |
+	factory := self makeFactory: FASTFortranDerivedTypeComponentFieldFactory.
+	factory
+		type: fastModel newIntegerType ;
+		fieldDeclarator: (fastModel newVariableDeclarator
+			name: 'x' ;
+			dimensions: {  fastModel newArrayRange } ).
+
+	paramFactory := self makeFactory: FASTFortranDerivedTypeParameterFieldFactory.
+	paramFactory name: 'idim'.
+
+	factory derivedTypeFactory: FASTFortranDerivedTypeFactory new.
+	factory derivedTypeFactory model: fast2kModel.
+	factory derivedTypeFactory privateFields: { factory . paramFactory }.
+	factory derivedTypeFactory name: 'bar'.
+
+	fast2k := factory createSeginiFieldInitialization.
+
+	self assert: fast2k size equals: 2.
+
+	self assert: fast2k first content equals: 'allocate(this%x(x_dim1(idim))'.
+	self assert: fast2k second content equals: 'this%x(:) = segment_integer_default_value'.
+
+]
+
+{ #category : 'tests' }
 FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiParameterDeclaration [
 
 	| fast2k factory |

@@ -12,6 +12,12 @@ Class {
 	#tag : 'Segment'
 }
 
+{ #category : 'accessing' }
+FASTFortranDerivedTypeFactory >> components [
+
+	^fields reject: #isSegmentParameter
+]
+
 { #category : 'api' }
 FASTFortranDerivedTypeFactory >> createModule [
 
@@ -48,6 +54,12 @@ FASTFortranDerivedTypeFactory >> createModule [
 ]
 
 { #category : 'accessing' }
+FASTFortranDerivedTypeFactory >> fields [
+
+	^fields
+]
+
+{ #category : 'accessing' }
 FASTFortranDerivedTypeFactory >> fields: fastFortranDeclarations [
 
 	fields := fastFortranDeclarations flatCollect: [ :fastVariableDeclaration |
@@ -80,21 +92,6 @@ FASTFortranDerivedTypeFactory >> makeBoxedTypeDefinition [
     end type boxed_{segmentName} 
 ';
 		  values: (Dictionary with: #segmentName -> name)
-]
-
-{ #category : 'helper-segCommands' }
-FASTFortranDerivedTypeFactory >> makeCheckPostCondition: segcommand segmentName: segName parameters: parametersCollection [
-
-	| checkPostCondition |
-	checkPostCondition := model newCallStatement
-		name: 'check_post_condition'.
-	checkPostCondition addArgument: (model newFunctionCall
-		name: 'associated' ;
-		addArgument: (model newScalarVariable name: 'this') ).
-	checkPostCondition addArgument: (model newCharacterLiteral primitiveValue: segName).
-	checkPostCondition addArgument: (model newCharacterLiteral primitiveValue: 'associated(this)').
-
-	^checkPostCondition
 ]
 
 { #category : 'helpers-codeString' }
@@ -491,8 +488,8 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 
 	| paramFactories componentFactories segini thisParameter |
 
-	paramFactories := fields collect: #isSegmentParameter.
-	componentFactories := fields reject: #isSegmentParameter.
+	paramFactories := self parameters.
+	componentFactories := self components.
 
 	segini := model newSubroutine
 		name: name , '_segini'.
@@ -682,4 +679,16 @@ FASTFortranDerivedTypeFactory >> name [
 FASTFortranDerivedTypeFactory >> name: anObject [
 
 	name := anObject
+]
+
+{ #category : 'accessing' }
+FASTFortranDerivedTypeFactory >> parameters [
+
+	^fields select: #isSegmentParameter
+]
+
+{ #category : 'accessing - private tests' }
+FASTFortranDerivedTypeFactory >> privateFields: componentFactories [
+
+	fields := componentFactories 
 ]
