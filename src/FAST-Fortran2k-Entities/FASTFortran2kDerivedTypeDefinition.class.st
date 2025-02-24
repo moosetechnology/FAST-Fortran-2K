@@ -41,13 +41,10 @@ I represent a derived type definition for example:
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `fields` | `FASTFortran2kDerivedTypeDefinition` | `parentDerivedType` | `FASTFortran2kDerivedTypeAbstractField` | |
-| `typeBoundProcedures` | `FASTFortran2kDerivedTypeDefinition` | `derivedTypeDefinition` | `FASTFortran2kTypeBoundProcedure` | |
-
-### Other
-| Relation | Origin | Opposite | Type | Comment |
-|---|
-| `comment` | `FASTFortran2kDerivedTypeDefinition` | `derivedTypeDefinition` | `FASTFortran2kComment` | |
+| `comments` | `FASTTWithComments` | `container` | `FASTTComment` | list of comments defined in the entity|
+| `fields` | `FASTFortran2kDerivedTypeDefinition` | `fieldOwner` | `FASTFortran2kDerivedTypeAbstractField` | My field|
+| `methods` | `FASTFortran2kDerivedTypeDefinition` | `methodOwner` | `FASTFortran2kTypeBoundProcedure` | My type bound procedure|
+| `modifiers` | `FASTFortran2kTWithModifiers` | `modifierOwner` | `FASTFortran2kTModifier` | My modifiers|
 
 
 ## Properties
@@ -64,13 +61,12 @@ I represent a derived type definition for example:
 Class {
 	#name : 'FASTFortran2kDerivedTypeDefinition',
 	#superclass : 'FASTFortran2kAbstractStatement',
-	#traits : 'FASTTNamedEntity',
-	#classTraits : 'FASTTNamedEntity classTrait',
+	#traits : 'FASTFortran2kTWithModifiers + FASTTNamedEntity + FASTTWithComments',
+	#classTraits : 'FASTFortran2kTWithModifiers classTrait + FASTTNamedEntity classTrait + FASTTWithComments classTrait',
 	#instVars : [
-		'#superType => FMProperty',
-		'#fields => FMMany type: #FASTFortran2kDerivedTypeAbstractField opposite: #parentDerivedType',
-		'#typeBoundProcedures => FMMany type: #FASTFortran2kTypeBoundProcedure opposite: #derivedTypeDefinition',
-		'#comment => FMOne type: #FASTFortran2kComment opposite: #derivedTypeDefinition'
+		'#fields => FMMany type: #FASTFortran2kDerivedTypeAbstractField opposite: #fieldOwner',
+		'#methods => FMMany type: #FASTFortran2kTypeBoundProcedure opposite: #methodOwner',
+		'#superType => FMProperty'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -93,31 +89,17 @@ FASTFortran2kDerivedTypeDefinition >> addField: anObject [
 ]
 
 { #category : 'adding' }
-FASTFortran2kDerivedTypeDefinition >> addTypeBoundProcedure: anObject [
+FASTFortran2kDerivedTypeDefinition >> addMethod: anObject [
 	<generated>
-	^ self typeBoundProcedures add: anObject
-]
-
-{ #category : 'accessing' }
-FASTFortran2kDerivedTypeDefinition >> comment [
-	"Relation named: #comment type: #FASTFortran2kComment opposite: #derivedTypeDefinition"
-
-	<generated>
-	^ comment
-]
-
-{ #category : 'accessing' }
-FASTFortran2kDerivedTypeDefinition >> comment: anObject [
-
-	<generated>
-	comment := anObject
+	^ self methods add: anObject
 ]
 
 { #category : 'accessing' }
 FASTFortran2kDerivedTypeDefinition >> fields [
-	"Relation named: #fields type: #FASTFortran2kDerivedTypeAbstractField opposite: #parentDerivedType"
+	"Relation named: #fields type: #FASTFortran2kDerivedTypeAbstractField opposite: #fieldOwner"
 
 	<generated>
+	<FMComment: 'My field'>
 	<derived>
 	^ fields
 ]
@@ -137,6 +119,30 @@ FASTFortran2kDerivedTypeDefinition >> fieldsGroup [
 ]
 
 { #category : 'accessing' }
+FASTFortran2kDerivedTypeDefinition >> methods [
+	"Relation named: #methods type: #FASTFortran2kTypeBoundProcedure opposite: #methodOwner"
+
+	<generated>
+	<FMComment: 'My type bound procedure'>
+	<derived>
+	^ methods
+]
+
+{ #category : 'accessing' }
+FASTFortran2kDerivedTypeDefinition >> methods: anObject [
+
+	<generated>
+	methods value: anObject
+]
+
+{ #category : 'navigation' }
+FASTFortran2kDerivedTypeDefinition >> methodsGroup [
+	<generated>
+	<navigation: 'Methods'>
+	^ MooseSpecializedGroup withAll: self methods asSet
+]
+
+{ #category : 'accessing' }
 FASTFortran2kDerivedTypeDefinition >> superType [
 
 	<FMProperty: #superType type: #String>
@@ -149,27 +155,4 @@ FASTFortran2kDerivedTypeDefinition >> superType [
 FASTFortran2kDerivedTypeDefinition >> superType: anObject [
 	<generated>
 	superType := anObject
-]
-
-{ #category : 'accessing' }
-FASTFortran2kDerivedTypeDefinition >> typeBoundProcedures [
-	"Relation named: #typeBoundProcedures type: #FASTFortran2kTypeBoundProcedure opposite: #derivedTypeDefinition"
-
-	<generated>
-	<derived>
-	^ typeBoundProcedures
-]
-
-{ #category : 'accessing' }
-FASTFortran2kDerivedTypeDefinition >> typeBoundProcedures: anObject [
-
-	<generated>
-	typeBoundProcedures value: anObject
-]
-
-{ #category : 'navigation' }
-FASTFortran2kDerivedTypeDefinition >> typeBoundProceduresGroup [
-	<generated>
-	<navigation: 'TypeBoundProcedures'>
-	^ MooseSpecializedGroup withAll: self typeBoundProcedures asSet
 ]

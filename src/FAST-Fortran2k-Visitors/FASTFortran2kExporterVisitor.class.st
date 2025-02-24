@@ -372,7 +372,20 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeAbstractField: aFAS
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponent: aFASTFortran2kDerivedTypeComponent [
 
-	^ self visitFASTFortranVariableDeclarationStatement: aFASTFortran2kDerivedTypeComponent
+	self indented: ''.
+	aFASTFortran2kDerivedTypeComponent declaredType accept: self.
+	
+	aFASTFortran2kDerivedTypeComponent modifiers 
+		ifNotEmpty: [ :modifiers | 
+			self << ', '.
+			self visitNodeListSeparatedByCommas: modifiers
+	].
+
+	self << ' :: '.
+
+	self 
+		<< aFASTFortran2kDerivedTypeComponent name;
+		newLine
 ]
 
 { #category : 'visiting' }
@@ -399,6 +412,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDeclaration: aFASTF
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDefinition: aFASTFortran2kDerivedTypeDefinition [
 
 	self indented: 'type'.
+
+	aFASTFortran2kDerivedTypeDefinition modifiers 
+		ifNotEmpty: [ :modifiers | 
+			self << ', '.
+			self visitNodeListSeparatedByCommas: modifiers
+		].
 
 	aFASTFortran2kDerivedTypeDefinition superType ifNotNil: [ :superType |
 		self
@@ -750,6 +769,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kLoopControlExpression: aFASTFo
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kMapStatement: aFASTFortran2kMapStatement [
 
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kModifier: aFASTFortran2kModifier [ 
+
+	self
+		<< aFASTFortran2kModifier token
 ]
 
 { #category : 'visiting - programUnits' }
@@ -1259,6 +1285,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortranAbstractStatement: aFASTFortranA
 	self skipLine: aFASTFortranAbstractStatement .
 
 	super visitFASTFortranAbstractStatement: aFASTFortranAbstractStatement
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortranAbstractStatement: aFASTFortranAbstractStatement [
+
+	self indented: ''
 ]
 
 { #category : 'visiting' }

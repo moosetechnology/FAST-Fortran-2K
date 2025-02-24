@@ -12,6 +12,7 @@ I represent a use statement
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
+| `modifiers` | `FASTFortran2kTWithModifiers` | `modifierOwner` | `FASTFortran2kTModifier` | My modifiers|
 | `useRenamedStatements` | `FASTFortran2kUseStatement` | `useStatement` | `FASTFortran2kUseRenamedStatement` | |
 
 
@@ -28,8 +29,8 @@ I represent a use statement
 Class {
 	#name : 'FASTFortran2kUseStatement',
 	#superclass : 'FASTFortran2kAbstractStatement',
-	#traits : 'FASTTNamedEntity',
-	#classTraits : 'FASTTNamedEntity classTrait',
+	#traits : 'FASTFortran2kTWithModifiers + FASTTNamedEntity',
+	#classTraits : 'FASTFortran2kTWithModifiers classTrait + FASTTNamedEntity classTrait',
 	#instVars : [
 		'#useRenamedStatements => FMMany type: #FASTFortran2kUseRenamedStatement opposite: #useStatement'
 	],

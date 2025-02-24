@@ -5,8 +5,16 @@
 ### Parents
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `derivedTypeComponent` | `FASTFortran2kDerivedTypeComponentDimension` | `derivedTypeComponentDimensions` | `FASTFortran2kDerivedTypeComponent` | |
+| `argumentOwner` | `FASTTExpression` | `arguments` | `FASTTWithArguments` | my owner|
+| `assignedIn` | `FASTTExpression` | `expression` | `FASTTAssignment` | Optional assignment where this expression is used|
+| `dimensionOwner` | `FASTFortran2kDerivedTypeComponentDimension` | `dimensions` | `FASTFortran2kDerivedTypeComponent` | The owner of the dimension|
+| `expressionStatementOwner` | `FASTTExpression` | `expression` | `FASTTExpressionStatement` | The expression statement that own me (if it's the case|
 | `invokedIn` | `FASTTNamedEntity` | `invoked` | `FASTTInvocation` | Optional invocation where this name is used|
+| `ioSpecifier` | `FASTTExpression` | `expression` | `FASTFortran2kIOParameter` | name of the parameter (keyword argument)|
+| `parentExpression` | `FASTTExpression` | `expression` | `FASTTUnaryExpression` | Parent (unary) expression|
+| `parentExpressionLeft` | `FASTTExpression` | `leftOperand` | `FASTTBinaryExpression` | Parent (binary) expression of which I am left side|
+| `parentExpressionRight` | `FASTTExpression` | `rightOperand` | `FASTTBinaryExpression` | Parent (binary) expression of which I am right side|
+| `returnOwner` | `FASTTExpression` | `expression` | `FASTTReturnStatement` | The return statement that own the expression (if it's the case)|
 
 
 ## Properties
@@ -21,11 +29,11 @@
 "
 Class {
 	#name : 'FASTFortran2kDerivedTypeComponentDimension',
-	#superclass : 'FASTFortran2kAbstractExpression',
-	#traits : 'FASTTNamedEntity',
-	#classTraits : 'FASTTNamedEntity classTrait',
+	#superclass : 'FASTFortran2kEntity',
+	#traits : 'FASTTExpression + FASTTNamedEntity',
+	#classTraits : 'FASTTExpression classTrait + FASTTNamedEntity classTrait',
 	#instVars : [
-		'#derivedTypeComponent => FMOne type: #FASTFortran2kDerivedTypeComponent opposite: #derivedTypeComponentDimensions'
+		'#dimensionOwner => FMOne type: #FASTFortran2kDerivedTypeComponent opposite: #dimensions'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -35,31 +43,32 @@ Class {
 { #category : 'meta' }
 FASTFortran2kDerivedTypeComponentDimension class >> annotation [
 
-	<FMClass: #DerivedTypeComponentDimension super: #FASTFortran2kAbstractExpression>
+	<FMClass: #DerivedTypeComponentDimension super: #FASTFortran2kEntity>
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
 ]
 
 { #category : 'accessing' }
-FASTFortran2kDerivedTypeComponentDimension >> derivedTypeComponent [
-	"Relation named: #derivedTypeComponent type: #FASTFortran2kDerivedTypeComponent opposite: #derivedTypeComponentDimensions"
+FASTFortran2kDerivedTypeComponentDimension >> dimensionOwner [
+	"Relation named: #dimensionOwner type: #FASTFortran2kDerivedTypeComponent opposite: #dimensions"
 
 	<generated>
+	<FMComment: 'The owner of the dimension'>
 	<container>
-	^ derivedTypeComponent
+	^ dimensionOwner
 ]
 
 { #category : 'accessing' }
-FASTFortran2kDerivedTypeComponentDimension >> derivedTypeComponent: anObject [
+FASTFortran2kDerivedTypeComponentDimension >> dimensionOwner: anObject [
 
 	<generated>
-	derivedTypeComponent := anObject
+	dimensionOwner := anObject
 ]
 
 { #category : 'navigation' }
-FASTFortran2kDerivedTypeComponentDimension >> derivedTypeComponentGroup [
+FASTFortran2kDerivedTypeComponentDimension >> dimensionOwnerGroup [
 	<generated>
-	<navigation: 'DerivedTypeComponent'>
-	^ MooseSpecializedGroup with: self derivedTypeComponent
+	<navigation: 'DimensionOwner'>
+	^ MooseSpecializedGroup with: self dimensionOwner
 ]

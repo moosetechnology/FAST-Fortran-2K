@@ -13,7 +13,6 @@ A fortran comment
 | Relation | Origin | Opposite | Type | Comment |
 |---|
 | `derivedTypeComponent` | `FASTFortran2kComment` | `comment` | `FASTFortran2kDerivedTypeComponent` | |
-| `derivedTypeDefinition` | `FASTFortran2kComment` | `comment` | `FASTFortran2kDerivedTypeDefinition` | |
 
 
 ## Properties
@@ -32,7 +31,6 @@ Class {
 	#traits : 'FASTTComment + FASTTEntity',
 	#classTraits : 'FASTTComment classTrait + FASTTEntity classTrait',
 	#instVars : [
-		'#derivedTypeDefinition => FMOne type: #FASTFortran2kDerivedTypeDefinition opposite: #comment',
 		'#derivedTypeComponent => FMOne type: #FASTFortran2kDerivedTypeComponent opposite: #comment'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
@@ -63,20 +61,4 @@ FASTFortran2kComment >> derivedTypeComponent: anObject [
 
 	<generated>
 	derivedTypeComponent := anObject
-]
-
-{ #category : 'accessing' }
-FASTFortran2kComment >> derivedTypeDefinition [
-	"Relation named: #derivedTypeDefinition type: #FASTFortran2kDerivedTypeDefinition opposite: #comment"
-
-	<generated>
-	<derived>
-	^ derivedTypeDefinition
-]
-
-{ #category : 'accessing' }
-FASTFortran2kComment >> derivedTypeDefinition: anObject [
-
-	<generated>
-	derivedTypeDefinition := anObject
 ]
