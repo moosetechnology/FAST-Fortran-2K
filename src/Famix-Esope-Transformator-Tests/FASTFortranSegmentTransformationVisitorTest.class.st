@@ -62,15 +62,15 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToD
 	
 	self assert: f2ksegment name equals: 'foo'.
 	
-	self assert: f2ksegment fields size equals: 2.
+	self assert: f2ksegment statements size equals: 2.
 	
-	stmt := f2ksegment fields first.
-	self assert: stmt class equals: FASTFortran2kDerivedTypeParameter.
+	stmt := f2ksegment statements first.
+	self assert: stmt class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
 	self assert: stmt name equals: 'N'.
 	
-	stmt := f2ksegment fields second.
-	self assert: stmt class equals: FASTFortran2kDerivedTypeComponent.
+	stmt := f2ksegment statements second.
+	self assert: stmt class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
 	self assert: stmt name equals: 'bar'.
 	self assert: stmt rank equals: 1.
