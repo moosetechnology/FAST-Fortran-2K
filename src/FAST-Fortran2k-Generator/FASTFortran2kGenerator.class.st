@@ -152,10 +152,6 @@ Class {
 		'interfaceProcedure',
 		'typeBPFinal',
 		'pointerAssignmentStatement',
-		'ptVariable',
-		'pointerVariable',
-		'targetVariable',
-		'tPointerAssignment',
 		'importStatement',
 		'classDeclarationStatement',
 		'sourceCodeString',
@@ -171,7 +167,8 @@ Class {
 		'functionReturnStatement',
 		'tWithModifiers',
 		'emptyStatement',
-		'functionCallStatement'
+		'functionCallStatement',
+		'tProcedure'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -358,8 +355,6 @@ FASTFortran2kGenerator >> defineClasses2k [
 		                              newClassNamed:
 		                              #PointerAssignmentStatement
 		                              comment: ''.
-	ptVariable := self newClassNamed: #PTVariable comment: ''.
-	pointerVariable := self newClassNamed: #PointerVariable comment: ''.
 
 	publicStatement := self
 		                   newClassNamed: #PublicStatement
@@ -373,9 +368,6 @@ FASTFortran2kGenerator >> defineClasses2k [
 	formattedCodeString := self
 		                       newClassNamed: #FormattedCodeString
 		                       comment: ''.
-
-
-	targetVariable := self newClassNamed: #TargetVariable comment: ''.
 
 	typeBoundProcedure := self
 		                      newClassNamed: #TypeBoundProcedure
@@ -875,20 +867,15 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	
 	module --|> programUnit.
 	
-	pointerAssignmentStatement --|> tPointerAssignment.
-	
-	ptVariable --|> variable.
-	
-	pointerVariable --|> ptVariable.
+	pointerAssignmentStatement --|> assignmentStatement.
 	
 	privateStatement --|> abstractStatement.
 	publicStatement --|> abstractStatement.
 	
+	procedure --|> tProcedure.
+	
 	sourceCodeString --|> abstractStatement.
-	
-	targetVariable --|> ptVariable.
-	
-	tPointerAssignment --|> tExpression.
+	sourceCodeString --|> tProcedure.
 	
 	typeBoundProcedure --|> tNamedEntity.
 	typeBPFinal --|> typeBoundProcedure.
@@ -1156,7 +1143,7 @@ FASTFortran2kGenerator >> defineRelations2k [
 	procedure <>-* internalProcedure.
 	mainprogram <>-* internalProcedure.
 
-	module <>-* procedure.
+	module <>-* tProcedure.
 
 	publicStatement <>-* nameEntity.
 	privateStatement <>-* nameEntity.
@@ -1164,17 +1151,6 @@ FASTFortran2kGenerator >> defineRelations2k [
 	useOnlyStatement <>-* useNoRenamedStatement.
 
 	interface <>-* interfaceProcedure.
-
-	((tPointerAssignment property: #variable) comment:
-		 'An assigned variable (lhs of assignment)')
-	<>-
-		((pointerVariable property: #parentAssignmentExpression) comment:
-			 'Optional assignment to the variable').
-
-	((tPointerAssignment property: #expression) comment:
-		 'Assigned expression (rhs of assignment)')
-	<>- ((ptVariable property: #assignedIn) comment:
-			 'Optional assignment where this expression is used')
 ]
 
 { #category : 'definition' }
@@ -1445,9 +1421,7 @@ FASTFortran2kGenerator >> defineTraits [
 { #category : 'definition' }
 FASTFortran2kGenerator >> defineTraits2k [
 
-	tPointerAssignment := builder
-		newTraitNamed: #TPointerAssignment
-		comment: 'self commentForTPointerAssignment'.
+	tProcedure := self newTraitNamed: #TProcedure comment: 'mainly used by sourceCodeString and its subclasses to be able to be added as a procedure in the module'.
 
-	tWithModifiers := self newTraitNamed: #TWithModifiers comment: 'TWithModifiers'.
+	tWithModifiers := self newTraitNamed: #TWithModifiers comment: self commentForModifier.
 ]
