@@ -43,9 +43,9 @@ FASTFortranDerivedTypeParameterFieldFactory >> createSeginiFieldInitialization [
 
 	^self model newAssignmentStatement
 		variable: (self model newDerivedTypeComponentAccess
-			instance: (self model newScalarVariable name: 'this') ;
-			field: (self model newScalarVariable name: name) ) ;
-		expression: (self model newScalarVariable name: name)
+			instance: (self scalarVariable: 'this') ;
+			field: (self scalarVariable: name) ) ;
+		expression: (self scalarVariable: name)
 ]
 
 { #category : 'entity-creation' }

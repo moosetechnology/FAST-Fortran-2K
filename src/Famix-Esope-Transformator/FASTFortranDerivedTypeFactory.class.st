@@ -446,9 +446,9 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
 		name: 'this' ;
 		derivedTypeFactory: self).
 
-	segadj addParameter: (model newScalarVariable name: 'this').
+	segadj addParameter: (self scalarVariable: 'this').
 	paramFactories do: [ :param |
-		segadj addParameter: (model newScalarVariable name: param name)
+		segadj addParameter: (self scalarVariable: param name)
 	].
 
 	segadj initBody.
@@ -507,8 +507,8 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegcop [
 		name: 'that' ;
 		derivedTypeFactory: self).
 
-	segcop addParameter: (model newScalarVariable name: 'this').
-	segcop addParameter: (model newScalarVariable name: 'that').
+	segcop addParameter: (self scalarVariable: 'this').
+	segcop addParameter: (self scalarVariable: 'that').
 
 	segcop initBody.
 	segcop addComment: '## Copy "this" segment to a new "that" segment'.
@@ -556,9 +556,9 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 		name: 'this' ;
 		derivedTypeFactory: self).
 
-	segini addParameter: (model newScalarVariable name: 'this').
+	segini addParameter: (self scalarVariable: 'this').
 	paramFactories do: [ :param |
-		segini addParameter: (model newScalarVariable name: param name)
+		segini addParameter: (self scalarVariable: param name)
 	].
 
 	segini initBody.
@@ -651,8 +651,8 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegmov [
 		name: 'that' ;
 		derivedTypeFactory: self).
 
-	segmov addParameter: (model newScalarVariable name: 'this').
-	segmov addParameter: (model newScalarVariable name: 'that').
+	segmov addParameter: (self scalarVariable: 'this').
+	segmov addParameter: (self scalarVariable: 'that').
 
 	segmov initBody.
 	segmov addComment: '## Copy data from "this" segment to an existing "that" segment'.
@@ -678,12 +678,12 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegmov [
 		operator: '.not.' ;
 		expression: (model newFunctionCall
 			name: 'associated' ;
-			addArgument: (model newScalarVariable name: 'this') ;
-			addArgument: (model newScalarVariable name: 'that')) ).
+			addArgument: (self scalarVariable: 'this') ;
+			addArgument: (self scalarVariable: 'that')) ).
 	if thenStatementBlock: (model newStatementBlock).
-	(fields reject: #isSegmentParameter) do: [ :fieldFactory |
+	self components do: [ :fieldFactory |
 		if thenStatementBlock addStatement: (model newFormattedCodeString
-			content: 'that%{1} := this%{1}' ;
+			content: 'that%{1} = this%{1}' ;
 			values: { fieldFactory asFieldAccess } )
 	].
 	segmov addStatement: if.
@@ -700,7 +700,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 		name: 'this' ;
 		derivedTypeFactory: self).
 
-	segsup addParameter: (model newScalarVariable name: 'this').
+	segsup addParameter: (self scalarVariable: 'this').
 	
 	segsup initBody.
 	segsup addComment: '## Delete ("supprimer" in French) the given "this" segment'.
@@ -711,7 +711,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 	if := model newIfBlockStatement new.
 	if condition: (model newFunctionCall
 		name: 'associated';
-		addArgument: (model newScalarVariable name: 'this');
+		addArgument: (self scalarVariable: 'this');
 		yourself
 	).
 	if thenStatementBlock: (model newStatementBlock).
@@ -723,12 +723,12 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 	
 	if thenStatementBlock addStatement: (model newFunctionCallStatement
 			name: 'deallocate';
-			addArgument: (model newScalarVariable name: 'this');
+			addArgument: (self scalarVariable: 'this');
 			yourself
 	).
 	if thenStatementBlock addStatement: (model newFunctionCallStatement
 			name: 'nullify';
-			addArgument: (model newScalarVariable name: 'this');
+			addArgument: (self scalarVariable: 'this');
 			yourself
 	).
 	segsup addStatement: if.
@@ -744,8 +744,7 @@ FASTFortranDerivedTypeFactory >> makeSegCall: segCommand arguments: arguments [
 		name: (name , '_seg' , segCommand).
 
 	arguments do: [ :arg |
-		stmt addArgument: (model newScalarVariable
-			name: arg name)
+		stmt addArgument: (self scalarVariable: arg name)
 	].
 
 	^stmt
@@ -833,4 +832,11 @@ FASTFortranDerivedTypeFactory >> rankMax [
 	^(self components collect: #rank)
 		ifEmpty: [ 0 ]
 		ifNotEmpty: [ :collection | collection max ]
+]
+
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> scalarVariable: variableName [
+
+	^model newScalarVariable
+		name: variableName
 ]

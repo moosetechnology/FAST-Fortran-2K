@@ -48,3 +48,9 @@ FASTFortranDerivedTypeFieldFactory >> name: aString [
 
 	name := aString 
 ]
+
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFieldFactory >> scalarVariable: variableName [
+
+	^self derivedTypeFactory scalarVariable: variableName
+]
