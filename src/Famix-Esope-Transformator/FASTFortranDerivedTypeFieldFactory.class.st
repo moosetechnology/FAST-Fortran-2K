@@ -15,7 +15,13 @@ Class {
 { #category : 'entity creation' }
 FASTFortranDerivedTypeFieldFactory >> assignement: variable value: expression [
 
-	^self derivedTypeFactory assignement: variable value: expression
+	^derivedTypeFactory assignement: variable value: expression
+]
+
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFieldFactory >> comment: aString [
+
+	^derivedTypeFactory comment: aString
 ]
 
 { #category : 'accessing - private tests' }
@@ -33,7 +39,13 @@ FASTFortranDerivedTypeFieldFactory >> derivedTypeFactory: aFactory [
 { #category : 'entity creation' }
 FASTFortranDerivedTypeFieldFactory >> derivedTypeFieldAccessVariable: instanceName field: fieldName [
 
-	^self derivedTypeFactory derivedTypeFieldAccessVariable: instanceName field: fieldName
+	^derivedTypeFactory derivedTypeFieldAccessVariable: instanceName field: fieldName
+]
+
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFieldFactory >> do: condition body: statements [
+
+	^derivedTypeFactory do: condition body: statements
 ]
 
 { #category : 'accessing' }
@@ -44,9 +56,21 @@ FASTFortranDerivedTypeFieldFactory >> fast2kModel [
 ]
 
 { #category : 'entity creation' }
+FASTFortranDerivedTypeFieldFactory >> formattedCode: aString values: values [
+
+	^derivedTypeFactory formattedCode: aString values: values
+]
+
+{ #category : 'entity creation' }
 FASTFortranDerivedTypeFieldFactory >> functionCall: aString arguments: arguments [
 
-	^self derivedTypeFactory functionCall: aString arguments: arguments
+	^derivedTypeFactory functionCall: aString arguments: arguments
+]
+
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFieldFactory >> literal: anObject [
+
+	^derivedTypeFactory literal: anObject
 ]
 
 { #category : 'accessing' }
@@ -70,5 +94,5 @@ FASTFortranDerivedTypeFieldFactory >> name: aString [
 { #category : 'entity creation' }
 FASTFortranDerivedTypeFieldFactory >> scalarVariable: variableName [
 
-	^self derivedTypeFactory scalarVariable: variableName
+	^derivedTypeFactory scalarVariable: variableName
 ]

@@ -26,6 +26,13 @@ FASTFortranDerivedTypeFactory >> assignement: variable value: expression [
 		expression: expression
 ]
 
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> comment: aString [
+
+	^model newComment
+		content: aString
+]
+
 { #category : 'accessing' }
 FASTFortranDerivedTypeFactory >> components [
 
@@ -68,11 +75,34 @@ FASTFortranDerivedTypeFactory >> createModule [
 ]
 
 { #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> declareMaxRankTemporaries: tempPrefix [
+
+		^(1 to: self rankMax)
+			collect: [ :i |
+				self formattedCode: 'integer :: {1}{2}' values: {  tempPrefix , i asString }
+			].
+]
+
+{ #category : 'entity creation' }
 FASTFortranDerivedTypeFactory >> derivedTypeFieldAccessVariable: instanceName field: fieldName [
 
 	^model newDerivedTypeComponentAccess
 		instance: (self scalarVariable: instanceName);
 		field: (self scalarVariable: fieldName)
+]
+
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> do: condition body: statements [
+
+	| do |
+	do := model newDoStatement
+		loopControl: condition ;
+		statementBlock: model newStatementBlock.
+
+	statements do: [ :stmt | do statementBlock addStatement: stmt ].
+
+	^do
+
 ]
 
 { #category : 'accessing' }
@@ -96,12 +126,50 @@ FASTFortranDerivedTypeFactory >> fields: fastFortranDeclarations [
 ]
 
 { #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> formattedCode: aString values: values [
+
+	^values
+		ifEmpty: [ model newSourceCodeString content: aString ]
+		ifNotEmpty: [ model newFormattedCodeString content: aString ; values: values ]
+]
+
+{ #category : 'entity creation' }
 FASTFortranDerivedTypeFactory >> functionCall: aString arguments: aCollection [ 
 
 	^model newFunctionCall
 		name: aString ;
 		arguments: aCollection ;
 		yourself
+]
+
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> if: condition then: statements [
+
+	| if |
+	if := model newIfBlockStatement
+		condition: condition ;
+		thenStatementBlock: model newStatementBlock.
+
+	statements do: [ :stmt | if thenStatementBlock addStatement: stmt ].
+
+	^if
+
+]
+
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> literal: anObject [
+
+	(anObject = true) ifTrue: [ ^model newBooleanLiteral primitiveValue: '.true.' ].
+	(anObject = false) ifTrue: [ ^model newBooleanLiteral primitiveValue: '.false.' ].
+
+	(anObject isCharacter) ifTrue: [ ^model newCharacterLiteral primitiveValue: anObject asString ].
+	(anObject isString) ifTrue: [ ^model newCharacterLiteral primitiveValue: anObject ].
+
+	(anObject isInteger) ifTrue: [ ^model newIntegerLiteral primitiveValue: anObject asString ].
+
+	(anObject isFloat) ifTrue: [ ^model newRealLiteral primitiveValue: anObject asString ].
+
+	Error signal: 'Unknown literal: ' , anObject asString
 ]
 
 { #category : 'helpers-codeString' }
@@ -498,12 +566,8 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
 	].
 	segadj addStatement: model newEmptyStatement.
 
-	1 to: self rankMax do: [ :i |
-		segadj addStatement: (model newSourceCodeString content: ('integer :: ooo_dim' , i asString ))
-	].
-	1 to: self rankMax do: [ :i |
-		segadj addStatement: (model newSourceCodeString content: ('integer :: ooo_stop' , i asString ))
-	].
+	segadj statementBlock statements addAll: (self declareMaxRankTemporaries: 'ooo_dim').
+	segadj statementBlock statements addAll: (self declareMaxRankTemporaries: 'ooo_stop').
 
 	self components do: [ :componentFactory |
 		segadj addStatement: componentFactory createSegadjTemporaryDeclaration
@@ -526,7 +590,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegcop [
 
 	| segcop thisParameter thatParameter paramFactories |
 
-	paramFactories := fields collect: #isSegmentParameter.
+	paramFactories := self parameters.
 
 	segcop := model newSubroutine
 		name: name , '_segcop'.
@@ -616,6 +680,55 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 	segini addStatement: (model newFormattedCodeString
 		content: 'call check_pre_condition(associated(this), ''{1}_segini'', ''associated(this)'')' ;
 		values: { name } ).
+]
+
+{ #category : 'helper-segCommands' }
+FASTFortranDerivedTypeFactory >> makeProcedureSegload [
+
+	| paramFactories componentFactories segstore thisParameter seginiArguments |
+
+	paramFactories := self parameters.
+	componentFactories := self components.
+
+	segstore := model newSubroutine
+		name: name , '_seg_load'.
+
+	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'this' ;
+		derivedTypeFactory: self).
+
+	segstore addParameter: (self scalarVariable: 'this').
+	segstore addParameter: (self scalarVariable: 'file_number').
+
+	segstore initBody.
+	segstore addComment: '## Get the given "this" segment on the file referenced by "file_number"'.
+	
+	segstore addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
+	segstore addStatement: (self formattedCode: 'integer, intent(in) :: file_number' values: #()).
+	segstore addStatement: model newEmptyStatement.
+
+	paramFactories do: [ :paramFactory |
+		segstore addStatement: (paramFactory createSegcmdFieldDeclaration)
+	].
+	segstore statementBlock statements addAll: (self declareMaxRankTemporaries: 'ooo_i').
+	segstore addStatement: model newEmptyStatement.
+
+	paramFactories do: [ :param |
+		segstore addStatement: (self
+			formattedCode: 'read(file_number, *) {1}'
+			values: { param name } ).
+	].
+	segstore addStatement: model newEmptyStatement.
+
+	seginiArguments := OrderedCollection new: (self rankMax + 1).
+	seginiArguments add: 'this'.
+	paramFactories do: [ :param | seginiArguments add: param name ].
+	segstore addStatement: (model newCallStatement
+		name: 'segini' ;
+		arguments: (seginiArguments collect: [ :arg | self scalarVariable: arg])).
+	segstore addStatement: model newEmptyStatement.
+
+	self components do: [ :comp | comp makeSegloadDo ]
 ]
 
 { #category : 'helper-segCommands' }
@@ -721,62 +834,142 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegmov [
 ]
 
 { #category : 'helper-segCommands' }
-FASTFortranDerivedTypeFactory >> makeProcedureSegprt [
+FASTFortranDerivedTypeFactory >> makeProcedureSegpar [
 
-	| paramFactories componentFactories segadj thisParameter |
+	| paramFactories componentFactories segpar thisParameter |
 
-	paramFactories := fields collect: #isSegmentParameter.
-	componentFactories := fields reject: #isSegmentParameter.
+	paramFactories := self parameters.
+	componentFactories := self components.
 
-	segadj := model newSubroutine
-		name: name , '_segadj'.
+	segpar := model newSubroutine
+		name: name , '_segpar'.
 
 	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
 		name: 'this' ;
 		derivedTypeFactory: self).
 
-	segadj addParameter: (self scalarVariable: 'this').
+	segpar addParameter: (self scalarVariable: 'this').
 	paramFactories do: [ :param |
-		segadj addParameter: (self scalarVariable: param name)
+		segpar addParameter: (self scalarVariable: param name)
 	].
 
-	segadj initBody.
-	segadj addComment: '## Adjust the given "this" segment'.
-	segadj addComment: '## using the given parameters'.
+	segpar initBody.
+	segpar addComment: '## Return the parameters of the given "this" segment'.
 	
-	segadj addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
+	segpar addStatement: (thisParameter createSegcmdInFieldDeclaration).
 	paramFactories do: [ :paramFactory |
-		segadj addStatement: (paramFactory createSegcmdInFieldDeclaration)
+		segpar addStatement: (paramFactory createSegcmdOutFieldDeclaration)
 	].
-	segadj addStatement: model newEmptyStatement.
+	segpar addStatement: model newEmptyStatement.
 
-	segadj addStatement: thisParameter createSeginiFieldInitialization.
-	paramFactories do: [ :paramFactory |
-		segadj addStatement: paramFactory createSeginiFieldInitialization.
-	].
-	segadj addStatement: model newEmptyStatement.
-
-	1 to: self rankMax do: [ :i |
-		segadj addStatement: (model newSourceCodeString content: ('integer :: ooo_dim' , i asString ))
-	].
-	1 to: self rankMax do: [ :i |
-		segadj addStatement: (model newSourceCodeString content: ('integer :: ooo_stop' , i asString ))
-	].
-
-	self components do: [ :componentFactory |
-		segadj addStatement: componentFactory createSegadjTemporaryDeclaration
-	].
-	segadj addStatement: (model newSourceCodeString content: 'logical :: ooo_eq_dims').
-	segadj addStatement: (model newSourceCodeString content: 'logical :: ooo_eq_pars').
-	segadj addStatement: model newEmptyStatement.
-
-	segadj addStatement: (model newFormattedCodeString
-		content: 'call check_pre_condition(associated(this), ''{1}_segadj'', ''associated(this)'')' ;
+	segpar addStatement: (model newFormattedCodeString
+		content: 'call check_pre_condition(associated(this), ''{1}_segpar'', ''associated(this)'')' ;
 		values: { name } ).
-	segadj addStatement: model newEmptyStatement.
+	segpar addStatement: model newEmptyStatement.
 
-	segadj addStatement: self makeSegadjIfStatement.
+	self
+		if: (self functionCall: 'associated' arguments: { self scalarVariable: 'this'})
+		then: (paramFactories collect: [ :param |
+			self assignement: param name value: (self derivedTypeFieldAccessVariable: 'this' field: param name)
+		])
+]
 
+{ #category : 'helper-segCommands' }
+FASTFortranDerivedTypeFactory >> makeProcedureSegprt [
+
+	| paramFactories componentFactories segprt thisParameter thenStatements |
+
+	paramFactories := fields collect: #isSegmentParameter.
+	componentFactories := fields reject: #isSegmentParameter.
+
+	segprt := model newSubroutine
+		name: name , '_segprt'.
+
+	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'this' ;
+		derivedTypeFactory: self).
+
+	segprt addParameter: (self scalarVariable: 'this').
+
+	segprt initBody.
+	segprt addComment: '## Print the given "this" segment'.
+	
+	segprt addStatement: (thisParameter createSegcmdInFieldDeclaration).
+	segprt addStatement: model newEmptyStatement.
+
+	1 to: self rankMax do: [ :i |
+		segprt addStatement: (self formattedCode: ('character(len=64) :: ooo_text_i' , i asString) values: #()).
+	].
+	(self rankMax > 0)
+		ifTrue: [ segprt addStatement: (self formattedCode: 'character(len=64) :: ooo_text_par' values: #() ) ].
+	segprt addStatement: (self formattedCode: 'character(len=64) :: ooo_text_value' values: #() ).
+	segprt statementBlock statements addAll: (self declareMaxRankTemporaries: 'ooo_i').
+	segprt addStatement: model newEmptyStatement.
+
+	segprt addStatement: (self
+		formattedCode: 'call check_pre_condition(associated(this), ''{1}_segprt'', ''associated(this)'')'
+		values: { name } ).
+	segprt addStatement: model newEmptyStatement.
+
+	thenStatements := OrderedCollection new.
+	thenStatements add: (self formattedCode: 'write(*, ''(a)'') ''{1}_segprt:''' values: {name}).
+	thenStatements add: model newEmptyStatement.
+
+	self parameters do: [ :param |
+		thenStatements add: (self formattedCode: 'write(ooo_text_par, *) this%{1}' values: {param name}).
+		thenStatements add: (self formattedCode: 'write(*, ''(a)'') ''    {1} = '' //  trim(adjustl(ooo_text_par))' values: {param name}).
+	].
+	thenStatements add: model newEmptyStatement.
+
+	self components do: [ :comp | thenStatements addAll: comp makeSegprtDo ].
+
+	segprt addStatement: (self
+		if: (self functionCall: 'associated' arguments: { self scalarVariable: 'this' } )
+		then: thenStatements).
+
+	^segprt
+]
+
+{ #category : 'helper-segCommands' }
+FASTFortranDerivedTypeFactory >> makeProcedureSegstore [
+
+	| paramFactories componentFactories segstore thisParameter |
+
+	paramFactories := self parameters.
+	componentFactories := self components.
+
+	segstore := model newSubroutine
+		name: name , '_seg_store'.
+
+	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'this' ;
+		derivedTypeFactory: self).
+
+	segstore addParameter: (self scalarVariable: 'this').
+	segstore addParameter: (self scalarVariable: 'file_number').
+
+	segstore initBody.
+	segstore addComment: '## Put the given "this" segment on the file referenced by "file_number"'.
+	
+	segstore addStatement: (thisParameter createSegcmdInFieldDeclaration).
+	segstore addStatement: (self formattedCode: 'integer, intent(in) :: file_number' values: #()).
+	segstore addStatement: model newEmptyStatement.
+
+	segstore statementBlock statements addAll: (self declareMaxRankTemporaries: 'ooo_i').
+	segstore addStatement: model newEmptyStatement.
+
+	segstore addStatement: (self
+		formattedCode: 'call check_pre_condition(associated(this), ''{1}_seg_store'', ''associated(this)'')'
+		values: { name } ).
+
+	paramFactories do: [ :param |
+		segstore addStatement: (self
+			formattedCode: 'write(file_number, *) this%{1}'
+			values: { param name } ).
+	].
+	segstore addStatement: model newEmptyStatement.
+
+	componentFactories do: [ :comp | comp makeSegstoreDo ]
 ]
 
 { #category : 'helper-segCommands' }
@@ -843,77 +1036,66 @@ FASTFortranDerivedTypeFactory >> makeSegCall: segCommand arguments: arguments [
 { #category : 'entity creation' }
 FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 
-	| if paramFactories componentFactories |
+	| ifStatements paramFactories componentFactories adjusterStatements |
 	paramFactories := self parameters.
 	componentFactories := self components.
 
-	if := model newIfBlockStatement.
-	if condition: (model newFunctionCall
-			 name: 'associated';
-			 addArgument: (self scalarVariable: 'this')).
-	if thenStatementBlock: model newStatementBlock.
+	ifStatements := OrderedCollection new.
 
-	if thenStatementBlock addStatement:
+	ifStatements add:
 		(model newSourceCodeString content: 'ooo_eq_pars = .true.').
 
-	paramFactories do: [ :paramFactory |
-		if thenStatementBlock addStatement: (model newFormattedCodeString
+	ifStatements addAll: (paramFactories collect: [ :paramFactory |
+		 (model newFormattedCodeString
 				 content: 'ooo_eq_pars = ooo_eq_pars .and. (this%{1} == {1})';
-				 values: { paramFactory name }) ].
+				 values: { paramFactory name }) ]).
 
-	if thenStatementBlock addStatement:
+	ifStatements add:
 		(model newSourceCodeString content: 'if ( ooo_eq_pars ) return').
-	if thenStatementBlock addStatement: model newEmptyStatement.
+	ifStatements add: model newEmptyStatement.
 
-	paramFactories do: [ :paramFactory |
-		if thenStatementBlock addStatement:
-			paramFactory createSeginiFieldInitialization ].
-	if thenStatementBlock addStatement: model newEmptyStatement.
+	ifStatements addAll: (paramFactories collect: [ :paramFactory |
+			paramFactory createSeginiFieldInitialization ]).
+	ifStatements add: model newEmptyStatement.
 
 	componentFactories do: [ :compFactory| | ifAdjuster |
-		if thenStatementBlock addComment: ('-- this%' , compFactory name).
-		if thenStatementBlock statements addAll: compFactory temporariesForDimInitialization.
-		if thenStatementBlock addStatement: (model newSourceCodeString content: 'ooo_eq_dims = .true.').
-		if thenStatementBlock statements addAll: compFactory temporariesForDimCheckIfExtendableInitialization.
+		ifStatements thenStatementBlock addComment: ('-- this%' , compFactory name).
+		ifStatements addAll: compFactory temporariesForDimInitialization.
+		ifStatements add: (model newSourceCodeString content: 'ooo_eq_dims = .true.').
+		ifStatements addAll: compFactory temporariesForDimCheckIfExtendableInitialization.
 
-		ifAdjuster := model newIfBlockStatement.
-		ifAdjuster condition: (model newUnaryExpression 
-			operator: '.not.';
-			expression: (self scalarVariable: 'ooo_eq_dims') 
-		).
-
-		ifAdjuster thenStatementBlock: model newStatementBlock.
-		ifAdjuster thenStatementBlock addStatement: (compFactory 
-			makeAllocationCallForDimensionnedField: ('oo_' , name) 
-			with: 'ooo_dim'
-		).
-
-		ifAdjuster thenStatementBlock addStatement: (self
-			assignement: ('oo' , compFactory asFieldAccess)
-			value: (compFactory scalarVariable: compFactory asDefaultValue)
-		).
-		ifAdjuster thenStatementBlock addStatement: (model newEmptyStatement).
-
-		ifAdjuster thenStatementBlock statements addAll: (compFactory temporariesForStopDimInitialization).
-		ifAdjuster thenStatementBlock addStatement: (
-			self
+		adjusterStatements := OrderedCollection new.
+		adjusterStatements add: (compFactory 
+					makeAllocationCallForDimensionnedField: ('oo_' , name) 
+					with: 'ooo_dim').
+		adjusterStatements add: (self
+					assignement: ('oo' , compFactory asFieldAccess)
+					value: (compFactory scalarVariable: compFactory asDefaultValue)).
+		adjusterStatements add: model newEmptyStatement.
+		adjusterStatements addAll: compFactory temporariesForStopDimInitialization.
+		adjusterStatements add: (self
 				assignement: (('oo_', name) , compFactory asFieldAccess: 'ooo_stop')
-				value: (self scalarVariable: (('this%', name) , compFactory asFieldAccess: 'ooo_stop'))
-		).
-		ifAdjuster thenStatementBlock addStatement: (model newEmptyStatement).
-
-		ifAdjuster thenStatementBlock addStatement: (
-			compFactory functionCall: 'deallocate' arguments: { ('this%', name) }
-		).
-
-		ifAdjuster thenStatementBlock addStatement: (
-			model newPointerAssignmentStatement
+				value: (self scalarVariable: (('this%', name) , compFactory asFieldAccess: 'ooo_stop'))).
+		adjusterStatements add: model newEmptyStatement.
+		adjusterStatements add: (compFactory functionCall: 'deallocate' arguments: { ('this%', name) }).
+		adjusterStatements add: (model newPointerAssignmentStatement
 				variable: (self derivedTypeFieldAccessVariable: 'this' field: name);
-				expression: (self scalarVariable: ('this%', name))
-		).
+				expression: (self scalarVariable: ('this%', name))).
 
-		if thenStatementBlock addStatement: ifAdjuster.
+		ifAdjuster := self
+			if: (model newUnaryExpression 
+				operator: '.not.';
+				expression: (self scalarVariable: 'ooo_eq_dims') 	)
+			then: adjusterStatements.
+
+		ifStatements add: ifAdjuster.
 	].
+
+	^self
+		if: (model newFunctionCall
+			name: 'associated';
+			addArgument: (self scalarVariable: 'this'))
+		then: ifStatements
 ]
 
 { #category : 'helpers-codeString' }

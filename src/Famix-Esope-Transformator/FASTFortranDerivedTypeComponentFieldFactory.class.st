@@ -138,6 +138,139 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeAllocationCallForDimensionned
 ]
 
 { #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> makeSegloadDo [
+
+	| statements |
+	statements := OrderedCollection new.
+
+
+	statements add: (self comment: ('-- this%' , name)).
+
+	(rank > 0)
+		ifTrue: [ statements add: (self
+			nestedDoLoops: 1
+			of: rank
+			allLoops: nil
+			finalLoop: {self formattedCode: 'read(file_number, *) this%{1}({2})' values: { name , self temporariesAsArguments } })
+		].
+
+	^statements		
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> makeSegprtDo [
+
+	| statements |
+	statements := OrderedCollection new.
+
+
+	statements add: (self comment: ('-- this%' , name)).
+	statements add: (self formattedCode: 'write(*, ''(1x)'')' values: #()).
+
+	(rank > 0)
+		ifTrue: [ statements add: (self
+			nestedDoLoops: 1
+			of: rank
+			allLoops: 'write(ooo_text_i{1}, *) ooo_i{1}'
+			finalLoop: {
+				self model newEmptyStatement .
+				self formattedCode: 'write(ooo_text_value, *) this%{1}({2})' values: { name , self temporariesAsArguments } .
+				self formattedCode: self makeSegprtDoFinalWrite values: #()
+			})
+		].
+
+	^statements		
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> makeSegprtDoFinalWrite [
+
+	^String streamContents: [ :str |
+				str << 'write(*, ''(a)'') ''    ' ;
+				<< name ;
+				<< '('' &' ;
+				cr.
+				(1 to: rank)
+					do: [ :i |
+						str
+							<< '    // trim(adjustl(ooo_text_i' ;
+							<< i asString ;
+							<< ')) // '''
+					]
+					separatedBy: [ str << ','' &' ; cr ].
+				str
+					<< ') = '' &' ;
+					cr ;
+					<< '    // trim(adjustl(ooo_text_value))'
+			].
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> makeSegstoreDo [
+
+	| statements |
+	statements := OrderedCollection new.
+
+
+	statements add: (self comment: ('-- this%' , name)).
+
+	(rank > 0)
+		ifTrue: [ statements add: (self
+			nestedDoLoops: 1
+			of: rank
+			allLoops: nil
+			finalLoop: {self formattedCode: 'write(file_number, *) this%{1}({2})' values: { name , self temporariesAsArguments }})
+		].
+
+	^statements		
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> nestedDoLoops: dim of: maxDim allLoops: allLoopsFormattedCode finalLoop: finalLoopStatements [
+
+	| loopControl statements |
+
+	loopControl := self model newLoopControlExpression.
+	loopControl init: (self model newAssignmentExpression
+		variable: (self scalarVariable: ('ooo_i' , dim asString)) ;
+		expression: (self literal: 1) ).
+	loopControl
+		limit: (self
+			functionCall: 'size'
+			arguments: {
+				self derivedTypeFieldAccessVariable: 'this' field: name .
+				self literal: 1
+			}).
+
+	statements := OrderedCollection new.
+
+	(dim = maxDim)
+		ifTrue: [ statements addAll: finalLoopStatements ]
+	ifFalse: [
+		allLoopsFormattedCode
+			ifNotNil: [ statements add: (self formattedCode: allLoopsFormattedCode values: { dim }) ].
+		self nestedDoLoops: (dim+1) of: maxDim allLoops: allLoopsFormattedCode finalLoop: finalLoopStatements
+	].
+
+	^self do: loopControl body: statements 
+
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> temporariesAsArguments [
+
+	^String streamContents: [ :str |
+		(1 to: rank)
+			do: [ :i |
+				str
+					<< 'ooo_i' ;
+					<< i asString
+			]
+			separatedBy: [ str << ',' ]
+	]
+]
+
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> temporariesForDimCheckIfExtendableInitialization [
 
 	^(1 to: rank) collect: [ :i |

@@ -31,6 +31,14 @@ FASTFortranDerivedTypeParameterFieldFactory >> createSegcmdInoutFieldDeclaration
 ]
 
 { #category : 'entity-creation' }
+FASTFortranDerivedTypeParameterFieldFactory >> createSegcmdOutFieldDeclaration [
+
+	^self createSegcmdFieldDeclaration 
+		modifiers: #( 'intent(out)' ) ;
+		yourself
+]
+
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeParameterFieldFactory >> createSegcopFieldDeclaration [
 
 	^self model newVariableDeclarationStatement

@@ -10,8 +10,36 @@ Class {
 }
 
 { #category : 'code-critics' }
-ManifestFamixEsopeTransformator class >> ruleStringConcatenationRuleV1FalsePositive [
+ManifestFamixEsopeTransformator class >> ruleCollectionMessagesToExternalObjectRuleV1FalsePositive [
 
 	<ignoreForCoverage>
-	^ #(#(#(#RGPackageDefinition #(#'Famix-Esope-Transformator')) #'2025-02-25T11:55:34.9047+01:00') )
+	^ #(#(#(#RGClassDefinition #(#FASTFortranDerivedTypeFactory)) #'2025-02-25T20:04:30.200798+01:00') )
+]
+
+{ #category : 'code-critics' }
+ManifestFamixEsopeTransformator class >> ruleCollectionProtocolRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGClassDefinition #(#FASTFortranDerivedTypeFactory)) #'2025-02-25T18:34:20.651239+01:00') )
+]
+
+{ #category : 'code-critics' }
+ManifestFamixEsopeTransformator class >> ruleGuardingClauseRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#FASTFortranDerivedTypeComponentFieldFactory #makeSegprtDo:of: #false)) #'2025-02-25T19:11:40.859094+01:00') )
+]
+
+{ #category : 'code-critics' }
+ManifestFamixEsopeTransformator class >> ruleLongMethodsRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGClassDefinition #(#FASTFortranDerivedTypeFactory)) #'2025-02-25T17:54:51.13185+01:00') )
+]
+
+{ #category : 'code-critics' }
+ManifestFamixEsopeTransformator class >> ruleReGuardClauseRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#FASTFortranDerivedTypeComponentFieldFactory #makeSegprtDo:of: #false)) #'2025-02-25T19:11:37.405821+01:00') )
 ]
