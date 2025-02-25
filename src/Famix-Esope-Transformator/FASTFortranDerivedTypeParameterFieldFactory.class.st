@@ -7,13 +7,7 @@ Class {
 }
 
 { #category : 'entity-creation' }
-FASTFortranDerivedTypeParameterFieldFactory >> createSegadjFieldDeclaration [
-
-	^self createSeginiFieldDeclaration
-]
-
-{ #category : 'entity-creation' }
-FASTFortranDerivedTypeParameterFieldFactory >> createSegcopFieldDeclaration [
+FASTFortranDerivedTypeParameterFieldFactory >> createSegcmdFieldDeclaration [
 
 	^self model newVariableDeclarationStatement
 		addDeclarator: (self model newVariableDeclarator name: name) ;
@@ -21,10 +15,25 @@ FASTFortranDerivedTypeParameterFieldFactory >> createSegcopFieldDeclaration [
 ]
 
 { #category : 'entity-creation' }
-FASTFortranDerivedTypeParameterFieldFactory >> createSeginiFieldDeclaration [
+FASTFortranDerivedTypeParameterFieldFactory >> createSegcmdInFieldDeclaration [
+
+	^self createSegcmdFieldDeclaration 
+		modifiers: #( 'intent(in)' ) ;
+		yourself
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeParameterFieldFactory >> createSegcmdInoutFieldDeclaration [
+
+	^self createSegcmdFieldDeclaration
+		modifiers: #( 'intent(inout)' ) ;
+		yourself
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeParameterFieldFactory >> createSegcopFieldDeclaration [
 
 	^self model newVariableDeclarationStatement
-		"addModifier: (self model newModifier: 'intent(in)') ;"
 		addDeclarator: (self model newVariableDeclarator name: name) ;
 		declaredType: self model newIntegerType
 ]
