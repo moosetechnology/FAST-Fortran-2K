@@ -683,6 +683,43 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 ]
 
 { #category : 'helper-segCommands' }
+FASTFortranDerivedTypeFactory >> makeProcedureSeglik [
+
+	| seglik thisParameter thatParameter paramFactories |
+
+	paramFactories := self parameters.
+
+	seglik := model newFunction
+		name: name , '_seglik' ;
+		declaredType: (model newLogicalType).
+
+	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'this' ;
+		derivedTypeFactory: self).
+	thatParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'that' ;
+		derivedTypeFactory: self).
+
+	seglik addParameter: (self scalarVariable: 'this').
+	seglik addParameter: (self scalarVariable: 'that').
+
+	seglik initBody.
+	seglik addComment: '## Do "this" and "that" segments have the same dimensions ?'.
+
+	seglik addStatement: (thisParameter createSegcmdInFieldDeclaration).
+	seglik addStatement: (thatParameter createSegcmdInFieldDeclaration).
+	seglik addStatement: model newEmptyStatement.
+
+	seglik addStatement: (self assignement: (name , '_seglik') value: (self literal: false)).
+	seglik addStatement: (model newIfLogicalStatement
+		condition: (model newUnaryExpression
+			operator: '.not.' ;
+			expression: (self
+				functionCall: 'associated'
+				arguments: {  self scalarVariable: 'this' })))
+]
+
+{ #category : 'helper-segCommands' }
 FASTFortranDerivedTypeFactory >> makeProcedureSegload [
 
 	| paramFactories componentFactories segstore thisParameter seginiArguments |
