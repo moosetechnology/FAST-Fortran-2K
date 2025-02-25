@@ -796,9 +796,49 @@ FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 			paramFactory createSeginiFieldInitialization ].
 	if thenStatementBlock addStatement: model newEmptyStatement.
 
-	componentFactories do: [ :compFactory|
+	componentFactories do: [ :compFactory| | ifAdjuster |
 		if thenStatementBlock addComment: ('-- this%' , compFactory name).
 		if thenStatementBlock statements addAll: compFactory temporariesForDimInitialization.
+		if thenStatementBlock addStatement: (model newSourceCodeString content: 'ooo_eq_dims = .true.').
+		if thenStatementBlock statements addAll: compFactory temporariesForDimCheckIfExtendableInitialization.
+
+		ifAdjuster := model newIfBlockStatement.
+		ifAdjuster condition: (model newUnaryExpression 
+			operator: '.not.';
+			expression: (self scalarVariable: 'ooo_eq_dims') 
+		).
+
+		ifAdjuster thenStatementBlock: model newStatementBlock.
+		ifAdjuster thenStatementBlock addStatement: (compFactory 
+			makeAllocationCallForDimensionnedField: ('oo_' , name) 
+			with: 'ooo_dim'
+		).
+
+		ifAdjuster thenStatementBlock addStatement: (self
+			assignement: ('oo' , compFactory asFieldAccess)
+			value: (compFactory scalarVariable: compFactory asDefaultValue)
+		).
+		ifAdjuster thenStatementBlock addStatement: (model newEmptyStatement).
+
+		ifAdjuster thenStatementBlock statements addAll: (compFactory temporariesForStopDimInitialization).
+		ifAdjuster thenStatementBlock addStatement: (
+			self
+				assignement: (('oo_', name) , compFactory asFieldAccess: 'ooo_stop')
+				value: (self scalarVariable: (('this%', name) , compFactory asFieldAccess: 'ooo_stop'))
+		).
+		ifAdjuster thenStatementBlock addStatement: (model newEmptyStatement).
+
+		ifAdjuster thenStatementBlock addStatement: (
+			compFactory functionCall: 'deallocate' arguments: { ('this%', name) }
+		).
+
+		ifAdjuster thenStatementBlock addStatement: (
+			model newPointerAssignmentStatement
+				variable: (self derivedTypeFieldAccessVariable: 'this' field: name);
+				expression: (self scalarVariable: ('this%', name))
+		).
+
+		if thenStatementBlock addStatement: ifAdjuster.
 	].
 ]
 

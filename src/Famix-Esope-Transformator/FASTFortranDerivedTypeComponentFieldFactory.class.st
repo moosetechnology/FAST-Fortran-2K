@@ -83,20 +83,17 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSegadjTemporaryDeclaration 
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> createSeginiFieldInitialization [
 
-	| statements stmt |
+	| statements |
 
 	statements := OrderedCollection new: (rank + 2).
 
 	statements addAll: self temporariesForDimInitialization.
 
 	(rank > 0) ifTrue: [
-		stmt := self  functionCall: 'allocate' arguments: {
-			"creating the array access as a functioncall which is syntactically equivlent"
-			self
-				functionCall: ('this%' , name)
-				arguments: ((1 to: rank) collect: [ :i | self scalarVariable: ('ooo_dim' , i asString) ])
-		}.
-		statements add: stmt
+		statements add: (self 
+			makeAllocationCallForDimensionnedField: ('this%' , name) 
+			with: 'ooo_dim'
+		)
 	].
 
 	statements add: (self
@@ -126,6 +123,42 @@ FASTFortranDerivedTypeComponentFieldFactory >> isSegmentParameter [
 ]
 
 { #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> makeAllocationCallForDimensionnedField: fieldName with: prefix [
+
+	^self functionCall: 'allocate' arguments: {
+		"creating the array access as a functioncall which is syntactically equivlent"
+		self
+			functionCall: fieldName
+			arguments: ((1 to: rank) collect: [ :i | self scalarVariable: (prefix , i asString) ])
+	}
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> temporariesForDimCheckIfExtendableInitialization [
+
+	^(1 to: rank) collect: [ :i |
+		self
+			assignement: ('ooo_eq_dims')
+			value: (self model newBinaryExpression
+				operator: '.and.';
+				leftOperand: (self scalarVariable: 'ooo_eq_dims');
+				rightOperand: (self model newBinaryExpression
+					operator: '==';
+					leftOperand: ( 
+						self functionCall: 'size'
+							arguments: { 
+								(self derivedTypeFieldAccessVariable: 'this' field: name) .
+								self model newIntegerLiteral primitiveValue: i
+							}
+					);
+					rightOperand: (self scalarVariable: ('ooo_dim', i asString))
+				)
+			)
+	]
+
+]
+
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> temporariesForDimInitialization [
 
 	^(1 to: rank) collect: [ :i |
@@ -136,6 +169,33 @@ FASTFortranDerivedTypeComponentFieldFactory >> temporariesForDimInitialization [
 				arguments: (self derivedTypeFactory parameters
 					collect: [ :param | self scalarVariable: param name]))
 	].
+
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> temporariesForStopDimInitialization [
+
+	^(1 to: rank) collect: [ :i |
+		self
+			assignement: ('ooo_stop', i asString)
+			value: (self functionCall: 'min'
+				arguments: {
+					self 
+						functionCall: 'size'
+						arguments: { 
+							self scalarVariable: ('oo_', name).
+							self model newIntegerLiteral primitiveValue: i
+						}
+					.
+					self 
+						functionCall: 'size'
+						arguments: { 
+							(self derivedTypeFieldAccessVariable: 'this' field: name) .
+							self model newIntegerLiteral primitiveValue: i
+						}
+				}
+			)
+	]
 
 ]
 
