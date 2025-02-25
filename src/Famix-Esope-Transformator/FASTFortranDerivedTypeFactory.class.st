@@ -456,9 +456,9 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
 	segadj addComment: '## Adjust the given "this" segment'.
 	segadj addComment: '## using the given parameters'.
 	
-	segadj addStatement: (thisParameter createSegadjFieldDeclaration).
+	segadj addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
 	paramFactories do: [ :paramFactory |
-		segadj addStatement: (paramFactory createSegadjFieldDeclaration)
+		segadj addStatement: (paramFactory createSegcmdInFieldDeclaration)
 	].
 	segadj addStatement: model newEmptyStatement.
 
@@ -514,12 +514,12 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegcop [
 	segcop initBody.
 	segcop addComment: '## Copy "this" segment to a new "that" segment'.
 
-	segcop addStatement: (thisParameter createSeginiFieldDeclaration).
-	segcop addStatement: (thatParameter createSeginiFieldDeclaration).
+	segcop addStatement: (thisParameter createSegcmdInFieldDeclaration).
+	segcop addStatement: (thatParameter createSegcmdInoutFieldDeclaration).
 	segcop addStatement: model newEmptyStatement.
 
 	paramFactories do: [ :paramFactory |
-		segcop addStatement: (paramFactory createSeginiFieldDeclaration)
+		segcop addStatement: (paramFactory createSegcmdFieldDeclaration)
 	].
 	segcop addStatement: model newEmptyStatement.
 
@@ -566,9 +566,9 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 	segini addComment: '## Initialize a new "this" segment with default values'.
 	segini addComment: '## using the given parameters'.
 	
-	segini addStatement: (thisParameter createSeginiFieldDeclaration).
+	segini addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
 	paramFactories do: [ :paramFactory |
-		segini addStatement: (paramFactory createSeginiFieldDeclaration)
+		segini addStatement: (paramFactory createSegcmdInFieldDeclaration)
 	].
 	segini addStatement: model newEmptyStatement.
 
@@ -630,8 +630,8 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegmov [
 	segmov addComment: '## Copy data from "this" segment to an existing "that" segment'.
 	segmov addComment: '## "that" must have same dimensions than "this"'.
 
-	segmov addStatement: (thisParameter createSeginiFieldDeclaration).
-	segmov addStatement: (thatParameter createSeginiFieldDeclaration).
+	segmov addStatement: (thisParameter createSegcmdInFieldDeclaration).
+	segmov addStatement: (thatParameter createSegcmdInoutFieldDeclaration).
 	segmov addStatement: model newEmptyStatement.
 
 	segmov addStatement: (model newFormattedCodeString
