@@ -143,6 +143,15 @@ FASTFortranDerivedTypeFactory >> functionCall: aString arguments: aCollection [
 ]
 
 { #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> functionCallStatement: aString arguments: aCollection [ 
+
+	^model newFunctionCallStatement
+		name: aString ;
+		arguments: aCollection ;
+		yourself
+]
+
+{ #category : 'entity creation' }
 FASTFortranDerivedTypeFactory >> if: condition then: statements [
 
 	| if |

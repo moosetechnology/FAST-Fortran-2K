@@ -68,6 +68,12 @@ FASTFortranDerivedTypeFieldFactory >> functionCall: aString arguments: arguments
 ]
 
 { #category : 'entity creation' }
+FASTFortranDerivedTypeFieldFactory >> functionCallStatement: aString arguments: arguments [
+
+	^derivedTypeFactory functionCallStatement: aString arguments: arguments
+]
+
+{ #category : 'entity creation' }
 FASTFortranDerivedTypeFieldFactory >> literal: anObject [
 
 	^derivedTypeFactory literal: anObject
