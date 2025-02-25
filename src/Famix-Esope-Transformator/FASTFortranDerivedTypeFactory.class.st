@@ -758,6 +758,42 @@ FASTFortranDerivedTypeFactory >> makeSegCall: segCommand arguments: arguments [
 	^stmt
 ]
 
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
+
+	| if paramFactories componentFactories |
+	paramFactories := self parameters.
+	componentFactories := self components.
+
+	if := model newIfBlockStatement.
+	if condition: (model newFunctionCall
+			 name: 'associated';
+			 addArgument: (self scalarVariable: 'this')).
+	if thenStatementBlock: model newStatementBlock.
+
+	if thenStatementBlock addStatement:
+		(model newSourceCodeString content: 'ooo_eq_pars = .true.').
+
+	paramFactories do: [ :paramFactory |
+		if thenStatementBlock addStatement: (model newFormattedCodeString
+				 content: 'ooo_eq_pars = ooo_eq_pars .and. (this%{1} == {1})';
+				 values: { paramFactory name }) ].
+
+	if thenStatementBlock addStatement:
+		(model newSourceCodeString content: 'if ( ooo_eq_pars ) return').
+	if thenStatementBlock addStatement: model newEmptyStatement.
+
+	paramFactories do: [ :paramFactory |
+		if thenStatementBlock addStatement:
+			paramFactory createSeginiFieldInitialization ].
+	if thenStatementBlock addStatement: model newEmptyStatement.
+
+	componentFactories do: [ :compFactory|
+		if thenStatementBlock addComment: ('-- this%' , compFactory name).
+		if thenStatementBlock statements addAll: compFactory temporariesForDimInitialization.
+	].
+]
+
 { #category : 'helpers-codeString' }
 FASTFortranDerivedTypeFactory >> makeSegmentModuleProlog [
 
