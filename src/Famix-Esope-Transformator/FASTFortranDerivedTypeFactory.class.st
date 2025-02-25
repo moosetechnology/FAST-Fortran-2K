@@ -605,7 +605,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegloc [
         use, intrinsic :: iso_fortran_env, only : int64
         use, intrinsic :: iso_c_binding, only : c_loc
 
-        type(bar), pointer, intent(in) :: this
+        type({1}), pointer, intent(in) :: this
         integer(int64) :: this_loc
 
         this_loc = transfer(c_loc(this), this_loc)
@@ -705,7 +705,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 	segsup initBody.
 	segsup addComment: '## Delete ("supprimer" in French) the given "this" segment'.
 
-	segsup addStatement: (thisParameter createSeginiFieldDeclaration).
+	segsup addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
 	segsup addStatement: model newEmptyStatement.
 
 	if := model newIfBlockStatement new.
