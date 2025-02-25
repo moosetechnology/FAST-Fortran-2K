@@ -97,8 +97,12 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSeginiFieldInitialization [
 	].
 
 	statements add: (self
-		assignement: ('this%' , self asFieldAccess)
-		value: (self scalarVariable: self asDefaultValue))
+		assignement: (self
+			derivedTypeFieldAccessVariable: 'this'
+			field: self asFieldAccess)
+		value: (self scalarVariable: self asDefaultValue)).
+
+	^statements
 ]
 
 { #category : 'entity-creation' }

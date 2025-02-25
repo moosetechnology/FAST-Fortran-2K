@@ -15,8 +15,8 @@ FASTFortranDerivedTypeFieldFactoryTest >> makeFactory: factoryClass [
 
 	| factory |
 	factory := factoryClass new.
-	factory derivedTypeFactory: (Mock named: 'FASTFrotranDerivedTypeFactory').
-	factory derivedTypeFactory stub model willReturn: fast2kModel.
+	factory derivedTypeFactory: FASTFortranDerivedTypeFactory new.
+	factory derivedTypeFactory model: fast2kModel.
 
 	^factory
 ]
@@ -189,10 +189,22 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiComponentInitializatio
 
 	fast2k := factory createSeginiFieldInitialization.
 
-	self assert: fast2k size equals: 2.
+	self assert: fast2k size equals: 3.
 
-	self assert: fast2k first content equals: 'allocate(this%x(x_dim1(idim))'.
-	self assert: fast2k second content equals: 'this%x(:) = segment_integer_default_value'.
+	"ooo_dim1 = x_dim1(idim)"
+	self assert: fast2k first class equals: FASTFortran2kAssignmentStatement.
+	self assert: fast2k first variable name equals: 'ooo_dim1'.
+	self assert: fast2k first expression class equals: FASTFortran2kFunctionCall.
+
+	"allocate(this%x(ooo_dim1)"
+	self assert: fast2k second class equals: FASTFortran2kFunctionCall.
+	self assert: fast2k second name equals: 'allocate'.
+	self assert: fast2k second arguments size equals: 1.
+
+	"this%x(:) = segment_integer_default_value"
+	self assert: fast2k third class equals: FASTFortran2kAssignmentStatement.
+	self assert: fast2k third variable class equals: FASTFortran2kDerivedTypeComponentAccess.
+	self assert: fast2k third expression class equals: FASTFortran2kScalarVariable
 
 ]
 

@@ -13,10 +13,16 @@ Class {
 }
 
 { #category : 'entity creation' }
-FASTFortranDerivedTypeFactory >> assignement: variableName value: expression [
+FASTFortranDerivedTypeFactory >> assignement: variable value: expression [
+
+	| var |
+
+	var := variable isMooseObject
+		ifTrue: [ variable ]
+		ifFalse: [ self scalarVariable: variable ].
 
 	^model newAssignmentStatement
-		variable: (model scalarVariable: variableName) ;
+		variable: var ;
 		expression: expression
 ]
 
@@ -87,6 +93,15 @@ FASTFortranDerivedTypeFactory >> fields: fastFortranDeclarations [
 
 		]
 	]
+]
+
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> functionCall: aString arguments: aCollection [ 
+
+	^model newFunctionCall
+		name: aString ;
+		arguments: aCollection ;
+		yourself
 ]
 
 { #category : 'helpers-codeString' }
@@ -706,6 +721,65 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegmov [
 ]
 
 { #category : 'helper-segCommands' }
+FASTFortranDerivedTypeFactory >> makeProcedureSegprt [
+
+	| paramFactories componentFactories segadj thisParameter |
+
+	paramFactories := fields collect: #isSegmentParameter.
+	componentFactories := fields reject: #isSegmentParameter.
+
+	segadj := model newSubroutine
+		name: name , '_segadj'.
+
+	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'this' ;
+		derivedTypeFactory: self).
+
+	segadj addParameter: (self scalarVariable: 'this').
+	paramFactories do: [ :param |
+		segadj addParameter: (self scalarVariable: param name)
+	].
+
+	segadj initBody.
+	segadj addComment: '## Adjust the given "this" segment'.
+	segadj addComment: '## using the given parameters'.
+	
+	segadj addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
+	paramFactories do: [ :paramFactory |
+		segadj addStatement: (paramFactory createSegcmdInFieldDeclaration)
+	].
+	segadj addStatement: model newEmptyStatement.
+
+	segadj addStatement: thisParameter createSeginiFieldInitialization.
+	paramFactories do: [ :paramFactory |
+		segadj addStatement: paramFactory createSeginiFieldInitialization.
+	].
+	segadj addStatement: model newEmptyStatement.
+
+	1 to: self rankMax do: [ :i |
+		segadj addStatement: (model newSourceCodeString content: ('integer :: ooo_dim' , i asString ))
+	].
+	1 to: self rankMax do: [ :i |
+		segadj addStatement: (model newSourceCodeString content: ('integer :: ooo_stop' , i asString ))
+	].
+
+	self components do: [ :componentFactory |
+		segadj addStatement: componentFactory createSegadjTemporaryDeclaration
+	].
+	segadj addStatement: (model newSourceCodeString content: 'logical :: ooo_eq_dims').
+	segadj addStatement: (model newSourceCodeString content: 'logical :: ooo_eq_pars').
+	segadj addStatement: model newEmptyStatement.
+
+	segadj addStatement: (model newFormattedCodeString
+		content: 'call check_pre_condition(associated(this), ''{1}_segadj'', ''associated(this)'')' ;
+		values: { name } ).
+	segadj addStatement: model newEmptyStatement.
+
+	segadj addStatement: self makeSegadjIfStatement.
+
+]
+
+{ #category : 'helper-segCommands' }
 FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 	| segsup thisParameter if |
 
@@ -752,7 +826,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 	^segsup
 ]
 
-{ #category : 'helper-segCommands' }
+{ #category : 'entity creation' }
 FASTFortranDerivedTypeFactory >> makeSegCall: segCommand arguments: arguments [
 
 	| stmt |
