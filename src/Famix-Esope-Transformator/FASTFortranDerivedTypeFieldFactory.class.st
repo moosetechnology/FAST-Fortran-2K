@@ -97,6 +97,12 @@ FASTFortranDerivedTypeFieldFactory >> name: aString [
 	name := aString 
 ]
 
+{ #category : 'accessing' }
+FASTFortranDerivedTypeFieldFactory >> rank [
+
+	^rank
+]
+
 { #category : 'entity creation' }
 FASTFortranDerivedTypeFieldFactory >> scalarVariable: variableName [
 
