@@ -61,6 +61,14 @@ FASTFortranDerivedTypeFactory >> createModule [
 	^ module
 ]
 
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> derivedTypeFieldAccessVariable: instanceName field: fieldName [
+
+	^model newDerivedTypeComponentAccess
+		instance: (self scalarVariable: instanceName);
+		field: (self scalarVariable: fieldName)
+]
+
 { #category : 'accessing' }
 FASTFortranDerivedTypeFactory >> fields [
 

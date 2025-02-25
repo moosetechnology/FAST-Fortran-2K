@@ -30,6 +30,12 @@ FASTFortranDerivedTypeFieldFactory >> derivedTypeFactory: aFactory [
 	derivedTypeFactory := aFactory
 ]
 
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFieldFactory >> derivedTypeFieldAccessVariable: instanceName field: fieldName [
+
+	^self derivedTypeFactory derivedTypeFieldAccessVariable: instanceName field: fieldName
+]
+
 { #category : 'accessing' }
 FASTFortranDerivedTypeFieldFactory >> fast2kModel [
 	"for polymorphism with FamixEsopeToFortran2k"
