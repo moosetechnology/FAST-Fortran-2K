@@ -12,6 +12,14 @@ Class {
 	#tag : 'Segment'
 }
 
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> assignement: variable value: expression [
+
+	^model newAssignmentStatement
+		variable: variable ;
+		expression: expression
+]
+
 { #category : 'accessing' }
 FASTFortranDerivedTypeFactory >> components [
 
