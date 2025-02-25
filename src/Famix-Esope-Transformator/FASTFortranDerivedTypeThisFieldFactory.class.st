@@ -7,13 +7,27 @@ Class {
 }
 
 { #category : 'entity-creation' }
-FASTFortranDerivedTypeThisFieldFactory >> createSeginiFieldDeclaration [
+FASTFortranDerivedTypeThisFieldFactory >> createSegcmdFieldDeclaration [
 
-	^self model newVariableDeclarationStatement 
-		"addModifier: 'pointer' ;
-		addModifier: 'intent(inout)' ;"
+	^self model newVariableDeclarationStatement
 		addDeclarator: (self model newVariableDeclarator name: name) ;
 		declaredType: (self model newUserDefinedType name: self derivedTypeFactory name)
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeThisFieldFactory >> createSegcmdInFieldDeclaration [
+
+	^self createSegcmdFieldDeclaration
+		modifiers: #( pointer 'intent(in)' ) ;
+		yourself
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeThisFieldFactory >> createSegcmdInoutFieldDeclaration [
+
+	^self createSegcmdFieldDeclaration
+		modifiers: #( pointer 'intent(inout)' ) ;
+		yourself
 ]
 
 { #category : 'entity-creation' }
