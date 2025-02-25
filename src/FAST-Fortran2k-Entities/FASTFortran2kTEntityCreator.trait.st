@@ -658,13 +658,6 @@ FASTFortran2kTEntityCreator >> newOptionsStatement [
 ]
 
 { #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newPTVariable [
-
-	<generated>
-	^ self add: FASTFortran2kPTVariable new
-]
-
-{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newParameterStatement [
 
 	<generated>
@@ -683,13 +676,6 @@ FASTFortran2kTEntityCreator >> newPointerAssignmentStatement [
 
 	<generated>
 	^ self add: FASTFortran2kPointerAssignmentStatement new
-]
-
-{ #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newPointerVariable [
-
-	<generated>
-	^ self add: FASTFortran2kPointerVariable new
 ]
 
 { #category : 'entity creation' }
@@ -844,13 +830,6 @@ FASTFortran2kTEntityCreator >> newSubstring [
 
 	<generated>
 	^ self add: FASTFortran2kSubstring new
-]
-
-{ #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newTargetVariable [
-
-	<generated>
-	^ self add: FASTFortran2kTargetVariable new
 ]
 
 { #category : 'entity creation' }

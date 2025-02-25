@@ -7,7 +7,7 @@ I represent a fortran subroutine or a function
 ### Parents
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `module` | `FASTFortran2kProcedure` | `procedures` | `FASTFortran2kModule` | |
+| `module` | `FASTFortran2kTProcedure` | `procedures` | `FASTFortran2kModule` | |
 
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
@@ -21,11 +21,10 @@ I represent a fortran subroutine or a function
 Class {
 	#name : 'FASTFortran2kProcedure',
 	#superclass : 'FASTFortran2kSubprogram',
-	#traits : 'FASTTWithParameters',
-	#classTraits : 'FASTTWithParameters classTrait',
+	#traits : 'FASTFortran2kTProcedure + FASTTWithParameters',
+	#classTraits : 'FASTFortran2kTProcedure classTrait + FASTTWithParameters classTrait',
 	#instVars : [
-		'#internalProcedures => FMMany type: #FASTFortran2kInternalProcedure opposite: #procedure',
-		'#module => FMOne type: #FASTFortran2kModule opposite: #procedures'
+		'#internalProcedures => FMMany type: #FASTFortran2kInternalProcedure opposite: #procedure'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -68,27 +67,4 @@ FASTFortran2kProcedure >> internalProceduresGroup [
 	<generated>
 	<navigation: 'InternalProcedures'>
 	^ MooseSpecializedGroup withAll: self internalProcedures asSet
-]
-
-{ #category : 'accessing' }
-FASTFortran2kProcedure >> module [
-	"Relation named: #module type: #FASTFortran2kModule opposite: #procedures"
-
-	<generated>
-	<container>
-	^ module
-]
-
-{ #category : 'accessing' }
-FASTFortran2kProcedure >> module: anObject [
-
-	<generated>
-	module := anObject
-]
-
-{ #category : 'navigation' }
-FASTFortran2kProcedure >> moduleGroup [
-	<generated>
-	<navigation: 'Module'>
-	^ MooseSpecializedGroup with: self module
 ]

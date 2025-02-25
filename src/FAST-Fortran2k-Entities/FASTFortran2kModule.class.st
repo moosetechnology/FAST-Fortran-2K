@@ -7,7 +7,7 @@ I represent a module
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `procedures` | `FASTFortran2kModule` | `module` | `FASTFortran2kProcedure` | |
+| `procedures` | `FASTFortran2kModule` | `module` | `FASTFortran2kTProcedure` | |
 
 
 
@@ -16,7 +16,7 @@ Class {
 	#name : 'FASTFortran2kModule',
 	#superclass : 'FASTFortran2kProgramUnit',
 	#instVars : [
-		'#procedures => FMMany type: #FASTFortran2kProcedure opposite: #module'
+		'#procedures => FMMany type: #FASTFortran2kTProcedure opposite: #module'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -40,7 +40,7 @@ FASTFortran2kModule >> addProcedure: anObject [
 
 { #category : 'accessing' }
 FASTFortran2kModule >> procedures [
-	"Relation named: #procedures type: #FASTFortran2kProcedure opposite: #module"
+	"Relation named: #procedures type: #FASTFortran2kTProcedure opposite: #module"
 
 	<generated>
 	<derived>

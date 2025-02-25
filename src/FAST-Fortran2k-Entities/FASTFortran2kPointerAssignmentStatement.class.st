@@ -32,9 +32,7 @@
 "
 Class {
 	#name : 'FASTFortran2kPointerAssignmentStatement',
-	#superclass : 'FASTFortran2kEntity',
-	#traits : 'FASTFortran2kTPointerAssignment',
-	#classTraits : 'FASTFortran2kTPointerAssignment classTrait',
+	#superclass : 'FASTFortran2kAssignmentStatement',
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
 	#tag : 'Entities'
@@ -43,7 +41,7 @@ Class {
 { #category : 'meta' }
 FASTFortran2kPointerAssignmentStatement class >> annotation [
 
-	<FMClass: #PointerAssignmentStatement super: #FASTFortran2kEntity>
+	<FMClass: #PointerAssignmentStatement super: #FASTFortran2kAssignmentStatement>
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
