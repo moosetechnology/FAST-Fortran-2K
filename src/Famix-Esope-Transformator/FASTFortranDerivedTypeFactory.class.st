@@ -560,8 +560,8 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
 
 	| paramFactories componentFactories segadj thisParameter |
 
-	paramFactories := fields collect: #isSegmentParameter.
-	componentFactories := fields reject: #isSegmentParameter.
+	paramFactories := self parameters.
+	componentFactories := self components.
 
 	segadj := model newSubroutine
 		name: name , '_segadj'.
@@ -607,6 +607,8 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
 	segadj addStatement: model newEmptyStatement.
 
 	segadj addStatement: self makeSegadjIfStatement.
+	
+	^segadj
 
 ]
 
@@ -659,6 +661,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegcop [
 		content: 'call check_post_condition(.not. associated(this, that), ''{1}_segcop'', ''.not. associated(this, that)'')' ;
 		values: { name } ).
 
+	^segcop
 ]
 
 { #category : 'helper-segCommands' }
@@ -705,6 +708,8 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 	segini addStatement: (model newFormattedCodeString
 		content: 'call check_pre_condition(associated(this), ''{1}_segini'', ''associated(this)'')' ;
 		values: { name } ).
+
+	^segini
 ]
 
 { #category : 'helper-segCommands' }
@@ -834,7 +839,9 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegload [
 		arguments: (seginiArguments collect: [ :arg | self scalarVariable: arg])).
 	segstore addStatement: model newEmptyStatement.
 
-	self components do: [ :comp | comp makeSegloadDo ]
+	self components do: [ :comp | comp makeSegloadDo ].
+
+	^segstore
 ]
 
 { #category : 'helper-segCommands' }
@@ -937,6 +944,8 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegmov [
 			values: { fieldFactory asFieldAccess } )
 	].
 	segmov addStatement: if.
+
+	^segmov
 ]
 
 { #category : 'helper-segCommands' }
@@ -977,7 +986,9 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegpar [
 		if: (self functionCall: 'associated' arguments: { self scalarVariable: 'this'})
 		then: (paramFactories collect: [ :param |
 			self assignement: param name value: (self derivedTypeFieldAccessVariable: 'this' field: param name)
-		])
+		]).
+
+	^segpar
 ]
 
 { #category : 'helper-segCommands' }
@@ -1075,7 +1086,9 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegstore [
 	].
 	segstore addStatement: model newEmptyStatement.
 
-	componentFactories do: [ :comp | comp makeSegstoreDo ]
+	componentFactories do: [ :comp | comp makeSegstoreDo ].
+
+	^segstore
 ]
 
 { #category : 'helper-segCommands' }
@@ -1097,7 +1110,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 	segsup addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
 	segsup addStatement: model newEmptyStatement.
 
-	if := model newIfBlockStatement new.
+	if := model newIfBlockStatement.
 	if condition: (model newFunctionCall
 		name: 'associated';
 		addArgument: (self scalarVariable: 'this');
@@ -1165,7 +1178,7 @@ FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 	ifStatements add: model newEmptyStatement.
 
 	componentFactories do: [ :compFactory| | ifAdjuster |
-		ifStatements thenStatementBlock addComment: ('-- this%' , compFactory name).
+		ifStatements add: (self comment: ('-- this%' , compFactory name)).
 		ifStatements addAll: compFactory temporariesForDimInitialization.
 		ifStatements add: (model newSourceCodeString content: 'ooo_eq_dims = .true.').
 		ifStatements addAll: compFactory temporariesForDimCheckIfExtendableInitialization.
@@ -1180,10 +1193,13 @@ FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 		adjusterStatements add: model newEmptyStatement.
 		adjusterStatements addAll: compFactory temporariesForStopDimInitialization.
 		adjusterStatements add: (self
-				assignement: (('oo_', name) , compFactory asFieldAccess: 'ooo_stop')
-				value: (self scalarVariable: (('this%', name) , compFactory asFieldAccess: 'ooo_stop'))).
+				assignement: (('oo_', name) , (compFactory asFieldAccess: 'ooo_stop'))
+				value: (self scalarVariable: (('this%', name) , (compFactory asFieldAccess: 'ooo_stop')))).
 		adjusterStatements add: model newEmptyStatement.
-		adjusterStatements add: (compFactory functionCall: 'deallocate' arguments: { ('this%', name) }).
+		adjusterStatements add: (compFactory 
+			functionCallStatement: 'deallocate' 
+			arguments: { self derivedTypeFieldAccessVariable: 'this' field: name }
+		).
 		adjusterStatements add: (model newPointerAssignmentStatement
 				variable: (self derivedTypeFieldAccessVariable: 'this' field: name);
 				expression: (self scalarVariable: ('this%', name))).
@@ -1240,7 +1256,9 @@ FASTFortranDerivedTypeFactory >> makeTypeDefinition [
 	fields do: [ :fieldFactory |
 		fieldFactory createSegmentFieldDeclaration
 			ifNotNil: [ :declStatement | segment addStatement: declStatement ]
-		]
+		].
+
+	^segment
 
 ]
 
@@ -1283,7 +1301,7 @@ FASTFortranDerivedTypeFactory >> privateFields: componentFactories [
 { #category : 'accessing' }
 FASTFortranDerivedTypeFactory >> rankMax [
 
-	^(self components collect: #rank)
+	^(self components collect: [ :component | component rank ] )
 		ifEmpty: [ 0 ]
 		ifNotEmpty: [ :collection | collection max ]
 ]
