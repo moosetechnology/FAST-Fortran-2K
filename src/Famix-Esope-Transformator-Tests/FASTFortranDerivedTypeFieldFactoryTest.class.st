@@ -48,6 +48,22 @@ FASTFortranDerivedTypeFieldFactoryTest >> testComponentAsFieldAccess1Rank [
 ]
 
 { #category : 'tests' }
+FASTFortranDerivedTypeFieldFactoryTest >> testComponentAsFieldAccess1RankWithSlicing [
+
+	| string factory |
+	factory := self makeFactory: FASTFortranDerivedTypeComponentFieldFactory.
+	factory 
+		type: fastModel newIntegerType ;
+		fieldDeclarator: (fastModel newVariableDeclarator
+			name: 'x' ;
+			dimensions: {  fastModel newArrayRange } ).
+
+	string := factory asFieldAccess: 'oo'.
+
+	self assert: string equals: 'x(:oo1)'
+]
+
+{ #category : 'tests' }
 FASTFortranDerivedTypeFieldFactoryTest >> testComponentAsFieldAccess3Rank [
 
 	| string factory |
@@ -58,9 +74,25 @@ FASTFortranDerivedTypeFieldFactoryTest >> testComponentAsFieldAccess3Rank [
 			name: 'x' ;
 			dimensions: { fastModel newArrayRange . fastModel newArrayRange . fastModel newArrayRange } ).
 
-	string := factory asFieldAccess.
+	string := factory asFieldAccess: ''.
 
-	self assert: string equals: 'x(:,:,:)'
+	self assert: string equals: 'x(:, :, :)'
+]
+
+{ #category : 'tests' }
+FASTFortranDerivedTypeFieldFactoryTest >> testComponentAsFieldAccess3RankWithSlicing [
+
+	| string factory |
+	factory := self makeFactory: FASTFortranDerivedTypeComponentFieldFactory.
+	factory 
+		type: fastModel newIntegerType ;
+		fieldDeclarator: (fastModel newVariableDeclarator
+			name: 'x' ;
+			dimensions: { fastModel newArrayRange . fastModel newArrayRange . fastModel newArrayRange } ).
+
+	string := factory asFieldAccess: 'stop'.
+
+	self assert: string equals: 'x(:stop1, :stop2, :stop3)'
 ]
 
 { #category : 'tests' }

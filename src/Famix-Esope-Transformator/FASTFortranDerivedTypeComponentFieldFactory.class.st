@@ -18,12 +18,36 @@ FASTFortranDerivedTypeComponentFieldFactory >> asDefaultValue [
 { #category : 'converting' }
 FASTFortranDerivedTypeComponentFieldFactory >> asFieldAccess [
 
-	^String streamContents: [ :stream |
+	 "self 
+		deprecated: 'Please use #asFieldAccess: '''' instead'
+      transformWith: '`@receiver asFieldAccess' -> '`@receiver asFieldAccess:'''''. "
+
+	^self asFieldAccess: ''
+]
+
+{ #category : 'converting' }
+FASTFortranDerivedTypeComponentFieldFactory >> asFieldAccess: slicingLimitName [
+
+	^String streamContents: [ :stream | 
 		stream << name.
 		(rank > 0)
 			ifTrue: [
 				stream << '(:'.
-				2 to: rank do: [ :i | stream << ',:' ].
+				slicingLimitName 
+					ifNotEmpty: [ 
+						stream 
+							<< slicingLimitName;
+							<< '1'
+					].
+				2 to: rank do: [ :i | 
+					stream << ', :'.
+					slicingLimitName 
+					ifNotEmpty: [ 
+						stream 
+							<< slicingLimitName;
+							<< (i asString)
+					]
+				].
 				stream << ')'
 			]
 	]
