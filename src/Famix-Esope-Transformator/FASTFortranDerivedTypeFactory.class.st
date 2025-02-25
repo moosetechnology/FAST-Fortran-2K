@@ -13,10 +13,10 @@ Class {
 }
 
 { #category : 'entity creation' }
-FASTFortranDerivedTypeFactory >> assignement: variable value: expression [
+FASTFortranDerivedTypeFactory >> assignement: variableName value: expression [
 
 	^model newAssignmentStatement
-		variable: variable ;
+		variable: (model scalarVariable: variableName) ;
 		expression: expression
 ]
 
