@@ -166,6 +166,22 @@ FASTFortranDerivedTypeFactory >> if: condition then: statements [
 ]
 
 { #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> if: condition then: thenStatements else: elseStatements [
+
+	| if |
+	if := self if: condition then: thenStatements.
+	
+	if elseStatementBlock: model newStatementBlock.
+
+	elseStatements do: [ :elseStatement |
+		if elseStatementBlock addStatement: elseStatement
+	].
+
+	^if
+
+]
+
+{ #category : 'entity creation' }
 FASTFortranDerivedTypeFactory >> literal: anObject [
 
 	(anObject = true) ifTrue: [ ^model newBooleanLiteral primitiveValue: '.true.' ].
