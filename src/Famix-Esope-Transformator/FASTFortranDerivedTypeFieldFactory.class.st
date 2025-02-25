@@ -12,6 +12,12 @@ Class {
 	#tag : 'Segment'
 }
 
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFieldFactory >> assignement: variable value: expression [
+
+	^self derivedTypeFactory assignement: variable value: expression
+]
+
 { #category : 'accessing - private tests' }
 FASTFortranDerivedTypeFieldFactory >> derivedTypeFactory [
 
@@ -29,6 +35,12 @@ FASTFortranDerivedTypeFieldFactory >> fast2kModel [
 	"for polymorphism with FamixEsopeToFortran2k"
 
 	^self model
+]
+
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFieldFactory >> functionCall: aString arguments: arguments [
+
+	^self derivedTypeFactory functionCall: aString arguments: arguments
 ]
 
 { #category : 'accessing' }

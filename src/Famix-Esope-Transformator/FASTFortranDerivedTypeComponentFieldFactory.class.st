@@ -58,37 +58,26 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSegadjTemporaryDeclaration 
 
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> createSeginiFieldInitialization [
-	"creates 2 statements:
-	 - allocate(this%idata(idata_dim1(idim,jdim))
-	 - this%idata(:) = segment_integer_default_value"
 
-	| line1 line2 |
-	line1 := String streamContents: [ :stream |
-		stream
-			<< 'allocate(this%' ;
-			<< name ;
-			<< '(' ;
-			<< name ;
-			<< '_dim' ;
-			<< (self derivedTypeFactory components indexOf: self) asString ;
-			<< '('.
-			self derivedTypeFactory parameters
-				do: [ :param | stream << param name]
-				separatedBy: [ stream << ',' ].
-			stream << '))'.
+	| statements stmt |
+
+	statements := OrderedCollection new: (rank + 2).
+
+	statements addAll: self temporariesForDimInitialization.
+
+	(rank > 0) ifTrue: [
+		stmt := self  functionCall: 'allocate' arguments: {
+			"creating the array access as a functioncall which is syntactically equivlent"
+			self
+				functionCall: ('this%' , name)
+				arguments: ((1 to: rank) collect: [ :i | self scalarVariable: ('ooo_dim' , i asString) ])
+		}.
+		statements add: stmt
 	].
 
-	line2 := String streamContents: [ :stream |
-		stream
-			<< 'this%' ;
-			<< self asFieldAccess ;
-			<< ' = ' ;
-			<< self asDefaultValue
-	].
-
-	^{
-		self model newSourceCodeString content: line1 .
-		self model newSourceCodeString content: line2 }
+	statements add: (self
+		assignement: ('this%' , self asFieldAccess)
+		value: (self scalarVariable: self asDefaultValue))
 ]
 
 { #category : 'entity-creation' }
@@ -110,6 +99,20 @@ FASTFortranDerivedTypeComponentFieldFactory >> fieldDeclarator: aFastFortranVari
 FASTFortranDerivedTypeComponentFieldFactory >> isSegmentParameter [
 
 	^false
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> temporariesForDimInitialization [
+
+	^(1 to: rank) collect: [ :i |
+		self
+			assignement: ('ooo_dim' , i asString)
+			value: (self
+				functionCall: (name , '_dim' , i asString)
+				arguments: (self derivedTypeFactory parameters
+					collect: [ :param | self scalarVariable: param name]))
+	].
+
 ]
 
 { #category : 'accessing' }
