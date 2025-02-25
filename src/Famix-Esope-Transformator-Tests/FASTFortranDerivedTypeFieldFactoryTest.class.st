@@ -99,6 +99,44 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegadjComponentTemporaryDecl
 ]
 
 { #category : 'tests' }
+FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegcmdInParameterDeclaration [
+
+	| fast2k factory |
+	factory := self makeFactory: FASTFortranDerivedTypeParameterFieldFactory.
+	factory name: 'x'.
+
+	fast2k := factory createSegcmdInFieldDeclaration.
+
+	self assert: fast2k class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType.
+	self assertCollection: fast2k modifiers hasSameElements: #( 'intent(in)' ).
+	self assert: fast2k declarators anyOne name equals: 'x'.
+]
+
+{ #category : 'tests' }
+FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegcmdInoutThisFieldDeclaration [
+
+	| fast2k factory |
+	factory := (self makeFactory: FASTFortranDerivedTypeThisFieldFactory)
+		name: 'this'.
+	factory derivedTypeFactory: FASTFortranDerivedTypeFactory new.
+	factory derivedTypeFactory model: fast2kModel.
+	factory derivedTypeFactory fields: #().
+	factory derivedTypeFactory name: 'bar'.
+
+	fast2k := factory createSegcmdInoutFieldDeclaration.
+
+	self assert: fast2k class equals: FASTFortran2kVariableDeclarationStatement.
+	self assertCollection: fast2k modifiers hasSameElements: #( pointer 'intent(inout)' ).
+
+	self assert: fast2k declarators size equals: 1.
+	self assert: fast2k declarators anyOne name equals: 'this'.
+
+	self assert: fast2k declaredType class equals: FASTFortran2kUserDefinedType.
+	self assert: fast2k declaredType name equals: 'bar'.
+]
+
+{ #category : 'tests' }
 FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiComponentInitialization [
 
 	| fast2k factory paramFactory |
@@ -127,20 +165,6 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiComponentInitializatio
 ]
 
 { #category : 'tests' }
-FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiParameterDeclaration [
-
-	| fast2k factory |
-	factory := self makeFactory: FASTFortranDerivedTypeParameterFieldFactory.
-	factory name: 'x'.
-
-	fast2k := factory createSeginiFieldDeclaration.
-
-	self assert: fast2k class equals: FASTFortran2kVariableDeclarationStatement.
-	self assert: fast2k declarators anyOne name equals: 'x'.
-	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType
-]
-
-{ #category : 'tests' }
 FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiParameterInitialization [
 
 	| fast2k factory |
@@ -157,28 +181,6 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiParameterInitializatio
 
 	self assert: fast2k expression class equals: FASTFortran2kScalarVariable.
 	self assert: fast2k expression name equals: 'x'.
-]
-
-{ #category : 'tests' }
-FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiThisFieldDeclaration [
-
-	| fast2k factory |
-	factory := (self makeFactory: FASTFortranDerivedTypeThisFieldFactory)
-		name: 'this'.
-	factory derivedTypeFactory: FASTFortranDerivedTypeFactory new.
-	factory derivedTypeFactory model: fast2kModel.
-	factory derivedTypeFactory fields: #().
-	factory derivedTypeFactory name: 'bar'.
-
-	fast2k := factory createSeginiFieldDeclaration.
-
-	self assert: fast2k class equals: FASTFortran2kVariableDeclarationStatement.
-
-	self assert: fast2k declarators size equals: 1.
-	self assert: fast2k declarators anyOne name equals: 'this'.
-
-	self assert: fast2k declaredType class equals: FASTFortran2kUserDefinedType.
-	self assert: fast2k declaredType name equals: 'bar'.
 ]
 
 { #category : 'tests' }
