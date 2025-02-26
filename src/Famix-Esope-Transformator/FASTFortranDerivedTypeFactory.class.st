@@ -45,33 +45,42 @@ FASTFortranDerivedTypeFactory >> createModule [
 	| module |
 	module := model newModule name: name , '_mod'.
 
-	module statementBlock:
-		(model newStatementBlock statements: {
-				 self makeSegmentModuleProlog.
-				 self makeTypeDefinition .
-				 self makeSegmentTypeName .
+	module statementBlock:(
+		model newStatementBlock statements: {
+			self makeSegmentModuleProlog.
+			self makeTypeDefinition .
+			self makeSegmentTypeName .
 
-				 self makeBoxedTypeDefinition .
-				 self makeInterfaces .
-				 self makeContainsStatement .
-				 self makeProcedureIgnore .
-				 self makeProcedureAssignPointerToPointer .
-				 self makeProcedureSegmentType .
+			self makeBoxedTypeDefinition .
+			self makeInterfaces .
+			"self makeContainsStatement ."
+		}
+	).
+	
+	module procedures:	{
+			self makeContainsComment .
+			self makeBeginFieldsDimensionComment .
+			self makeEndFieldsDimensionComment .
+			self makeProcedureIgnore .
+			self makeProcedureAssignPointerToPointer .
+			self makeProcedureSegmentType .
 
-				 self makeProcedureSegini .
-				 self makeProcedureSegcop .
-				 self makeProcedureSegmov .
-				 self makeProcedureSegadj .
-				 self makeProcedureSegsup .
-				 self makeProcedureSegprt .
-				 self makeProcedureSegstore .
-				 self makeProcedureSegload .
-				 self makeProcedureSegpar .
-				 self makeProcedureSeglik .
-				 self makeProcedureSegloc .
+			self makeProcedureSegini .
+			self makeProcedureSegcop .
+			self makeProcedureSegmov .
+			self makeProcedureSegadj .
+			self makeProcedureSegsup .
+			self makeProcedureSegprt .
+			self makeProcedureSegstore .
+			self makeProcedureSegload .
+			self makeProcedureSegpar .
+			self makeProcedureSeglik .
+			self makeProcedureSegloc .
 
-				 self makeProcedureBoxed  }).
-	^ module
+			self makeProcedureBoxed 
+	}.
+
+	^module
 ]
 
 { #category : 'entity creation' }
