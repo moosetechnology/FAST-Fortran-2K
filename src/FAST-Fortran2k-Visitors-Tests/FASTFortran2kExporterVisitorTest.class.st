@@ -16,6 +16,14 @@ FASTFortran2kExporterVisitorTest >> assertExport: anEntity equals: expectedStrin
 ]
 
 { #category : 'running' }
+FASTFortran2kExporterVisitorTest >> characterLiteral: value [
+
+	^FASTFortran2kCharacterLiteral new
+		primitiveValue: value ;
+		yourself
+]
+
+{ #category : 'running' }
 FASTFortran2kExporterVisitorTest >> characterType: dimension [
 	^FASTFortran2kCharacterType new
 		size: (self typeSize: dimension) ;
@@ -47,8 +55,31 @@ FASTFortran2kExporterVisitorTest >> integerType: dimension [
 ]
 
 { #category : 'running' }
+FASTFortran2kExporterVisitorTest >> ioParameter: aName value: expression [
+
+	^FASTFortran2kIOParameter new
+		name: aName ;
+		expression: (self makeSimpleExpression: expression) ;
+		yourself
+]
+
+{ #category : 'running' }
 FASTFortran2kExporterVisitorTest >> logicalType: dimension [
 	^FASTFortran2kLogicalType new
+]
+
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> makeSimpleExpression: description [
+
+	description ifNil: [ ^nil ].
+	(description = '*') ifTrue: [ ^FASTFortran2kAsterisk new ].
+	description isInteger ifTrue: [ ^self integerLiteral: description asString ].
+	description isFloat ifTrue: [ ^self realLiteral: description asString ].
+	description isSymbol ifTrue: [ ^self scalarVariable: description asString ].
+	description isString ifTrue: [ ^self characterLiteral: description asString ].
+	description isMooseEntity ifTrue: [ ^description ].
+
+	ShouldBeImplemented signal: 'ExpressionDescription: ' , description class name
 ]
 
 { #category : 'running' }
@@ -74,9 +105,25 @@ FASTFortran2kExporterVisitorTest >> newVisitor [
 ]
 
 { #category : 'running' }
+FASTFortran2kExporterVisitorTest >> realLiteral: value [
+
+	^FASTFortran2kRealLiteral new
+		primitiveValue: value ;
+		yourself
+]
+
+{ #category : 'running' }
 FASTFortran2kExporterVisitorTest >> realType: dimension [
 	^FASTFortran2kRealType new
 		size: (self typeSize: dimension) ;
+		yourself
+]
+
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> scalarVariable: aName [
+
+	^FASTFortran2kScalarVariable new
+		name: aName ;
 		yourself
 ]
 
@@ -230,6 +277,23 @@ end program demo
   implicit none
 end program demo
 '
+]
+
+{ #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testOpenStatement [
+	| stmt |
+	stmt := FASTFortran2kOpenStatement new
+		ioParameters: {
+			self integerLiteral: '3' .
+			self ioParameter: #file value: 'projectA/data.test'.
+			self ioParameter: #err value: 99
+		}.
+
+	self
+		assertExport: stmt
+		equals: 
+'open (3, file=''projectA/data.test'', err=99)
+'.
 ]
 
 { #category : 'testing - program-units' }

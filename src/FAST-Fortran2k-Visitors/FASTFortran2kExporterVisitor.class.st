@@ -632,6 +632,11 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kIModuleProcedureSummary: aFAST
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kIOParameter: aFASTFortran2kIOParameter [
 
+	self 
+		<< aFASTFortran2kIOParameter name;
+		<< '='. "Not need to surround = by space since we dealing with keywordNamed like"
+	
+	aFASTFortran2kIOParameter expression accept: self
 ]
 
 { #category : 'visiting' }
