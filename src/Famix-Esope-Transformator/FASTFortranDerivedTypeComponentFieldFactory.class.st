@@ -118,7 +118,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSegmentFieldDeclaration [
 { #category : 'accessing' }
 FASTFortranDerivedTypeComponentFieldFactory >> dimensioningExpressions [
 
-	^ dimensioningExpressions
+	^ dimensioningExpressions ifNil: [ dimensioningExpressions := OrderedCollection new  ]
 ]
 
 { #category : 'accessing' }

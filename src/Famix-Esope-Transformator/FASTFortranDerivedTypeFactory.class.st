@@ -1222,7 +1222,9 @@ FASTFortranDerivedTypeFactory >> makeProceduresFromDimensioningExpressions [
 			].
 			aFunction addStatement: model newEmptyStatement.
 			aFunction addStatement: (
-				self assignement: aFunctionName value: (componentFactory dimensioningExpressions at: i)
+				self 
+					assignement: aFunctionName 
+					value: (componentFactory dimensioningExpressions at: i)
 			).
 			aFunction addStatement: model newEmptyStatement.
 			
