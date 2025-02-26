@@ -585,7 +585,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFuncti
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCall [ 
+FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCall [
+
 	self
 		<< aFASTFortran2kFunctionCall name;
 		<< ' ( '.
