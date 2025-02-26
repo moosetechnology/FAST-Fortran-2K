@@ -564,7 +564,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFormattedCodeString: aFASTFort
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFunction [ 
 
-	self setLineDescriptions: aFASTFortran2kFunction backTrace.
+	aFASTFortran2kFunction backTrace 
+		ifNotNil: [ self setLineDescriptions: aFASTFortran2kFunction backTrace ].
 
 	aFASTFortran2kFunction declaredType 
 		ifNotNil: [ :declaredType | declaredType accept: self ].
@@ -1043,7 +1044,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSubprogram: aFASTFortran2kSubp
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kSubroutine: aFASTFortran2kSubroutine [ 
 
-	self setLineDescriptions: aFASTFortran2kSubroutine backTrace.
+	aFASTFortran2kSubroutine backTrace
+		ifNotNil: [ self setLineDescriptions: aFASTFortran2kSubroutine backTrace ].
 
 	self
 		indented: 'subroutine ';
