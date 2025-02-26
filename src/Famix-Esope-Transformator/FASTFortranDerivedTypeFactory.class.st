@@ -123,13 +123,22 @@ FASTFortranDerivedTypeFactory >> fields [
 { #category : 'accessing' }
 FASTFortranDerivedTypeFactory >> fields: fastFortranDeclarations [
 
-	fields := fastFortranDeclarations flatCollect: [ :fastVariableDeclaration |
-		fastVariableDeclaration declarators collect: [ :fastVariableDeclarator |
-			FASTFortranDerivedTypeComponentFieldFactory new
+	fields := OrderedCollection new: fastFortranDeclarations size.
+
+	fastFortranDeclarations do: [ :fastVariableDeclaration |
+		fastVariableDeclaration declarators do: [ :fastVariableDeclarator |
+			fields add: (FASTFortranDerivedTypeComponentFieldFactory new
 				derivedTypeFactory: self ;
 				type: fastVariableDeclaration declaredType ;
 				fieldDeclarator: fastVariableDeclarator
+			).
 
+			(self getParameterFactories: fastVariableDeclarator dimensions)
+				do: [ :paramFactory |  
+					fields 
+						detect: [ :factory | factory name = paramFactory name ]
+						ifNone: [ fields add: paramFactory ]
+				]
 		]
 	]
 ]
@@ -158,6 +167,36 @@ FASTFortranDerivedTypeFactory >> functionCallStatement: aString arguments: aColl
 		name: aString ;
 		arguments: aCollection ;
 		yourself
+]
+
+{ #category : 'accessing' }
+FASTFortranDerivedTypeFactory >> getParameterFactories: fastFortranArrayRanges [
+	"
+	segment foo
+	integer bar(N+1, M * N)
+	end segment
+	
+	[foo]
+    	parameters = N M
+
+	[foo/bar]
+    	type = integer
+    	rank = 2
+    	dim1 = N + 1
+    	dim2 = M * N
+
+	"
+
+	^fastFortranArrayRanges flatCollect: [ :aFASTFortranArrayRange |
+		(aFASTFortranArrayRange 
+			accept: FASTFortranParameterExtractionVisitor new)
+			collect: [ :paramName | 
+				FASTFortranDerivedTypeParameterFieldFactory new
+					derivedTypeFactory: self;
+					name: paramName;
+					yourself
+			]
+	]
 ]
 
 { #category : 'entity creation' }
