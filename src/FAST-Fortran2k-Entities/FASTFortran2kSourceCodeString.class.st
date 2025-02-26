@@ -1,4 +1,13 @@
 "
+## Relations
+======================
+
+### Parents
+| Relation | Origin | Opposite | Type | Comment |
+|---|
+| `module` | `FASTFortran2kTProcedure` | `procedures` | `FASTFortran2kModule` | |
+
+
 ## Properties
 ======================
 
@@ -10,6 +19,8 @@
 Class {
 	#name : 'FASTFortran2kSourceCodeString',
 	#superclass : 'FASTFortran2kAbstractStatement',
+	#traits : 'FASTFortran2kTProcedure',
+	#classTraits : 'FASTFortran2kTProcedure classTrait',
 	#instVars : [
 		'#content => FMProperty'
 	],
