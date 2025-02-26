@@ -2,11 +2,24 @@ Class {
 	#name : 'FASTFortranUseTransformationVisitor',
 	#superclass : 'FASTFortranAbstractTransformationVisitor',
 	#instVars : [
-		'parentTransformator'
+		'parentTransformator',
+		'model'
 	],
 	#category : 'Famix-Esope-Transformator',
 	#package : 'Famix-Esope-Transformator'
 }
+
+{ #category : 'accessing' }
+FASTFortranUseTransformationVisitor >> model [
+
+	^model
+]
+
+{ #category : 'accessing' }
+FASTFortranUseTransformationVisitor >> model: anObject [
+
+	model := anObject
+]
 
 { #category : 'accessing' }
 FASTFortranUseTransformationVisitor >> parentTransformator [

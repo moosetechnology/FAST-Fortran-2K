@@ -2,37 +2,23 @@ Class {
 	#name : 'FASTFortranBehavioralTransformationVisitor',
 	#superclass : 'FASTFortranAbstractTransformationVisitor',
 	#instVars : [
-		'parentTransformator'
+		'parentTransformator',
+		'model'
 	],
 	#category : 'Famix-Esope-Transformator',
 	#package : 'Famix-Esope-Transformator'
 }
 
-{ #category : 'private' }
-FASTFortranBehavioralTransformationVisitor >> makeVirtualBackTrace: fastDeclarators [
-
-	| virtualBackTrace anchors |
-	virtualBackTrace := FamixVirtualBackTrace new.
-
-	anchors := fastDeclarators
-			select: [ :declarator |
-				declarator famixDeclaration isNotNil and: [ declarator famixDeclaration sourceAnchor isNotNil ] ]
-			thenCollect: [ :declarator | declarator famixDeclaration sourceAnchor ] .
-
-	anchors
-		ifEmpty: [ virtualBackTrace startLine: 0 ; endLine: 0 ]
-		ifNotEmpty: [
-			virtualBackTrace startLine: (anchors detectMin: #startLine) startLine.
-			virtualBackTrace endLine: (anchors detectMax: #endLine) endLine
-		].
-
-	^virtualBackTrace
-]
-
 { #category : 'accessing' }
 FASTFortranBehavioralTransformationVisitor >> model [
 
-	^self parentTransformator fast2kModel
+	^model
+]
+
+{ #category : 'accessing' }
+FASTFortranBehavioralTransformationVisitor >> model: anObject [
+
+	model := anObject
 ]
 
 { #category : 'accessing' }
@@ -127,10 +113,9 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 	
 	| esopeDeclarator callerProgramUnit pointerDeclaredType |
 
-	esopeDeclarator := FASTFortran2kDerivedTypeDeclaration new 
-		declaredType: (FASTFortran2kUserDefinedType new 
+	esopeDeclarator := self model newVariableDeclarationStatement
+		declaredType: (self model newUserDefinedType  
 			name: aFASTEsopePointerDeclarator pointedTypeName;
-			mooseModel: self model;
 			yourself
 		);
 		addDeclarator: (aFASTEsopePointerDeclarator variableDeclarator accept: self);

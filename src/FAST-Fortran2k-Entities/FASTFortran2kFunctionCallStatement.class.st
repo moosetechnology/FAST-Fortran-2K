@@ -1,11 +1,29 @@
 "
 I represent a function call statement
 
+## Relations
+======================
+
+### Parents
+| Relation | Origin | Opposite | Type | Comment |
+|---|
+| `statementContainer` | `FASTTStatement` | `statements` | `FASTTStatementBlock` | Block containing this statement.|
+
+
+## Properties
+======================
+
+| Name | Type | Default value | Comment |
+|---|
+| `endPos` | `Number` | nil | |
+| `startPos` | `Number` | nil | |
 
 "
 Class {
 	#name : 'FASTFortran2kFunctionCallStatement',
-	#superclass : 'FASTFortran2kEntity',
+	#superclass : 'FASTFortran2kFunctionCall',
+	#traits : 'FASTTStatement',
+	#classTraits : 'FASTTStatement classTrait',
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
 	#tag : 'Entities'
@@ -14,7 +32,7 @@ Class {
 { #category : 'meta' }
 FASTFortran2kFunctionCallStatement class >> annotation [
 
-	<FMClass: #FunctionCallStatement super: #FASTFortran2kEntity>
+	<FMClass: #FunctionCallStatement super: #FASTFortran2kFunctionCall>
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self

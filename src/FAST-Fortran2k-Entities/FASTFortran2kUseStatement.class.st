@@ -12,7 +12,6 @@ I represent a use statement
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `modifiers` | `FASTFortran2kTWithModifiers` | `modifierOwner` | `FASTFortran2kTModifier` | My modifiers|
 | `useRenamedStatements` | `FASTFortran2kUseStatement` | `useStatement` | `FASTFortran2kUseRenamedStatement` | |
 
 
@@ -22,6 +21,7 @@ I represent a use statement
 | Name | Type | Default value | Comment |
 |---|
 | `endPos` | `Number` | nil | |
+| `modifiers` | `Object` | #() | A collection of modifiers (strings)|
 | `name` | `String` | nil | |
 | `startPos` | `Number` | nil | |
 

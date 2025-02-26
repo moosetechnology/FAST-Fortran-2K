@@ -8,7 +8,6 @@ I represent a function statement - a function-like declaration, made in a single
 | Relation | Origin | Opposite | Type | Comment |
 |---|
 | `invokedIn` | `FASTTNamedEntity` | `invoked` | `FASTTInvocation` | Optional invocation where this name is used|
-| `statementContainer` | `FASTTStatement` | `statements` | `FASTTStatementBlock` | Block containing this statement.|
 
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
@@ -29,9 +28,9 @@ I represent a function statement - a function-like declaration, made in a single
 "
 Class {
 	#name : 'FASTFortran2kFunctionStatement',
-	#superclass : 'FASTFortran2kFunctionCall',
-	#traits : 'FASTTNamedEntity + FASTTStatement + FASTTWithParameters',
-	#classTraits : 'FASTTNamedEntity classTrait + FASTTStatement classTrait + FASTTWithParameters classTrait',
+	#superclass : 'FASTFortran2kAbstractStatement',
+	#traits : 'FASTTNamedEntity + FASTTWithParameters',
+	#classTraits : 'FASTTNamedEntity classTrait + FASTTWithParameters classTrait',
 	#instVars : [
 		'#expression => FMOne type: #FASTFortran2kAbstractExpression opposite: #assignementExpressionOwner'
 	],
@@ -43,7 +42,7 @@ Class {
 { #category : 'meta' }
 FASTFortran2kFunctionStatement class >> annotation [
 
-	<FMClass: #FunctionStatement super: #FASTFortran2kFunctionCall>
+	<FMClass: #FunctionStatement super: #FASTFortran2kAbstractStatement>
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self

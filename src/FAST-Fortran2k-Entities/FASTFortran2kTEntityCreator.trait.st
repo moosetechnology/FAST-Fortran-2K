@@ -245,20 +245,6 @@ FASTFortran2kTEntityCreator >> newDecodeStatement [
 ]
 
 { #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newDerivedTypeAbstractField [
-
-	<generated>
-	^ self add: FASTFortran2kDerivedTypeAbstractField new
-]
-
-{ #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newDerivedTypeComponent [
-
-	<generated>
-	^ self add: FASTFortran2kDerivedTypeComponent new
-]
-
-{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newDerivedTypeComponentAccess [
 
 	<generated>
@@ -266,31 +252,10 @@ FASTFortran2kTEntityCreator >> newDerivedTypeComponentAccess [
 ]
 
 { #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newDerivedTypeComponentDimension [
-
-	<generated>
-	^ self add: FASTFortran2kDerivedTypeComponentDimension new
-]
-
-{ #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newDerivedTypeDeclaration [
-
-	<generated>
-	^ self add: FASTFortran2kDerivedTypeDeclaration new
-]
-
-{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newDerivedTypeDefinition [
 
 	<generated>
 	^ self add: FASTFortran2kDerivedTypeDefinition new
-]
-
-{ #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newDerivedTypeParameter [
-
-	<generated>
-	^ self add: FASTFortran2kDerivedTypeParameter new
 ]
 
 { #category : 'entity creation' }
@@ -651,13 +616,6 @@ FASTFortran2kTEntityCreator >> newMapStatement [
 ]
 
 { #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newModifier [
-
-	<generated>
-	^ self add: FASTFortran2kModifier new
-]
-
-{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newModule [
 
 	<generated>
@@ -700,13 +658,6 @@ FASTFortran2kTEntityCreator >> newOptionsStatement [
 ]
 
 { #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newPTVariable [
-
-	<generated>
-	^ self add: FASTFortran2kPTVariable new
-]
-
-{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newParameterStatement [
 
 	<generated>
@@ -725,13 +676,6 @@ FASTFortran2kTEntityCreator >> newPointerAssignmentStatement [
 
 	<generated>
 	^ self add: FASTFortran2kPointerAssignmentStatement new
-]
-
-{ #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newPointerVariable [
-
-	<generated>
-	^ self add: FASTFortran2kPointerVariable new
 ]
 
 { #category : 'entity creation' }
@@ -886,13 +830,6 @@ FASTFortran2kTEntityCreator >> newSubstring [
 
 	<generated>
 	^ self add: FASTFortran2kSubstring new
-]
-
-{ #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newTargetVariable [
-
-	<generated>
-	^ self add: FASTFortran2kTargetVariable new
 ]
 
 { #category : 'entity creation' }

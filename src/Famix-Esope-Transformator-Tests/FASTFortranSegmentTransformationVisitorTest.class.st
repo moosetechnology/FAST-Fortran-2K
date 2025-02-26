@@ -17,7 +17,7 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentToDerivedTypeInMo
 	"
 
 	| stmt res f2ksegment |
-	
+
 	stmt := self segment: 'foo' attributes: { #bar -> #integer }.
 	
 	res := stmt accept: visitor.
@@ -29,13 +29,14 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentToDerivedTypeInMo
 	
 	self assert: f2ksegment name equals: 'foo'.
 	
-	self assert: f2ksegment fields size equals: 1.
+	self assert: f2ksegment statements size equals: 1.
 	
-	stmt := f2ksegment fields anyOne.
-	self assert: stmt class equals: FASTFortran2kDerivedTypeComponent.
+	stmt := f2ksegment statements anyOne.
+	self assert: stmt class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
-	self assert: stmt name equals: 'bar'.
-	self assert: stmt rank equals: 0.
+	self assert: stmt declarators size equals: 1.
+	self assert: stmt declarators anyOne name equals: 'bar'.
+	self assert: stmt declarators anyOne dimensions size equals: 0.
 	
 ]
 
@@ -48,7 +49,7 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToD
 	"
 
 	| stmt res f2ksegment |
-	
+
 	stmt := self segment: 'foo' attributes: { #bar -> #integer }.
 	stmt statements anyOne declarators anyOne
 		dimensions: { FASTFortranArrayRange new upperBound: (self scalarVariable: #N) }.
@@ -62,18 +63,16 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToD
 	
 	self assert: f2ksegment name equals: 'foo'.
 	
-	self assert: f2ksegment fields size equals: 2.
-	
-	stmt := f2ksegment fields first.
-	self assert: stmt class equals: FASTFortran2kDerivedTypeParameter.
+	self assert: f2ksegment statements size equals: 2.
+	f2ksegment statements do: [ :stmt | self assert: stmt class equals: FASTFortran2kVariableDeclarationStatement ].
+
+	stmt := f2ksegment statements detect: [ :each | each declarators anyOne name = 'N' ].
 	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
-	self assert: stmt name equals: 'N'.
-	
-	stmt := f2ksegment fields second.
-	self assert: stmt class equals: FASTFortran2kDerivedTypeComponent.
+
+	stmt := f2ksegment statements detect: [ :each | each declarators anyOne name = 'bar' ].
 	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
-	self assert: stmt name equals: 'bar'.
-	self assert: stmt rank equals: 1.
+	self assert: stmt declarators anyOne dimensions size equals: 1.
+
 ]
 
 { #category : 'running' }
@@ -130,7 +129,7 @@ end module foo_mod
 	f2ksegment := res statementBlock statements detect: [ :e | e class = FASTFortran2kDerivedTypeDefinition ].
 	
 	self assert: f2ksegment name equals: 'foo'.
-	self assert: f2ksegment fields size equals: 0.
+	self assert: f2ksegment statements size equals: 0.
 ]
 
 { #category : 'running' }
@@ -173,7 +172,7 @@ end module bar_mod
 	f2ksegment := res statementBlock statements detect: [ :e | e class = FASTFortran2kDerivedTypeDefinition ].
 	
 	self assert: f2ksegment name equals: 'foo'.
-	self assert: f2ksegment fields size equals: 0.
+	self assert: f2ksegment statements size equals: 0.
 
 	res := modules
 		detect: [:mod | mod name = 'bar_mod']
@@ -182,7 +181,7 @@ end module bar_mod
 	f2ksegment := res statementBlock statements detect: [ :e | e class = FASTFortran2kDerivedTypeDefinition ].
 	
 	self assert: f2ksegment name equals: 'bar'.
-	self assert: f2ksegment fields size equals: 0.
+	self assert: f2ksegment statements size equals: 0.
 ]
 
 { #category : 'running' }
@@ -225,7 +224,7 @@ end module foo_mod
 	
 	self assert: f2ksegment name equals: 'foo'.
 	
-	self assert: f2ksegment fields size equals: 0.
+	self assert: f2ksegment statements size equals: 0.
 ]
 
 { #category : 'running' }

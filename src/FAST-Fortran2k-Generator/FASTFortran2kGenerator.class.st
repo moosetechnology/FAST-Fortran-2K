@@ -138,9 +138,7 @@ Class {
 		'useNoRenamedStatement',
 		'useOnlyStatement',
 		'derivedTypeDeclarationStatement',
-		'derivedTypeComponent',
 		'typeBoundProcedure',
-		'tHasBindingAttribute',
 		'module',
 		'publicStatement',
 		'privateStatement',
@@ -154,19 +152,12 @@ Class {
 		'interfaceProcedure',
 		'typeBPFinal',
 		'pointerAssignmentStatement',
-		'ptVariable',
-		'pointerVariable',
-		'targetVariable',
-		'tPointerAssignment',
 		'importStatement',
 		'classDeclarationStatement',
 		'sourceCodeString',
 		'formattedCodeString',
 		'derivedTypeDefinition',
 		'derivedTypeComponentAccess',
-		'derivedTypeComponentDimension',
-		'derivedTypeParameter',
-		'derivedTypeAbstractField',
 		'tDeclaration',
 		'tDeclaredType',
 		'tWithDeclarations',
@@ -174,11 +165,10 @@ Class {
 		'fieldAccess',
 		'ioParameter',
 		'functionReturnStatement',
-		'tModifier',
 		'tWithModifiers',
-		'modifier',
 		'emptyStatement',
-		'functionCallStatement'
+		'functionCallStatement',
+		'tProcedure'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -325,30 +315,11 @@ FASTFortran2kGenerator >> defineClasses2k [
 		                         comment:
 		                         self commentForDerivedTypeDefinition.
 
-	derivedTypeAbstractField := self
-		                            newClassNamed: #DerivedTypeAbstractField
-		                            comment:
-		                            'I represent a field (attribute, component,...) for a segment: either DerivedTypeComponent and DerivedTypeParameter'.
-
-	derivedTypeComponent := self
-		                        newClassNamed: #DerivedTypeComponent
-		                        comment: 'I''m a derived type component'.
-
-	derivedTypeComponentDimension := self newClassNamed:
-		                                 #DerivedTypeComponentDimension.
-	derivedTypeParameter := self newClassNamed: #DerivedTypeParameter.
-
 	derivedTypeComponentAccess := self
 		                              newClassNamed:
 		                              #DerivedTypeComponentAccess
 		                              comment:
 		                              'I represent an access to object % field in derived type (therefore an expression)'.
-
-	derivedTypeDeclarationStatement := self
-		                                   newClassNamed:
-		                                   #DerivedTypeDeclaration
-		                                   comment:
-		                                   'I represent a derived type declaration'.
 
 	interface := self
 		             newClassNamed: #Interface
@@ -384,8 +355,6 @@ FASTFortran2kGenerator >> defineClasses2k [
 		                              newClassNamed:
 		                              #PointerAssignmentStatement
 		                              comment: ''.
-	ptVariable := self newClassNamed: #PTVariable comment: ''.
-	pointerVariable := self newClassNamed: #PointerVariable comment: ''.
 
 	publicStatement := self
 		                   newClassNamed: #PublicStatement
@@ -399,9 +368,6 @@ FASTFortran2kGenerator >> defineClasses2k [
 	formattedCodeString := self
 		                       newClassNamed: #FormattedCodeString
 		                       comment: ''.
-
-
-	targetVariable := self newClassNamed: #TargetVariable comment: ''.
 
 	typeBoundProcedure := self
 		                      newClassNamed: #TypeBoundProcedure
@@ -429,8 +395,6 @@ FASTFortran2kGenerator >> defineClasses2k [
 	userDefinedType := self
 		                   newClassNamed: #UserDefinedType
 		                   comment: 'I represent a user defined type'.
-
-	modifier := self newClassNamed: #Modifier comment: self commentForModifier.
 
 	emptyStatement := self newClassNamed: #EmptyStatement comment: 'I represent an empty statement, maybe useful to add empty line'.
 
@@ -870,30 +834,20 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 
 	nameEntity --|> tNamedEntity.
 
-	derivedTypeDefinition --|> type.
-	derivedTypeDefinition --|> tWithModifiers.
-	derivedTypeDefinition --|> tWithComments.
-	derivedTypeDefinition --|> tNamedEntity.
 	derivedTypeDefinition --|> abstractStatement.
-	
-	derivedTypeDeclarationStatement --|> variableDeclarationStatement.
-	classDeclarationStatement --|> variableDeclarationStatement.
-	variableDeclarator --|> tWithModifiers.
-
-	derivedTypeAbstractField --|> tExpression.
-	derivedTypeAbstractField --|> tDeclaredType.
-	derivedTypeAbstractField --|> tNamedEntity.
-	derivedTypeAbstractField --|> tWithModifiers.
-	
-	derivedTypeComponent --|> derivedTypeAbstractField.
-	derivedTypeComponent --|> tWithComments.
-	derivedTypeParameter --|> derivedTypeAbstractField.
-
-	derivedTypeComponentDimension --|> tExpression.
-	derivedTypeComponentDimension --|> tNamedEntity.
+	derivedTypeDefinition --|> tWithModifiers.
+	derivedTypeDefinition --|> tStatementBlock.
+	derivedTypeDefinition --|> tNamedEntity.
 
 	derivedTypeComponentAccess --|> variable.
 	
+	emptyStatement --|> abstractStatement.
+
+	formattedCodeString --|> sourceCodeString.
+
+	functionCallStatement --|> functionCall.
+	functionCallStatement --|> #TStatement.
+
 	importStatement --|> abstractStatement.
 	
 	interface --|> tNamedEntity. "name is optional"
@@ -913,21 +867,15 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	
 	module --|> programUnit.
 	
-	pointerAssignmentStatement --|> tPointerAssignment.
-	
-	ptVariable --|> variable.
-	
-	pointerVariable --|> ptVariable.
+	pointerAssignmentStatement --|> assignmentStatement.
 	
 	privateStatement --|> abstractStatement.
 	publicStatement --|> abstractStatement.
 	
+	procedure --|> tProcedure.
+	
 	sourceCodeString --|> abstractStatement.
-	formattedCodeString --|> sourceCodeString.
-	
-	targetVariable --|> ptVariable.
-	
-	tPointerAssignment --|> tExpression.
+	sourceCodeString --|> tProcedure.
 	
 	typeBoundProcedure --|> tNamedEntity.
 	typeBPFinal --|> typeBoundProcedure.
@@ -944,10 +892,8 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	userDefinedType --|> type.
 	userDefinedType  --|> tNamedEntity.
 
-	modifier --|> tModifier.
-	emptyStatement --|> abstractStatement.
-	functionStatement --|> functionCall.
-	functionStatement --|> #TStatement.
+	variableDeclarationStatement --|> tWithModifiers.
+
 ]
 
 { #category : 'definition' }
@@ -997,11 +943,6 @@ FASTFortran2kGenerator >> defineProperties2k [
 	(derivedTypeDefinition property: #superType type: #String) comment:
 		'I represent the name of the super type'.
 
-	(modifier property: #token type: #String) comment:
-		'The modifier value'.
-
-	(derivedTypeComponent property: #rank type: #Number defaultValue: 0).
-		
 	(interface property: #isAbstractInterface type: #Boolean)
 		comment: 'Im abstract ?'.
 		
@@ -1009,7 +950,10 @@ FASTFortran2kGenerator >> defineProperties2k [
 		comment: 'The source code string to export'.
 	(formattedCodeString property: #values type: #Object)
 		comment: 'Values of the variables to format the string'.
-	
+
+	((tWithModifiers property: #modifiers type: #Object defaultValue: #())
+		comment: 'A collection of modifiers (strings)').
+
 	(typeBoundProcedure property: #alias type: #String)
 		comment: 'I represent the alias name of the procedure'.
 		
@@ -1183,21 +1127,10 @@ FASTFortran2kGenerator >> defineRelations [
 { #category : 'definition' }
 FASTFortran2kGenerator >> defineRelations2k [
 
-	((derivedTypeDefinition property: #fields)
-		comment: 'My field')
-	<>-* ((derivedTypeAbstractField property: #fieldOwner)
-		comment: 'The owner of the field').
-
 	((derivedTypeDefinition property: #methods)
 		comment: 'My type bound procedure')
 	<>-* ((typeBoundProcedure property: #methodOwner)
 		comment: 'The owner of the type bound procedure').
-
-	((derivedTypeComponent property: #dimensions)
-		comment: 'My dimension')
-	<>-* ((derivedTypeComponentDimension property: #dimensionOwner)
-		comment: 'The owner of the dimension').
-	derivedTypeComponent - comment.
 
 	(derivedTypeComponentAccess property: #instance)
 	<>- ((variable property: #instanceIn) comment: 'Parent DerivedTypeComponentAccess in which receiver is a instance of derived type').
@@ -1210,7 +1143,7 @@ FASTFortran2kGenerator >> defineRelations2k [
 	procedure <>-* internalProcedure.
 	mainprogram <>-* internalProcedure.
 
-	module <>-* procedure.
+	module <>-* tProcedure.
 
 	publicStatement <>-* nameEntity.
 	privateStatement <>-* nameEntity.
@@ -1218,22 +1151,6 @@ FASTFortran2kGenerator >> defineRelations2k [
 	useOnlyStatement <>-* useNoRenamedStatement.
 
 	interface <>-* interfaceProcedure.
-
-	((tWithModifiers property: #modifiers)
-		comment: 'My modifiers')
-	<>-* ((tModifier property: #modifierOwner)
-		comment: 'The owner of the modifier').
-
-	((tPointerAssignment property: #variable) comment:
-		 'An assigned variable (lhs of assignment)')
-	<>-
-		((pointerVariable property: #parentAssignmentExpression) comment:
-			 'Optional assignment to the variable').
-
-	((tPointerAssignment property: #expression) comment:
-		 'Assigned expression (rhs of assignment)')
-	<>- ((ptVariable property: #assignedIn) comment:
-			 'Optional assignment where this expression is used')
 ]
 
 { #category : 'definition' }
@@ -1504,15 +1421,7 @@ FASTFortran2kGenerator >> defineTraits [
 { #category : 'definition' }
 FASTFortran2kGenerator >> defineTraits2k [
 
-	tHasBindingAttribute := self
-		                        newTraitNamed: #THasBindingAttribute
-		                        comment:
-		                        'I represent an attribute (pass/nopass or deferred/non_overidable or private/public) of a type-bound-procedure'.
+	tProcedure := self newTraitNamed: #TProcedure comment: 'mainly used by sourceCodeString and its subclasses to be able to be added as a procedure in the module'.
 
-	tPointerAssignment := builder
-		                      newTraitNamed: #TPointerAssignment
-		                      comment: 'self commentForTPointerAssignment'.
-
-	tModifier := self newTraitNamed: #TModifier comment: 'TModifier'.
-	tWithModifiers := self newTraitNamed: #TWithModifiers comment: 'TWithModifiers'.
+	tWithModifiers := self newTraitNamed: #TWithModifiers comment: self commentForModifier.
 ]

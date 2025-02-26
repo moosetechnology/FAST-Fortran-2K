@@ -159,6 +159,7 @@ FASTFortranTransformationVisitor >> transformationVisitor: visitorClass [
 
 	^visitorClass new
 		parentTransformator: self ;
+		model: model;
 		yourself
 ]
 

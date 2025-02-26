@@ -323,7 +323,7 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithPointeurDeclaration [
     self assert: stmt class equals: FASTFortran2kImplicitStatement.
 
     stmt := res statementBlock statements second.
-    self assert: stmt class equals: FASTFortran2kDerivedTypeDeclaration.
+    self assert: stmt class equals: FASTFortran2kVariableDeclarationStatement.
 	 self assert: stmt declaredType class equals: FASTFortran2kUserDefinedType.
 	 self assert: stmt declaredType name equals: 'foo'.	
 	 self assert: stmt declarators size equals: 1.

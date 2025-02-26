@@ -431,7 +431,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDefinition: aFASTFo
 		newLine.
 
 	self indent.
-	aFASTFortran2kDerivedTypeDefinition fields do: [ :derivedTypeComponent |
+	aFASTFortran2kDerivedTypeDefinition statements do: [ :derivedTypeComponent |
 		derivedTypeComponent accept: self 
 	].
 	self unindent.
@@ -1222,7 +1222,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUs
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUserDefinedType: aFASTFortran2kUserDefinedType [
 
 	self
-		<< 'type(';
+		<< 'type (';
 		<< aFASTFortran2kUserDefinedType name;
 		<< ')'
 ]
@@ -1285,12 +1285,6 @@ FASTFortran2kExporterVisitor >> visitFASTFortranAbstractStatement: aFASTFortranA
 	self skipLine: aFASTFortranAbstractStatement .
 
 	super visitFASTFortranAbstractStatement: aFASTFortranAbstractStatement
-]
-
-{ #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortranAbstractStatement: aFASTFortranAbstractStatement [
-
-	self indented: ''
 ]
 
 { #category : 'visiting' }

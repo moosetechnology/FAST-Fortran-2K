@@ -1,0 +1,54 @@
+Class {
+	#name : 'FASTFortranDerivedTypeThisFieldFactory',
+	#superclass : 'FASTFortranDerivedTypeParameterFieldFactory',
+	#category : 'Famix-Esope-Transformator-Segment',
+	#package : 'Famix-Esope-Transformator',
+	#tag : 'Segment'
+}
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeThisFieldFactory >> createSegcmdFieldDeclaration [
+
+	^self model newVariableDeclarationStatement
+		addDeclarator: (self model newVariableDeclarator name: name) ;
+		declaredType: (self model newUserDefinedType name: self derivedTypeFactory name)
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeThisFieldFactory >> createSegcmdInFieldDeclaration [
+
+	^self createSegcmdFieldDeclaration
+		modifiers: #( pointer 'intent(in)' ) ;
+		yourself
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeThisFieldFactory >> createSegcmdInoutFieldDeclaration [
+
+	^self createSegcmdFieldDeclaration
+		modifiers: #( pointer 'intent(inout)' ) ;
+		yourself
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeThisFieldFactory >> createSeginiFieldInitialization [
+
+	^self model newFunctionCallStatement
+		name: 'allocate' ;
+		addArgument: (self scalarVariable: name) ;
+		yourself
+		
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeThisFieldFactory >> createSegmentFieldDeclaration [
+	"do not generate a declaration for 'this' field in the derivedType definition"
+	
+	^nil
+]
+
+{ #category : 'testing' }
+FASTFortranDerivedTypeThisFieldFactory >> isSegmentThisParameter [
+
+	^true
+]

@@ -9,8 +9,8 @@ Contains the block of Fortran statements
 |---|
 | `fastBehaviouralParent` | `FASTTStatementBlock` | `statementBlock` | `FASTTBehaviouralEntity` | Behavioural entity containing the statement block.|
 | `parentDoStatement` | `FASTFortran2kStatementBlock` | `statementBlock` | `FASTFortran2kDoStatement` | Parent do statement|
-| `parentIfBlock` | `FASTFortran2kStatementBlock` | `thenStatementBlock` | `FASTFortran2kIfBlockStatement` | Parent if block|
 | `parentIfBlock` | `FASTFortran2kStatementBlock` | `elseStatementBlock` | `FASTFortran2kIfBlockStatement` | Parent if block|
+| `parentIfBlock` | `FASTFortran2kStatementBlock` | `thenStatementBlock` | `FASTFortran2kIfBlockStatement` | Parent if block|
 | `statementContainer` | `FASTTStatement` | `statements` | `FASTTStatementBlock` | Block containing this statement.|
 
 ### Children
@@ -36,8 +36,7 @@ Class {
 	#classTraits : 'FASTTStatementBlock classTrait + FASTTWithComments classTrait',
 	#instVars : [
 		'#parentDoStatement => FMOne type: #FASTFortran2kDoStatement opposite: #statementBlock',
-		'#parentIfBlock => FMOne type: #FASTFortran2kIfBlockStatement opposite: #thenStatementBlock',
-		'#backTrace'
+		'#parentIfBlock => FMOne type: #FASTFortran2kIfBlockStatement opposite: #thenStatementBlock'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -51,18 +50,6 @@ FASTFortran2kStatementBlock class >> annotation [
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
-]
-
-{ #category : 'accessing' }
-FASTFortran2kStatementBlock >> backTrace [
-
-	^backTrace
-]
-
-{ #category : 'accessing' }
-FASTFortran2kStatementBlock >> backTrace: aFamixEntity [
-
-	backTrace := aFamixEntity
 ]
 
 { #category : 'accessing' }
