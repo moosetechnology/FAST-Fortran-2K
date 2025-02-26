@@ -13,8 +13,8 @@ FASTFortranSegmentTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegm
 
 	^FASTFortranDerivedTypeFactory new
 		name: aFASTEsopeSegmentNode name ;
-		fields: aFASTEsopeSegmentNode statements ;
 		model: self model ;
+		fields: aFASTEsopeSegmentNode statements ;
 
 		createModule.
 ]

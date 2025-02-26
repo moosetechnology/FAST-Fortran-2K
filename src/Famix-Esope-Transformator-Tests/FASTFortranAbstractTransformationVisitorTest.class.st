@@ -72,7 +72,13 @@ FASTFortranAbstractTransformationVisitorTest >> functionWithSegment [
 { #category : 'running' }
 FASTFortranAbstractTransformationVisitorTest >> newVisitor [
 
-	^ self visitorClass new parentTransformator: FamixEsopeToFortran2k new
+	| transformator |
+	transformator := FamixEsopeToFortran2k new.
+
+	^ self visitorClass new 
+		parentTransformator: transformator;
+		model: transformator fast2kModel;
+		yourself
 ]
 
 { #category : 'setup' }

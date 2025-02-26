@@ -60,7 +60,8 @@ FASTFortranDerivedTypeComponentFieldFactory >> asVariableDeclaration [
 
 	| stmt declarator |
 	stmt := self model newVariableDeclarationStatement.
-	stmt declaredType: (type accept: (FASTFortranBehavioralTransformationVisitor new parentTransformator: self)).
+	stmt declaredType: (type accept: (FASTFortranBehavioralTransformationVisitor new 
+		model: self model )).
 
 	declarator := self model newVariableDeclarator.
 	declarator name: name.
@@ -126,6 +127,13 @@ FASTFortranDerivedTypeComponentFieldFactory >> fieldDeclarator: aFastFortranVari
 
 	name := aFastFortranVariableDeclarator name.
 	rank := aFastFortranVariableDeclarator dimensions size.
+	dimensioningExpressions := (aFastFortranVariableDeclarator dimensions 
+		select: [ :arrayRange | arrayRange upperBound isNotNil ]
+		thenCollect: [ :arrayRange |
+			arrayRange upperBound accept: (FASTFortranBehavioralTransformationVisitor new
+				model: self model
+			)
+	])
 ]
 
 { #category : 'accessing' }
