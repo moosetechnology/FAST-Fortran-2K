@@ -50,11 +50,6 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToD
 
 	| stmt res f2ksegment |
 
-	self skip: '#FIXME: declared type not work  anymore. 
-		- Maybe related to "kind of singleton" intrinsic creation
-		- Or the way we extract the dimensions in each field in FASTFortranDerivedTypeFactory...
-		'.
-
 	stmt := self segment: 'foo' attributes: { #bar -> #integer }.
 	stmt statements anyOne declarators anyOne
 		dimensions: { FASTFortranArrayRange new upperBound: (self scalarVariable: #N) }.
@@ -69,17 +64,14 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToD
 	self assert: f2ksegment name equals: 'foo'.
 	
 	self assert: f2ksegment statements size equals: 2.
+	f2ksegment statements do: [ :stmt | self assert: stmt class equals: FASTFortran2kVariableDeclarationStatement ].
 
-	stmt := f2ksegment statements first.
-	self assert: stmt class equals: FASTFortran2kVariableDeclarationStatement.
+	stmt := f2ksegment statements detect: [ :each | each declarators anyOne name = 'N' ].
 	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
-	self assert: stmt name equals: 'N'.
 
-	stmt := f2ksegment statements second.
-	self assert: stmt class equals: FASTFortran2kVariableDeclarationStatement.
+	stmt := f2ksegment statements detect: [ :each | each declarators anyOne name = 'bar' ].
 	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
-	self assert: stmt name equals: 'bar'.
-	self assert: stmt dimensions size equals: 1.
+	self assert: stmt declarators anyOne dimensions size equals: 1.
 
 ]
 
