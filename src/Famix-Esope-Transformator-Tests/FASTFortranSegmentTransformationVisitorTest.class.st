@@ -18,11 +18,6 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentToDerivedTypeInMo
 
 	| stmt res f2ksegment |
 
-	self skip: '#FIXME: declared type not work  anymore. 
-		- Maybe related to "kind of singleton" intrinsic creation
-		- Or the way we extract the dimensions in each field in FASTFortranDerivedTypeFactory...
-		'.
-	
 	stmt := self segment: 'foo' attributes: { #bar -> #integer }.
 	
 	res := stmt accept: visitor.
