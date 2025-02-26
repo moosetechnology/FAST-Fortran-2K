@@ -8,27 +8,6 @@ Class {
 	#package : 'Famix-Esope-Transformator'
 }
 
-{ #category : 'private' }
-FASTFortranBehavioralTransformationVisitor >> makeVirtualBackTrace: fastDeclarators [
-
-	| virtualBackTrace anchors |
-	virtualBackTrace := FamixVirtualBackTrace new.
-
-	anchors := fastDeclarators
-			select: [ :declarator |
-				declarator famixDeclaration isNotNil and: [ declarator famixDeclaration sourceAnchor isNotNil ] ]
-			thenCollect: [ :declarator | declarator famixDeclaration sourceAnchor ] .
-
-	anchors
-		ifEmpty: [ virtualBackTrace startLine: 0 ; endLine: 0 ]
-		ifNotEmpty: [
-			virtualBackTrace startLine: (anchors detectMin: #startLine) startLine.
-			virtualBackTrace endLine: (anchors detectMax: #endLine) endLine
-		].
-
-	^virtualBackTrace
-]
-
 { #category : 'accessing' }
 FASTFortranBehavioralTransformationVisitor >> model [
 
