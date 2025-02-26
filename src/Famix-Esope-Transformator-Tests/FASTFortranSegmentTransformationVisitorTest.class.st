@@ -17,7 +17,11 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentToDerivedTypeInMo
 	"
 
 	| stmt res f2ksegment |
-	self skip: '#FIXME: declared type not work  anymore. Maybe related to "kind of singleton" intrinsic creation'.
+
+	self skip: '#FIXME: declared type not work  anymore. 
+		- Maybe related to "kind of singleton" intrinsic creation
+		- Or the way we extract the dimensions in each field in FASTFortranDerivedTypeFactory...
+		'.
 	
 	stmt := self segment: 'foo' attributes: { #bar -> #integer }.
 	
@@ -49,7 +53,11 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToD
 	"
 
 	| stmt res f2ksegment |
-		self skip: '#FIXME: declared type not work  anymore. Maybe related to "kind of singleton" intrinsic creation'.
+
+	self skip: '#FIXME: declared type not work  anymore. 
+		- Maybe related to "kind of singleton" intrinsic creation
+		- Or the way we extract the dimensions in each field in FASTFortranDerivedTypeFactory...
+		'.
 
 	stmt := self segment: 'foo' attributes: { #bar -> #integer }.
 	stmt statements anyOne declarators anyOne
@@ -64,19 +72,19 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToD
 	
 	self assert: f2ksegment name equals: 'foo'.
 	
-	self assert: f2ksegment statements size equals: 1.
+	self assert: f2ksegment statements size equals: 2.
 
-	stmt := f2ksegment statements anyOne.
+	stmt := f2ksegment statements first.
+	self assert: stmt class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
+	self assert: stmt name equals: 'N'.
+
+	stmt := f2ksegment statements second.
 	self assert: stmt class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
 	self assert: stmt name equals: 'bar'.
 	self assert: stmt dimensions size equals: 1.
-	
-	stmt := f2ksegment statements anyOne dimensions anyOne.
-	self assert: stmt class equals: FASTFortran2kVariableDeclarationStatement.
-	self assert: stmt declaredType class equals: FASTFortran2kIntegerType.
-	self assert: stmt name equals: 'N'.
-	
+
 ]
 
 { #category : 'running' }
