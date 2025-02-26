@@ -10,6 +10,25 @@ Class {
 }
 
 { #category : 'accessing' }
+FASTFortranBehavioralTransformationVisitor >> handleProgramUnitSegmentDeclaration: declarations [
+	
+	declarations ifNotNil: [ 
+		
+		declarations do: [ :declaration | | programFile |
+			programFile := self model newProgramFile
+				filename: (declaration famix migratedModuleName , '.f90').
+
+			programFile addProgramUnit: (
+				declaration accept: (FASTFortranSegmentTransformationVisitor new 
+					parentTransformator: self parentTransformator;
+					model: self model
+				)
+			)
+		]
+	]
+]
+
+{ #category : 'accessing' }
 FASTFortranBehavioralTransformationVisitor >> model [
 
 	^model
