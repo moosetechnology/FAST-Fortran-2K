@@ -2,7 +2,9 @@ Class {
 	#name : 'FASTFortranDerivedTypeComponentFieldFactory',
 	#superclass : 'FASTFortranDerivedTypeFieldFactory',
 	#instVars : [
-		'type'
+		'type',
+		'rank',
+		'dimensioningExpressions'
 	],
 	#category : 'Famix-Esope-Transformator-Segment',
 	#package : 'Famix-Esope-Transformator',
@@ -254,6 +256,12 @@ FASTFortranDerivedTypeComponentFieldFactory >> nestedDoLoops: dim of: maxDim all
 
 	^self do: loopControl body: statements 
 
+]
+
+{ #category : 'accessing' }
+FASTFortranDerivedTypeComponentFieldFactory >> rank [
+
+	^rank
 ]
 
 { #category : 'entity-creation' }

@@ -3,8 +3,6 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'name',
-		'rank',
-		'dimensions',
 		'derivedTypeFactory'
 	],
 	#category : 'Famix-Esope-Transformator-Segment',
@@ -95,12 +93,6 @@ FASTFortranDerivedTypeFieldFactory >> name [
 FASTFortranDerivedTypeFieldFactory >> name: aString [
 
 	name := aString 
-]
-
-{ #category : 'accessing' }
-FASTFortranDerivedTypeFieldFactory >> rank [
-
-	^rank
 ]
 
 { #category : 'entity creation' }
