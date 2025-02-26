@@ -197,7 +197,7 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiComponentInitializatio
 	self assert: fast2k first expression class equals: FASTFortran2kFunctionCall.
 
 	"allocate(this%x(ooo_dim1)"
-	self assert: fast2k second class equals: FASTFortran2kFunctionCall.
+	self assert: fast2k second class equals: FASTFortran2kFunctionCallStatement.
 	self assert: fast2k second name equals: 'allocate'.
 	self assert: fast2k second arguments size equals: 1.
 
