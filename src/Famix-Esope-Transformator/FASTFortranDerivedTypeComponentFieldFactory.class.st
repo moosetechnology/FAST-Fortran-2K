@@ -116,6 +116,12 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSegmentFieldDeclaration [
 ]
 
 { #category : 'accessing' }
+FASTFortranDerivedTypeComponentFieldFactory >> dimensioningExpressions [
+
+	^ dimensioningExpressions
+]
+
+{ #category : 'accessing' }
 FASTFortranDerivedTypeComponentFieldFactory >> fieldDeclarator: aFastFortranVariableDeclarator [
 
 	name := aFastFortranVariableDeclarator name.

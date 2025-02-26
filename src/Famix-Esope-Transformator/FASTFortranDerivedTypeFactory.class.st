@@ -56,11 +56,13 @@ FASTFortranDerivedTypeFactory >> createModule [
 			"self makeContainsStatement ."
 		}
 	).
+
+	module procedures add: self makeContainsComment.
+	module procedures add: self makeContainsComment.
+
+	module procedures addAll: (self makeProceduresFromDimensioningExpressions).
 	
-	module procedures:	{
-			self makeContainsComment .
-			self makeBeginFieldsDimensionComment .
-			self makeEndFieldsDimensionComment .
+	module procedures addAll: {
 			self makeProcedureIgnore .
 			self makeProcedureAssignPointerToPointer .
 			self makeProcedureSegmentType .
@@ -246,13 +248,6 @@ FASTFortranDerivedTypeFactory >> literal: anObject [
 ]
 
 { #category : 'helpers-codeString' }
-FASTFortranDerivedTypeFactory >> makeBeginFieldsDimensionComment [
-
-	^model newSourceCodeString
-		  content: '! begin: the fields dimensions from the parameters'
-]
-
-{ #category : 'helpers-codeString' }
 FASTFortranDerivedTypeFactory >> makeBoxedTypeDefinition [
 
 	^model newFormattedCodeString
@@ -286,13 +281,6 @@ FASTFortranDerivedTypeFactory >> makeContainsStatement [
 		  content: 'contains
 	 ! ## primary aspects
 '
-]
-
-{ #category : 'helpers-codeString' }
-FASTFortranDerivedTypeFactory >> makeEndFieldsDimensionComment [
-
-	^model newSourceCodeString
-		  content: '! end: the fields dimensions from the parameters'
 ]
 
 { #category : 'helpers-codeString' }
@@ -1200,6 +1188,63 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 	segsup addStatement: if.
 
 	^segsup
+]
+
+{ #category : 'helper-segCommands' }
+FASTFortranDerivedTypeFactory >> makeProceduresFromDimensioningExpressions [
+	
+	| paramFactories componentFactories dimensioningExpressionsProcedures |
+
+	paramFactories := self parameters.
+	componentFactories := self components.
+
+	dimensioningExpressionsProcedures := OrderedCollection new.
+	
+	dimensioningExpressionsProcedures add: (model newSourceCodeString
+		  content: '! begin: the fields dimensions from the parameters').
+	
+	componentFactories do: [ :componentFactory |
+		1 to: componentFactory rank do: [ :i | | aFunction aFunctionName |
+			aFunctionName := componentFactory name, '_dim', i asString. 
+			aFunction := model newFunction
+				name: aFunctionName;
+				declaredType: (model newIntegerType);
+				yourself.
+			
+			paramFactories do: [ :param |
+				aFunction addParameter: (self scalarVariable: param name)
+			].
+
+			aFunction initBody.
+			
+			paramFactories do: [ :paramFactory |
+				aFunction addStatement: (paramFactory createSegcmdInFieldDeclaration)
+			].
+			aFunction addStatement: model newEmptyStatement.
+			aFunction addStatement: (
+				self assignement: aFunctionName value: (componentFactory dimensioningExpressions at: i)
+			).
+			aFunction addStatement: model newEmptyStatement.
+			
+			aFunction addStatement: (model newFormattedCodeString
+				content: 'call ignore({1}, ''{1}'', ''{2}::{3}_dim{4}'')' ;
+				values: { (paramFactories at: i) . name . componentFactory name . i }
+			).
+			aFunction addStatement: (model newFormattedCodeString
+				content: 'call check_pre_condition(associated(this), ''{1}_segadj'', ''associated(this)'')' ;
+				values: { name }
+			).
+			
+			dimensioningExpressionsProcedures add: aFunction
+		]
+	].
+
+	dimensioningExpressionsProcedures add: (model newSourceCodeString
+		  content: '! end: the fields dimensions from the parameters').
+
+	^dimensioningExpressionsProcedures
+
+
 ]
 
 { #category : 'entity creation' }
