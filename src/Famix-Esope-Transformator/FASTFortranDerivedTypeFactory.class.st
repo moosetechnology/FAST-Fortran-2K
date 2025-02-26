@@ -198,6 +198,13 @@ FASTFortranDerivedTypeFactory >> literal: anObject [
 ]
 
 { #category : 'helpers-codeString' }
+FASTFortranDerivedTypeFactory >> makeBeginFieldsDimensionComment [
+
+	^model newSourceCodeString
+		  content: '! begin: the fields dimensions from the parameters'
+]
+
+{ #category : 'helpers-codeString' }
 FASTFortranDerivedTypeFactory >> makeBoxedTypeDefinition [
 
 	^model newFormattedCodeString
@@ -219,16 +226,25 @@ FASTFortranDerivedTypeFactory >> makeBoxedTypeDefinition [
 ]
 
 { #category : 'helpers-codeString' }
+FASTFortranDerivedTypeFactory >> makeContainsComment [
+
+	^model newSourceCodeString content: '! ## primary aspects'
+]
+
+{ #category : 'helpers-codeString' }
 FASTFortranDerivedTypeFactory >> makeContainsStatement [
 
 	^model newSourceCodeString
-		  content: '
-contains
+		  content: 'contains
 	 ! ## primary aspects
-    ! begin: the fields dimensions from the parameters
-    ! end: the fields dimensions from the parameters
-
 '
+]
+
+{ #category : 'helpers-codeString' }
+FASTFortranDerivedTypeFactory >> makeEndFieldsDimensionComment [
+
+	^model newSourceCodeString
+		  content: '! end: the fields dimensions from the parameters'
 ]
 
 { #category : 'helpers-codeString' }
