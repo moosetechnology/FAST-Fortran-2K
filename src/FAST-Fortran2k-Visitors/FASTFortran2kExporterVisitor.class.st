@@ -486,6 +486,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kElseStatement: aFASTFortran2kE
 ]
 
 { #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kEmptyStatement: aFASTFortran2kEmptyStatement [ 
+
+	self newLine
+]
+
+{ #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kEncodeStatement: aFASTFortran2kEncodeStatement [
 
 	self indented: 'encode '.
@@ -586,6 +592,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFu
 
 	self visitNodeListSeparatedByCommas: aFASTFortran2kFunctionCall arguments.
 	self << ' )'
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCallStatement: aFASTFortran2kFunctionCallStatement [ 
+	
+	self visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCallStatement
 ]
 
 { #category : 'visiting' }
