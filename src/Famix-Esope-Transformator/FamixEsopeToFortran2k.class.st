@@ -126,11 +126,12 @@ FamixEsopeToFortran2k >> resolveUses [
 	 - user -- a FamixF77ProgramUnit
 	 - needed -- a FamixF77ProgramUnit or FamixEsopeSegment"
 
-	usesNeeded do: [ :association | | source target |
-		source := association key.
-		target := association value.
-		source fast statementBlock statements 
-			addFirst: (self fast2kModel newUseStatement name: target migratedModuleName)
+1halt.
+	usesNeeded do: [ :association | | user needed |
+		user := association key.
+		needed := association value.
+
+		"(user module_or_PU2k) addUse: (needed module_or_Segment2k)"
 	]
 ]
 
