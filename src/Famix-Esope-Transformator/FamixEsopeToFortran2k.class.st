@@ -126,7 +126,6 @@ FamixEsopeToFortran2k >> resolveUses [
 	 - fmxUser -- a FamixF77ProgramUnit
 	 - fmxNeeded -- a FamixF77ProgramUnit or FamixEsopeSegment"
 
-1halt.
 	usesNeeded do: [ :association | | fmxUser fmxNeeded |
 		fmxUser := association key.
 		fmxNeeded := association value.

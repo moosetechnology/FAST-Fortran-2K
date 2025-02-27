@@ -10,7 +10,7 @@ FASTFortran2kProgramMain >> addUse: usedName [
 { #category : '*Famix-Esope-Transformator' }
 FASTFortran2kProgramMain >> migratedModuleName [
 
-	^self parentProgramFile filename
+	^self programFile filename asPath basenameWithoutExtension
 ]
 
 { #category : '*Famix-Esope-Transformator' }

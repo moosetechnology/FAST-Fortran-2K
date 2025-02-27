@@ -10,12 +10,12 @@ Class {
 }
 
 { #category : 'helpers - segment' }
-FASTFortranProcedureTransformationVisitor >> createModule: moduleName [
+FASTFortranProcedureTransformationVisitor >> createModule: famixEntity [
 
 	| module |
 	
 	module := self model2k newModule
-		name: (($/ split: moduleName) last) ;
+		name: famixEntity  migratedModuleName ;
 		statementBlock: (self model2k newStatementBlock
 			addStatement: self model2k newImplicitStatement ;
 			yourself ) ;
@@ -23,7 +23,7 @@ FASTFortranProcedureTransformationVisitor >> createModule: moduleName [
 	
 	
 	self model2k newProgramFile
-		filename: (moduleName , '.f90') ;
+		filename: (famixEntity programFile filename asPath withExtension: 'f90') pathString ;
 		programUnits: {  module }.
 
 	^module
@@ -31,9 +31,11 @@ FASTFortranProcedureTransformationVisitor >> createModule: moduleName [
 ]
 
 { #category : 'helpers - segment' }
-FASTFortranProcedureTransformationVisitor >> ensureModule: filename [
+FASTFortranProcedureTransformationVisitor >> ensureModule: famixEntity [
 
-	^self getModule: filename ifAbsentPut: [ self createModule: filename ]
+	| moduleName |
+	moduleName := famixEntity  migratedModuleName.
+	^self getModule: moduleName ifAbsentPut: [ self createModule: famixEntity ]
 ]
 
 { #category : 'helpers - segment' }
@@ -47,7 +49,7 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 
 	| function2k module2k |
 
-	module2k := self ensureModule: aFASTFortranFunction famix migratedModuleName.
+	module2k := self ensureModule: aFASTFortranFunction famix.
 
 	function2k := self model2k newFunction
 		name: aFASTFortranFunction name ;
@@ -75,7 +77,7 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFo
 
 	| subrtn2k module2k |
 
-	module2k := self ensureModule: aFASTFortranSubroutine famix migratedModuleName. 
+	module2k := self ensureModule: aFASTFortranSubroutine famix. 
 
 	subrtn2k := self model2k newSubroutine
 		name: aFASTFortranSubroutine name ;
