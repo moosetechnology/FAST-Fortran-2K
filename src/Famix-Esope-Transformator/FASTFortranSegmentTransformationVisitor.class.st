@@ -12,12 +12,17 @@ Class {
 { #category : 'visiting' }
 FASTFortranSegmentTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
 
-	^FASTFortranDerivedTypeFactory new
+	| derivedType2k |
+	derivedType2k := FASTFortranDerivedTypeFactory new
 		name: aFASTEsopeSegmentNode name ;
 		model: self model2k ;
 		fields: aFASTEsopeSegmentNode statements ;
-
+		
 		createModule.
+
+	aFASTEsopeSegmentNode transformed2k: derivedType2k.
+
+	^derivedType2k
 ]
 
 { #category : 'visiting' }

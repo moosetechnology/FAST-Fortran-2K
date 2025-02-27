@@ -36,7 +36,7 @@ FASTFortranUseTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsop
 	aFASTEsopeIncludeStatement famixInclude included types
 		ifNotNil: [ :types |
 			types do: [ :type |
-				self parentTransformator useNeeded:  programUnit -> type
+				self useNeeded:  (programUnit -> type)
 			]
 		]
 	
@@ -135,9 +135,9 @@ FASTFortranUseTransformationVisitor >> visitFASTFortranExternalStatement: aFASTF
 	We can ask module name with: aFASTFortranExternalStatement famix migratedModuleName
 	
 	"
-	self parentTransformator useNeeded: 
-		aFASTFortranExternalStatement famix programUnit 
-		-> aFASTFortranExternalStatement famix externalProcedure.
+	self useNeeded: 
+		(aFASTFortranExternalStatement famix programUnit 
+		-> aFASTFortranExternalStatement famix externalProcedure)
 ]
 
 { #category : 'visiting' }
@@ -161,4 +161,8 @@ FASTFortranUseTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFortra
 		ifFalse: [ self useNeeded: (caller -> called) ].
 
 	super visitFASTFortranFunctionCall: aFASTFortranFunctionCall
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranUseTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
 ]

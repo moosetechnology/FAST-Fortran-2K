@@ -20,30 +20,32 @@ FASTFortranMainTransformationVisitor >> visitFASTFortranFunction: aFASTFortranFu
 ]
 
 { #category : 'visiting - programUnits' }
-FASTFortranMainTransformationVisitor >> visitFASTFortranProgramMain: aProgramNode [
+FASTFortranMainTransformationVisitor >> visitFASTFortranProgramMain: aMainProgramNode [
 
-	| programMain programFile |
+	| programMain2k programFile2k |
 	
-	programFile := self model2k newProgramFile
-		filename: (self fortran2kFilename: aProgramNode) ;
+	programFile2k := self model2k newProgramFile
+		filename: (self fortran2kFilename: aMainProgramNode) ;
 		yourself.
+	aMainProgramNode programFile transformed2k: programFile2k.
 
-	programMain := self model2k newProgramMain 
-		name: aProgramNode name;
-		programFile: programFile ;
-		backTrace: aProgramNode programFile filename ;
+	programMain2k := self model2k newProgramMain 
+		name: aMainProgramNode name;
+		programFile: programFile2k ;
+		backTrace: aMainProgramNode programFile filename ;
 		yourself.
+	aMainProgramNode transformed2k: programMain2k.
 
-	stack push: programMain.
+	stack push: programMain2k.
 	
-	programMain statementBlock: (aProgramNode statementBlock accept: self).
-	programMain statementBlock statements addFirst: self model2k newImplicitStatement.
+	programMain2k statementBlock: (aMainProgramNode statementBlock accept: self).
+	programMain2k statementBlock statements addFirst: self model2k newImplicitStatement.
 
-	self handleProgramUnitSegmentDeclaration: aProgramNode declarations.
+	self handleProgramUnitSegmentDeclaration: aMainProgramNode declarations.
 
 	stack pop.
 
-	^programFile
+	^programFile2k
 ]
 
 { #category : 'visiting - programUnits' }

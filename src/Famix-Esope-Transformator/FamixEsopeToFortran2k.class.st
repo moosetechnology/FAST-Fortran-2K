@@ -123,15 +123,16 @@ FamixEsopeToFortran2k >> migrationSteps [
 FamixEsopeToFortran2k >> resolveUses [
 
 	"usesNeeded is a collection of associations:
-	 - user -- a FamixF77ProgramUnit
-	 - needed -- a FamixF77ProgramUnit or FamixEsopeSegment"
+	 - fmxUser -- a FamixF77ProgramUnit
+	 - fmxNeeded -- a FamixF77ProgramUnit or FamixEsopeSegment"
 
 1halt.
-	usesNeeded do: [ :association | | user needed |
-		user := association key.
-		needed := association value.
+	usesNeeded do: [ :association | | fmxUser fmxNeeded |
+		fmxUser := association key.
+		fmxNeeded := association value.
 
-		"(user module_or_PU2k) addUse: (needed module_or_Segment2k)"
+		fmxUser fast transformed2k useSource
+			addUse: (fmxNeeded migratedModuleName)
 	]
 ]
 
@@ -157,7 +158,7 @@ FamixEsopeToFortran2k >> transformationVisitor: visitorClass [
 
 	^visitorClass new
 		parentTransformator: self ;
-		model: fast2kModel;
+		model2k: fast2kModel;
 		yourself
 ]
 

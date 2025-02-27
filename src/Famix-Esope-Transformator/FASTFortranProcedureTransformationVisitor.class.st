@@ -45,50 +45,53 @@ FASTFortranProcedureTransformationVisitor >> getModule: filename ifAbsentPut: aB
 { #category : 'visiting - programUnits' }
 FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFortranFunction [
 
-	| function module |
+	| function2k module2k |
 
-	module := self ensureModule: aFASTFortranFunction famix migratedModuleName. 
+	module2k := self ensureModule: aFASTFortranFunction famix migratedModuleName.
 
-	function := self model2k newFunction
+	function2k := self model2k newFunction
 		name: aFASTFortranFunction name ;
 		declaredType: (aFASTFortranFunction famix declaredType accept: self);
-		module: module ;
+		module: module2k ;
 		backTrace: aFASTFortranFunction programFile filename ;
 		yourself.
+	aFASTFortranFunction transformed2k: function2k.
 
-	stack push: function.
 
-	function parameters: (self visitFASTFortranList: aFASTFortranFunction parameters).
-	function statementBlock: (aFASTFortranFunction statementBlock accept: self).
+	stack push: function2k.
+
+	function2k parameters: (self visitFASTFortranList: aFASTFortranFunction parameters).
+	function2k statementBlock: (aFASTFortranFunction statementBlock accept: self).
 
 	self handleProgramUnitSegmentDeclaration: aFASTFortranFunction declarations.
 
 	stack pop.
 
-	^module programFile
+	^module2k programFile
 ]
 
 { #category : 'visiting - programUnits' }
 FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFortranSubroutine [
 
-	| subrtn module |
+	| subrtn2k module2k |
 
-	module := self ensureModule: aFASTFortranSubroutine famix migratedModuleName. 
+	module2k := self ensureModule: aFASTFortranSubroutine famix migratedModuleName. 
 
-	subrtn := self model2k newSubroutine
+	subrtn2k := self model2k newSubroutine
 		name: aFASTFortranSubroutine name ;
-		module: module ;
+		module: module2k ;
 		backTrace: aFASTFortranSubroutine programFile filename ;
 		yourself.
+	aFASTFortranSubroutine transformed2k: subrtn2k.
 
-	stack push: subrtn.
+	stack push: subrtn2k.
 
-	subrtn parameters: (self visitFASTFortranList: aFASTFortranSubroutine parameters).
-	subrtn statementBlock: (aFASTFortranSubroutine statementBlock accept: self).
+	subrtn2k parameters: (self visitFASTFortranList: aFASTFortranSubroutine parameters).
+	subrtn2k statementBlock: (aFASTFortranSubroutine statementBlock accept: self).
 
 	self handleProgramUnitSegmentDeclaration: aFASTFortranSubroutine declarations.
 
 	stack pop.
 
-	^module programFile
+	^module2k programFile
 ]

@@ -18,3 +18,9 @@ FASTFortran2kProgramUnit >> initBody [
 
 	self statementBlock: self mooseModel newStatementBlock
 ]
+
+{ #category : '*Famix-Esope-Transformator' }
+FASTFortran2kProgramUnit >> useSource [
+
+	self subclassResponsibility 
+]

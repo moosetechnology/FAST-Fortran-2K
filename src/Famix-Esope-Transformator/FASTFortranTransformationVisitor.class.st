@@ -28,23 +28,6 @@ FASTFortranTransformationVisitor >> addUseIn: aFASTFortran2kEntity to: moduleNam
 ]
 
 { #category : 'helpers' }
-FASTFortranTransformationVisitor >> addUsesIn: programUnit [
-	"programUnit is a FASTFortran2k ProgramUnit.
-	 Checking if it needs some 'use' instructions"
-
-	useNeeded do: [ :assoc || source target |
-		source := assoc key.    "a FASTFortran2k ProgramUnit or a DerivedTypeDefinition"
-		target := assoc value.  "a FamixF77 ProgramFile or Segment"
-
-		(source inSameFileAs: programUnit)
-			ifTrue: [
-				(source needsUseFor: target)
-					ifTrue: [ self addUseIn: programUnit to: target migratedModuleName ]
-			]
-	]
-]
-
-{ #category : 'helpers' }
 FASTFortranTransformationVisitor >> createProgramFile: f77Filename forProgramUnits: programUnitsF2k [
 	"Creates one or several FASTFortran2kProgramFile from the programUnitsF2k
 	 - one for a FASTFortran2kProgramMain

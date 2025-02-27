@@ -7,7 +7,7 @@ FASTFortran2kProcedure >> migratedModuleName [
 ]
 
 { #category : '*Famix-Esope-Transformator' }
-FASTFortran2kProcedure >> needsUseFor: aFamix77Entity [
+FASTFortran2kProcedure >> useSource [
 
-	^aFamix77Entity needsUseForProcedure: self
+	^self module
 ]
