@@ -10,7 +10,7 @@ FASTFortranProcedureTransformationVisitorTest >> testCreateModule [
 
 	| module |
 
-	module := visitor createModule: '/not/normalized/someName_mod'.
+	module := visitor createModule: (FamixF77PUSubroutine new programFile: (FamixF77ProgramFile new filename: '/not/normalized/someName.E')).
 
 	self assert: module class equals: FASTFortran2kModule.
 	self assert: module name equals: 'someName_mod'.
@@ -24,9 +24,10 @@ FASTFortranProcedureTransformationVisitorTest >> testCreateModule [
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testEnsureModuleOnce [
 
-	| module |
+	| module famix |
 
-	module := visitor ensureModule: 'someName_mod'.
+	famix := (FamixF77PUSubroutine new programFile: (FamixF77ProgramFile new filename: '/not/normalized/someName.E')).
+	module := visitor ensureModule: famix.
 
 	self assert: module class equals: FASTFortran2kModule.
 	self assert: module name equals: 'someName_mod'.
@@ -36,14 +37,15 @@ FASTFortranProcedureTransformationVisitorTest >> testEnsureModuleOnce [
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testEnsureModuleTwice [
 
-	| module |
+	| module famix |
 
-	module := visitor ensureModule: 'someName_mod'.
+	famix := (FamixF77PUSubroutine new programFile: (FamixF77ProgramFile new filename: '/not/normalized/someName.E')).
+	module := visitor ensureModule: famix.
 
 	self assert: module class equals: FASTFortran2kModule.
 	self assert: module name equals: 'someName_mod'.
 
-	self assert: (visitor ensureModule: 'someName_mod') equals: module
+	self assert: (visitor ensureModule: famix) equals: module
 ]
 
 { #category : 'tests' }

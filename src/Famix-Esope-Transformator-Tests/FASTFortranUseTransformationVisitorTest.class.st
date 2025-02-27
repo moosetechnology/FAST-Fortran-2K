@@ -19,7 +19,7 @@ FASTFortranUseTransformationVisitorTest >> newVisitor [
 
 { #category : 'tests-statement' }
 FASTFortranUseTransformationVisitorTest >> testEsopeToF2kExternalStatement [
-	| stmt res |
+	| stmt usesNeeded |
 
 	self programEmpty.
 
@@ -29,15 +29,18 @@ FASTFortranUseTransformationVisitorTest >> testEsopeToF2kExternalStatement [
 		FamixF77ExternalDeclaration new 
 			name: 'mypnt'; 
 			programUnit: fastMainProgram famix; 
+			externalProcedure: FamixF77PUSubroutine new
 			yourself
 	).
 
-	res := stmt accept: visitor.
+	stmt := stmt accept: visitor.
 
-	self assert: res isNil.
-	self assert: visitor parentTransformator usesNeeded size equals: 1.
-	self assert: visitor parentTransformator usesNeeded anyOne key equals: fastMainProgram famix.
-	self assert: visitor parentTransformator usesNeeded anyOne value isNil.
+	usesNeeded := self usesNeeded.
+
+	self assert: usesNeeded size equals: 1.
+
+	self assert: usesNeeded anyOne key class equals: FamixF77PUMain.
+	self assert: usesNeeded anyOne value class equals: FamixF77PUSubroutine.
 ]
 
 { #category : 'tests' }
