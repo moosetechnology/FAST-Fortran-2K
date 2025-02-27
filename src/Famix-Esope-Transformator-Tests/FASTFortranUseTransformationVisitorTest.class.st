@@ -5,6 +5,18 @@ Class {
 	#package : 'Famix-Esope-Transformator-Tests'
 }
 
+{ #category : 'running' }
+FASTFortranUseTransformationVisitorTest >> newVisitor [
+	"override because there is no model in FASTFortranUseTransformationVisitor"
+	| transformator |
+	transformator := FamixEsopeToFortran2k new.
+
+	^FASTFortranUseTransformationVisitor new 
+		parentTransformator: transformator ;
+		"model: FASTFortran2kModel new ;"
+		yourself
+]
+
 { #category : 'tests-statement' }
 FASTFortranUseTransformationVisitorTest >> testEsopeToF2kExternalStatement [
 	| stmt res |
@@ -185,10 +197,4 @@ FASTFortranUseTransformationVisitorTest >> testSubroutineWithFunctionStatementCa
 FASTFortranUseTransformationVisitorTest >> usesNeeded [ 
 
 	^visitor parentTransformator usesNeeded
-]
-
-{ #category : 'running' }
-FASTFortranUseTransformationVisitorTest >> visitorClass [ 
-
-	^FASTFortranUseTransformationVisitor
 ]

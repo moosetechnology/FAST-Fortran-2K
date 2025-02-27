@@ -76,7 +76,8 @@ FASTFortranAbstractTransformationVisitorTest >> newVisitor [
 	transformator := FamixEsopeToFortran2k new.
 
 	^ self visitorClass new 
-		parentTransformator: transformator;
+		parentTransformator: transformator ;
+		model: FASTFortran2kModel new ;
 		yourself
 ]
 
@@ -403,6 +404,7 @@ FASTFortranAbstractTransformationVisitorTest >> setUp [
 	famixProgramFile := FamixF77ProgramFile new filename: 'someFile.f'.
 
 	fastProgramFile famix: famixProgramFile.
+
 	
 ]
 
