@@ -177,29 +177,6 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kContinueStatemen
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kExternalStatement [
-	| stmt res |
-
-	self programEmpty.
-
-	stmt := (self externalStatement: 'mypnt').
-	fastMainProgram statementBlock addStatement: stmt.
-	stmt famix: (
-		FamixF77ExternalDeclaration new 
-			name: 'mypnt'; 
-			programUnit: fastMainProgram famix; 
-			yourself
-	).
-
-	res := stmt accept: visitor.
-
-	self assert: res isNil.
-	self assert: visitor parentTransformator usesNeeded size equals: 1.
-	self assert: visitor parentTransformator usesNeeded anyOne key equals: fastMainProgram famix.
-	self assert: visitor parentTransformator usesNeeded anyOne value isNil.
-]
-
-{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kGoToStatement [
 	| stmt res entity |
 

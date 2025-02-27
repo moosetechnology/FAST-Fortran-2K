@@ -5,6 +5,29 @@ Class {
 	#package : 'Famix-Esope-Transformator-Tests'
 }
 
+{ #category : 'tests-statement' }
+FASTFortranUseTransformationVisitorTest >> testEsopeToF2kExternalStatement [
+	| stmt res |
+
+	self programEmpty.
+
+	stmt := (self externalStatement: 'mypnt').
+	fastMainProgram statementBlock addStatement: stmt.
+	stmt famix: (
+		FamixF77ExternalDeclaration new 
+			name: 'mypnt'; 
+			programUnit: fastMainProgram famix; 
+			yourself
+	).
+
+	res := stmt accept: visitor.
+
+	self assert: res isNil.
+	self assert: visitor parentTransformator usesNeeded size equals: 1.
+	self assert: visitor parentTransformator usesNeeded anyOne key equals: fastMainProgram famix.
+	self assert: visitor parentTransformator usesNeeded anyOne value isNil.
+]
+
 { #category : 'tests' }
 FASTFortranUseTransformationVisitorTest >> testProcedureWithPointeurDeclaration [
 
