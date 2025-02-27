@@ -1,12 +1,6 @@
 Extension { #name : 'FASTFortran2kProgramMain' }
 
 { #category : '*Famix-Esope-Transformator' }
-FASTFortran2kProgramMain >> migratedModuleName [
-
-	^self programFile filename asPath basenameWithoutExtension
-]
-
-{ #category : '*Famix-Esope-Transformator' }
 FASTFortran2kProgramMain >> useSource [
 
 	^self
