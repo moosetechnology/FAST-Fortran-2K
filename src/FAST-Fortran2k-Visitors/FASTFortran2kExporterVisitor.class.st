@@ -56,6 +56,7 @@ FASTFortran2kExporterVisitor >> initialize [
 
 	super initialize.
 
+	self breakLongLines: false.
 	linesDescription := #().
 ]
 
@@ -832,10 +833,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kModule: aFASTFortranModule [
 	aFASTFortranModule statementBlock accept: self.
 	
 	aFASTFortranModule procedures ifNotEmpty: [ :procedures |
-		self << 'contains'.
 		self
 			newLine ;
+			<< 'contains' ;
+			newLine ;
+			newLine ;
 			indent.
+
 		procedures do: [ :procedure | procedure accept: self ].
 		self
 			unindent ;
@@ -1242,7 +1246,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUs
 
 	self skipLine: aFASTFortran2kUseStatement.
 
-	self << 'use'.
+	self indented: 'use'.
 
 	aFASTFortran2kUseStatement modifiers 
 		ifNotEmpty: [ :modifiers | 
