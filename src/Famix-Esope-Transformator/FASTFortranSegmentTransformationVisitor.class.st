@@ -4,8 +4,9 @@ Class {
 	#instVars : [
 		'tmpStream'
 	],
-	#category : 'Famix-Esope-Transformator',
-	#package : 'Famix-Esope-Transformator'
+	#category : 'Famix-Esope-Transformator-Visitors',
+	#package : 'Famix-Esope-Transformator',
+	#tag : 'Visitors'
 }
 
 { #category : 'visiting' }

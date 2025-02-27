@@ -7,8 +7,9 @@ Class {
 		'famixModel',
 		'fast2kModel'
 	],
-	#category : 'Famix-Esope-Transformator',
-	#package : 'Famix-Esope-Transformator'
+	#category : 'Famix-Esope-Transformator-Core',
+	#package : 'Famix-Esope-Transformator',
+	#tag : 'Core'
 }
 
 { #category : 'running' }
