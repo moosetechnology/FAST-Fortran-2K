@@ -12,6 +12,9 @@ Class {
 		'modelIn',
 		'linesDescription'
 	],
+	#classVars : [
+		'ModernRelationalOperators'
+	],
 	#category : 'FAST-Fortran2k-Visitors',
 	#package : 'FAST-Fortran2k-Visitors'
 }
@@ -72,6 +75,21 @@ FASTFortran2kExporterVisitor >> model [
 FASTFortran2kExporterVisitor >> model: anObject [
 
 	modelIn := anObject
+]
+
+{ #category : 'initialization' }
+FASTFortran2kExporterVisitor >> modernRelationalOperators [
+
+	^ModernRelationalOperators ifNil: [	
+		ModernRelationalOperators := { 
+			'.eq.'  -> '==' .
+			'.ne.'  -> '/=' .
+			'.gt.'  -> '>' .
+			'.lt.'  -> '<' .
+			'.ge.'  -> '>=' .
+			'.le.'  -> '<='
+		} asDictionary
+	]
 ]
 
 { #category : 'outputting' }
@@ -222,7 +240,10 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kBinaryExpression: aFASTFortran
 	aFASTFortran2kBinaryExpression leftOperand accept: self.
 	self 
 		space ;
-		<< aFASTFortran2kBinaryExpression operator;
+		<< (self modernRelationalOperators 
+				at: aFASTFortran2kBinaryExpression operator
+				ifAbsent: [ aFASTFortran2kBinaryExpression operator ] 
+		);
 		space.
 	aFASTFortran2kBinaryExpression rightOperand accept: self.
 ]
@@ -1156,7 +1177,16 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kTypePBFinal: aFASTFortran2kTyp
 { #category : 'visiting - expressions' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUnaryExpression: aFASTFortran2kUnaryExpression [
 
-	self visitFASTFortranUnaryExpression: aFASTFortran2kUnaryExpression
+	self
+		outputExpression: [
+			self
+				<< (self modernRelationalOperators 
+					at: aFASTFortran2kUnaryExpression operator
+					ifAbsent: [ aFASTFortran2kUnaryExpression operator ] 
+				) ;
+				space.
+			aFASTFortran2kUnaryExpression expression accept: self ]
+		withOperator: aFASTFortran2kUnaryExpression operator
 ]
 
 { #category : 'visiting' }
