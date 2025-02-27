@@ -375,14 +375,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDoStatement: aDoSt
 
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranExternalStatement: aFASTFortranExternalStatement [
-	"here we know for sure this will need use statement since it is an external procedure
-	- if a use statement with this name already exists, we do nothing othewise we can create a one
-	We can ask module name with: aFASTFortranExternalStatement famix migratedModuleName
-	
-	"
-	self parentTransformator useNeeded: 
-		aFASTFortranExternalStatement famix programUnit 
-		-> aFASTFortranExternalStatement famix externalProcedure.
+
 	^nil
 ]
 
