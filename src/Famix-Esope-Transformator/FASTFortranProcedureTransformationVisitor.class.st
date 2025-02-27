@@ -57,8 +57,10 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 
 	stack push: function.
 
-	function parameters: (aFASTFortranFunction parameters collect: [ :parameter | parameter accept: self ]).
+	function parameters: (self visitFASTFortranList: aFASTFortranFunction parameters).
 	function statementBlock: (aFASTFortranFunction statementBlock accept: self).
+
+	self handleProgramUnitSegmentDeclaration: aFASTFortranFunction declarations.
 
 	stack pop.
 
@@ -80,8 +82,10 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFo
 
 	stack push: subrtn.
 
-	subrtn parameters: (aFASTFortranSubroutine parameters collect: [ :parameter | parameter accept: self ]).	
+	subrtn parameters: (self visitFASTFortranList: aFASTFortranSubroutine parameters).
 	subrtn statementBlock: (aFASTFortranSubroutine statementBlock accept: self).
+
+	self handleProgramUnitSegmentDeclaration: aFASTFortranSubroutine declarations.
 
 	stack pop.
 

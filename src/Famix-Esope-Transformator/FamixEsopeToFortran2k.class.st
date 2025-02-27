@@ -19,6 +19,27 @@ FamixEsopeToFortran2k >> exportFAST2k [
 		export
 ]
 
+{ #category : 'running' }
+FamixEsopeToFortran2k >> famixEsopeToFast2k [
+
+	(famixModel allWithType: FamixF77ProgramFile) do: [ :famixProgFile |
+		famixProgFile fast: (FASTFortranProgramFile new
+			filename: famixProgFile filename).
+
+		self flag: '#FIXME: includedFile vs other programUnit '.
+		famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
+			fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgFile.
+
+			fastProgramUnit ifNotNil: [ 
+				self migrateToFAST2k: fastProgramUnit.
+				
+				"self flag: '#FIXME: cleaning, quid revolveUses'.
+				fastProgramUnit accept: fastProgramUnit mooseModel carrefourBinderCleaner"
+			 ]
+		]
+	].
+]
+
 { #category : 'accessing' }
 FamixEsopeToFortran2k >> famixModel [
 
@@ -79,16 +100,28 @@ FamixEsopeToFortran2k >> migrateToFAST2k: aFASTProgramUnit [
 	visitor filename: aFASTProgramUnit programFile filename.
 	aFASTProgramUnit accept: visitor.
 
-	"visitor := FASTFortranUseTransformationVisitor new
-		parentTransformator: self.
-	aFASTProgramUnit accept: visitor."
+	visitor := FASTFortranUseTransformationVisitor new
+		parentTransformator: self;
+		model: fast2kModel;
+		yourself.
+
+	aFASTProgramUnit accept: visitor.
 
 	^fast2kModel
 
 ]
 
 { #category : 'running' }
-FamixEsopeToFortran2k >> resolveUses: usesNeeded [
+FamixEsopeToFortran2k >> migrationSteps [
+	^{
+		'Converting famix esope model to fast2k model' -> #famixEsopeToFast2k .
+		'resolve uses statements in program unit' -> #resolveUses .
+		'export the migrated fast2k model' -> #exportFAST2k 
+	}
+]
+
+{ #category : 'running' }
+FamixEsopeToFortran2k >> resolveUses [
 
 	"usesNeeded is a collection of associations:
 	 - user -- a FamixF77ProgramUnit
@@ -104,28 +137,19 @@ FamixEsopeToFortran2k >> resolveUses: usesNeeded [
 
 { #category : 'running' }
 FamixEsopeToFortran2k >> run [
-	usesNeeded := Set new.
+	"The following commented statement is already initialized in initialize method"
+	"usesNeeded := Set new." 
 
-	(famixModel allWithType: FamixF77ProgramFile) do: [ :famixProgFile |
-		famixProgFile fast: (FASTFortranProgramFile new
-			filename: famixProgFile filename).
+	UIManager default displayProgress: ''
+		from: 0 to: (self migrationSteps size - 1)
+		during: [:bar |
+			self migrationSteps withIndexDo: [ :step :i |
+				bar label: step key.
+				bar current: i.
 
-		self flag: '#FIXME: includedFile vs other programUnit '.
-		famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
-			fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgFile.
-
-			fastProgramUnit ifNotNil: [ 
-				self migrateToFAST2k: fastProgramUnit.
-				
-				"self flag: '#FIXME: cleaning, quid revolveUses'.
-				fastProgramUnit accept: fastProgramUnit mooseModel carrefourBinderCleaner"
-			 ]
+				self perform: step value
+			] 
 		]
-	].
-
-	"self resolveUses: usesNeeded."
-
-	self exportFAST2k
 ]
 
 { #category : 'running' }

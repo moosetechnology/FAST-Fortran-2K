@@ -72,10 +72,58 @@ FASTFortranUseTransformationVisitor >> visitFASTEsopePointerDeclarator: aFASTEso
 
 ]
 
+{ #category : 'visiting' }
+FASTFortranUseTransformationVisitor >> visitFASTEsopeSegCommand: aFASTEsopeSegCommand [
+
+	aFASTEsopeSegCommand variables 
+		do: [ :variable |  | programUnit segment |
+			programUnit := variable famixVariable parentBehaviouralEntity.
+			segment := variable famixVariable declaredType.
+
+			self useNeeded: (programUnit -> segment)
+		]
+]
+
+{ #category : 'visiting' }
+FASTFortranUseTransformationVisitor >> visitFASTEsopeSegact: aFASTEsopeSegact [ 
+
+	self visitFASTEsopeSegCommand: aFASTEsopeSegact
+]
+
+{ #category : 'visiting' }
+FASTFortranUseTransformationVisitor >> visitFASTEsopeSegadj: aFASTEsopeSegadj [ 
+
+	self visitFASTEsopeSegCommand: aFASTEsopeSegadj
+]
+
+{ #category : 'visiting' }
+FASTFortranUseTransformationVisitor >> visitFASTEsopeSegdes: aFASTEsopeSegdes [ 
+
+	self visitFASTEsopeSegCommand: aFASTEsopeSegdes
+]
+
+{ #category : 'visiting' }
+FASTFortranUseTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSegini [ 
+
+	self visitFASTEsopeSegCommand: aFASTEsopeSegini
+]
+
 { #category : 'visiting - expressions' }
 FASTFortranUseTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
 
 	self visitFASTFortranList: aFASTEsopeSegmentNode statements
+]
+
+{ #category : 'visiting' }
+FASTFortranUseTransformationVisitor >> visitFASTEsopeSegprt: aFASTEsopeSegprt [ 
+
+	self visitFASTEsopeSegCommand: aFASTEsopeSegprt
+]
+
+{ #category : 'visiting' }
+FASTFortranUseTransformationVisitor >> visitFASTEsopeSegsup: aFASTEsopeSegsup [ 
+
+	self visitFASTEsopeSegCommand: aFASTEsopeSegsup
 ]
 
 { #category : 'visiting - expressions' }

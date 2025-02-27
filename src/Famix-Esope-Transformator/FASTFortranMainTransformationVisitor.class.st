@@ -38,6 +38,8 @@ FASTFortranMainTransformationVisitor >> visitFASTFortranProgramMain: aProgramNod
 	programMain statementBlock: (aProgramNode statementBlock accept: self).
 	programMain statementBlock statements addFirst: self model newImplicitStatement.
 
+	self handleProgramUnitSegmentDeclaration: aProgramNode declarations.
+
 	stack pop.
 
 	^programFile

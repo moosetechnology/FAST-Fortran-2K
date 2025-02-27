@@ -486,6 +486,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kElseStatement: aFASTFortran2kE
 ]
 
 { #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kEmptyStatement: aFASTFortran2kEmptyStatement [ 
+
+	self newLine
+]
+
+{ #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kEncodeStatement: aFASTFortran2kEncodeStatement [
 
 	self indented: 'encode '.
@@ -558,7 +564,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFormattedCodeString: aFASTFort
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFunction [ 
 
-	self setLineDescriptions: aFASTFortran2kFunction backTrace.
+	aFASTFortran2kFunction backTrace 
+		ifNotNil: [ self setLineDescriptions: aFASTFortran2kFunction backTrace ].
 
 	aFASTFortran2kFunction declaredType 
 		ifNotNil: [ :declaredType | declaredType accept: self ].
@@ -579,13 +586,20 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFuncti
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCall [ 
+FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCall [
+
 	self
 		<< aFASTFortran2kFunctionCall name;
 		<< ' ( '.
 
 	self visitNodeListSeparatedByCommas: aFASTFortran2kFunctionCall arguments.
 	self << ' )'
+]
+
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCallStatement: aFASTFortran2kFunctionCallStatement [ 
+	
+	self visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCallStatement
 ]
 
 { #category : 'visiting' }
@@ -1030,7 +1044,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSubprogram: aFASTFortran2kSubp
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kSubroutine: aFASTFortran2kSubroutine [ 
 
-	self setLineDescriptions: aFASTFortran2kSubroutine backTrace.
+	aFASTFortran2kSubroutine backTrace
+		ifNotNil: [ self setLineDescriptions: aFASTFortran2kSubroutine backTrace ].
 
 	self
 		indented: 'subroutine ';
@@ -1198,8 +1213,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUs
 	self skipLine: aFASTFortran2kUseStatement.
 
 	self << 'use'.
-	"aFASTFortran2kUseStatement isIntrinsic ifTrue: [
-		self << ', intrinsic' ]."
+
+	aFASTFortran2kUseStatement modifiers 
+		ifNotEmpty: [ :modifiers | 
+			self << ', '.
+			self visitNodeListSeparatedByCommas: modifiers 
+		].
+
 	self
 		<< ' :: ';
 		<< aFASTFortran2kUseStatement name.

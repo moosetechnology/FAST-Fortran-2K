@@ -190,7 +190,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeSegprtDo [
 			allLoops: 'write(ooo_text_i{1}, *) ooo_i{1}'
 			finalLoop: {
 				self model newEmptyStatement .
-				self formattedCode: 'write(ooo_text_value, *) this%{1}({2})' values: { name , self temporariesAsArguments } .
+				self formattedCode: 'write(ooo_text_value, *) this%{1}({2})' values: { name . self temporariesAsArguments } .
 				self formattedCode: self makeSegprtDoFinalWrite values: #()
 			})
 		].

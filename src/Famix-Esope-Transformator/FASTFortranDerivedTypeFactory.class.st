@@ -90,7 +90,7 @@ FASTFortranDerivedTypeFactory >> declareMaxRankTemporaries: tempPrefix [
 
 		^(1 to: self rankMax)
 			collect: [ :i |
-				self formattedCode: 'integer :: {1}{2}' values: {  tempPrefix , i asString }
+				self formattedCode: 'integer :: {1}{2}' values: {  tempPrefix . i asString }
 			].
 ]
 
@@ -1081,7 +1081,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegprt [
 	segprt addStatement: model newEmptyStatement.
 
 	thenStatements := OrderedCollection new.
-	thenStatements add: (self formattedCode: 'write(*, ''(a)'') ''{1}_segprt:''' values: {name}).
+	thenStatements add: (self formattedCode: 'write(*, ''(a)'') ''{1}_segprt:''' values: { name }).
 	thenStatements add: model newEmptyStatement.
 
 	self parameters do: [ :param |
