@@ -114,8 +114,8 @@ FamixEsopeToFortran2k >> migrateToFAST2k: aFASTProgramUnit [
 FamixEsopeToFortran2k >> migrationSteps [
 	^{
 		'Converting famix esope model to fast2k model' -> #famixEsopeToFast2k .
-		'resolve uses statements in program unit' -> #resolveUses .
-		'export the migrated fast2k model' -> #exportFAST2k 
+		'Resolve uses statements in program unit' -> #resolveUses .
+		'Export the migrated fast2k model' -> #exportFAST2k 
 	}
 ]
 
