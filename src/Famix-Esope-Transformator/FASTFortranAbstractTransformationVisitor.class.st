@@ -27,7 +27,7 @@ FASTFortranAbstractTransformationVisitor >> fortran2k: fastFortran2kClass traceB
 
 	| fortran2kEntity |
 	fortran2kEntity := fastFortran2kClass new
-		mooseModel: self model ;
+		mooseModel: self model2k ;
 		yourself.
 	fortranEntity startPos
 		ifNil: [ fortran2kEntity startPos: 0 ; endPos: 0 ]
@@ -45,7 +45,7 @@ FASTFortranAbstractTransformationVisitor >> initialize [
 ]
 
 { #category : 'accessing' }
-FASTFortranAbstractTransformationVisitor >> model [
+FASTFortranAbstractTransformationVisitor >> model2k [
 
 	self subclassResponsibility 
 ]
@@ -66,7 +66,7 @@ FASTFortranAbstractTransformationVisitor >> visitFASTFortranList: list [
 FASTFortranAbstractTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
 
 	| varDeclarator |
-	varDeclarator := self model newVariableDeclarator
+	varDeclarator := self model2k newVariableDeclarator
 		  name: aFASTFortranVariableDeclarator name;
 		  yourself.
 		

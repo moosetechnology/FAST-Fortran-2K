@@ -24,11 +24,11 @@ FASTFortranMainTransformationVisitor >> visitFASTFortranProgramMain: aProgramNod
 
 	| programMain programFile |
 	
-	programFile := self model newProgramFile
+	programFile := self model2k newProgramFile
 		filename: (self fortran2kFilename: aProgramNode) ;
 		yourself.
 
-	programMain := self model newProgramMain 
+	programMain := self model2k newProgramMain 
 		name: aProgramNode name;
 		programFile: programFile ;
 		backTrace: aProgramNode programFile filename ;
@@ -37,7 +37,7 @@ FASTFortranMainTransformationVisitor >> visitFASTFortranProgramMain: aProgramNod
 	stack push: programMain.
 	
 	programMain statementBlock: (aProgramNode statementBlock accept: self).
-	programMain statementBlock statements addFirst: self model newImplicitStatement.
+	programMain statementBlock statements addFirst: self model2k newImplicitStatement.
 
 	self handleProgramUnitSegmentDeclaration: aProgramNode declarations.
 

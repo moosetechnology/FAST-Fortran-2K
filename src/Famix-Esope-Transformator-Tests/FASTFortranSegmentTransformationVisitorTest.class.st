@@ -118,7 +118,7 @@ end module foo_mod
 
 	fastProcedures anyOne accept: visitor.
 	
-	res := visitor model allWithSubTypesOf: (FASTFortran2kModule).
+	res := visitor model2k allWithSubTypesOf: (FASTFortran2kModule).
 	self assert: res size equals: 1.
 	
 	res := res anyOne.
@@ -162,7 +162,7 @@ end module bar_mod
 
 	fastProcedures anyOne accept: visitor.
 
-	modules := visitor model allWithSubTypesOf: FASTFortran2kModule.
+	modules := visitor model2k allWithSubTypesOf: FASTFortran2kModule.
 	self assert: modules size equals: 2.
 	
 	res := modules
@@ -212,7 +212,7 @@ end module foo_mod
 
 	fastMainProgram accept: visitor.
 	
-	res := visitor model allWithSubTypesOf: (FASTFortran2kModule).
+	res := visitor model2k allWithSubTypesOf: (FASTFortran2kModule).
 	self assert: res size equals: 1.
 	
 	res := res anyOne.

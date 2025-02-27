@@ -14,15 +14,15 @@ FASTFortranProcedureTransformationVisitor >> createModule: moduleName [
 
 	| module |
 	
-	module := self model newModule
+	module := self model2k newModule
 		name: (($/ split: moduleName) last) ;
-		statementBlock: (self model newStatementBlock
-			addStatement: self model newImplicitStatement ;
+		statementBlock: (self model2k newStatementBlock
+			addStatement: self model2k newImplicitStatement ;
 			yourself ) ;
 		yourself.
 	
 	
-	self model newProgramFile
+	self model2k newProgramFile
 		filename: (moduleName , '.f90') ;
 		programUnits: {  module }.
 
@@ -49,7 +49,7 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 
 	module := self ensureModule: aFASTFortranFunction famix migratedModuleName. 
 
-	function := self model newFunction
+	function := self model2k newFunction
 		name: aFASTFortranFunction name ;
 		declaredType: (aFASTFortranFunction famix declaredType accept: self);
 		module: module ;
@@ -75,7 +75,7 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFo
 
 	module := self ensureModule: aFASTFortranSubroutine famix migratedModuleName. 
 
-	subrtn := self model newSubroutine
+	subrtn := self model2k newSubroutine
 		name: aFASTFortranSubroutine name ;
 		module: module ;
 		backTrace: aFASTFortranSubroutine programFile filename ;

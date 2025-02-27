@@ -14,7 +14,7 @@ FASTFortranSegmentTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegm
 
 	^FASTFortranDerivedTypeFactory new
 		name: aFASTEsopeSegmentNode name ;
-		model: self model ;
+		model: self model2k ;
 		fields: aFASTEsopeSegmentNode statements ;
 
 		createModule.
@@ -23,7 +23,7 @@ FASTFortranSegmentTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegm
 { #category : 'visiting' }
 FASTFortranSegmentTransformationVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
 
-	^self model newDerivedTypeComponent
+	^self model2k newDerivedTypeComponent
 		type: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
 		declarators: (self visitFASTFortranList: aFASTFortranVariableDeclarationStatement declarators) ;
 		yourself

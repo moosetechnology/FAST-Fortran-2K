@@ -77,7 +77,7 @@ FASTFortranAbstractTransformationVisitorTest >> newVisitor [
 
 	^ self visitorClass new 
 		parentTransformator: transformator ;
-		model: FASTFortran2kModel new ;
+		model2k: FASTFortran2kModel new ;
 		yourself
 ]
 
