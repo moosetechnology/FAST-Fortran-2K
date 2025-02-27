@@ -1213,8 +1213,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUs
 	self skipLine: aFASTFortran2kUseStatement.
 
 	self << 'use'.
-	"aFASTFortran2kUseStatement isIntrinsic ifTrue: [
-		self << ', intrinsic' ]."
+
+	aFASTFortran2kUseStatement modifiers 
+		ifNotEmpty: [ :modifiers | 
+			self << ', '.
+			self visitNodeListSeparatedByCommas: modifiers 
+		].
+
 	self
 		<< ' :: ';
 		<< aFASTFortran2kUseStatement name.
