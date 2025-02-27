@@ -21,7 +21,6 @@ FASTFortranBehavioralTransformationVisitor >> handleProgramUnitSegmentDeclaratio
 
 			programFile addProgramUnit: (
 				declaration accept: (FASTFortranSegmentTransformationVisitor new 
-					parentTransformator: self parentTransformator;
 					model: self model
 				)
 			)
@@ -39,12 +38,6 @@ FASTFortranBehavioralTransformationVisitor >> model [
 FASTFortranBehavioralTransformationVisitor >> model: anObject [
 
 	model := anObject
-]
-
-{ #category : 'accessing' }
-FASTFortranBehavioralTransformationVisitor >> parentTransformator [
-
-	^ parentTransformator
 ]
 
 { #category : 'accessing' }
