@@ -53,26 +53,44 @@ FASTFortranBehavioralTransformationVisitor >> parentTransformator: anObject [
 ]
 
 { #category : 'private - helpers' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandMayDimensionned: aFASTEsopeSegCommand named: aSymbol [
-	| anEsopeCommandCall |
+FASTFortranBehavioralTransformationVisitor >> retrieveOtherArgumentNamesFromDimensioningExpressions: variable [
 
-	aFASTEsopeSegCommand variables do:  [ :variable | 
-		anEsopeCommandCall := self model newCallStatement
-			name: aSymbol;
-			addArgument: (variable accept: self);
-			yourself.
-		
-		self flag: '#TODO: add others arguments from segment dimensional expressions'.
-		variable famixVariable 
-			ifNotNil: [ :famixVariable |
-				famixVariable declaredType 
-					ifNotNil: [ :declaredType | 
-						declaredType accesses do: [ :access | 
-							self flag: '#TODO'.
-						] 
+	^variable famixVariable 
+		ifNotNil: [ :famixVariable |
+			famixVariable declaredType 
+				ifNotNil: [ :declaredType | 
+					declaredType accesses collect: [ :access |
+						access variable name
 					]
-			]
+				]
+				ifNil: [ #() ]
+		]
+		ifNil: [ #() ]
+]
+
+{ #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandMayDimensionned: variables named: aSymbol [
+	| anEsopeCommandCall arguments |
+
+	anEsopeCommandCall := self model newCallStatement
+			name: aSymbol;
+			yourself.
+
+	arguments := OrderedCollection new.
+	variables do:  [ :variable | | argument |
+		argument := variable accept: self.
+		arguments add: argument.
+
+		"#FIXME: add others arguments from segment dimensioning expressions"
+		arguments addAll: (
+			(self retrieveOtherArgumentNamesFromDimensioningExpressions: variable)
+				collect: [ :argName |
+					model newScalarVariable name: argName
+				]
+		)
 	].
+
+	anEsopeCommandCall arguments: arguments.
 
 	^anEsopeCommandCall
 ]
@@ -158,7 +176,9 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegact: aFASTEsopeSe
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegadj: aFASTEsopeSegadj [ 
 
-	^self visitFASTEsopeCommandMayDimensionned: aFASTEsopeSegadj named: 'segadj'
+	^self 
+		visitFASTEsopeCommandMayDimensionned: aFASTEsopeSegadj variables 
+		named: 'segadj'
 ]
 
 { #category : 'visiting - esope' }
@@ -180,7 +200,9 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegdes: aFASTEsopeSe
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSegini [ 
 
-	^self visitFASTEsopeCommandMayDimensionned: aFASTEsopeSegini named: 'segini'
+	^self 
+		visitFASTEsopeCommandMayDimensionned: aFASTEsopeSegini variables 
+		named: 'segini'
 ]
 
 { #category : 'visiting - esope' }
