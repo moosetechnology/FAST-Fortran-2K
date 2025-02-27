@@ -27,7 +27,6 @@ FamixEsopeToFortran2k >> famixEsopeToFast2k [
 		famixProgFile fast: (FASTFortranProgramFile new
 			filename: famixProgFile filename).
 
-		self flag: '#FIXME: includedFile vs other programUnit '.
 		famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
 			fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgFile.
 
