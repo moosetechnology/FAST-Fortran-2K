@@ -10,18 +10,6 @@ Class {
 }
 
 { #category : 'accessing' }
-FASTFortranUseTransformationVisitor >> model [
-
-	^model
-]
-
-{ #category : 'accessing' }
-FASTFortranUseTransformationVisitor >> model: anObject [
-
-	model := anObject
-]
-
-{ #category : 'accessing' }
 FASTFortranUseTransformationVisitor >> parentTransformator [
 
 	^ parentTransformator
