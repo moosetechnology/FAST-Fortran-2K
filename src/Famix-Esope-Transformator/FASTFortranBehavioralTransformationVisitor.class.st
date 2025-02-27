@@ -82,12 +82,13 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandMayDimensionn
 		arguments add: argument.
 
 		"#FIXME: add others arguments from segment dimensioning expressions"
-		arguments addAll: (
-			(self retrieveOtherArgumentNamesFromDimensioningExpressions: variable)
-				collect: [ :argName |
-					model newScalarVariable name: argName
-				]
-		)
+		(self retrieveOtherArgumentNamesFromDimensioningExpressions: variable)
+			do: [ :argName |
+				((arguments collect: #name) includes: argName)
+					ifFalse: [ 
+						arguments add: (model newScalarVariable name: argName)
+					]
+			]
 	].
 
 	anEsopeCommandCall arguments: arguments.
