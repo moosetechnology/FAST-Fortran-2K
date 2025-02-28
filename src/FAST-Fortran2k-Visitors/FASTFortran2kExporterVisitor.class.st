@@ -619,8 +619,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFu
 
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCallStatement: aFASTFortran2kFunctionCallStatement [ 
-	
-	self visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCallStatement
+
+	self skipLine: aFASTFortran2kFunctionCallStatement.
+
+	self 
+		indented: '';
+		visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCallStatement;
+		newLine 
 ]
 
 { #category : 'visiting' }
