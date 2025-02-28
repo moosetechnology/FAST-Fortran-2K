@@ -21,7 +21,7 @@ FASTFortranIncludedFileTransformationVisitor >> visitFASTEsopeSegment: aFASTEsop
 	)
 ]
 
-{ #category : 'visiting - esope' }
+{ #category : 'visiting - programUnits' }
 FASTFortranIncludedFileTransformationVisitor >> visitFASTFortranIncludedFile: aFASTFortranIncludedFile [
 
 	aFASTFortranIncludedFile declarations 
