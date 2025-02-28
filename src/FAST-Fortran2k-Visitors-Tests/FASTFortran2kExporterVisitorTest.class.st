@@ -102,6 +102,12 @@ FASTFortran2kExporterVisitorTest >> newVisitor [
 ]
 
 { #category : 'running' }
+FASTFortran2kExporterVisitorTest >> readStatement: args ioParams: params [
+
+	^self ioStatement: FASTFortran2kReadStatement ioParams: params arguments: args
+]
+
+{ #category : 'running' }
 FASTFortran2kExporterVisitorTest >> realLiteral: value [
 
 	^FASTFortran2kRealLiteral new
@@ -342,6 +348,27 @@ end program demo
 
 	self assertExport: stmt equals: 'program demo
 end program demo
+'
+]
+
+{ #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testReadStatementWellFormatted [
+	| stmt |
+
+	self skip: '#TODO: Arguments in Write and Read are not AssignmentExpression' .
+
+	stmt := self
+		readStatement: #(V)
+		ioParams: {
+			1 .
+			self assignementExpression: #rec value: 3 .
+			self assignementExpression: #iostat value: #N .
+			self assignementExpression: #err value: 8
+		}.
+
+	self
+		assertExport: stmt
+		equals: 'read (1, rec=3, iostat=N, err=8) V
 '
 ]
 
