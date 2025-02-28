@@ -29,6 +29,17 @@ FASTFortranBehavioralTransformationVisitor >> handleProgramUnitSegmentDeclaratio
 ]
 
 { #category : 'accessing' }
+FASTFortranBehavioralTransformationVisitor >> includedStatements: includedFilename [
+	"Statements from the included file to be inserted in the including file
+	 Ignore comments which do not seem relevant
+	 MAke a copy so that they can be added safely to the parentStatementBlock"
+
+	^(parentTransformator includedFiles at: includedFilename)
+		reject: [ :stmt | stmt class = FASTFortran2kComment ]
+		thenCollect: [ :stmt | stmt copy]
+]
+
+{ #category : 'accessing' }
 FASTFortranBehavioralTransformationVisitor >> model2k [
 
 	^model2k
@@ -38,6 +49,12 @@ FASTFortranBehavioralTransformationVisitor >> model2k [
 FASTFortranBehavioralTransformationVisitor >> model2k: anObject [
 
 	model2k := anObject
+]
+
+{ #category : 'accessing - private tests' }
+FASTFortranBehavioralTransformationVisitor >> parentTransformator [
+
+	^parentTransformator
 ]
 
 { #category : 'accessing' }
@@ -111,24 +128,36 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandSimple: aFAST
 
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsopeIncludeStatement [ 
+	"in place of the #include,puts all statements of the included file which are not segment declaration
+	 (so all variable declarations or other statements)
+	 Enclose this in 2 comments as visual aids.
+	 The first one is set to be in the same position of the original comment so that computing
+	 empty lines can work for it."
 
-	| includedStatements |
-	includedStatements := OrderedCollection new.
+	| includedStatements return startCommentContent |
+	includedStatements := (self includedStatements:
+		aFASTEsopeIncludeStatement famixInclude included programFile filename).
+	return := OrderedCollection new: includedStatements size + 2.
 
-	includedStatements add: (self model2k newComment
-		content: '@[FRA] #include ' , aFASTEsopeIncludeStatement filename).
+	startCommentContent := '[ooo] ' ,
+		(includedStatements ifEmpty: [ 'empty ' ] ifNotEmpty: [ '' ]) ,
+		'#include ' ,
+		aFASTEsopeIncludeStatement filename.
 
-	includedStatements addAll: (
-		(parentTransformator includedFiles
-			at: (aFASTEsopeIncludeStatement famixInclude included programFile filename))
-		
-		reject: [ :stmt | stmt class = FASTFortran2kComment ]
-		thenCollect: [ :stmt | stmt copy]).
+	return add: (self model2k newComment
+		content: startCommentContent ;
+		startPos: aFASTEsopeIncludeStatement startPos ;
+		endPos: (aFASTEsopeIncludeStatement startPos + startCommentContent size) ;
+		yourself ).
 
-	includedStatements add: (self model2k newComment
-		content: '@[FRA] end #include ' , aFASTEsopeIncludeStatement filename).
+	return addAll: includedStatements.
 
-	^includedStatements
+	includedStatements
+		ifNotEmpty: [
+			return addLast: (self model2k newComment
+				content: '[ooo] #end-include ' , aFASTEsopeIncludeStatement filename) ].
+
+	^return
 ]
 
 { #category : 'visiting' }

@@ -8,6 +8,21 @@ Class {
 	#package : 'Famix-Esope-Transformator-Tests'
 }
 
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> includeStatement: filename [
+
+	| entity |
+	entity := FamixF77ProgramFile new filename: filename.
+	entity := FamixF77IncludedFile new programFile: entity.
+	entity := FamixF77Include new included: entity.
+
+	^FASTEsopeIncludeStatement new
+		filename: 'included/file' ;
+		famixInclude: entity ;
+		startPos: 5 ;
+		endPos: 42.
+]
+
 { #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testArrayDeclaration [
 	| stmt dst |
@@ -286,6 +301,74 @@ FASTFortranBehavioralTransformationVisitorTest >> testImpliedDoExpression [
 	self assert: entity increment class equals: FASTFortran2kIntegerLiteral.
 	self assert: entity limit class equals: FASTFortran2kScalarVariable.
 	
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testIncludedStatementEmpty [
+
+	| stmt res |
+	stmt := self includeStatement: 'included/file.f'.
+	visitor parentTransformator includedFiles at: 'included/file.f' put: #().
+
+	res := stmt accept: visitor.
+
+	self assert: res size equals: 1.
+	res := res anyOne.
+	
+	self assert: res class equals: FASTFortran2kComment.
+	self assert: res content equals: '[ooo] empty #include included/file'.
+	self assert: res startPos equals: 5.
+	self assert: res endPos equals: 39
+
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testIncludedStatementOnlyComments [
+
+	| stmt res |
+	stmt := self includeStatement: 'included/file.f'.
+	visitor parentTransformator includedFiles at: 'included/file.f' put: {
+		FASTFortran2kComment new .
+		FASTFortran2kComment new .
+	}.
+
+	res := stmt accept: visitor.
+
+	self assert: res size equals: 1.
+	res := res anyOne.
+	
+	self assert: res class equals: FASTFortran2kComment.
+	self assert: res content equals: '[ooo] empty #include included/file'.
+	self assert: res startPos equals: 5.
+	self assert: res endPos equals: 39
+
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testIncludedStatementWithVariableDeclaration [
+
+	| stmt res entity |
+	stmt := self includeStatement: 'included/file.f'.
+	visitor parentTransformator includedFiles at: 'included/file.f' put: {
+		FASTFortran2kVariableDeclarationStatement new
+	}.
+
+	res := stmt accept: visitor.
+
+	self assert: res size equals: 3.
+
+	entity := res first.
+	self assert: entity class equals: FASTFortran2kComment.
+	self assert: entity content equals: '[ooo] #include included/file'.
+
+	entity := res second.
+	self assert: entity class equals: FASTFortran2kVariableDeclarationStatement.
+
+	entity := res third.
+	self assert: entity class equals: FASTFortran2kComment.
+	self assert: entity content equals: '[ooo] #end-include included/file'.
+
+
 ]
 
 { #category : 'tests-statement' }
