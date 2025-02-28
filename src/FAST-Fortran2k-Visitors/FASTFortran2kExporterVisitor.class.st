@@ -453,9 +453,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDefinition: aFASTFo
 		newLine.
 
 	self indent.
-	aFASTFortran2kDerivedTypeDefinition statements do: [ :derivedTypeComponent |
-		derivedTypeComponent accept: self 
-	].
+	aFASTFortran2kDerivedTypeDefinition statements 
+		do: [ :statement | statement accept: self ].
 	self unindent.
 
 	self
