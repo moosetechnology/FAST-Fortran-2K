@@ -5,7 +5,8 @@ Class {
 		'allModules',
 		'usesNeeded',
 		'famixModel',
-		'fast2kModel'
+		'fast2kModel',
+		'includedFiles'
 	],
 	#category : 'Famix-Esope-Transformator-Core',
 	#package : 'Famix-Esope-Transformator',
@@ -25,19 +26,31 @@ FamixEsopeToFortran2k >> famixEsopeToFast2k [
 
 	(famixModel allWithType: FamixF77ProgramFile) do: [ :famixProgFile |
 		famixProgFile fast: (FASTFortranProgramFile new
-			filename: famixProgFile filename).
+			filename: famixProgFile filename)
+	].
 
+	"dealing with all IncludedFile-s"
+	(famixModel allWithType: FamixF77IncludedFile) do: [ :famixIncludedFile || fastPUIncludedFile |
+		fastPUIncludedFile := self fastModelFor: famixIncludedFile in: famixIncludedFile programFile.
+
+		self migrateIncludedFileToFAST2k: fastPUIncludedFile.
+	].
+
+	"dealing with 'normal' PrugramUnit-s"
+	(famixModel allWithType: FamixF77ProgramFile) do: [ :famixProgFile |
 		famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
-			fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgFile.
+			(famixProgUnit class = FamixF77IncludedFile)
+				ifFalse: [ 
+					fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgUnit programFile.
 
-			fastProgramUnit ifNotNil: [ 
-				self migrateToFAST2k: fastProgramUnit.
-				
+					self migrateToFAST2k: fastProgramUnit.
+
 				"self flag: '#FIXME: cleaning, quid revolveUses'.
 				fastProgramUnit accept: fastProgramUnit mooseModel carrefourBinderCleaner"
 			 ]
 		]
-	].
+	]
+
 ]
 
 { #category : 'accessing' }
@@ -88,6 +101,26 @@ FamixEsopeToFortran2k >> initialize [
 	allModules := Dictionary new.
 	usesNeeded := Set new.
 	fast2kModel := FASTFortran2kModel new.
+	includedFiles := Dictionary new.
+
+]
+
+{ #category : 'running' }
+FamixEsopeToFortran2k >> migrateIncludedFileToFAST2k: aFASTIncludedFile [
+
+	| visitor includedStatements |
+
+	visitor := self transformationVisitor: aFASTIncludedFile transformationVisitorClass.
+	visitor filename: aFASTIncludedFile programFile filename.
+
+	includedStatements := aFASTIncludedFile accept: visitor.
+
+	includedFiles at: aFASTIncludedFile programFile filename put: includedStatements.
+
+	visitor := FASTFortranUseTransformationVisitor new
+		parentTransformator: self;
+		yourself.
+	aFASTIncludedFile accept: visitor.
 
 ]
 

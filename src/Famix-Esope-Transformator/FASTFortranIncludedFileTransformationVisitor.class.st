@@ -32,6 +32,13 @@ FASTFortranIncludedFileTransformationVisitor >> visitFASTFortranIncludedFile: aF
 				addProgramUnit: f2kModule
 		].
 
-	self flag: '#TODO: handle the rest of the statements'.
-	aFASTFortranIncludedFile statementBlock accept: self
+	^aFASTFortranIncludedFile statementBlock accept: self
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranIncludedFileTransformationVisitor >> visitFASTFortranStatementBlock: aFASTFortranStatementBlock [
+
+	^aFASTFortranStatementBlock statements
+		collect: [ :statement | statement accept: self ].
+
 ]
