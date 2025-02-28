@@ -1,9 +1,6 @@
 Class {
 	#name : 'FASTFortran2kExporterVisitorTest',
-	#superclass : 'TestCase',
-	#instVars : [
-		'visitor'
-	],
+	#superclass : 'FASTFortranAbstractVisitorTest',
 	#category : 'FAST-Fortran2k-Visitors-Tests',
 	#package : 'FAST-Fortran2k-Visitors-Tests'
 }
@@ -369,7 +366,6 @@ end type book
 FASTFortran2kExporterVisitorTest >> testTypeBoxedBookDefinition [
 
 	| stmt |
-	self skip: 'TODO'.
 
 	stmt := self segmentBoxedBookDefinition.
 
@@ -377,7 +373,7 @@ FASTFortran2kExporterVisitorTest >> testTypeBoxedBookDefinition [
 		assertExport: stmt
 		equals:
 'type, extends(segment) :: boxed_book
-  type(book), pointer, private :: this
+  type (book), pointer, private :: this
 end type boxed_book
 '
 ]
@@ -449,11 +445,9 @@ end type point_t
 FASTFortran2kExporterVisitorTest >> testUseStatementIntrinsicSimple [
 	| stmt |
 
-	self skip: 'TODO'.
-
 	stmt := FASTFortran2kUseStatement new 
 		name: 'module_name'; 
-		"isIntrinsic: true;"
+		modifiers: #( intrinsic );
 		yourself.
 
 	self
@@ -533,8 +527,6 @@ FASTFortran2kExporterVisitorTest >> testUseStatementSimple [
 
 	| stmt |
 
-	self skip: 'TODO'.
-
 	stmt := FASTFortran2kUseStatement new name: 'module_name'.
 
 	self assertExport: stmt equals: 'use :: module_name
@@ -544,8 +536,6 @@ FASTFortran2kExporterVisitorTest >> testUseStatementSimple [
 { #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementWithRenaming [
 	| stmt |
-
-	self skip: 'TODO'.
 
 	stmt := FASTFortran2kUseStatement new 
 		name: 'module_name'; 
@@ -565,8 +555,6 @@ FASTFortran2kExporterVisitorTest >> testUseStatementWithRenaming [
 FASTFortran2kExporterVisitorTest >> testUseStatementWithRenamings [
 
 	| stmt |
-
-	self skip: 'TODO'.
 
 	stmt := FASTFortran2kUseStatement new
 		name: 'module_name';

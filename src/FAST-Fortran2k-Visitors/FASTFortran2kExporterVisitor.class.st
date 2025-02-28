@@ -819,6 +819,18 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kModifier: aFASTFortran2kModifi
 		<< aFASTFortran2kModifier token
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kModifiers: modifiers [
+	"modifier are simple bytestring"
+
+	modifiers ifNotEmpty: [  
+			self << ', '.
+			modifiers 
+				do: [ :modifier | self << modifier ]
+				separatedBy: [ self << ', ' ]
+	 	].
+]
+
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kModule: aFASTFortranModule [
 
@@ -1248,11 +1260,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUs
 
 	self indented: 'use'.
 
-	aFASTFortran2kUseStatement modifiers 
-		ifNotEmpty: [ :modifiers | 
-			self << ', '.
-			self visitNodeListSeparatedByCommas: modifiers 
-		].
+	self visitFASTFortran2kModifiers: aFASTFortran2kUseStatement modifiers.
 
 	self
 		<< ' :: ';
@@ -1295,17 +1303,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVariable: aFASTFortran2kVariab
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarationStatement: aFASTFortran2kVariableDeclarationStatement [
 
-	| comma |
-
 	self skipLine: aFASTFortran2kVariableDeclarationStatement.
 
 	self indented: ''.
 	aFASTFortran2kVariableDeclarationStatement declaredType accept: self.
 
-	comma := ''.
-	"aFASTFortranVariableDeclarationStatement isPointer ifTrue: [ self << comma ; << ' pointer'. comma := ',' ].
-	aFASTFortranVariableDeclarationStatement visibility ifNotNil: [ :viz | self << comma ; << viz. comma := ',' ]. "
-	self flag: #TODO. "aFASTFortranVariableDeclarationStatement isTarget ifTrue: [ :viz | self << comma ; << ' target'. comma := ',' ]. "
+	self visitFASTFortran2kModifiers: aFASTFortran2kVariableDeclarationStatement modifiers.
 	
 	self << ' :: '.
 	self visitNodeListSeparatedByCommas:
