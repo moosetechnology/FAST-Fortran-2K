@@ -112,7 +112,23 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandSimple: aFAST
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsopeIncludeStatement [ 
 
-	^nil
+	| includedStatements |
+	includedStatements := OrderedCollection new.
+
+	includedStatements add: (self model2k newComment
+		content: '@[FRA] #include ' , aFASTEsopeIncludeStatement filename).
+
+	includedStatements addAll: (
+		(parentTransformator includedFiles
+			at: (aFASTEsopeIncludeStatement famixInclude included programFile filename))
+		
+		reject: [ :stmt | stmt class = FASTFortran2kComment ]
+		thenCollect: [ :stmt | stmt copy]).
+
+	includedStatements add: (self model2k newComment
+		content: '@[FRA] end #include ' , aFASTEsopeIncludeStatement filename).
+
+	^includedStatements
 ]
 
 { #category : 'visiting' }

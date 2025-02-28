@@ -92,6 +92,12 @@ FamixEsopeToFortran2k >> getModule: filename ifAbsentPut: aBlock [
 		ifAbsentPut: aBlock
 ]
 
+{ #category : 'accessing' }
+FamixEsopeToFortran2k >> includedFiles [
+
+	^ includedFiles
+]
+
 { #category : 'initialization' }
 FamixEsopeToFortran2k >> initialize [
 
