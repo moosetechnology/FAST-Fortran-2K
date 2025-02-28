@@ -3,12 +3,25 @@ Class {
 	#superclass : 'FASTFortranAbstractTransformationVisitor',
 	#instVars : [
 		'parentTransformator',
-		'model2k'
+		'model2k',
+		'externalDeclared'
 	],
 	#category : 'Famix-Esope-Transformator-Visitors',
 	#package : 'Famix-Esope-Transformator',
 	#tag : 'Visitors'
 }
+
+{ #category : 'accessing - private tests' }
+FASTFortranBehavioralTransformationVisitor >> externalDeclared [
+
+	^externalDeclared
+]
+
+{ #category : 'accessing - private tests' }
+FASTFortranBehavioralTransformationVisitor >> externalDeclared: acollection [
+
+	externalDeclared := acollection 
+]
 
 { #category : 'accessing' }
 FASTFortranBehavioralTransformationVisitor >> handleProgramUnitSegmentDeclaration: declarations [
@@ -37,6 +50,14 @@ FASTFortranBehavioralTransformationVisitor >> includedStatements: includedFilena
 	^(parentTransformator includedFiles at: includedFilename)
 		reject: [ :stmt | stmt class = FASTFortran2kComment ]
 		thenCollect: [ :stmt | stmt copy]
+]
+
+{ #category : 'initialization' }
+FASTFortranBehavioralTransformationVisitor >> initialize [
+
+	super initialize.
+
+	externalDeclared := OrderedCollection new: 5
 ]
 
 { #category : 'accessing' }
@@ -411,6 +432,8 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDoStatement: aDoSt
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranExternalStatement: aFASTFortranExternalStatement [
 
+	externalDeclared add: aFASTFortranExternalStatement name.
+
 	^nil
 ]
 
@@ -753,14 +776,40 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranUnaryExpression: a
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
 
+	| declarators |
+	declarators := (self visitFASTFortranList: aFASTFortranVariableDeclarationStatement declarators)
+		reject: #isNil.
+
+	declarators ifEmpty: [ ^nil ].
+
 	^(self
 		fortran2k: FASTFortran2kVariableDeclarationStatement
 		traceBack: aFASTFortranVariableDeclarationStatement)
 
 		declaredType: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
-		declarators: (self visitFASTFortranList: aFASTFortranVariableDeclarationStatement declarators) ;
+		declarators: declarators ;
 		yourself
 		
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
+
+	| varDeclarator |
+	
+	(externalDeclared includes: aFASTFortranVariableDeclarator name)
+		ifTrue: [ ^nil ].
+
+	varDeclarator := self model2k newVariableDeclarator
+		  name: aFASTFortranVariableDeclarator name;
+		  yourself.
+		
+	varDeclarator dimensions:
+		(varDeclarator dimensions collect: [ :dimension | 
+			dimension accept: self
+		]).
+
+	^varDeclarator 
 ]
 
 { #category : 'visiting - statements' }

@@ -61,19 +61,3 @@ FASTFortranAbstractTransformationVisitor >> visitFASTFortranList: list [
 
 	^ list collect: [ :item | item accept: self ]
 ]
-
-{ #category : 'visiting - statements' }
-FASTFortranAbstractTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
-
-	| varDeclarator |
-	varDeclarator := self model2k newVariableDeclarator
-		  name: aFASTFortranVariableDeclarator name;
-		  yourself.
-		
-	varDeclarator dimensions:
-		(varDeclarator dimensions collect: [ :dimension | 
-			dimension accept: self
-		]).
-
-	^varDeclarator 
-]

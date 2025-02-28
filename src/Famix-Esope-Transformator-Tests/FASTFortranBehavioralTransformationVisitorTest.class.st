@@ -192,6 +192,25 @@ FASTFortranBehavioralTransformationVisitorTest >> testDoStatement [
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testExternalDeclaration [
+	| stmt res |
+
+	stmt := FASTFortranExternalStatement new name: 'anExternal'.
+
+	self assert: visitor externalDeclared isEmpty.
+
+	res := stmt accept: visitor.
+
+	self assert: res isNil.
+
+	self assert: visitor externalDeclared size equals: 1.
+	self assert: visitor externalDeclared anyOne equals: 'anExternal'
+
+	
+	
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testGoToStatement [
 	| stmt res entity |
 
@@ -489,6 +508,38 @@ FASTFortranBehavioralTransformationVisitorTest >> testUnaryExpression [
 	self assert: res expression class equals: FASTFortran2kIntegerLiteral.
 	self assert: res expression primitiveValue equals: 2.
 	
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testVariableDeclarationForExternal [
+	| stmt res |
+
+	stmt := FASTFortranVariableDeclarationStatement new
+		declarators: { self variableDeclarator: 'var' } ;
+		declaredType: FASTFortranIntegerType new.
+	visitor externalDeclared: { 'var' }.
+
+	res := stmt accept: visitor.
+
+	self assert: res isNil.
+
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testVariableDeclarationsSomeExternal [
+	| stmt res |
+
+	stmt := FASTFortranVariableDeclarationStatement new
+		declarators: { self variableDeclarator: 'var' .self variableDeclarator: 'otherVar' } ;
+		declaredType: FASTFortranIntegerType new.
+	visitor externalDeclared: { 'var' }.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: res declarators size equals: 1.
+	self assert: res declarators anyOne name equals: 'otherVar'
+
 ]
 
 { #category : 'tests-statement' }
