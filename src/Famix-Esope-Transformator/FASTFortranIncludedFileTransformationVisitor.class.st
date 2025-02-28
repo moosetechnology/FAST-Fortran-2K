@@ -37,8 +37,16 @@ FASTFortranIncludedFileTransformationVisitor >> visitFASTFortranIncludedFile: aF
 
 { #category : 'visiting - statements' }
 FASTFortranIncludedFileTransformationVisitor >> visitFASTFortranStatementBlock: aFASTFortranStatementBlock [
+	"returning the list of statement (which are not segment declaration to the caller)
+	 these statements will be injected in place of the #include of thie current file
+	 We set their start/end-pos to 0 because it will not be meaningfull in the context of the #include"
 
 	^aFASTFortranStatementBlock statements
-		collect: [ :statement | statement accept: self ].
+		collect: [ :statement |
+			(statement accept: self)
+				startPos: 0 ;
+				endPos: 0 ;
+				yourself
+		].
 
 ]
