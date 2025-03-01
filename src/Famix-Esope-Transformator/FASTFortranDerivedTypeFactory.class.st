@@ -637,12 +637,6 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
 	].
 	segadj addStatement: model newEmptyStatement.
 
-	segadj addStatement: thisParameter createSeginiFieldInitialization.
-	paramFactories do: [ :paramFactory |
-		segadj addStatement: paramFactory createSeginiFieldInitialization.
-	].
-	segadj addStatement: model newEmptyStatement.
-
 	segadj statementBlock statements addAll: (self declareMaxRankTemporaries: 'ooo_dim').
 	segadj statementBlock statements addAll: (self declareMaxRankTemporaries: 'ooo_stop').
 
@@ -651,6 +645,12 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
 	].
 	segadj addStatement: (model newSourceCodeString content: 'logical :: ooo_eq_dims').
 	segadj addStatement: (model newSourceCodeString content: 'logical :: ooo_eq_pars').
+	segadj addStatement: model newEmptyStatement.
+	
+	segadj addStatement: thisParameter createSeginiFieldInitialization.
+	paramFactories do: [ :paramFactory |
+		segadj addStatement: paramFactory createSeginiFieldInitialization.
+	].
 	segadj addStatement: model newEmptyStatement.
 
 	segadj addStatement: (model newFormattedCodeString
@@ -801,7 +801,6 @@ FASTFortranDerivedTypeFactory >> makeProcedureSeglik [
 				arguments: {  self scalarVariable: 'this' }));
 		statement: model newReturnStatement).
 
-	seglik addStatement: (self assignement: (name , '_seglik') value: (self literal: false)).
 	seglik addStatement: (model newIfLogicalStatement
 		condition: (model newUnaryExpression
 			operator: '.not.' ;
@@ -816,12 +815,11 @@ FASTFortranDerivedTypeFactory >> makeProcedureSeglik [
 	elseStatements add: (self assignement: (name , '_seglik') value: (self literal: false)).
 	elseStatements addAll: (
 		paramFactories collect: [ :param |
-			self 
-				assignement: (name , '_seglik') 
-				value: (model newBinaryExpression 
-					operator: '.and.';
-					leftOperand: (self assignement: (name , '_seglik') value: (self literal: false));
-					rightOperand: (model newBinaryExpression 
+			self assignement: (name , '_seglik') 
+			value: (model newBinaryExpression 
+				operator: '.and.' ;
+				leftOperand: (self scalarVariable: (name , '_seglik')) ;
+				rightOperand: (model newBinaryExpression 
 						operator: '==';
 						leftOperand: (self derivedTypeFieldAccessVariable: 'this' field: param name);
 						rightOperand: (self derivedTypeFieldAccessVariable: 'that' field: param name)
@@ -985,10 +983,14 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegmov [
 	if := model newIfBlockStatement.
 	if condition: (model newUnaryExpression
 		operator: '.not.' ;
-		expression: (model newFunctionCall
-			name: 'associated' ;
-			addArgument: (self scalarVariable: 'this') ;
-			addArgument: (self scalarVariable: 'that')) ).
+		expression: (self 
+			functionCall: 'associated' 
+			arguments: { 
+				self scalarVariable: 'this' .
+				self scalarVariable: 'that'  
+			}
+		)
+	).
 	if thenStatementBlock: (model newStatementBlock).
 	self components do: [ :fieldFactory |
 		if thenStatementBlock addStatement: (model newFormattedCodeString
@@ -1039,6 +1041,16 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegpar [
 		then: (paramFactories collect: [ :param |
 			self assignement: param name value: (self derivedTypeFieldAccessVariable: 'this' field: param name)
 		]).
+	
+	paramFactories do: [ :paramFactory | 
+		segpar addStatement: (self 
+			assignement: paramFactory name 
+			value: ( self 
+				derivedTypeFieldAccessVariable: 'this' 
+				field: paramFactory name 
+			)
+		)	
+	].
 
 	^segpar
 ]
@@ -1163,16 +1175,18 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 	segsup addStatement: model newEmptyStatement.
 
 	if := model newIfBlockStatement.
-	if condition: (model newFunctionCall
-		name: 'associated';
-		addArgument: (self scalarVariable: 'this');
-		yourself
+	if condition: (self 
+		functionCall: 'associated'
+		arguments: { self scalarVariable: 'this' }
 	).
 	if thenStatementBlock: (model newStatementBlock).
 	self components do: [ :fieldFactory |
-		if thenStatementBlock addStatement: (model newFormattedCodeString
-			content: 'deallocate(this%{1})' ;
-			values: { fieldFactory name } )
+		if thenStatementBlock addStatement: ( self 
+			functionCallStatement: 'deallocate'
+			arguments: {
+				self derivedTypeFieldAccessVariable: 'this' field: fieldFactory name
+			}
+		)
 	].
 	
 	if thenStatementBlock addStatement: (model newFunctionCallStatement
@@ -1230,7 +1244,7 @@ FASTFortranDerivedTypeFactory >> makeProceduresFromDimensioningExpressions [
 			
 			aFunction addStatement: (model newFormattedCodeString
 				content: 'call ignore({1}, ''{1}'', ''{2}::{3}_dim{4}'')' ;
-				values: { (paramFactories at: i) . name . componentFactory name . i }
+				values: { (paramFactories at: i) name . name . componentFactory name . i }
 			).
 			aFunction addStatement: (model newFormattedCodeString
 				content: 'call check_pre_condition(associated(this), ''{1}_segadj'', ''associated(this)'')' ;
@@ -1325,9 +1339,10 @@ FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 	].
 
 	^self
-		if: (model newFunctionCall
-			name: 'associated';
-			addArgument: (self scalarVariable: 'this'))
+		if: ( self 
+			functionCall: 'associated' 
+			arguments: {  self scalarVariable: 'this' }
+		)
 		then: ifStatements
 ]
 
