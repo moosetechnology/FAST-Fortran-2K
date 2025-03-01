@@ -101,7 +101,7 @@ FASTFortranBehavioralTransformationVisitor >> retrieveOtherArgumentNamesFromDime
 ]
 
 { #category : 'visiting - esope' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandMayDimensionned: variables named: aSymbol [
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandDimensionned: variables named: aSymbol [
 	| anEsopeCommandCall arguments |
 
 	anEsopeCommandCall := self model2k newCallStatement
@@ -129,9 +129,27 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandMayDimensionn
 ]
 
 { #category : 'visiting - esope' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandNonMigrated: aFASTEsopeSegCommand [
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandNotMigrated: aFASTEsopeSegCommand [
 
-	^nil
+	^self model2k newComment
+		content: '[ooo] ' , aFASTEsopeSegCommand name
+]
+
+{ #category : 'visiting - esope' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandNotMigrated: commandName arguments: arguments [
+
+	^self model2k newComment
+		content: (String streamContents: [ :str |
+		 	str
+				<< '[ooo] ' ;
+				<< commandName ;
+				<< ', '.
+			arguments ifNotEmpty: [
+				FASTFortranExporterVisitor new
+					outputStream: str ;
+					visitNodeListSeparatedByCommas: arguments
+			]
+	])
 ]
 
 { #category : 'visiting - esope' }
@@ -219,14 +237,14 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegact: aFASTEsopeSegact [ 
 
-	^self visitFASTEsopeCommandNonMigrated: aFASTEsopeSegact
+	^self visitFASTEsopeCommandNotMigrated: 'segact' arguments: aFASTEsopeSegact variables
 ]
 
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegadj: aFASTEsopeSegadj [ 
 
 	^self 
-		visitFASTEsopeCommandMayDimensionned: aFASTEsopeSegadj variables 
+		visitFASTEsopeCommandDimensionned: aFASTEsopeSegadj variables 
 		named: 'segadj'
 ]
 
@@ -243,20 +261,20 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegcop: aFASTEsopeSe
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegdes: aFASTEsopeSegdes [ 
 
-	^self visitFASTEsopeCommandNonMigrated: aFASTEsopeSegdes
+	^self visitFASTEsopeCommandNotMigrated: 'segdes' arguments: aFASTEsopeSegdes variables
 ]
 
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSegini [ 
 
 	^self 
-		visitFASTEsopeCommandMayDimensionned: aFASTEsopeSegini variables 
+		visitFASTEsopeCommandDimensionned: aFASTEsopeSegini variables 
 		named: 'segini'
 ]
 
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
-
+	"this is treated by FASTFortranSegmentTransformationVisitor"
 	^nil
 ]
 
