@@ -801,7 +801,6 @@ FASTFortranDerivedTypeFactory >> makeProcedureSeglik [
 				arguments: {  self scalarVariable: 'this' }));
 		statement: model newReturnStatement).
 
-	seglik addStatement: (self assignement: (name , '_seglik') value: (self literal: false)).
 	seglik addStatement: (model newIfLogicalStatement
 		condition: (model newUnaryExpression
 			operator: '.not.' ;
@@ -816,12 +815,11 @@ FASTFortranDerivedTypeFactory >> makeProcedureSeglik [
 	elseStatements add: (self assignement: (name , '_seglik') value: (self literal: false)).
 	elseStatements addAll: (
 		paramFactories collect: [ :param |
-			self 
-				assignement: (name , '_seglik') 
-				value: (model newBinaryExpression 
-					operator: '.and.';
-					leftOperand: (self assignement: (name , '_seglik') value: (self literal: false));
-					rightOperand: (model newBinaryExpression 
+			self assignement: (name , '_seglik') 
+			value: (model newBinaryExpression 
+				operator: '.and.' ;
+				leftOperand: (self scalarVariable: (name , '_seglik')) ;
+				rightOperand: (model newBinaryExpression 
 						operator: '==';
 						leftOperand: (self derivedTypeFieldAccessVariable: 'this' field: param name);
 						rightOperand: (self derivedTypeFieldAccessVariable: 'that' field: param name)
