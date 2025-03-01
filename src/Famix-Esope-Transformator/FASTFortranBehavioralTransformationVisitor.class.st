@@ -100,7 +100,7 @@ FASTFortranBehavioralTransformationVisitor >> retrieveOtherArgumentNamesFromDime
 		ifNil: [ #() ]
 ]
 
-{ #category : 'private - helpers' }
+{ #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandMayDimensionned: variables named: aSymbol [
 	| anEsopeCommandCall arguments |
 
@@ -128,13 +128,13 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandMayDimensionn
 	^anEsopeCommandCall
 ]
 
-{ #category : 'private - helpers' }
+{ #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandNonMigrated: aFASTEsopeSegCommand [
 
 	^nil
 ]
 
-{ #category : 'private - helpers' }
+{ #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandSimple: aFASTEsopeSegCommand named: aName [
 
 	^aFASTEsopeSegCommand variables 
@@ -181,7 +181,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeIncludeStatement: aF
 	^return
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarationStatement: aFASTEsopePointerDeclarationStatement [
 	"FASTEsopePointerDeclarator do not have start/en-pos (see FAST-Esope/issue #20)
 	 As a work around, we put the position of the FASTEsopePointerDeclarationStatement into each (usually 1)
@@ -212,8 +212,6 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 
 	callerProgramUnit := stack top.
 	pointerDeclaredType := aFASTEsopePointerDeclarator variableDeclarator famixDeclaration declaredType.
-
-	"useNeeded add: (callerProgramUnit  -> pointerDeclaredType)."
 
 	^esopeDeclarator
 ]
