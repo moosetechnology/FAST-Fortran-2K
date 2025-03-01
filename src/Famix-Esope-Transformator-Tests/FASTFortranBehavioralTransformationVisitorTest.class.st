@@ -192,6 +192,30 @@ FASTFortranBehavioralTransformationVisitorTest >> testDoStatement [
 ]
 
 { #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeCommandSegact [
+
+	| dst segCommand |
+	segCommand := self segact: { #v }.
+
+	dst := segCommand accept: visitor.
+
+	self assert: dst class equals: FASTFortran2kComment.
+	self assert: dst content equals: '[ooo] segact, v'
+]
+
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeCommandSegdes [
+
+	| dst segCommand |
+	segCommand := self segdes: { #v }.
+
+	dst := segCommand accept: visitor.
+
+	self assert: dst class equals: FASTFortran2kComment.
+	self assert: dst content equals: '[ooo] segdes, v'
+]
+
+{ #category : 'running' }
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeCommandSegini [
 
 	| dst segCommand |
