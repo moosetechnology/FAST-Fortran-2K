@@ -1230,7 +1230,7 @@ FASTFortranDerivedTypeFactory >> makeProceduresFromDimensioningExpressions [
 			
 			aFunction addStatement: (model newFormattedCodeString
 				content: 'call ignore({1}, ''{1}'', ''{2}::{3}_dim{4}'')' ;
-				values: { (paramFactories at: i) . name . componentFactory name . i }
+				values: { (paramFactories at: i) name . name . componentFactory name . i }
 			).
 			aFunction addStatement: (model newFormattedCodeString
 				content: 'call check_pre_condition(associated(this), ''{1}_segadj'', ''associated(this)'')' ;
