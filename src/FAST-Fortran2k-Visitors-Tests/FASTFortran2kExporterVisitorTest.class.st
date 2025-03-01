@@ -300,7 +300,7 @@ FASTFortran2kExporterVisitorTest >> testOpenStatement [
 ]
 
 { #category : 'testing - program-units' }
-FASTFortran2kExporterVisitorTest >> testProgram [
+FASTFortran2kExporterVisitorTest >> testPointerDeclarationStatement [
 	"
 program demo
 	implicit none
@@ -309,27 +309,15 @@ end program demo
 "
 
 	| stmt |
-	stmt := FASTFortran2kProgramMain new
-		name: 'demo';
-		statementBlock:
-			(FASTFortran2kStatementBlock new
-				statements: {
-					FASTFortran2kImplicitStatement new
-					.
-					(FASTFortran2kVariableDeclarationStatement new
-						declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
-						declarators: { FASTFortran2kVariableDeclarator new name: 'p' } ;
-						yourself) } ) ;
-		backTrace: self stubFile ;
+	stmt := FASTFortran2kVariableDeclarationStatement new
+		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
+		declarators: { FASTFortran2kVariableDeclarator new name: 'p' } ;
 		yourself.
 
 	self
 		assertExport: stmt
 		equals:
-'program demo
-  implicit none
-  type (point_t) :: p
-end program demo
+'type (point_t), pointer :: p
 '
 ]
 
