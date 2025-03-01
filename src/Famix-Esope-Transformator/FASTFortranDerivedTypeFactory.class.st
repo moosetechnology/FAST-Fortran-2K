@@ -637,12 +637,6 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
 	].
 	segadj addStatement: model newEmptyStatement.
 
-	segadj addStatement: thisParameter createSeginiFieldInitialization.
-	paramFactories do: [ :paramFactory |
-		segadj addStatement: paramFactory createSeginiFieldInitialization.
-	].
-	segadj addStatement: model newEmptyStatement.
-
 	segadj statementBlock statements addAll: (self declareMaxRankTemporaries: 'ooo_dim').
 	segadj statementBlock statements addAll: (self declareMaxRankTemporaries: 'ooo_stop').
 
@@ -651,6 +645,12 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
 	].
 	segadj addStatement: (model newSourceCodeString content: 'logical :: ooo_eq_dims').
 	segadj addStatement: (model newSourceCodeString content: 'logical :: ooo_eq_pars').
+	segadj addStatement: model newEmptyStatement.
+	
+	segadj addStatement: thisParameter createSeginiFieldInitialization.
+	paramFactories do: [ :paramFactory |
+		segadj addStatement: paramFactory createSeginiFieldInitialization.
+	].
 	segadj addStatement: model newEmptyStatement.
 
 	segadj addStatement: (model newFormattedCodeString
