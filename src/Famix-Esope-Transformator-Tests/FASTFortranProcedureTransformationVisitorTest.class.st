@@ -91,7 +91,7 @@ FASTFortranProcedureTransformationVisitorTest >> testMissedParameterDeclaration 
 		famixParameter: famix.
 
 	res := visitor
-		missedParameterDeclaration: ( fast -> #inOut ).
+		missedParameterDeclaration: ( fast -> 'intent(inOut)' ).
 
 	self assert: res class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: res declarators size equals: 1.
@@ -170,6 +170,40 @@ FASTFortranProcedureTransformationVisitorTest >> testParameterDeclaredOneMissing
 	| res famix fast2k fast2ksubrtn |
 	self subroutineEmpty.
 	famix := FamixF77Parameter new name: 'forgotten' ; declaredType: (FamixF77TypeIntrinsic new name: #integer).
+	fastProcedures anyOne
+		addParameter: (FASTFortranScalarVariable new name: 'param' ; famixParameter: FamixF77Parameter new) ;
+		addParameter: (FASTFortranScalarVariable new name: 'forgotten' ; famixParameter: famix).
+	fastProcedures anyOne statementBlock addStatement: (self declarationStatement: 'param' type: #integer).
+		
+	res := fastProcedures anyOne accept: visitor.
+
+	self assert: visitor parametersToDeclare size equals: 1.
+
+	fast2ksubrtn := res programUnits anyOne procedures anyOne.
+	self assert: fast2ksubrtn statementBlock statements size equals: 4.
+
+	fast2k := fast2ksubrtn statementBlock statements first.
+	self assert: fast2k class equals: FASTFortran2kComment.
+
+	fast2k := fast2ksubrtn statementBlock statements second.
+	self assert: fast2k modifiers anyOne equals: 'intent(in)'.
+	self assert: fast2k declarators anyOne name equals: 'forgotten'.
+
+	fast2k := fast2ksubrtn statementBlock statements third.
+	self assert: fast2k class equals: FASTFortran2kEmptyStatement.
+
+	fast2k := fast2ksubrtn statementBlock statements fourth.
+	self assert: fast2k modifiers anyOne equals: 'intent(in)'.
+	self assert: fast2k declarators anyOne name equals: 'param'
+
+]
+
+{ #category : 'tests' }
+FASTFortranProcedureTransformationVisitorTest >> testParameterDeclaredOnePointerMissing [
+
+	| res famix fast2k fast2ksubrtn |
+	self subroutineEmpty.
+	famix := FamixF77Parameter new name: 'forgotten' ; declaredType: (FamixEsopeSegment new name: #seg).
 	fastProcedures anyOne
 		addParameter: (FASTFortranScalarVariable new name: 'param' ; famixParameter: FamixF77Parameter new) ;
 		addParameter: (FASTFortranScalarVariable new name: 'forgotten' ; famixParameter: famix).
@@ -309,6 +343,39 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromReadAnd
 	self assert: res size equals: 1.
 	self assert: res anyOne key class equals: FASTFortranScalarVariable.
 	self assert: res first value equals: 'intent(inOut)'
+]
+
+{ #category : 'tests' }
+FASTFortranProcedureTransformationVisitorTest >> testParametersPointerDeclaredNonMissing [
+
+	| res famix fast2k |
+	self functionEmpty.
+	famix := FamixF77Parameter new name: 'param' ; declaredType: (FamixEsopeSegment new name: #seg).
+	fastProcedures anyOne
+		addParameter: (FASTFortranScalarVariable new name: 'param' ; famixParameter: famix).
+	fastProcedures anyOne statementBlock
+		addStatement: (FASTEsopePointerDeclarationStatement new
+			addPointerDeclarator: (
+				FASTEsopePointerDeclarator new
+					pointedTypeName: 'seg' ;
+					variableDeclarator: (FASTFortranVariableDeclarator new
+						name: 'param' ;
+						famixDeclaration: famix)
+			) ;
+			yourself
+		).
+		
+	res := fastProcedures anyOne accept: visitor.
+
+	self assert: visitor parametersToDeclare isEmpty.
+
+	fast2k := res programUnits anyOne procedures anyOne.
+	self assert: fast2k statementBlock statements size equals: 1.
+
+	fast2k := fast2k statementBlock statements first.
+	self assert: fast2k modifiers anyOne equals: 'intent(in)'.
+	self assert: fast2k declarators anyOne name equals: 'param'.
+
 ]
 
 { #category : 'tests' }

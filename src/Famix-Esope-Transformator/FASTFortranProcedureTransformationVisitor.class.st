@@ -10,6 +10,24 @@ Class {
 	#tag : 'Visitors'
 }
 
+{ #category : 'helpers - parameters' }
+FASTFortranProcedureTransformationVisitor >> checkForParameterDeclaration: aFASTFortran2kVariableDeclarationStatement [
+	"if aFASTFortran2kVariableDeclarationStatement match the name of a parametersToDeclare
+	then remove it from the list to declare and set its intent"
+
+	parametersToDeclare
+		detect: [ :association |
+			aFASTFortran2kVariableDeclarationStatement declarators anySatisfy: [ :declarator |
+				association key name = declarator name]
+		]
+		ifOne: [ :assoc |
+			parametersToDeclare remove: assoc.
+			aFASTFortran2kVariableDeclarationStatement modifiers: { assoc value }
+		].
+
+	^aFASTFortran2kVariableDeclarationStatement 
+]
+
 { #category : 'helpers - segment' }
 FASTFortranProcedureTransformationVisitor >> createModule: famixEntity [
 
@@ -116,6 +134,13 @@ FASTFortranProcedureTransformationVisitor >> parametersToDeclare [
 	^parametersToDeclare
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortranProcedureTransformationVisitor >> visitFASTEsopePointerDeclarator: aFASTEsopePointerDeclarator [ 
+
+	^self checkForParameterDeclaration: (super
+		visitFASTEsopePointerDeclarator: aFASTEsopePointerDeclarator)
+]
+
 { #category : 'visiting - programUnits' }
 FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFortranFunction [
 
@@ -180,21 +205,15 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFo
 { #category : 'visiting - statements' }
 FASTFortranProcedureTransformationVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
 
-	| fast2kDeclaration |
+	^self checkForParameterDeclaration: (super
+		visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement)
+]
 
-	fast2kDeclaration := super visitFASTFortranVariableDeclarationStatement:
-		aFASTFortranVariableDeclarationStatement.
+{ #category : 'visiting' }
+FASTFortranProcedureTransformationVisitor >> visitFamixTWithAccesses: aFamixEsopeSegment [ 
+	"this is called from #missedParameterDeclaration:, when a pointer parameter was not declared
+	 we must create a declaredType for this parameter"
 
-	parametersToDeclare
-		detect: [ :association |
-			aFASTFortranVariableDeclarationStatement declarators anySatisfy: [ :declarator |
-				association key name = declarator name]
-		]
-		ifOne: [ :assoc |
-			parametersToDeclare remove: assoc.
-			fast2kDeclaration modifiers: { assoc value }
-		].
-
-	^fast2kDeclaration
-
+	^model2k newUserDefinedType
+		name: aFamixEsopeSegment name
 ]
