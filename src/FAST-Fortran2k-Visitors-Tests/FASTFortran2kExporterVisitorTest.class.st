@@ -312,6 +312,7 @@ end program demo
 	stmt := FASTFortran2kVariableDeclarationStatement new
 		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
 		declarators: { FASTFortran2kVariableDeclarator new name: 'p' } ;
+		modifiers: #( pointer ) ;
 		yourself.
 
 	self
@@ -398,14 +399,15 @@ FASTFortran2kExporterVisitorTest >> testTypeDeclarationStatement [
 
 	| stmt |
 	stmt := FASTFortran2kVariableDeclarationStatement new
-		 declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
-		 declarators: { (FASTFortran2kVariableDeclarator new name: 'p1') } ;
-		 yourself.
+		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
+		declarators: { (FASTFortran2kVariableDeclarator new name: 'p1') } ;
+		modifiers: #( pointer ) ;
+		yourself.
 
 	self
 		assertExport: stmt
 		equals:
-'type (point_t) :: p1
+'type (point_t), pointer :: p1
 '
 ]
 
@@ -414,17 +416,18 @@ FASTFortran2kExporterVisitorTest >> testTypeDeclarationsStatement [
 
 	| stmt |
 	stmt := FASTFortran2kVariableDeclarationStatement new
-		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t');
+		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
 		declarators: {
 			(FASTFortran2kVariableDeclarator new name: 'p1')
 			.
-			(FASTFortran2kVariableDeclarator new name: 'p2') };
+			(FASTFortran2kVariableDeclarator new name: 'p2') } ;
+		modifiers: #( pointer ) ;
 		yourself.
 
 	self
 		assertExport: stmt
 		equals:
-'type (point_t) :: p1, p2
+'type (point_t), pointer :: p1, p2
 '
 ]
 

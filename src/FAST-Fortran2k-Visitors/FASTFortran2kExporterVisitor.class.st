@@ -1311,8 +1311,6 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarationStatement: 
 
 	self indented: ''.
 	aFASTFortran2kVariableDeclarationStatement declaredType accept: self.
-	(aFASTFortran2kVariableDeclarationStatement declaredType class = FASTFortran2kUserDefinedType)
-		ifTrue: [ self << ', pointer' ].
 
 	self visitFASTFortran2kModifiers: aFASTFortran2kVariableDeclarationStatement modifiers.
 	

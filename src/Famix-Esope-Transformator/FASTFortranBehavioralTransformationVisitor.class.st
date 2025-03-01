@@ -223,9 +223,9 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 		declaredType: (self model2k newUserDefinedType  
 			name: aFASTEsopePointerDeclarator pointedTypeName;
 			yourself
-		);
-		addDeclarator: (aFASTEsopePointerDeclarator variableDeclarator accept: self);
-		mooseModel: self model2k;
+		) ;
+		addDeclarator: (aFASTEsopePointerDeclarator variableDeclarator accept: self) ;
+		modifiers: #( pointer ) ;
 		yourself.
 
 	callerProgramUnit := stack top.
