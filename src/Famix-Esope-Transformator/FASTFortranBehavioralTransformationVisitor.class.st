@@ -3,11 +3,25 @@ Class {
 	#superclass : 'FASTFortranAbstractTransformationVisitor',
 	#instVars : [
 		'parentTransformator',
-		'model'
+		'model2k',
+		'externalDeclared'
 	],
-	#category : 'Famix-Esope-Transformator',
-	#package : 'Famix-Esope-Transformator'
+	#category : 'Famix-Esope-Transformator-Visitors',
+	#package : 'Famix-Esope-Transformator',
+	#tag : 'Visitors'
 }
+
+{ #category : 'accessing - private tests' }
+FASTFortranBehavioralTransformationVisitor >> externalDeclared [
+
+	^externalDeclared
+]
+
+{ #category : 'accessing - private tests' }
+FASTFortranBehavioralTransformationVisitor >> externalDeclared: acollection [
+
+	externalDeclared := acollection 
+]
 
 { #category : 'accessing' }
 FASTFortranBehavioralTransformationVisitor >> handleProgramUnitSegmentDeclaration: declarations [
@@ -15,13 +29,12 @@ FASTFortranBehavioralTransformationVisitor >> handleProgramUnitSegmentDeclaratio
 	declarations ifNotNil: [ 
 		
 		declarations do: [ :declaration | | programFile |
-			programFile := self model newProgramFile
+			programFile := self model2k newProgramFile
 				filename: (declaration famix migratedModuleName , '.f90').
 
 			programFile addProgramUnit: (
 				declaration accept: (FASTFortranSegmentTransformationVisitor new 
-					parentTransformator: self parentTransformator;
-					model: self model
+					model2k: self model2k
 				)
 			)
 		]
@@ -29,21 +42,40 @@ FASTFortranBehavioralTransformationVisitor >> handleProgramUnitSegmentDeclaratio
 ]
 
 { #category : 'accessing' }
-FASTFortranBehavioralTransformationVisitor >> model [
+FASTFortranBehavioralTransformationVisitor >> includedStatements: includedFilename [
+	"Statements from the included file to be inserted in the including file
+	 Ignore comments which do not seem relevant
+	 MAke a copy so that they can be added safely to the parentStatementBlock"
 
-	^model
+	^(parentTransformator includedFiles at: includedFilename)
+		reject: [ :stmt | stmt class = FASTFortran2kComment ]
+		thenCollect: [ :stmt | stmt copy]
+]
+
+{ #category : 'initialization' }
+FASTFortranBehavioralTransformationVisitor >> initialize [
+
+	super initialize.
+
+	externalDeclared := OrderedCollection new: 5
 ]
 
 { #category : 'accessing' }
-FASTFortranBehavioralTransformationVisitor >> model: anObject [
+FASTFortranBehavioralTransformationVisitor >> model2k [
 
-	model := anObject
+	^model2k
 ]
 
 { #category : 'accessing' }
+FASTFortranBehavioralTransformationVisitor >> model2k: anObject [
+
+	model2k := anObject
+]
+
+{ #category : 'accessing - private tests' }
 FASTFortranBehavioralTransformationVisitor >> parentTransformator [
 
-	^ parentTransformator
+	^parentTransformator
 ]
 
 { #category : 'accessing' }
@@ -68,11 +100,11 @@ FASTFortranBehavioralTransformationVisitor >> retrieveOtherArgumentNamesFromDime
 		ifNil: [ #() ]
 ]
 
-{ #category : 'private - helpers' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandMayDimensionned: variables named: aSymbol [
+{ #category : 'visiting - esope' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandDimensionned: variables named: aSymbol [
 	| anEsopeCommandCall arguments |
 
-	anEsopeCommandCall := self model newCallStatement
+	anEsopeCommandCall := self model2k newCallStatement
 			name: aSymbol;
 			yourself.
 
@@ -86,7 +118,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandMayDimensionn
 			do: [ :argName |
 				((arguments collect: #name) includes: argName)
 					ifFalse: [ 
-						arguments add: (model newScalarVariable name: argName)
+						arguments add: (model2k newScalarVariable name: argName)
 					]
 			]
 	].
@@ -96,18 +128,36 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandMayDimensionn
 	^anEsopeCommandCall
 ]
 
-{ #category : 'private - helpers' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandNonMigrated: aFASTEsopeSegCommand [
+{ #category : 'visiting - esope' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandNotMigrated: aFASTEsopeSegCommand [
 
-	^nil
+	^self model2k newComment
+		content: '[ooo] ' , aFASTEsopeSegCommand name
 ]
 
-{ #category : 'private - helpers' }
+{ #category : 'visiting - esope' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandNotMigrated: commandName arguments: arguments [
+
+	^self model2k newComment
+		content: (String streamContents: [ :str |
+		 	str
+				<< '[ooo] ' ;
+				<< commandName ;
+				<< ', '.
+			arguments ifNotEmpty: [
+				FASTFortranExporterVisitor new
+					outputStream: str ;
+					visitNodeListSeparatedByCommas: arguments
+			]
+	])
+]
+
+{ #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandSimple: aFASTEsopeSegCommand named: aName [
 
 	^aFASTEsopeSegCommand variables 
 		collect:  [ :variable |
-			self model newCallStatement
+			self model2k newCallStatement
 				name: aName;
 				addArgument: (variable accept: self);
 				yourself.
@@ -117,21 +167,39 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandSimple: aFAST
 
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsopeIncludeStatement [ 
-	
-	self flag: '#TODO: 
-	
-	self model newUseStatement 
-		name: (aFASTEsopeIncludeStatement famixInclude included migratedModuleName)"
-	"an include can be a use
-	- local variable in includedFile must be a local variable where the file is included
-	- segment or programUnit in includedFile must be moved in their own module
-	for exemple see: user.seg file in bookstore
-	'.
+	"in place of the #include,puts all statements of the included file which are not segment declaration
+	 (so all variable declarations or other statements)
+	 Enclose this in 2 comments as visual aids.
+	 The first one is set to be in the same position of the original comment so that computing
+	 empty lines can work for it."
 
-	^nil
+	| includedStatements return startCommentContent |
+	includedStatements := (self includedStatements:
+		aFASTEsopeIncludeStatement famixInclude included programFile filename).
+	return := OrderedCollection new: includedStatements size + 2.
+
+	startCommentContent := '[ooo] ' ,
+		(includedStatements ifEmpty: [ 'empty ' ] ifNotEmpty: [ '' ]) ,
+		'#include ' ,
+		aFASTEsopeIncludeStatement filename.
+
+	return add: (self model2k newComment
+		content: startCommentContent ;
+		startPos: aFASTEsopeIncludeStatement startPos ;
+		endPos: (aFASTEsopeIncludeStatement startPos + startCommentContent size) ;
+		yourself ).
+
+	return addAll: includedStatements.
+
+	includedStatements
+		ifNotEmpty: [
+			return addLast: (self model2k newComment
+				content: '[ooo] #end-include ' , aFASTEsopeIncludeStatement filename) ].
+
+	^return
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarationStatement: aFASTEsopePointerDeclarationStatement [
 	"FASTEsopePointerDeclarator do not have start/en-pos (see FAST-Esope/issue #20)
 	 As a work around, we put the position of the FASTEsopePointerDeclarationStatement into each (usually 1)
@@ -151,19 +219,17 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 	
 	| esopeDeclarator callerProgramUnit pointerDeclaredType |
 
-	esopeDeclarator := self model newVariableDeclarationStatement
-		declaredType: (self model newUserDefinedType  
+	esopeDeclarator := self model2k newVariableDeclarationStatement
+		declaredType: (self model2k newUserDefinedType  
 			name: aFASTEsopePointerDeclarator pointedTypeName;
 			yourself
-		);
-		addDeclarator: (aFASTEsopePointerDeclarator variableDeclarator accept: self);
-		mooseModel: self model;
+		) ;
+		addDeclarator: (aFASTEsopePointerDeclarator variableDeclarator accept: self) ;
+		modifiers: #( pointer ) ;
 		yourself.
 
 	callerProgramUnit := stack top.
 	pointerDeclaredType := aFASTEsopePointerDeclarator variableDeclarator famixDeclaration declaredType.
-
-	"useNeeded add: (callerProgramUnit  -> pointerDeclaredType)."
 
 	^esopeDeclarator
 ]
@@ -171,14 +237,14 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegact: aFASTEsopeSegact [ 
 
-	^self visitFASTEsopeCommandNonMigrated: aFASTEsopeSegact
+	^self visitFASTEsopeCommandNotMigrated: 'segact' arguments: aFASTEsopeSegact variables
 ]
 
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegadj: aFASTEsopeSegadj [ 
 
 	^self 
-		visitFASTEsopeCommandMayDimensionned: aFASTEsopeSegadj variables 
+		visitFASTEsopeCommandDimensionned: aFASTEsopeSegadj variables 
 		named: 'segadj'
 ]
 
@@ -195,20 +261,20 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegcop: aFASTEsopeSe
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegdes: aFASTEsopeSegdes [ 
 
-	^self visitFASTEsopeCommandNonMigrated: aFASTEsopeSegdes
+	^self visitFASTEsopeCommandNotMigrated: 'segdes' arguments: aFASTEsopeSegdes variables
 ]
 
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSegini [ 
 
 	^self 
-		visitFASTEsopeCommandMayDimensionned: aFASTEsopeSegini variables 
+		visitFASTEsopeCommandDimensionned: aFASTEsopeSegini variables 
 		named: 'segini'
 ]
 
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
-
+	"this is treated by FASTFortranSegmentTransformationVisitor"
 	^nil
 ]
 
@@ -237,7 +303,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegsup: aFASTEsopeSe
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranArrayRange: aFASTFortranArrayRange [
 
-	^self model newArrayRange
+	^self model2k newArrayRange
 		lowerBound: (aFASTFortranArrayRange lowerBound accept: self);
 		upperBound: (aFASTFortranArrayRange upperBound accept: self);
 		yourself
@@ -246,7 +312,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranArrayRange: aFASTF
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranArrayVariable: aFASTFortranArrayVariable [
 
-	^self model newArrayVariable
+	^self model2k newArrayVariable
 		name: aFASTFortranArrayVariable name;
 		indices: (self visitFASTFortranList: aFASTFortranArrayVariable indices);
 		yourself
@@ -256,7 +322,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranArrayVariable: aFA
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentExpression: anAssignmentExpressionNode [
 
-	^ self model newAssignmentExpression
+	^ self model2k newAssignmentExpression
 		  variable: (anAssignmentExpressionNode variable accept: self);
 		  expression: (anAssignmentExpressionNode expression accept: self);
 		  yourself
@@ -277,7 +343,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentStatemen
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAsterisk: aFASTFortranAsterisk [
 
-	^ self model newAsterisk
+	^ self model2k newAsterisk
 ]
 
 { #category : 'visiting - expressions' }
@@ -287,14 +353,14 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranBinaryExpression: 
 		  operator: aBinaryExpresionNode operator;
 		  leftOperand: (aBinaryExpresionNode leftOperand accept: self);
 		  rightOperand: (aBinaryExpresionNode rightOperand accept: self);
-		  mooseModel: self model;
+		  mooseModel: self model2k;
 		  yourself
 ]
 
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranBooleanLiteral: aBooleanLiteralNode [
 
-	^ self model newBooleanLiteral
+	^ self model2k newBooleanLiteral
 		  primitiveValue: aBooleanLiteralNode primitiveValue;
 		  yourself
 ]
@@ -324,7 +390,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCallStatement: aFA
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterLiteral: aFASTFortranCharacterLiteral [
 
-	^ self model newCharacterLiteral
+	^ self model2k newCharacterLiteral
 		  primitiveValue: aFASTFortranCharacterLiteral primitiveValue;
 		  yourself
 ]
@@ -332,7 +398,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterLiteral: 
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterType: aFASTFortranCharacterType [
 
-	^self model newCharacterType
+	^self model2k newCharacterType
 		size: (aFASTFortranCharacterType size accept: self);
 		yourself
 ]
@@ -381,14 +447,9 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDoStatement: aDoSt
 
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranExternalStatement: aFASTFortranExternalStatement [
-	"here we know for sure this will need use statement since it is an external procedure
-	- if a use statement with this name already exists, we do nothing othewise we can create a one
-	We can ask module name with: aFASTFortranExternalStatement famix migratedModuleName
-	
-	"
-	self parentTransformator useNeeded: 
-		aFASTFortranExternalStatement famix programUnit 
-		-> aFASTFortranExternalStatement famix externalProcedure.
+
+	externalDeclared add: aFASTFortranExternalStatement name.
+
 	^nil
 ]
 
@@ -402,26 +463,26 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFieldAccess: aFAST
 				and: [ aFASTFortranFieldAccess field indices anyOne operator asLowercase = '/' ]]
 			) 
 			ifTrue: [ 
-				self model newFunctionCall
+				self model2k newFunctionCall
 					name: 'size';
 					arguments: { 
-						self model newDerivedTypeComponentAccess
+						self model2k newDerivedTypeComponentAccess
 							instance: (aFASTFortranFieldAccess pointer accept: self);
-							field: (self model newScalarVariable name: aFASTFortranFieldAccess field name);
+							field: (self model2k newScalarVariable name: aFASTFortranFieldAccess field name);
 							yourself.
 
 						(aFASTFortranFieldAccess field indices anyOne expression accept: self)
 					};
 					yourself
 			] ifFalse: [ 
-				self model newDerivedTypeComponentAccess
+				self model2k newDerivedTypeComponentAccess
 					instance: (aFASTFortranFieldAccess pointer accept: self);
 					field: (aFASTFortranFieldAccess field accept: self);
 					yourself.
 			]
 		]
 		ifFalse: [ 
-			self model newDerivedTypeComponentAccess
+			self model2k newDerivedTypeComponentAccess
 				instance: (aFASTFortranFieldAccess pointer accept: self);
 				field: (aFASTFortranFieldAccess field accept: self);
 				yourself.
@@ -433,7 +494,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionCall: aFAS
 
 	| functionCall callerProgramUnit calledProgramFile |
 
-	functionCall := self model newFunctionCall
+	functionCall := self model2k newFunctionCall
 		name: aFASTFortranFunctionCall name ;
 		arguments: (aFASTFortranFunctionCall arguments collect: [:arg | arg accept: self]) ;
 		yourself.
@@ -450,24 +511,24 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionCall: aFAS
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement: aFunctionStatementNode [
 
 	| fct |
-	fct := self model newInternalFunction
+	fct := self model2k newInternalFunction
 		name: aFunctionStatementNode name;
 		declaredType: (aFunctionStatementNode famix declaredType accept: self)
 		yourself.
 
 	fct	 parameters: (aFunctionStatementNode parameters collect: [:parameter | 
-			self model newScalarVariable 
+			self model2k newScalarVariable 
 				name: parameter name;
 				yourself
 			]).
 
-	fct statementBlock: self model  newStatementBlock.
+	fct statementBlock: self model2k  newStatementBlock.
 
 	aFunctionStatementNode parameters do: [:parameter |
 		fct statementBlock addStatement: (
-			self model newVariableDeclarationStatement
+			self model2k newVariableDeclarationStatement
 				declaredType: (parameter famixParameter declaredType accept: self);
-				declarators: { self model newVariableDeclarator 
+				declarators: { self model2k newVariableDeclarator 
 					name:  parameter name;
 					yourself 
 				};
@@ -476,8 +537,8 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement:
 	].
 
 	fct statementBlock addStatement:	(	
-			self model newAssignmentStatement
-				variable: (self model newVariable name: aFunctionStatementNode name);
+			self model2k newAssignmentStatement
+				variable: (self model2k newVariable name: aFunctionStatementNode name);
 				expression: (aFunctionStatementNode expression accept: self);
 				yourself
 			).
@@ -499,7 +560,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranGoToStatement: aFA
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIOParameter: aFASTFortranIOParameter [
 
-	^self model newIOParameter
+	^self model2k newIOParameter
 		name: aFASTFortranIOParameter name;
 		expression: (aFASTFortranIOParameter expression accept: self);
 		yourself
@@ -549,7 +610,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranImplicitStatement:
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranImpliedDoExpression: aFASTFortranImpliedDoExpression [ 
 
-	^self model newImpliedDoExpression
+	^self model2k newImpliedDoExpression
 		loopControl: (aFASTFortranImpliedDoExpression loopControl accept: self);
 		variables: (self visitFASTFortranList: aFASTFortranImpliedDoExpression variables);
 		yourself
@@ -558,7 +619,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranImpliedDoExpressio
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerLiteral: anIntegerLiteralNode [
 
-	^ self model newIntegerLiteral
+	^ self model2k newIntegerLiteral
 		  primitiveValue: anIntegerLiteralNode primitiveValue;
 		  yourself
 ]
@@ -566,13 +627,13 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerLiteral: an
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerType: aFASTFortranIntegerType [
 
-	^ self model newIntegerType
+	^ self model2k newIntegerType
 ]
 
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLabelReference: aFASTFortranLabelReference [
 
-	^self model newLabelReference
+	^self model2k newLabelReference
 		label: aFASTFortranLabelReference label;
 		yourself.
 ]
@@ -580,13 +641,13 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLabelReference: aF
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLogicalType: aFASTFortranLogicalType [
 
-	^ self model newLogicalType
+	^ self model2k newLogicalType
 ]
 
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLoopControlExpression: aLoopControlNode [
 
-	^self model newLoopControlExpression
+	^self model2k newLoopControlExpression
 		  init: (aLoopControlNode init accept: self);
 		  limit: (aLoopControlNode limit accept: self);
 		  increment: (aLoopControlNode increment ifNotNil: [:increment | increment  accept: self ]);
@@ -634,14 +695,14 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealLiteral: aReal
 
 	^ FASTFortran2kRealLiteral new
 		  primitiveValue: aRealLiteralNode primitiveValue;
-		  mooseModel: self model;
+		  mooseModel: self model2k;
 		  yourself
 ]
 
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealType: aRealTypeNode [
 
-	^ self model newRealType
+	^ self model2k newRealType
 ]
 
 { #category : 'visiting - statements' }
@@ -672,7 +733,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranReturnStatement: a
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranScalarVariable: aScalarVariableNode [
 
-	^ self model newScalarVariable
+	^ self model2k newScalarVariable
 		  name: aScalarVariableNode name;
 		  yourself
 ]
@@ -722,7 +783,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStopStatement: aFA
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranUnaryExpression: aFASTFortranUnaryExpression [
 
-	^self model newUnaryExpression 
+	^self model2k newUnaryExpression 
 		expression: (aFASTFortranUnaryExpression expression accept: self);
 		operator: aFASTFortranUnaryExpression operator;
 		yourself.
@@ -731,14 +792,40 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranUnaryExpression: a
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
 
+	| declarators |
+	declarators := (self visitFASTFortranList: aFASTFortranVariableDeclarationStatement declarators)
+		reject: #isNil.
+
+	declarators ifEmpty: [ ^nil ].
+
 	^(self
 		fortran2k: FASTFortran2kVariableDeclarationStatement
 		traceBack: aFASTFortranVariableDeclarationStatement)
 
 		declaredType: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
-		declarators: (self visitFASTFortranList: aFASTFortranVariableDeclarationStatement declarators) ;
+		declarators: declarators ;
 		yourself
 		
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
+
+	| varDeclarator |
+	
+	(externalDeclared includes: aFASTFortranVariableDeclarator name)
+		ifTrue: [ ^nil ].
+
+	varDeclarator := self model2k newVariableDeclarator
+		  name: aFASTFortranVariableDeclarator name;
+		  yourself.
+		
+	varDeclarator dimensions:
+		(varDeclarator dimensions collect: [ :dimension | 
+			dimension accept: self
+		]).
+
+	^varDeclarator 
 ]
 
 { #category : 'visiting - statements' }
@@ -764,6 +851,6 @@ FASTFortranBehavioralTransformationVisitor >> visitFamixF77Type: aFamixF77Type [
 	} asDictionary at: aFamixF77Type name.
 
 	^aTypeClass new
-		mooseModel: self model;
+		mooseModel: self model2k;
 		yourself.
 ]

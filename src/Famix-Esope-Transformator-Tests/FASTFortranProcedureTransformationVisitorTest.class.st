@@ -10,7 +10,7 @@ FASTFortranProcedureTransformationVisitorTest >> testCreateModule [
 
 	| module |
 
-	module := visitor createModule: '/not/normalized/someName_mod'.
+	module := visitor createModule: (FamixF77PUSubroutine new programFile: (FamixF77ProgramFile new filename: '/not/normalized/someName.E')).
 
 	self assert: module class equals: FASTFortran2kModule.
 	self assert: module name equals: 'someName_mod'.
@@ -24,9 +24,10 @@ FASTFortranProcedureTransformationVisitorTest >> testCreateModule [
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testEnsureModuleOnce [
 
-	| module |
+	| module famix |
 
-	module := visitor ensureModule: 'someName_mod'.
+	famix := (FamixF77PUSubroutine new programFile: (FamixF77ProgramFile new filename: '/not/normalized/someName.E')).
+	module := visitor ensureModule: famix.
 
 	self assert: module class equals: FASTFortran2kModule.
 	self assert: module name equals: 'someName_mod'.
@@ -36,81 +37,15 @@ FASTFortranProcedureTransformationVisitorTest >> testEnsureModuleOnce [
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testEnsureModuleTwice [
 
-	| module |
+	| module famix |
 
-	module := visitor ensureModule: 'someName_mod'.
+	famix := (FamixF77PUSubroutine new programFile: (FamixF77ProgramFile new filename: '/not/normalized/someName.E')).
+	module := visitor ensureModule: famix.
 
 	self assert: module class equals: FASTFortran2kModule.
 	self assert: module name equals: 'someName_mod'.
 
-	self assert: (visitor ensureModule: 'someName_mod') equals: module
-]
-
-{ #category : 'tests' }
-FASTFortranProcedureTransformationVisitorTest >> testEsopeTwoSegmentsInTwoModules [
-
-		"
---- someFile.seg ----
-   subroutine _$someFile_seg
-	segment foo
-	end segment
-
-	segment bar
-	end segment
-	end
-
-
----- foo_mod.f90 -----
-module foo_mod
-	...
-   type :: foo
-   		...
-   end type foo
-	...
-end module foo_mod
-
-
----- bar_mod.f90 -----
-module bar_mod
-	...
-   type :: bar
-   		...
-   end type bar
-	...
-end module bar_mod
-	"
-
-	| stmt res f2ksegment segment_foo segment_bar fastFakesubroutine |
-
-	self skip: '#TODO: remove this test or improving it to handle segment in programFile ? '.
-
-	segment_foo := self segment: 'foo' attributes: #().
-	segment_bar := self segment: 'bar' attributes: #().
-
-	fastFakesubroutine := self subroutine: '_$someFile_seg'.
-	fastFakesubroutine statementBlock: (self statementBlock: {segment_foo . segment_bar }).
-	
-	fastProgramFile addProgramUnit: fastFakesubroutine.
-
-	res := fastProgramFile accept: visitor.
-
-	self assert: res class equals: FASTFortran2kModule.
-	self assert: res name equals: 'foo_m'.
-	
-	f2ksegment := res statementBlock statements detect: [ :e | e class = FASTFortran2kDerivedTypeDefinition ].
-	
-	self assert: f2ksegment name equals: 'foo'.
-	
-	self assert: f2ksegment fields size equals: 1.
-	
-	stmt := f2ksegment fields anyOne.
-	self assert: stmt class equals: FASTFortran2kVariableDeclarationStatement.
-	self assert: stmt type class equals: FASTFortran2kIntegerType.
-	self assert: stmt declarators size equals: 1.
-	
-	stmt := stmt declarators first.
-	self assert: stmt class equals: FASTFortran2kVariableDeclarator.
-	self assert: stmt name equals: 'bar'.
+	self assert: (visitor ensureModule: famix) equals: module
 ]
 
 { #category : 'tests' }

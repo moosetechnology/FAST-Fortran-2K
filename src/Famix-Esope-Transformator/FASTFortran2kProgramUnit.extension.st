@@ -14,7 +14,26 @@ FASTFortran2kProgramUnit >> addStatement: f2kStatement [
 ]
 
 { #category : '*Famix-Esope-Transformator' }
+FASTFortran2kProgramUnit >> addUse: usedName [
+
+    self statementBlock statements
+        detect: [ :statement | 
+            statement class = FASTFortran2kUseStatement
+                and: [ statement name asLowercase = usedName asLowercase ] ]
+        ifNone: [ 
+            self statementBlock statements
+                addFirst: (self mooseModel newUseStatement name: usedName) 
+        ]
+]
+
+{ #category : '*Famix-Esope-Transformator' }
 FASTFortran2kProgramUnit >> initBody [
 
 	self statementBlock: self mooseModel newStatementBlock
+]
+
+{ #category : '*Famix-Esope-Transformator' }
+FASTFortran2kProgramUnit >> useSource [
+
+	self subclassResponsibility 
 ]

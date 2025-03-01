@@ -2,24 +2,12 @@ Class {
 	#name : 'FASTFortranUseTransformationVisitor',
 	#superclass : 'FASTFortranAbstractTransformationVisitor',
 	#instVars : [
-		'parentTransformator',
-		'model'
+		'parentTransformator'
 	],
-	#category : 'Famix-Esope-Transformator',
-	#package : 'Famix-Esope-Transformator'
+	#category : 'Famix-Esope-Transformator-Visitors',
+	#package : 'Famix-Esope-Transformator',
+	#tag : 'Visitors'
 }
-
-{ #category : 'accessing' }
-FASTFortranUseTransformationVisitor >> model [
-
-	^model
-]
-
-{ #category : 'accessing' }
-FASTFortranUseTransformationVisitor >> model: anObject [
-
-	model := anObject
-]
 
 { #category : 'accessing' }
 FASTFortranUseTransformationVisitor >> parentTransformator [
@@ -48,7 +36,7 @@ FASTFortranUseTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsop
 	aFASTEsopeIncludeStatement famixInclude included types
 		ifNotNil: [ :types |
 			types do: [ :type |
-				self parentTransformator useNeeded:  programUnit -> type
+				self useNeeded:  (programUnit -> type)
 			]
 		]
 	
@@ -140,6 +128,18 @@ FASTFortranUseTransformationVisitor >> visitFASTFortranCallStatement: aFASTFortr
 	super visitFASTFortranCallStatement: aFASTFortranCallStatement
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortranUseTransformationVisitor >> visitFASTFortranExternalStatement: aFASTFortranExternalStatement [
+	"here we know for sure this will need use statement since it is an external procedure
+	- if a use statement with this name already exists, we do nothing othewise we can create a one
+	We can ask module name with: aFASTFortranExternalStatement famix migratedModuleName
+	
+	"
+	self useNeeded: 
+		(aFASTFortranExternalStatement famix programUnit 
+		-> aFASTFortranExternalStatement famix externalProcedure)
+]
+
 { #category : 'visiting' }
 FASTFortranUseTransformationVisitor >> visitFASTFortranFieldAccess: aFASTFortranFieldAccess [ 
 	|  pointer pointed |
@@ -161,4 +161,8 @@ FASTFortranUseTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFortra
 		ifFalse: [ self useNeeded: (caller -> called) ].
 
 	super visitFASTFortranFunctionCall: aFASTFortranFunctionCall
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranUseTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
 ]

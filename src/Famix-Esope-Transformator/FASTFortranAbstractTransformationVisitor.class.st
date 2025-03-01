@@ -5,8 +5,9 @@ Class {
 		'stack',
 		'filename'
 	],
-	#category : 'Famix-Esope-Transformator',
-	#package : 'Famix-Esope-Transformator'
+	#category : 'Famix-Esope-Transformator-Visitors',
+	#package : 'Famix-Esope-Transformator',
+	#tag : 'Visitors'
 }
 
 { #category : 'accessing' }
@@ -26,7 +27,7 @@ FASTFortranAbstractTransformationVisitor >> fortran2k: fastFortran2kClass traceB
 
 	| fortran2kEntity |
 	fortran2kEntity := fastFortran2kClass new
-		mooseModel: self model ;
+		mooseModel: self model2k ;
 		yourself.
 	fortranEntity startPos
 		ifNil: [ fortran2kEntity startPos: 0 ; endPos: 0 ]
@@ -44,7 +45,7 @@ FASTFortranAbstractTransformationVisitor >> initialize [
 ]
 
 { #category : 'accessing' }
-FASTFortranAbstractTransformationVisitor >> model [
+FASTFortranAbstractTransformationVisitor >> model2k [
 
 	self subclassResponsibility 
 ]
@@ -59,20 +60,4 @@ FASTFortranAbstractTransformationVisitor >> stack [
 FASTFortranAbstractTransformationVisitor >> visitFASTFortranList: list [
 
 	^ list collect: [ :item | item accept: self ]
-]
-
-{ #category : 'visiting - statements' }
-FASTFortranAbstractTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
-
-	| varDeclarator |
-	varDeclarator := self model newVariableDeclarator
-		  name: aFASTFortranVariableDeclarator name;
-		  yourself.
-		
-	varDeclarator dimensions:
-		(varDeclarator dimensions collect: [ :dimension | 
-			dimension accept: self
-		]).
-
-	^varDeclarator 
 ]

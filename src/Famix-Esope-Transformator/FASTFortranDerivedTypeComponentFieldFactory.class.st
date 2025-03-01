@@ -61,7 +61,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> asVariableDeclaration [
 	| stmt declarator |
 	stmt := self model newVariableDeclarationStatement.
 	stmt declaredType: (type accept: (FASTFortranBehavioralTransformationVisitor new 
-		model: self model )).
+		model2k: self model )).
 
 	declarator := self model newVariableDeclarator.
 	declarator name: name.
@@ -131,7 +131,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> fieldDeclarator: aFastFortranVari
 		select: [ :arrayRange | arrayRange upperBound isNotNil ]
 		thenCollect: [ :arrayRange |
 			arrayRange upperBound accept: (FASTFortranBehavioralTransformationVisitor new
-				model: self model
+				model2k: self model
 			)
 	])
 ]

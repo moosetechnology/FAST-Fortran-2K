@@ -41,7 +41,6 @@ Class {
 		'nameListStatement',
 		'openStatement',
 		'optionsStatement',
-		'parameterStatement',
 		'pauseStatement',
 		'pragmaStatement',
 		'printStatement',
@@ -300,10 +299,6 @@ FASTFortran2kGenerator >> defineClasses [
 { #category : 'definition' }
 FASTFortran2kGenerator >> defineClasses2k [
 
-	nameEntity := self
-		              newClassNamed: #NameEntity
-		              comment: 'Im an item of access-id-list'.
-
 	classDeclarationStatement := self
 		                             newClassNamed:
 		                             #ClassDeclarationStatement
@@ -350,6 +345,10 @@ FASTFortran2kGenerator >> defineClasses2k [
 	importStatement := self newClassNamed: #ImportStatement comment: ''.
 
 	module := self newClassNamed: #Module comment: 'I represent a module'.
+
+	nameEntity := self
+		              newClassNamed: #NameEntity
+		              comment: 'Im an item of access-id-list'.
 
 	pointerAssignmentStatement := self
 		                              newClassNamed:
@@ -609,7 +608,6 @@ FASTFortran2kGenerator >> defineFASTClasses [
 		               comment:
 		               'The PROGRAM statement identifies the program unit as a main program. program. For the loader, the main program is always named MAIN. The PROGRAM statement serves only the person who reads the program'.
 
-
 	procedure := self
 		             newClassNamed: #Procedure
 		             comment:
@@ -736,8 +734,6 @@ FASTFortran2kGenerator >> defineHierarchy [
 	nameListStatement --|> abstractStatement.
 	openStatement --|> abstractIOStatement.
 	optionsStatement --|> abstractStatement.
-	parameterStatement --|> abstractStatement.
-	parameterStatement --|> tWithDeclarators.
 	pauseStatement --|> abstractStatement.
 	pragmaStatement --|> abstractStatement.
 	printStatement --|> abstractStatement.
@@ -901,6 +897,9 @@ FASTFortran2kGenerator >> defineProperties [
 
 	super defineProperties.
 
+	(abstractStatement property: #label type: #String) comment:
+		'Determines the statement label which consists of 1 to 5 digits, with at least one nonzero'.
+
 	(callStatement property: #name type: #String) comment:
 		'Name of called entity (a subroutine)'.
 
@@ -917,22 +916,19 @@ FASTFortran2kGenerator >> defineProperties [
 
 	(labelReference property: #label type: #String) comment: 'The value of the label. The value is an integer literal, stored in a String'.
 
+	(pauseStatement property: #displayArgument type: #String) comment:
+		'Optional. Displayed when the program pauses. String of no more that 5 digits or a character constant'.
+
 	(programFile property: #filename type: #String).
 
 	(returnStatement property: #alternateReturnLabel type: #String)
 		comment: 'Optional. Expression of type INTEGER or REAL'.
-
-	(pauseStatement property: #displayArgument type: #String) comment:
-		'Optional. Displayed when the program pauses. String of no more that 5 digits or a character constant'.
 
 	(stopStatement property: #displayArgument type: #String) comment:
 		'Optional. Displayed when the program stops. String of no more that 5 digits or a character constant'.
 
 	(tBinaryExpression property: #operator type: #String) comment:
 		'Binary expression operator'.
-
-	(abstractStatement property: #label type: #String) comment:
-		'Determines the statement label which consists of 1 to 5 digits, with at least one nonzero'.
 
 	self defineProperties2k.
 ]
@@ -943,13 +939,14 @@ FASTFortran2kGenerator >> defineProperties2k [
 	(derivedTypeDefinition property: #superType type: #String) comment:
 		'I represent the name of the super type'.
 
-	(interface property: #isAbstractInterface type: #Boolean)
-		comment: 'Im abstract ?'.
-		
-	(sourceCodeString property: #content type: #String)
-		comment: 'The source code string to export'.
 	(formattedCodeString property: #values type: #Object)
 		comment: 'Values of the variables to format the string'.
+
+	(interface property: #isAbstractInterface type: #Boolean)
+		comment: 'Im abstract ?'.
+
+	(sourceCodeString property: #content type: #String)
+		comment: 'The source code string to export'.
 
 	((tWithModifiers property: #modifiers type: #Object defaultValue: #())
 		comment: 'A collection of modifiers (strings)').
@@ -1316,10 +1313,6 @@ FASTFortran2kGenerator >> defineStatements [
 	optionsStatement := self
 		                    newClassNamed: #OptionsStatement
 		                    comment: 'I represent Fortran Options statement'.
-	parameterStatement := self
-		                      newClassNamed: #ParameterStatement
-		                      comment:
-		                      'I represent Fortran Parameter statement'.
 	pauseStatement := self
 		                  newClassNamed: #PauseStatement
 		                  comment: 'I represent Fortran Pause statement'.

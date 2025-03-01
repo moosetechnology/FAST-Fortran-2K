@@ -5,6 +5,44 @@ Class {
 	#package : 'Famix-Esope-Transformator-Tests'
 }
 
+{ #category : 'running' }
+FASTFortranUseTransformationVisitorTest >> newVisitor [
+	"override because there is no model in FASTFortranUseTransformationVisitor"
+	| transformator |
+	transformator := FamixEsopeToFortran2k new.
+
+	^FASTFortranUseTransformationVisitor new 
+		parentTransformator: transformator ;
+		"model: FASTFortran2kModel new ;"
+		yourself
+]
+
+{ #category : 'tests-statement' }
+FASTFortranUseTransformationVisitorTest >> testEsopeToF2kExternalStatement [
+	| stmt usesNeeded |
+
+	self programEmpty.
+
+	stmt := (self externalStatement: 'mypnt').
+	fastMainProgram statementBlock addStatement: stmt.
+	stmt famix: (
+		FamixF77ExternalDeclaration new 
+			name: 'mypnt'; 
+			programUnit: fastMainProgram famix; 
+			externalProcedure: FamixF77PUSubroutine new
+			yourself
+	).
+
+	stmt := stmt accept: visitor.
+
+	usesNeeded := self usesNeeded.
+
+	self assert: usesNeeded size equals: 1.
+
+	self assert: usesNeeded anyOne key class equals: FamixF77PUMain.
+	self assert: usesNeeded anyOne value class equals: FamixF77PUSubroutine.
+]
+
 { #category : 'tests' }
 FASTFortranUseTransformationVisitorTest >> testProcedureWithPointeurDeclaration [
 
@@ -162,10 +200,4 @@ FASTFortranUseTransformationVisitorTest >> testSubroutineWithFunctionStatementCa
 FASTFortranUseTransformationVisitorTest >> usesNeeded [ 
 
 	^visitor parentTransformator usesNeeded
-]
-
-{ #category : 'running' }
-FASTFortranUseTransformationVisitorTest >> visitorClass [ 
-
-	^FASTFortranUseTransformationVisitor
 ]

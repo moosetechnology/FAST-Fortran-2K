@@ -1,9 +1,6 @@
 Class {
 	#name : 'FASTFortran2kExporterVisitorTest',
-	#superclass : 'TestCase',
-	#instVars : [
-		'visitor'
-	],
+	#superclass : 'FASTFortranAbstractVisitorTest',
 	#category : 'FAST-Fortran2k-Visitors-Tests',
 	#package : 'FAST-Fortran2k-Visitors-Tests'
 }
@@ -102,6 +99,12 @@ FASTFortran2kExporterVisitorTest >> makeType: typeDescription [
 FASTFortran2kExporterVisitorTest >> newVisitor [
 
 	^FASTFortran2kExporterVisitor new
+]
+
+{ #category : 'running' }
+FASTFortran2kExporterVisitorTest >> readStatement: args ioParams: params [
+
+	^self ioStatement: FASTFortran2kReadStatement ioParams: params arguments: args
 ]
 
 { #category : 'running' }
@@ -297,7 +300,7 @@ FASTFortran2kExporterVisitorTest >> testOpenStatement [
 ]
 
 { #category : 'testing - program-units' }
-FASTFortran2kExporterVisitorTest >> testProgram [
+FASTFortran2kExporterVisitorTest >> testPointerDeclarationStatement [
 	"
 program demo
 	implicit none
@@ -306,27 +309,16 @@ end program demo
 "
 
 	| stmt |
-	stmt := FASTFortran2kProgramMain new
-		name: 'demo';
-		statementBlock:
-			(FASTFortran2kStatementBlock new
-				statements: {
-					FASTFortran2kImplicitStatement new
-					.
-					(FASTFortran2kVariableDeclarationStatement new
-						declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
-						declarators: { FASTFortran2kVariableDeclarator new name: 'p' } ;
-						yourself) } ) ;
-		backTrace: self stubFile ;
+	stmt := FASTFortran2kVariableDeclarationStatement new
+		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
+		declarators: { FASTFortran2kVariableDeclarator new name: 'p' } ;
+		modifiers: #( pointer ) ;
 		yourself.
 
 	self
 		assertExport: stmt
 		equals:
-'program demo
-  implicit none
-  type (point_t) :: p
-end program demo
+'type (point_t), pointer :: p
 '
 ]
 
@@ -345,6 +337,27 @@ end program demo
 
 	self assertExport: stmt equals: 'program demo
 end program demo
+'
+]
+
+{ #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testReadStatementWellFormatted [
+	| stmt |
+
+	self skip: '#TODO: Arguments in Write and Read are not AssignmentExpression' .
+
+	stmt := self
+		readStatement: #(V)
+		ioParams: {
+			1 .
+			self assignementExpression: #rec value: 3 .
+			self assignementExpression: #iostat value: #N .
+			self assignementExpression: #err value: 8
+		}.
+
+	self
+		assertExport: stmt
+		equals: 'read (1, rec=3, iostat=N, err=8) V
 '
 ]
 
@@ -369,7 +382,6 @@ end type book
 FASTFortran2kExporterVisitorTest >> testTypeBoxedBookDefinition [
 
 	| stmt |
-	self skip: 'TODO'.
 
 	stmt := self segmentBoxedBookDefinition.
 
@@ -377,7 +389,7 @@ FASTFortran2kExporterVisitorTest >> testTypeBoxedBookDefinition [
 		assertExport: stmt
 		equals:
 'type, extends(segment) :: boxed_book
-  type(book), pointer, private :: this
+  type (book), pointer, private :: this
 end type boxed_book
 '
 ]
@@ -387,14 +399,15 @@ FASTFortran2kExporterVisitorTest >> testTypeDeclarationStatement [
 
 	| stmt |
 	stmt := FASTFortran2kVariableDeclarationStatement new
-		 declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
-		 declarators: { (FASTFortran2kVariableDeclarator new name: 'p1') } ;
-		 yourself.
+		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
+		declarators: { (FASTFortran2kVariableDeclarator new name: 'p1') } ;
+		modifiers: #( pointer ) ;
+		yourself.
 
 	self
 		assertExport: stmt
 		equals:
-'type (point_t) :: p1
+'type (point_t), pointer :: p1
 '
 ]
 
@@ -403,17 +416,18 @@ FASTFortran2kExporterVisitorTest >> testTypeDeclarationsStatement [
 
 	| stmt |
 	stmt := FASTFortran2kVariableDeclarationStatement new
-		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t');
+		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
 		declarators: {
 			(FASTFortran2kVariableDeclarator new name: 'p1')
 			.
-			(FASTFortran2kVariableDeclarator new name: 'p2') };
+			(FASTFortran2kVariableDeclarator new name: 'p2') } ;
+		modifiers: #( pointer ) ;
 		yourself.
 
 	self
 		assertExport: stmt
 		equals:
-'type (point_t) :: p1, p2
+'type (point_t), pointer :: p1, p2
 '
 ]
 
@@ -449,11 +463,9 @@ end type point_t
 FASTFortran2kExporterVisitorTest >> testUseStatementIntrinsicSimple [
 	| stmt |
 
-	self skip: 'TODO'.
-
 	stmt := FASTFortran2kUseStatement new 
 		name: 'module_name'; 
-		"isIntrinsic: true;"
+		modifiers: #( intrinsic );
 		yourself.
 
 	self
@@ -533,8 +545,6 @@ FASTFortran2kExporterVisitorTest >> testUseStatementSimple [
 
 	| stmt |
 
-	self skip: 'TODO'.
-
 	stmt := FASTFortran2kUseStatement new name: 'module_name'.
 
 	self assertExport: stmt equals: 'use :: module_name
@@ -544,8 +554,6 @@ FASTFortran2kExporterVisitorTest >> testUseStatementSimple [
 { #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testUseStatementWithRenaming [
 	| stmt |
-
-	self skip: 'TODO'.
 
 	stmt := FASTFortran2kUseStatement new 
 		name: 'module_name'; 
@@ -565,8 +573,6 @@ FASTFortran2kExporterVisitorTest >> testUseStatementWithRenaming [
 FASTFortran2kExporterVisitorTest >> testUseStatementWithRenamings [
 
 	| stmt |
-
-	self skip: 'TODO'.
 
 	stmt := FASTFortran2kUseStatement new
 		name: 'module_name';

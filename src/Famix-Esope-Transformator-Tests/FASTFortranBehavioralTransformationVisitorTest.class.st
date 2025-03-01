@@ -8,6 +8,21 @@ Class {
 	#package : 'Famix-Esope-Transformator-Tests'
 }
 
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> includeStatement: filename [
+
+	| entity |
+	entity := FamixF77ProgramFile new filename: filename.
+	entity := FamixF77IncludedFile new programFile: entity.
+	entity := FamixF77Include new included: entity.
+
+	^FASTEsopeIncludeStatement new
+		filename: 'included/file' ;
+		famixInclude: entity ;
+		startPos: 5 ;
+		endPos: 42.
+]
+
 { #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testArrayDeclaration [
 	| stmt dst |
@@ -20,52 +35,8 @@ FASTFortranBehavioralTransformationVisitorTest >> testArrayDeclaration [
 		equals: FASTFortran2kVariableDeclarationStatement.
 ]
 
-{ #category : 'running' }
-FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementLiteralValue [
-	| stmt res |
-	stmt := self assignementStatement: #aVar value: (self logicalLiteral: '.true.').
-	
-	res := stmt accept: visitor.
-	
-	self assert: res class equals: FASTFortran2kAssignmentStatement.
-	self assert: res variable class equals: FASTFortran2kScalarVariable.
-	self assert: res expression class equals: FASTFortran2kBooleanLiteral.
-	
-	self assert: res variable name equals: 'aVar'.
-	self assert: res expression primitiveValue equals: '.true.'.
-]
-
-{ #category : 'tests' }
-FASTFortranBehavioralTransformationVisitorTest >> testComment [
-	| cmt dst |
-	cmt := self comment: 'This is a comment'.
-	
-	dst := cmt accept: visitor.
-	
-	self assert: dst class equals: FASTFortran2kComment.
-	self assert: dst content equals: 'This is a comment'.
-]
-
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testDoStatement [
-	| stmt res loopControl |
-
-	stmt := self doStatement: #(i 1 max 1) statements: #().
-	
-	res := stmt accept: visitor.
-
-	self assert: res class equals: FASTFortran2kDoStatement.
-	
-	loopControl := res loopControl.
-	
-	self assert: loopControl class equals: FASTFortran2kLoopControlExpression.
-	self assert: loopControl init class equals: FASTFortran2kAssignmentExpression.
-	self assert: loopControl init variable class equals: FASTFortran2kScalarVariable.
-	self assert: loopControl init expression class equals: FASTFortran2kIntegerLiteral.
-]
-
-{ #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kArrayFieldAccessElement [
+FASTFortranBehavioralTransformationVisitorTest >> testArrayFieldAccessElement [
 	| stmt res |
 
 	self programEmpty.
@@ -88,7 +59,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kArrayFieldAccess
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kArrayFieldAccessSize [
+FASTFortranBehavioralTransformationVisitorTest >> testArrayFieldAccessSize [
 	| stmt res expression argument |
 
 	self programEmpty.
@@ -121,7 +92,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kArrayFieldAccess
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kArrayVariable [
+FASTFortranBehavioralTransformationVisitorTest >> testArrayVariable [
 	| stmt res indice |
 
 	stmt := self arrayVariable: #b indice: '1'.
@@ -139,7 +110,22 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kArrayVariable [
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kAsterisk [
+FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementLiteralValue [
+	| stmt res |
+	stmt := self assignementStatement: #aVar value: (self logicalLiteral: '.true.').
+	
+	res := stmt accept: visitor.
+	
+	self assert: res class equals: FASTFortran2kAssignmentStatement.
+	self assert: res variable class equals: FASTFortran2kScalarVariable.
+	self assert: res expression class equals: FASTFortran2kBooleanLiteral.
+	
+	self assert: res variable name equals: 'aVar'.
+	self assert: res expression primitiveValue equals: '.true.'.
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testAsterisk [
 	| stmt res |
 
 	stmt := FASTFortranAsterisk new.
@@ -153,7 +139,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kAsterisk [
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kCloseStatement [
+FASTFortranBehavioralTransformationVisitorTest >> testCloseStatement [
 	| stmt res |
 
 	stmt := FASTFortranCloseStatement new.
@@ -164,8 +150,19 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kCloseStatement [
 
 ]
 
+{ #category : 'tests' }
+FASTFortranBehavioralTransformationVisitorTest >> testComment [
+	| cmt dst |
+	cmt := self comment: 'This is a comment'.
+	
+	dst := cmt accept: visitor.
+	
+	self assert: dst class equals: FASTFortran2kComment.
+	self assert: dst content equals: 'This is a comment'.
+]
+
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kContinueStatement [
+FASTFortranBehavioralTransformationVisitorTest >> testContinueStatement [
 	| stmt res |
 
 	stmt := FASTFortranContinueStatement new label: '42'.
@@ -177,30 +174,81 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kContinueStatemen
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kExternalStatement [
+FASTFortranBehavioralTransformationVisitorTest >> testDoStatement [
+	| stmt res loopControl |
+
+	stmt := self doStatement: #(i 1 max 1) statements: #().
+	
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kDoStatement.
+	
+	loopControl := res loopControl.
+	
+	self assert: loopControl class equals: FASTFortran2kLoopControlExpression.
+	self assert: loopControl init class equals: FASTFortran2kAssignmentExpression.
+	self assert: loopControl init variable class equals: FASTFortran2kScalarVariable.
+	self assert: loopControl init expression class equals: FASTFortran2kIntegerLiteral.
+]
+
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeCommandSegact [
+
+	| dst segCommand |
+	segCommand := self segact: { #v }.
+
+	dst := segCommand accept: visitor.
+
+	self assert: dst class equals: FASTFortran2kComment.
+	self assert: dst content equals: '[ooo] segact, v'
+]
+
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeCommandSegdes [
+
+	| dst segCommand |
+	segCommand := self segdes: { #v }.
+
+	dst := segCommand accept: visitor.
+
+	self assert: dst class equals: FASTFortran2kComment.
+	self assert: dst content equals: '[ooo] segdes, v'
+]
+
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeCommandSegini [
+
+	| dst segCommand |
+	segCommand := self segini: { #v }.
+
+	dst := segCommand accept: visitor.
+
+	self assert: dst class equals: FASTFortran2kCallStatement.
+	self assert: dst name equals: 'segini'.
+	self assert: dst arguments size equals: 1
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testExternalDeclaration [
 	| stmt res |
 
-	self programEmpty.
+	stmt := FASTFortranExternalStatement new name: 'anExternal'.
 
-	stmt := (self externalStatement: 'mypnt').
-	fastMainProgram statementBlock addStatement: stmt.
-	stmt famix: (
-		FamixF77ExternalDeclaration new 
-			name: 'mypnt'; 
-			programUnit: fastMainProgram famix; 
-			yourself
-	).
+	self assert: visitor externalDeclared isEmpty.
 
 	res := stmt accept: visitor.
 
 	self assert: res isNil.
-	self assert: visitor parentTransformator usesNeeded size equals: 1.
-	self assert: visitor parentTransformator usesNeeded anyOne key equals: fastMainProgram famix.
-	self assert: visitor parentTransformator usesNeeded anyOne value isNil.
+
+	self assert: visitor externalDeclared size equals: 1.
+	self assert: visitor externalDeclared anyOne equals: 'anExternal'
+
+	
+	
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kGoToStatement [
+FASTFortranBehavioralTransformationVisitorTest >> testGoToStatement [
 	| stmt res entity |
 
 	stmt := self gotoStatement: 100.
@@ -216,7 +264,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kGoToStatement [
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kIfBlockStatement [
+FASTFortranBehavioralTransformationVisitorTest >> testIfBlockStatement [
 
 	| stmt res entity |
 	stmt := self
@@ -248,7 +296,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kIfBlockStatement
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kIfBlockStatementEmpty [
+FASTFortranBehavioralTransformationVisitorTest >> testIfBlockStatementEmpty [
 
 	| stmt res |
 	stmt := self ifBlock: (self binary: '.gt.' left: #y right: 5) then: #() else:  #().
@@ -263,7 +311,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kIfBlockStatement
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kIfLogicalStatement [
+FASTFortranBehavioralTransformationVisitorTest >> testIfLogicalStatement [
 
 	| stmt res entity |
 	stmt := self
@@ -288,7 +336,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kIfLogicalStateme
 ]
 
 { #category : 'tests-expression' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kImpliedDoExpression [
+FASTFortranBehavioralTransformationVisitorTest >> testImpliedDoExpression [
 	| res expression entity |
 
 	self programEmpty.
@@ -312,7 +360,75 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kImpliedDoExpress
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kOpenStatement [
+FASTFortranBehavioralTransformationVisitorTest >> testIncludedStatementEmpty [
+
+	| stmt res |
+	stmt := self includeStatement: 'included/file.f'.
+	visitor parentTransformator includedFiles at: 'included/file.f' put: #().
+
+	res := stmt accept: visitor.
+
+	self assert: res size equals: 1.
+	res := res anyOne.
+	
+	self assert: res class equals: FASTFortran2kComment.
+	self assert: res content equals: '[ooo] empty #include included/file'.
+	self assert: res startPos equals: 5.
+	self assert: res endPos equals: 39
+
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testIncludedStatementOnlyComments [
+
+	| stmt res |
+	stmt := self includeStatement: 'included/file.f'.
+	visitor parentTransformator includedFiles at: 'included/file.f' put: {
+		FASTFortran2kComment new .
+		FASTFortran2kComment new .
+	}.
+
+	res := stmt accept: visitor.
+
+	self assert: res size equals: 1.
+	res := res anyOne.
+	
+	self assert: res class equals: FASTFortran2kComment.
+	self assert: res content equals: '[ooo] empty #include included/file'.
+	self assert: res startPos equals: 5.
+	self assert: res endPos equals: 39
+
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testIncludedStatementWithVariableDeclaration [
+
+	| stmt res entity |
+	stmt := self includeStatement: 'included/file.f'.
+	visitor parentTransformator includedFiles at: 'included/file.f' put: {
+		FASTFortran2kVariableDeclarationStatement new
+	}.
+
+	res := stmt accept: visitor.
+
+	self assert: res size equals: 3.
+
+	entity := res first.
+	self assert: entity class equals: FASTFortran2kComment.
+	self assert: entity content equals: '[ooo] #include included/file'.
+
+	entity := res second.
+	self assert: entity class equals: FASTFortran2kVariableDeclarationStatement.
+
+	entity := res third.
+	self assert: entity class equals: FASTFortran2kComment.
+	self assert: entity content equals: '[ooo] #end-include included/file'.
+
+
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testOpenStatement [
 	| stmt res entity |
 
 	stmt := FASTFortranOpenStatement new
@@ -347,7 +463,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kOpenStatement [
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kReadStatement [
+FASTFortranBehavioralTransformationVisitorTest >> testReadStatement [
 	| stmt res entity |
 
 	stmt := self readStatement: #( 'x' ).
@@ -368,7 +484,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kReadStatement [
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kReturnStatement [
+FASTFortranBehavioralTransformationVisitorTest >> testReturnStatement [
 
 	| stmt res |
 	stmt := self returnStatement: 2.
@@ -381,7 +497,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kReturnStatement 
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kScalarFieldAccess [
+FASTFortranBehavioralTransformationVisitorTest >> testScalarFieldAccess [
 	| stmt res |
 
 	self programEmpty.
@@ -401,7 +517,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kScalarFieldAcces
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kStopStatement [
+FASTFortranBehavioralTransformationVisitorTest >> testStopStatement [
 
 	| stmt res |
 	stmt := FASTFortranStopStatement new
@@ -415,7 +531,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kStopStatement [
 ]
 
 { #category : 'tests-expression' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kUnaryExpression [
+FASTFortranBehavioralTransformationVisitorTest >> testUnaryExpression [
 	| res expression |
 
 	self programEmpty.
@@ -432,7 +548,39 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kUnaryExpression 
 ]
 
 { #category : 'tests-statement' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeToF2kWriteStatement [
+FASTFortranBehavioralTransformationVisitorTest >> testVariableDeclarationForExternal [
+	| stmt res |
+
+	stmt := FASTFortranVariableDeclarationStatement new
+		declarators: { self variableDeclarator: 'var' } ;
+		declaredType: FASTFortranIntegerType new.
+	visitor externalDeclared: { 'var' }.
+
+	res := stmt accept: visitor.
+
+	self assert: res isNil.
+
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testVariableDeclarationsSomeExternal [
+	| stmt res |
+
+	stmt := FASTFortranVariableDeclarationStatement new
+		declarators: { self variableDeclarator: 'var' .self variableDeclarator: 'otherVar' } ;
+		declaredType: FASTFortranIntegerType new.
+	visitor externalDeclared: { 'var' }.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: res declarators size equals: 1.
+	self assert: res declarators anyOne name equals: 'otherVar'
+
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testkWriteStatement [
 	| stmt res entity |
 
 	stmt := self writeStatement: #( 'message' ).

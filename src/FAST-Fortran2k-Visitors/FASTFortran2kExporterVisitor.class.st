@@ -56,6 +56,7 @@ FASTFortran2kExporterVisitor >> initialize [
 
 	super initialize.
 
+	self breakLongLines: false.
 	linesDescription := #().
 ]
 
@@ -452,9 +453,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDefinition: aFASTFo
 		newLine.
 
 	self indent.
-	aFASTFortran2kDerivedTypeDefinition statements do: [ :derivedTypeComponent |
-		derivedTypeComponent accept: self 
-	].
+	aFASTFortran2kDerivedTypeDefinition statements 
+		do: [ :statement | statement accept: self ].
 	self unindent.
 
 	self
@@ -619,8 +619,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFu
 
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCallStatement: aFASTFortran2kFunctionCallStatement [ 
-	
-	self visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCallStatement
+
+	self skipLine: aFASTFortran2kFunctionCallStatement.
+
+	self 
+		indented: '';
+		visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCallStatement;
+		newLine 
 ]
 
 { #category : 'visiting' }
@@ -818,6 +823,18 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kModifier: aFASTFortran2kModifi
 		<< aFASTFortran2kModifier token
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kModifiers: modifiers [
+	"modifier are simple bytestring"
+
+	modifiers ifNotEmpty: [  
+			self << ', '.
+			modifiers 
+				do: [ :modifier | self << modifier ]
+				separatedBy: [ self << ', ' ]
+	 	].
+]
+
 { #category : 'visiting - programUnits' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kModule: aFASTFortranModule [
 
@@ -832,10 +849,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kModule: aFASTFortranModule [
 	aFASTFortranModule statementBlock accept: self.
 	
 	aFASTFortranModule procedures ifNotEmpty: [ :procedures |
-		self << 'contains'.
 		self
 			newLine ;
+			<< 'contains' ;
+			newLine ;
+			newLine ;
 			indent.
+
 		procedures do: [ :procedure | procedure accept: self ].
 		self
 			unindent ;
@@ -1242,13 +1262,9 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUs
 
 	self skipLine: aFASTFortran2kUseStatement.
 
-	self << 'use'.
+	self indented: 'use'.
 
-	aFASTFortran2kUseStatement modifiers 
-		ifNotEmpty: [ :modifiers | 
-			self << ', '.
-			self visitNodeListSeparatedByCommas: modifiers 
-		].
+	self visitFASTFortran2kModifiers: aFASTFortran2kUseStatement modifiers.
 
 	self
 		<< ' :: ';
@@ -1291,17 +1307,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVariable: aFASTFortran2kVariab
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarationStatement: aFASTFortran2kVariableDeclarationStatement [
 
-	| comma |
-
 	self skipLine: aFASTFortran2kVariableDeclarationStatement.
 
 	self indented: ''.
 	aFASTFortran2kVariableDeclarationStatement declaredType accept: self.
 
-	comma := ''.
-	"aFASTFortranVariableDeclarationStatement isPointer ifTrue: [ self << comma ; << ' pointer'. comma := ',' ].
-	aFASTFortranVariableDeclarationStatement visibility ifNotNil: [ :viz | self << comma ; << viz. comma := ',' ]. "
-	self flag: #TODO. "aFASTFortranVariableDeclarationStatement isTarget ifTrue: [ :viz | self << comma ; << ' target'. comma := ',' ]. "
+	self visitFASTFortran2kModifiers: aFASTFortran2kVariableDeclarationStatement modifiers.
 	
 	self << ' :: '.
 	self visitNodeListSeparatedByCommas:

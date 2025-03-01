@@ -5,10 +5,12 @@ Class {
 		'allModules',
 		'usesNeeded',
 		'famixModel',
-		'fast2kModel'
+		'fast2kModel',
+		'includedFiles'
 	],
-	#category : 'Famix-Esope-Transformator',
-	#package : 'Famix-Esope-Transformator'
+	#category : 'Famix-Esope-Transformator-Core',
+	#package : 'Famix-Esope-Transformator',
+	#tag : 'Core'
 }
 
 { #category : 'running' }
@@ -24,20 +26,31 @@ FamixEsopeToFortran2k >> famixEsopeToFast2k [
 
 	(famixModel allWithType: FamixF77ProgramFile) do: [ :famixProgFile |
 		famixProgFile fast: (FASTFortranProgramFile new
-			filename: famixProgFile filename).
+			filename: famixProgFile filename)
+	].
 
-		self flag: '#FIXME: includedFile vs other programUnit '.
+	"dealing with all IncludedFile-s"
+	(famixModel allWithType: FamixF77IncludedFile) do: [ :famixIncludedFile || fastPUIncludedFile |
+		fastPUIncludedFile := self fastModelFor: famixIncludedFile in: famixIncludedFile programFile.
+
+		self migrateIncludedFileToFAST2k: fastPUIncludedFile.
+	].
+
+	"dealing with 'normal' PrugramUnit-s"
+	(famixModel allWithType: FamixF77ProgramFile) do: [ :famixProgFile |
 		famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
-			fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgFile.
+			(famixProgUnit class = FamixF77IncludedFile)
+				ifFalse: [ 
+					fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgUnit programFile.
 
-			fastProgramUnit ifNotNil: [ 
-				self migrateToFAST2k: fastProgramUnit.
-				
+					self migrateToFAST2k: fastProgramUnit.
+
 				"self flag: '#FIXME: cleaning, quid revolveUses'.
 				fastProgramUnit accept: fastProgramUnit mooseModel carrefourBinderCleaner"
 			 ]
 		]
-	].
+	]
+
 ]
 
 { #category : 'accessing' }
@@ -79,6 +92,12 @@ FamixEsopeToFortran2k >> getModule: filename ifAbsentPut: aBlock [
 		ifAbsentPut: aBlock
 ]
 
+{ #category : 'accessing' }
+FamixEsopeToFortran2k >> includedFiles [
+
+	^ includedFiles
+]
+
 { #category : 'initialization' }
 FamixEsopeToFortran2k >> initialize [
 
@@ -88,6 +107,26 @@ FamixEsopeToFortran2k >> initialize [
 	allModules := Dictionary new.
 	usesNeeded := Set new.
 	fast2kModel := FASTFortran2kModel new.
+	includedFiles := Dictionary new.
+
+]
+
+{ #category : 'running' }
+FamixEsopeToFortran2k >> migrateIncludedFileToFAST2k: aFASTIncludedFile [
+
+	| visitor includedStatements |
+
+	visitor := self transformationVisitor: aFASTIncludedFile transformationVisitorClass.
+	visitor filename: aFASTIncludedFile programFile filename.
+
+	includedStatements := aFASTIncludedFile accept: visitor.
+
+	includedFiles at: aFASTIncludedFile programFile filename put: includedStatements.
+
+	visitor := FASTFortranUseTransformationVisitor new
+		parentTransformator: self;
+		yourself.
+	aFASTIncludedFile accept: visitor.
 
 ]
 
@@ -102,9 +141,7 @@ FamixEsopeToFortran2k >> migrateToFAST2k: aFASTProgramUnit [
 
 	visitor := FASTFortranUseTransformationVisitor new
 		parentTransformator: self;
-		model: fast2kModel;
 		yourself.
-
 	aFASTProgramUnit accept: visitor.
 
 	^fast2kModel
@@ -115,8 +152,8 @@ FamixEsopeToFortran2k >> migrateToFAST2k: aFASTProgramUnit [
 FamixEsopeToFortran2k >> migrationSteps [
 	^{
 		'Converting famix esope model to fast2k model' -> #famixEsopeToFast2k .
-		'resolve uses statements in program unit' -> #resolveUses .
-		'export the migrated fast2k model' -> #exportFAST2k 
+		'Resolve uses statements in program unit' -> #resolveUses .
+		'Export the migrated fast2k model' -> #exportFAST2k 
 	}
 ]
 
@@ -124,14 +161,15 @@ FamixEsopeToFortran2k >> migrationSteps [
 FamixEsopeToFortran2k >> resolveUses [
 
 	"usesNeeded is a collection of associations:
-	 - user -- a FamixF77ProgramUnit
-	 - needed -- a FamixF77ProgramUnit or FamixEsopeSegment"
+	 - fmxUser -- a FamixF77ProgramUnit
+	 - fmxNeeded -- a FamixF77ProgramUnit or FamixEsopeSegment"
 
-	usesNeeded do: [ :association | | source target |
-		source := association key.
-		target := association value.
-		source fast statementBlock statements 
-			addFirst: (self fast2kModel newUseStatement name: target migratedModuleName)
+	usesNeeded do: [ :association | | fmxUser fmxNeeded |
+		fmxUser := association key.
+		fmxNeeded := association value.
+
+		fmxUser fast transformed2k useSource
+			addUse: (fmxNeeded migratedModuleName)
 	]
 ]
 
@@ -157,7 +195,7 @@ FamixEsopeToFortran2k >> transformationVisitor: visitorClass [
 
 	^visitorClass new
 		parentTransformator: self ;
-		model: fast2kModel;
+		model2k: fast2kModel;
 		yourself
 ]
 

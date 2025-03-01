@@ -76,8 +76,8 @@ FASTFortranAbstractTransformationVisitorTest >> newVisitor [
 	transformator := FamixEsopeToFortran2k new.
 
 	^ self visitorClass new 
-		parentTransformator: transformator;
-		model: transformator fast2kModel;
+		parentTransformator: transformator ;
+		model2k: FASTFortran2kModel new ;
 		yourself
 ]
 
@@ -366,6 +366,24 @@ FASTFortranAbstractTransformationVisitorTest >> programWithSegment [
 		
 ]
 
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> segact: aCollection [
+	
+	^self segmentCommand: FASTEsopeSegact with: aCollection
+]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> segdes: aCollection [
+	
+	^self segmentCommand: FASTEsopeSegdes with: aCollection
+]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> segini: aCollection [
+	
+	^self segmentCommand: FASTEsopeSegini with: aCollection
+]
+
 { #category : 'running' }
 FASTFortranAbstractTransformationVisitorTest >> segment: aName attributes: aDeclarationStatements [
 
@@ -378,12 +396,12 @@ FASTFortranAbstractTransformationVisitorTest >> segment: aName attributes: aDecl
 ]
 
 { #category : 'setup' }
-FASTFortranAbstractTransformationVisitorTest >> segmentCommand: aCommandName with: aCollection [
+FASTFortranAbstractTransformationVisitorTest >> segmentCommand: aCommandClass with: aCollection [
 	
 	| segmentCommand  |
 	aCollection ifEmpty: [ ^nil ].
 
-	segmentCommand := FASTEsopeSegini new.
+	segmentCommand := aCommandClass new.
 	aCollection do: [ :varName | | var |
 		var := self scalarVariable: varName.
 		var famixVariable: (FamixF77Variable new name: varName).
@@ -404,6 +422,7 @@ FASTFortranAbstractTransformationVisitorTest >> setUp [
 	famixProgramFile := FamixF77ProgramFile new filename: 'someFile.f'.
 
 	fastProgramFile famix: famixProgramFile.
+
 	
 ]
 

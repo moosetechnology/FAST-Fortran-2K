@@ -1335,10 +1335,10 @@ FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 FASTFortranDerivedTypeFactory >> makeSegmentModuleProlog [
 
 	^model newSourceCodeString content: '
-	use ignore_m
-	use contract_m
-	use segment_m
-	use str_m
+	use ignore_mod
+	use contract_mod
+	use segment_mod
+	use str_mod
 
 	implicit none
 	private
