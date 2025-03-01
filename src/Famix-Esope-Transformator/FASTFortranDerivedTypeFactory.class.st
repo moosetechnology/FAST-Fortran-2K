@@ -985,10 +985,14 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegmov [
 	if := model newIfBlockStatement.
 	if condition: (model newUnaryExpression
 		operator: '.not.' ;
-		expression: (model newFunctionCall
-			name: 'associated' ;
-			addArgument: (self scalarVariable: 'this') ;
-			addArgument: (self scalarVariable: 'that')) ).
+		expression: (self 
+			functionCall: 'associated' 
+			arguments: { 
+				self scalarVariable: 'this' .
+				self scalarVariable: 'that'  
+			}
+		)
+	).
 	if thenStatementBlock: (model newStatementBlock).
 	self components do: [ :fieldFactory |
 		if thenStatementBlock addStatement: (model newFormattedCodeString
@@ -1163,16 +1167,18 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 	segsup addStatement: model newEmptyStatement.
 
 	if := model newIfBlockStatement.
-	if condition: (model newFunctionCall
-		name: 'associated';
-		addArgument: (self scalarVariable: 'this');
-		yourself
+	if condition: (self 
+		functionCall: 'associated'
+		arguments: { self scalarVariable: 'this' }
 	).
 	if thenStatementBlock: (model newStatementBlock).
 	self components do: [ :fieldFactory |
-		if thenStatementBlock addStatement: (model newFormattedCodeString
-			content: 'deallocate(this%{1})' ;
-			values: { fieldFactory name } )
+		if thenStatementBlock addStatement: ( self 
+			functionCallStatement: 'deallocate'
+			arguments: {
+				self derivedTypeFieldAccessVariable: 'this' field: fieldFactory name
+			}
+		)
 	].
 	
 	if thenStatementBlock addStatement: (model newFunctionCallStatement
@@ -1325,9 +1331,10 @@ FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 	].
 
 	^self
-		if: (model newFunctionCall
-			name: 'associated';
-			addArgument: (self scalarVariable: 'this'))
+		if: ( self 
+			functionCall: 'associated' 
+			arguments: {  self scalarVariable: 'this' }
+		)
 		then: ifStatements
 ]
 
