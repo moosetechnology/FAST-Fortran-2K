@@ -658,13 +658,6 @@ FASTFortran2kTEntityCreator >> newOptionsStatement [
 ]
 
 { #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newParameterStatement [
-
-	<generated>
-	^ self add: FASTFortran2kParameterStatement new
-]
-
-{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newPauseStatement [
 
 	<generated>
