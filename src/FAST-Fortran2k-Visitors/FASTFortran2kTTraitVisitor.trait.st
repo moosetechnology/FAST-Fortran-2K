@@ -965,6 +965,13 @@ FASTFortran2kTTraitVisitor >> visitFASTFortran2kProcedure: aFASTFortran2kProcedu
 ]
 
 { #category : 'visiting' }
+FASTFortran2kTTraitVisitor >> visitFASTFortran2kProcedureParameter: aFASTFortran2kProcedureParameter [
+
+	self visitFASTTVariableEntity: aFASTFortran2kProcedureParameter
+
+]
+
+{ #category : 'visiting' }
 FASTFortran2kTTraitVisitor >> visitFASTFortran2kProgramFile: aFASTFortran2kProgramFile [
 	<generated>
 

@@ -700,6 +700,13 @@ FASTFortran2kTEntityCreator >> newProcedure [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newProcedureParameter [
+
+	<generated>
+	^ self add: FASTFortran2kProcedureParameter new
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newProgramFile [
 
 	<generated>
