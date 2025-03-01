@@ -300,10 +300,6 @@ FASTFortran2kGenerator >> defineClasses [
 { #category : 'definition' }
 FASTFortran2kGenerator >> defineClasses2k [
 
-	nameEntity := self
-		              newClassNamed: #NameEntity
-		              comment: 'Im an item of access-id-list'.
-
 	classDeclarationStatement := self
 		                             newClassNamed:
 		                             #ClassDeclarationStatement
@@ -350,6 +346,10 @@ FASTFortran2kGenerator >> defineClasses2k [
 	importStatement := self newClassNamed: #ImportStatement comment: ''.
 
 	module := self newClassNamed: #Module comment: 'I represent a module'.
+
+	nameEntity := self
+		              newClassNamed: #NameEntity
+		              comment: 'Im an item of access-id-list'.
 
 	pointerAssignmentStatement := self
 		                              newClassNamed:
@@ -609,6 +609,10 @@ FASTFortran2kGenerator >> defineFASTClasses [
 		               comment:
 		               'The PROGRAM statement identifies the program unit as a main program. program. For the loader, the main program is always named MAIN. The PROGRAM statement serves only the person who reads the program'.
 
+	parameter := self
+		                      newClassNamed: #Parameter
+		                      comment:
+		                      'I represent a Parameter in a FortranProcedure. I can have an intent (in, ou, inOut)'.
 
 	procedure := self
 		             newClassNamed: #Procedure
@@ -1319,10 +1323,6 @@ FASTFortran2kGenerator >> defineStatements [
 	optionsStatement := self
 		                    newClassNamed: #OptionsStatement
 		                    comment: 'I represent Fortran Options statement'.
-	parameter := self
-		                      newClassNamed: #ParameterStatement
-		                      comment:
-		                      'I represent a Parameter in a FortranProcedure. I can have an intent (in, ou, inOut)'.
 	pauseStatement := self
 		                  newClassNamed: #PauseStatement
 		                  comment: 'I represent Fortran Pause statement'.
