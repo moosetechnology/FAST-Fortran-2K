@@ -578,8 +578,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFormatStatement: aFASTFortran2
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kFormattedCodeString: aFASTFortran2kFormattedCodeString [
 
-	self << (aFASTFortran2kFormattedCodeString content format:
-		 aFASTFortran2kFormattedCodeString values)
+	self 
+		skipLine: aFASTFortran2kFormattedCodeString ;
+		indented: '' ; 
+		<< (aFASTFortran2kFormattedCodeString content format:
+		 aFASTFortran2kFormattedCodeString values);
+		newLine
 ]
 
 { #category : 'visiting - programUnits' }
@@ -587,6 +591,8 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFuncti
 
 	aFASTFortran2kFunction backTrace 
 		ifNotNil: [ self setLineDescriptions: aFASTFortran2kFunction backTrace ].
+
+	self indented: ''.
 
 	aFASTFortran2kFunction declaredType 
 		ifNotNil: [ :declaredType | declaredType accept: self ].
@@ -1000,7 +1006,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kPublicStatement: aFASTFortran2
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kReadStatement: aFASTFortran2kReadStatement [
 
-	self visitFASTFortranReadStatement: aFASTFortran2kReadStatement
+	self 
+		skipLine: aFASTFortran2kReadStatement ;
+		indented: '' ;
+		visitFASTFortranReadStatement: aFASTFortran2kReadStatement ;
+		newLine
+		
 ]
 
 { #category : 'visiting - expressions' }
@@ -1048,7 +1059,11 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kScalarVariable: aFASTFortran2k
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kSourceCodeString: aFASTFortran2kSourceCodeString [
 
-	self << aFASTFortran2kSourceCodeString content
+	self 
+		skipLine: aFASTFortran2kSourceCodeString ;
+		indented: '' ; 
+		<< aFASTFortran2kSourceCodeString content ;
+		newLine 
 ]
 
 { #category : 'visiting - statements' }
@@ -1341,7 +1356,11 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVolatileStatement: aFASTFortra
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kWriteStatement: aFASTFortran2kWriteStatement [
 
-	self visitFASTFortranWriteStatement: aFASTFortran2kWriteStatement
+	self 
+		skipLine: aFASTFortran2kWriteStatement ;
+		indented: '' ;
+	   visitFASTFortranWriteStatement: aFASTFortran2kWriteStatement ;
+		newLine
 ]
 
 { #category : 'visiting - statements' }
