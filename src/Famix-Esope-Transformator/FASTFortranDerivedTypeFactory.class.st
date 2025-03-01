@@ -1043,6 +1043,16 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegpar [
 		then: (paramFactories collect: [ :param |
 			self assignement: param name value: (self derivedTypeFieldAccessVariable: 'this' field: param name)
 		]).
+	
+	paramFactories do: [ :paramFactory | 
+		segpar addStatement: (self 
+			assignement: paramFactory name 
+			value: ( self 
+				derivedTypeFieldAccessVariable: 'this' 
+				field: paramFactory name 
+			)
+		)	
+	].
 
 	^segpar
 ]
