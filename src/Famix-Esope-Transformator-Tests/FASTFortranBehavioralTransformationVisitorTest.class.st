@@ -191,6 +191,19 @@ FASTFortranBehavioralTransformationVisitorTest >> testDoStatement [
 	self assert: loopControl init expression class equals: FASTFortran2kIntegerLiteral.
 ]
 
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> testEsopeCommandSegini [
+
+	| dst segCommand |
+	segCommand := self segini: { #v }.
+
+	dst := segCommand accept: visitor.
+
+	self assert: dst class equals: FASTFortran2kCallStatement.
+	self assert: dst name equals: 'segini'.
+	self assert: dst arguments size equals: 1
+]
+
 { #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testExternalDeclaration [
 	| stmt res |

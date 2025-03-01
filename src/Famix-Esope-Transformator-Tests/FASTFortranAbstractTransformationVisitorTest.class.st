@@ -366,6 +366,24 @@ FASTFortranAbstractTransformationVisitorTest >> programWithSegment [
 		
 ]
 
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> segact: aCollection [
+	
+	^self segmentCommand: FASTEsopeSegact with: aCollection
+]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> segdes: aCollection [
+	
+	^self segmentCommand: FASTEsopeSegdes with: aCollection
+]
+
+{ #category : 'setup' }
+FASTFortranAbstractTransformationVisitorTest >> segini: aCollection [
+	
+	^self segmentCommand: FASTEsopeSegini with: aCollection
+]
+
 { #category : 'running' }
 FASTFortranAbstractTransformationVisitorTest >> segment: aName attributes: aDeclarationStatements [
 
@@ -378,12 +396,12 @@ FASTFortranAbstractTransformationVisitorTest >> segment: aName attributes: aDecl
 ]
 
 { #category : 'setup' }
-FASTFortranAbstractTransformationVisitorTest >> segmentCommand: aCommandName with: aCollection [
+FASTFortranAbstractTransformationVisitorTest >> segmentCommand: aCommandClass with: aCollection [
 	
 	| segmentCommand  |
 	aCollection ifEmpty: [ ^nil ].
 
-	segmentCommand := FASTEsopeSegini new.
+	segmentCommand := aCommandClass new.
 	aCollection do: [ :varName | | var |
 		var := self scalarVariable: varName.
 		var famixVariable: (FamixF77Variable new name: varName).
