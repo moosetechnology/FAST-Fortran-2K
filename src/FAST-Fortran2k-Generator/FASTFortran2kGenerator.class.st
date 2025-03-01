@@ -167,8 +167,7 @@ Class {
 		'tWithModifiers',
 		'emptyStatement',
 		'functionCallStatement',
-		'tProcedure',
-		'procedureParameter'
+		'tProcedure'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -609,11 +608,6 @@ FASTFortran2kGenerator >> defineFASTClasses [
 		               comment:
 		               'The PROGRAM statement identifies the program unit as a main program. program. For the loader, the main program is always named MAIN. The PROGRAM statement serves only the person who reads the program'.
 
-	procedureParameter := self
-		                      newClassNamed: #ProcedureParameter
-		                      comment:
-		                      'I represent a Parameter in a FortranProcedure. I can have an intent (in, ou, inOut)'.
-
 	procedure := self
 		             newClassNamed: #Procedure
 		             comment:
@@ -740,7 +734,6 @@ FASTFortran2kGenerator >> defineHierarchy [
 	nameListStatement --|> abstractStatement.
 	openStatement --|> abstractIOStatement.
 	optionsStatement --|> abstractStatement.
-	procedureParameter --|> tVariableEntity.
 	pauseStatement --|> abstractStatement.
 	pragmaStatement --|> abstractStatement.
 	printStatement --|> abstractStatement.
@@ -951,9 +944,6 @@ FASTFortran2kGenerator >> defineProperties2k [
 
 	(interface property: #isAbstractInterface type: #Boolean)
 		comment: 'Im abstract ?'.
-
-	(procedureParameter property: #intent type: #String)
-		comment: 'intent of the parameter, either #in, #out or #InOut'.
 
 	(sourceCodeString property: #content type: #String)
 		comment: 'The source code string to export'.
