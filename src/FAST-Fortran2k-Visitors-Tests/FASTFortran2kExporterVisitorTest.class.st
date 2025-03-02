@@ -299,6 +299,20 @@ FASTFortran2kExporterVisitorTest >> testOpenStatement [
 '.
 ]
 
+{ #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testPointerAssignmentStatement [
+
+	| stmt |
+
+	stmt := FASTFortran2kPointerAssignmentStatement new
+		variable: (FASTFortran2kScalarVariable new name: 'x') ;
+		expression: (FASTFortran2kScalarVariable new name: 'y') ;
+		yourself.
+
+	self assertExport: stmt equals: 'x => y
+'
+]
+
 { #category : 'testing - program-units' }
 FASTFortran2kExporterVisitorTest >> testPointerDeclarationStatement [
 	"
