@@ -11,6 +11,15 @@ Class {
 	#tag : 'Visitors'
 }
 
+{ #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> assignmentStatementClass: aFASTFortranAssignmentStatement [
+	"Handle special class for pointer assignment"
+
+	^(aFASTFortranAssignmentStatement variable famixVariable declaredType class = FamixEsopeSegment)
+		ifTrue: [ FASTFortran2kPointerAssignmentStatement ]
+		ifFalse: [ FASTFortran2kAssignmentStatement ]
+]
+
 { #category : 'accessing - private tests' }
 FASTFortranBehavioralTransformationVisitor >> externalDeclared [
 
@@ -332,7 +341,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentExpressi
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentStatement: aFASTFortranAssignmentStatement [
 
 	^(self
-		fortran2k: FASTFortran2kAssignmentStatement
+		fortran2k: (self assignmentStatementClass: aFASTFortranAssignmentStatement)
 		traceBack: aFASTFortranAssignmentStatement)
 
 		variable: (aFASTFortranAssignmentStatement variable accept: self);

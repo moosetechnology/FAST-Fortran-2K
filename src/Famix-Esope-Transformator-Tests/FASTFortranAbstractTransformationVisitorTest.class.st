@@ -178,7 +178,11 @@ FASTFortranAbstractTransformationVisitorTest >> programWithExternalFunctionCall 
 		programFile: (FamixF77ProgramFile new filename: 'externalFile.f') ;
 		yourself.
 			
-	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
+	fastCallStatement := self
+		assignementStatement: 'aVar'
+		value: (self functionCall: 'fct' arguments: {}).
+	fastCallStatement variable famixVariable: (FamixF77Variable new
+		declaredType: (FamixF77TypeIntrinsic new)).
 
 	self programEmpty.
 	fastMainProgram statementBlock addStatement: fastCallStatement.
@@ -279,7 +283,11 @@ FASTFortranAbstractTransformationVisitorTest >> programWithFunctionStatementCall
 		yourself
 	).
 	
-	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
+	fastCallStatement := self
+		assignementStatement: 'aVar'
+		value: (self functionCall: 'fct' arguments: {}).
+	fastCallStatement variable famixVariable: (FamixF77Variable new
+		declaredType: (FamixF77TypeIntrinsic new)).
 
 	self programEmpty.
 	fastMainProgram statementBlock addStatement: fastFunctionStatement.
@@ -499,7 +507,11 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunctionWithCall [
 	| fastCallStatement |
 	self subroutineAndFunction.
 
-	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
+	fastCallStatement := self
+		assignementStatement: 'aVar'
+		value: (self functionCall: 'fct' arguments: {}).
+	fastCallStatement variable famixVariable: (FamixF77Variable new
+		declaredType: (FamixF77TypeIntrinsic new)).
 
 	fastProcedures second statementBlock addStatement: fastCallStatement.
 
@@ -617,7 +629,12 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineWithFunctionStatementC
 		yourself
 	).
 	
-	fastCallStatement := self assignementStatement: 'aVar' value: (self functionCall: 'fct' arguments: {}).
+	fastCallStatement := self
+		assignementStatement: 'aVar'
+		value: (self functionCall: 'fct' arguments: {}).
+	fastCallStatement variable famixVariable: (FamixF77Variable new
+		declaredType: (FamixF77TypeIntrinsic new)).
+
 
 	self subroutineEmpty.
 	fastSubroutine := fastProcedures anyOne.

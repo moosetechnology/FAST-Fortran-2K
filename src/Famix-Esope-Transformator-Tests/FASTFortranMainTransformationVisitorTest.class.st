@@ -150,10 +150,13 @@ end program demo
 
 { #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramWithAssignementStatement [
-	| res entity |
+	| res entity stmt |
 
 	self programEmpty.
-	fastMainProgram 	statementBlock addStatement: (self assignementStatement: 'x' value: 5).
+	stmt := self assignementStatement: 'x' value: 5.
+	stmt variable famixVariable: (FamixF77Variable new
+		declaredType: (FamixF77TypeIntrinsic new)).
+	fastMainProgram statementBlock addStatement: stmt.
 		
 	res := fastMainProgram accept: visitor.
 	
