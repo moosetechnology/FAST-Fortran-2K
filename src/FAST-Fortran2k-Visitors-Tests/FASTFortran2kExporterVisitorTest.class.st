@@ -568,6 +568,26 @@ FASTFortran2kExporterVisitorTest >> testUseStatementWithRenamings [
 ]
 
 { #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testVariableDeclarationStatementArray1Dim [
+
+	| stmt declarator |
+	declarator := (self variableDeclarator: 'str')
+		dimensions: {
+			FASTFortran2kArrayRange new upperBound: (self integerLiteral: '5')
+		}.
+	stmt := FASTFortran2kVariableDeclarationStatement new
+		declaredType: (self characterType: 30) ;
+		declarators: { declarator } ;
+		yourself.
+
+	self
+		assertExport: stmt
+		equals:
+'character(len=30) :: str(5)
+'
+]
+
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testVariableDeclarationStatementPointer [
 
 	| stmt |
