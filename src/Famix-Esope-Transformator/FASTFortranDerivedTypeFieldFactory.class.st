@@ -72,6 +72,12 @@ FASTFortranDerivedTypeFieldFactory >> functionCallStatement: aString arguments: 
 ]
 
 { #category : 'entity creation' }
+FASTFortranDerivedTypeFieldFactory >> if: condition then: statements [
+
+	^derivedTypeFactory if: condition then: statements
+]
+
+{ #category : 'entity creation' }
 FASTFortranDerivedTypeFieldFactory >> literal: anObject [
 
 	^derivedTypeFactory literal: anObject

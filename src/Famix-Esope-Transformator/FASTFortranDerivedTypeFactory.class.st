@@ -1270,7 +1270,7 @@ FASTFortranDerivedTypeFactory >> makeSegCall: segCommand arguments: arguments [
 { #category : 'entity creation' }
 FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 
-	| ifStatements paramFactories componentFactories adjusterStatements |
+	| ifStatements paramFactories componentFactories |
 	paramFactories := self parameters.
 	componentFactories := self components.
 
@@ -1281,7 +1281,7 @@ FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 
 	ifStatements addAll: (paramFactories collect: [ :paramFactory |
 		 (model newFormattedCodeString
-				 content: 'ooo_eq_pars = ooo_eq_pars .and. (this%{1} == {1})';
+				 content: 'ooo_eq_pars = ooo_eq_pars .and. (this % {1} == {1})';
 				 values: { paramFactory name }) ]).
 
 	ifStatements add:
@@ -1292,41 +1292,8 @@ FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 			paramFactory createSeginiFieldInitialization ]).
 	ifStatements add: model newEmptyStatement.
 
-	componentFactories do: [ :compFactory| | ifAdjuster |
-		ifStatements add: (self comment: ('-- this%' , compFactory name)).
-		ifStatements addAll: compFactory temporariesForDimInitialization.
-		ifStatements add: (model newSourceCodeString content: 'ooo_eq_dims = .true.').
-		ifStatements addAll: compFactory temporariesForDimCheckIfExtendableInitialization.
-
-		adjusterStatements := OrderedCollection new.
-		adjusterStatements add: (compFactory 
-					makeAllocationCallForDimensionnedField: ('oo_' , name) 
-					with: 'ooo_dim').
-		adjusterStatements add: (self
-					assignement: ('oo' , compFactory asFieldAccess)
-					value: (compFactory scalarVariable: compFactory asDefaultValue)).
-		adjusterStatements add: model newEmptyStatement.
-		adjusterStatements addAll: compFactory temporariesForStopDimInitialization.
-		adjusterStatements add: (self
-				assignement: (('oo_', name) , (compFactory asFieldAccess: 'ooo_stop'))
-				value: (self scalarVariable: (('this%', name) , (compFactory asFieldAccess: 'ooo_stop')))).
-		adjusterStatements add: model newEmptyStatement.
-		adjusterStatements add: (compFactory 
-			functionCallStatement: 'deallocate' 
-			arguments: { self derivedTypeFieldAccessVariable: 'this' field: name }
-		).
-		adjusterStatements add: (model newPointerAssignmentStatement
-				variable: (self derivedTypeFieldAccessVariable: 'this' field: name);
-				expression: (self scalarVariable: ('this%', name))).
-
-		ifAdjuster := self
-			if: (model newUnaryExpression 
-				operator: '.not.';
-				expression: (self scalarVariable: 'ooo_eq_dims') 	)
-			then: adjusterStatements.
-
-		ifStatements add: ifAdjuster.
-	].
+	componentFactories do: [ :compFactory|
+		ifStatements addAll: compFactory makeSegadjIfStatement ].
 
 	^self
 		if: ( self 

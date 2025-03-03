@@ -165,6 +165,50 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeAllocationCallForDimensionned
 ]
 
 { #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> makeSegadjIfStatement [ 
+
+	| ifAdjuster statements adjusterStatements |
+	
+	statements := OrderedCollection new.
+	
+		statements add: (self comment: ('-- this%' , name)).
+		statements addAll: self temporariesForDimInitialization.
+		statements add: (self model newSourceCodeString content: 'ooo_eq_dims = .true.').
+		statements addAll: self temporariesForDimCheckIfExtendableInitialization.
+
+		adjusterStatements := OrderedCollection new.
+		adjusterStatements add: (self 
+					makeAllocationCallForDimensionnedField: ('ooo_' , name) 
+					with: 'ooo_dim').
+		adjusterStatements add: (self
+					assignement: ('ooo' , self asFieldAccess)
+					value: (self scalarVariable: self asDefaultValue)).
+		adjusterStatements add: self model newEmptyStatement.
+		adjusterStatements addAll: self temporariesForStopDimInitialization.
+		adjusterStatements add: (self
+				assignement: (('ooo_', name) , (self asFieldAccess: 'ooo_stop'))
+				value: (self scalarVariable: (('this % ', name) , (self asFieldAccess: 'ooo_stop')))).
+		adjusterStatements add: self model newEmptyStatement.
+		adjusterStatements add: (self 
+			functionCallStatement: 'deallocate' 
+			arguments: { self derivedTypeFieldAccessVariable: 'this' field: name }
+		).
+		adjusterStatements add: (self model newPointerAssignmentStatement
+				variable: (self derivedTypeFieldAccessVariable: 'this' field: name);
+				expression: (self scalarVariable: ('this%', name))).
+
+		ifAdjuster := self
+			if: (self model newUnaryExpression 
+				operator: '.not.';
+				expression: (self scalarVariable: 'ooo_eq_dims') 	)
+			then: adjusterStatements.
+
+		statements add: ifAdjuster.
+
+	^statements
+]
+
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> makeSegloadDo [
 
 	| statements |
