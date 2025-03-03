@@ -42,7 +42,7 @@ FASTFortran2kExporterVisitor >> export [
 				writeStreamDo: [ :aStream | 
 					programFile programUnits do: [ :programUnit | 
 						programUnit accept: self.
-						aStream << self outputStream contents.
+						aStream << self outputStream contents withUnixLineEndings.
 
 						self flag: 'FIXME: It emptied the outputstream to avoid accumulation'.
 						self outputStream: (WriteStream with: '') 
