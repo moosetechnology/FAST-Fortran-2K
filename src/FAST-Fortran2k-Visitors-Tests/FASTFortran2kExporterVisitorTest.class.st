@@ -293,6 +293,7 @@ end program demo
 'program demo
   implicit none
 end program demo
+
 '
 ]
 
@@ -351,6 +352,7 @@ end program demo
 
 	self assertExport: stmt equals: 'program demo
 end program demo
+
 '
 ]
 
