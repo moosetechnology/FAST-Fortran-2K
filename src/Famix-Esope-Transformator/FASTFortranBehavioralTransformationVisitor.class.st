@@ -828,7 +828,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclaratio
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
 
 	| varDeclarator |
-	
+
 	(externalDeclared includes: aFASTFortranVariableDeclarator name)
 		ifTrue: [ ^nil ].
 

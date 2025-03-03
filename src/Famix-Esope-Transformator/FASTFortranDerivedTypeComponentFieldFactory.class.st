@@ -58,16 +58,25 @@ FASTFortranDerivedTypeComponentFieldFactory >> asFieldAccess: slicingLimitName [
 { #category : 'converting' }
 FASTFortranDerivedTypeComponentFieldFactory >> asVariableDeclaration [
 
-	| stmt declarator |
+	| stmt declarator modifiers |
+
 	stmt := self model newVariableDeclarationStatement.
 	stmt declaredType: (type accept: (FASTFortranBehavioralTransformationVisitor new 
 		model2k: self model )).
 
 	declarator := self model newVariableDeclarator.
 	declarator name: name.
-	1 to: rank do: [ :i | declarator addDimension: self model newArrayRange ].
 
-	stmt addDeclarator: declarator.
+	(rank > 0)
+		ifTrue: [
+			modifiers := #( pointer ).
+			1 to: rank do: [ :i | declarator addDimension: self model newArrayRange ]
+		]
+		ifFalse: [ modifiers := #() ].
+
+	stmt
+		addDeclarator: declarator ;
+		modifiers: modifiers.
 
 	^stmt
 ]
@@ -77,7 +86,6 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSegadjTemporaryDeclaration 
 
 	| stmt |
 	stmt := self asVariableDeclaration.
-	stmt modifiers: #( pointer ).
 	stmt declarators anyOne name: ('ooo_' , name).
 
 	^stmt
@@ -111,8 +119,10 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSeginiFieldInitialization [
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> createSegmentFieldDeclaration [
 
-	^self asVariableDeclaration
-		modifiers: #( public ) ;
+	| stmt |
+	stmt := self asVariableDeclaration.
+	^stmt
+		modifiers: ( stmt modifiers , #( public ) ) ;
 		yourself.
 ]
 

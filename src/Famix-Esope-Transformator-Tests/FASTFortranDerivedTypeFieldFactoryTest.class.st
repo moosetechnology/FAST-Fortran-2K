@@ -258,10 +258,39 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegmentComponentDeclaration 
 
 	self assert: fast2k class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType.
-	
+
+	self assert: fast2k modifiers size equals: 1.
+	self assert: fast2k modifiers anyOne equals: 'public'.
+
 	self assert: fast2k declarators size equals: 1.
 	self assert: fast2k declarators anyOne name equals: 'x'.
 	self assert: fast2k declarators anyOne dimensions size equals: 0.
+]
+
+{ #category : 'tests' }
+FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegmentComponentDeclarationWithDim [
+
+	| fast2k factory |
+	factory := self makeFactory: FASTFortranDerivedTypeComponentFieldFactory.
+	factory 
+		type: fastModel newIntegerType ;
+		fieldDeclarator: (fastModel newVariableDeclarator
+			name: 'x' ;
+			addDimension: (fastModel newArrayRange upperBound: (fastModel newScalarVariable name: 'dim1')) ;
+			yourself
+		).
+
+	fast2k := factory createSegmentFieldDeclaration.
+
+	self assert: fast2k class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType.
+	
+	self assert: fast2k modifiers size equals: 2.
+	self assert: fast2k modifiers first equals: 'pointer'.
+	self assert: fast2k modifiers second equals: 'public'.
+
+	self assert: fast2k declarators size equals: 1.
+	self assert: fast2k declarators anyOne name equals: 'x'.
 ]
 
 { #category : 'tests' }
