@@ -43,3 +43,10 @@ ManifestFamixEsopeTransformator class >> ruleReGuardClauseRuleV1FalsePositive [
 	<ignoreForCoverage>
 	^ #(#(#(#RGMethodDefinition #(#FASTFortranDerivedTypeComponentFieldFactory #makeSegprtDo:of: #false)) #'2025-02-25T19:11:37.405821+01:00') )
 ]
+
+{ #category : 'code-critics' }
+ManifestFamixEsopeTransformator class >> ruleStringConcatenationRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGClassDefinition #(#FASTFortranDerivedTypeFactory)) #'2025-03-03T19:07:17.252041+01:00') )
+]
