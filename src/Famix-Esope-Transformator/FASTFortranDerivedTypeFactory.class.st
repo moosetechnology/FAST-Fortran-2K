@@ -52,13 +52,9 @@ FASTFortranDerivedTypeFactory >> createModule [
 			self makeSegmentTypeName .
 
 			self makeBoxedTypeDefinition .
-			self makeInterfaces .
-			"self makeContainsStatement ."
+			self makeInterfaces
 		}
 	).
-
-	module procedures add: self makeContainsComment.
-	module procedures add: self makeContainsComment.
 
 	module procedures addAll: (self makeProceduresFromDimensioningExpressions).
 	
@@ -266,12 +262,6 @@ FASTFortranDerivedTypeFactory >> makeBoxedTypeDefinition [
     end type boxed_{1} 
 ';
 		  values: { name }
-]
-
-{ #category : 'helpers-codeString' }
-FASTFortranDerivedTypeFactory >> makeContainsComment [
-
-	^model newSourceCodeString content: '! ## primary aspects'
 ]
 
 { #category : 'helpers-codeString' }
