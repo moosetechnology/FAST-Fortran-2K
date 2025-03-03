@@ -27,6 +27,7 @@ FASTFortran2kExporterVisitor >> end: programUnit named: aName [
 		<< programUnit ;
 		<< String space ;
 		<< aName;
+		newLine ;
 		newLine
 ]
 
