@@ -11,6 +11,22 @@ Class {
 	#tag : 'Visitors'
 }
 
+{ #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> assignmentStatementClass: aFASTFortranAssignmentStatement [
+	"Handle special class for pointer assignment
+	 note: function return is done by assignment too and in that case there is no FamixVariable
+	 note: the #variable could also be a fieldAccess and there is an extra step in this case"
+
+	| famixVar |
+	famixVar := (aFASTFortranAssignmentStatement variable class = FASTFortranFieldAccess)
+		ifTrue: [ aFASTFortranAssignmentStatement variable field famix ]
+		ifFalse: [ aFASTFortranAssignmentStatement variable famixVariable ].
+
+	famixVar ifNil: [ ^FASTFortran2kAssignmentStatement ].
+	(famixVar declaredType class = FamixEsopeSegment) ifTrue: [ ^FASTFortran2kPointerAssignmentStatement ].
+	^FASTFortran2kAssignmentStatement
+]
+
 { #category : 'accessing - private tests' }
 FASTFortranBehavioralTransformationVisitor >> externalDeclared [
 
@@ -332,7 +348,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentExpressi
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentStatement: aFASTFortranAssignmentStatement [
 
 	^(self
-		fortran2k: FASTFortran2kAssignmentStatement
+		fortran2k: (self assignmentStatementClass: aFASTFortranAssignmentStatement)
 		traceBack: aFASTFortranAssignmentStatement)
 
 		variable: (aFASTFortranAssignmentStatement variable accept: self);

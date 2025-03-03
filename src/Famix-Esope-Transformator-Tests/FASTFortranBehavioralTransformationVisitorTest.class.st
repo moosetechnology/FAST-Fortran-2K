@@ -110,6 +110,23 @@ FASTFortranBehavioralTransformationVisitorTest >> testArrayVariable [
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementFunctionValue [
+	"in case of assigning the return value of a function, there is no famixVariable
+	 associated to the FAST variable"
+	| stmt res |
+	stmt := self assignementStatement: #aVar value: (self logicalLiteral: '.true.').
+	
+	res := stmt accept: visitor.
+	
+	self assert: res class equals: FASTFortran2kAssignmentStatement.
+	self assert: res variable class equals: FASTFortran2kScalarVariable.
+	self assert: res expression class equals: FASTFortran2kBooleanLiteral.
+	
+	self assert: res variable name equals: 'aVar'.
+	self assert: res expression primitiveValue equals: '.true.'.
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementLiteralValue [
 	| stmt res |
 	stmt := self assignementStatement: #aVar value: (self logicalLiteral: '.true.').
@@ -122,6 +139,37 @@ FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementLitera
 	
 	self assert: res variable name equals: 'aVar'.
 	self assert: res expression primitiveValue equals: '.true.'.
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementPointer [
+	| stmt res |
+	stmt := self assignementStatement: #aVar value: (self scalarVariable: 'p').
+	stmt variable famixVariable: (FamixF77Variable new
+		declaredType: (FamixEsopeSegment new)).
+	
+	res := stmt accept: visitor.
+	
+	self assert: res class equals: FASTFortran2kPointerAssignmentStatement.
+	self assert: res variable class equals: FASTFortran2kScalarVariable.
+	self assert: res expression class equals: FASTFortran2kScalarVariable.
+	
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementToFieldAccess [
+	| stmt res fieldAccess |
+	fieldAccess := FASTFortranFieldAccess new
+		field: (self scalarVariable: 'att') ;
+		pointer: (self scalarVariable: 'aPtr') .
+	stmt := FASTFortranAssignmentStatement new
+		variable: fieldAccess ;
+		expression: (self makeSimpleExpression: (self logicalLiteral: '.true.')).
+	
+	res := stmt accept: visitor.
+	
+	self assert: res class equals: FASTFortran2kAssignmentStatement.
+	self assert: res variable class equals: FASTFortran2kDerivedTypeComponentAccess.
 ]
 
 { #category : 'tests-statement' }
@@ -270,7 +318,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testIfBlockStatement [
 	stmt := self
 		ifBlock: (self binary: '.le.' left: #x right: 5)
 		then: { self returnStatement: nil } 
-		else: { self assignementStatement: #x value: 5 }.
+		else: { self comment: 'this is the else' }.
 
 	res := stmt accept: visitor.
 
@@ -289,10 +337,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testIfBlockStatement [
 
 	entity := res elseStatementBlock.
 	self assert: entity statements size equals: 1.
-	self assert: entity statements anyOne class equals: FASTFortran2kAssignmentStatement.
-	self assert: entity statements anyOne variable name equals: 'x'.
-	self assert: entity statements anyOne expression class equals: FASTFortran2kIntegerLiteral.
-
+	self assert: entity statements anyOne class equals: FASTFortran2kComment.
 ]
 
 { #category : 'tests-statement' }
@@ -316,7 +361,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testIfLogicalStatement [
 	| stmt res entity |
 	stmt := self
 		logicalIf: (self binary: '.lt.' left: #x right: 5)
-		statement: (self assignementStatement: #x value: 5).
+		statement: (self returnStatement: nil).
 
 	res := stmt accept: visitor.
 
@@ -329,10 +374,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testIfLogicalStatement [
 	self assert: entity rightOperand class equals: FASTFortran2kIntegerLiteral.
 
 	entity := res statement.
-	self assert: entity class equals: FASTFortran2kAssignmentStatement.
-	self assert: entity variable name equals: 'x'.
-	self assert: entity expression class equals: FASTFortran2kIntegerLiteral.
-
+	self assert: entity class equals: FASTFortran2kReturnStatement
 ]
 
 { #category : 'tests-expression' }

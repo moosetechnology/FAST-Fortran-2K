@@ -153,7 +153,8 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithAssignementStatement 
 	| res entity |
 
 	self programEmpty.
-	fastMainProgram 	statementBlock addStatement: (self assignementStatement: 'x' value: 5).
+	fastMainProgram statementBlock
+		addStatement: (self assignementStatement: 'x' value: 5).
 		
 	res := fastMainProgram accept: visitor.
 	
