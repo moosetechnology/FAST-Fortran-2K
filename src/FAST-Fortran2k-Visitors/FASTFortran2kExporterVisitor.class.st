@@ -1320,7 +1320,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarationStatement: 
 	self newLine
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarator: aFASTFortran2kVariableDeclarator [
 
 	^ self visitFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator
