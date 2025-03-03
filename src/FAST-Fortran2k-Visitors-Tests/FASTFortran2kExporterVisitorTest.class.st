@@ -213,6 +213,20 @@ FASTFortran2kExporterVisitorTest >> testAssignmentStatement [
 ]
 
 { #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testAssignmentStatementPointer [
+
+	| stmt |
+
+	stmt := FASTFortran2kPointerAssignmentStatement new
+		variable: (FASTFortran2kScalarVariable new name: 'x') ;
+		expression: (FASTFortran2kScalarVariable new name: 'y') ;
+		yourself.
+
+	self assertExport: stmt equals: 'x => y
+'
+]
+
+{ #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testCommentStatement [
 
 	| stmt |
@@ -297,20 +311,6 @@ FASTFortran2kExporterVisitorTest >> testOpenStatement [
 		equals: 
 'open (3, file=''projectA/data.test'', err=99)
 '.
-]
-
-{ #category : 'testing - statements' }
-FASTFortran2kExporterVisitorTest >> testPointerAssignmentStatement [
-
-	| stmt |
-
-	stmt := FASTFortran2kPointerAssignmentStatement new
-		variable: (FASTFortran2kScalarVariable new name: 'x') ;
-		expression: (FASTFortran2kScalarVariable new name: 'y') ;
-		yourself.
-
-	self assertExport: stmt equals: 'x => y
-'
 ]
 
 { #category : 'testing - program-units' }
@@ -405,43 +405,6 @@ FASTFortran2kExporterVisitorTest >> testTypeBoxedBookDefinition [
 'type, extends(segment) :: boxed_book
   type (book), pointer, private :: this
 end type boxed_book
-'
-]
-
-{ #category : 'testing - statements' }
-FASTFortran2kExporterVisitorTest >> testTypeDeclarationStatement [
-
-	| stmt |
-	stmt := FASTFortran2kVariableDeclarationStatement new
-		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
-		declarators: { (FASTFortran2kVariableDeclarator new name: 'p1') } ;
-		modifiers: #( pointer ) ;
-		yourself.
-
-	self
-		assertExport: stmt
-		equals:
-'type (point_t), pointer :: p1
-'
-]
-
-{ #category : 'testing - statements' }
-FASTFortran2kExporterVisitorTest >> testTypeDeclarationsStatement [
-
-	| stmt |
-	stmt := FASTFortran2kVariableDeclarationStatement new
-		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
-		declarators: {
-			(FASTFortran2kVariableDeclarator new name: 'p1')
-			.
-			(FASTFortran2kVariableDeclarator new name: 'p2') } ;
-		modifiers: #( pointer ) ;
-		yourself.
-
-	self
-		assertExport: stmt
-		equals:
-'type (point_t), pointer :: p1, p2
 '
 ]
 
@@ -601,6 +564,84 @@ FASTFortran2kExporterVisitorTest >> testUseStatementWithRenamings [
 		assertExport: stmt
 		equals:
 'use :: module_name, output => output_unit, input => input_unit
+'
+]
+
+{ #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testVariableDeclarationStatementArray1Dim [
+
+	| stmt declarator |
+	declarator := (self variableDeclarator: 'str')
+		dimensions: {
+			FASTFortran2kArrayRange new upperBound: (self integerLiteral: '5')
+		}.
+	stmt := FASTFortran2kVariableDeclarationStatement new
+		declaredType: (self characterType: 30) ;
+		declarators: { declarator } ;
+		yourself.
+
+	self
+		assertExport: stmt
+		equals:
+'character(len=30) :: str(5)
+'
+]
+
+{ #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testVariableDeclarationStatementArray2DimsNoBounds [
+
+	| stmt declarator |
+	declarator := (self variableDeclarator: 'str')
+		dimensions: {
+			FASTFortran2kArrayRange new .
+			FASTFortran2kArrayRange new
+		}.
+	stmt := FASTFortran2kVariableDeclarationStatement new
+		declaredType: (self characterType: 30) ;
+		declarators: { declarator } ;
+		yourself.
+
+	self
+		assertExport: stmt
+		equals:
+'character(len=30) :: str(:, :)
+'
+]
+
+{ #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testVariableDeclarationStatementPointer [
+
+	| stmt |
+	stmt := FASTFortran2kVariableDeclarationStatement new
+		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
+		declarators: { (FASTFortran2kVariableDeclarator new name: 'p1') } ;
+		modifiers: #( pointer ) ;
+		yourself.
+
+	self
+		assertExport: stmt
+		equals:
+'type (point_t), pointer :: p1
+'
+]
+
+{ #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testVariableDeclarationStatementPointerTwoVars [
+
+	| stmt |
+	stmt := FASTFortran2kVariableDeclarationStatement new
+		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
+		declarators: {
+			(FASTFortran2kVariableDeclarator new name: 'p1')
+			.
+			(FASTFortran2kVariableDeclarator new name: 'p2') } ;
+		modifiers: #( pointer ) ;
+		yourself.
+
+	self
+		assertExport: stmt
+		equals:
+'type (point_t), pointer :: p1, p2
 '
 ]
 

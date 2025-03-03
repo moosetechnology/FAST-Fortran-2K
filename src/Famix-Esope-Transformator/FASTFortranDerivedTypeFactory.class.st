@@ -279,7 +279,7 @@ FASTFortranDerivedTypeFactory >> makeContainsStatement [
 
 	^model newSourceCodeString
 		  content: 'contains
-	 ! ## primary aspects
+    ! ## primary aspects
 '
 ]
 
@@ -1350,13 +1350,13 @@ FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 FASTFortranDerivedTypeFactory >> makeSegmentModuleProlog [
 
 	^model newSourceCodeString content: '
-	use ignore_mod
-	use contract_mod
-	use segment_mod
-	use str_mod
+  use ignore_mod
+  use contract_mod
+  use segment_mod
+  use str_mod
 
-	implicit none
-	private
+  implicit none
+  private
 '
 ]
 

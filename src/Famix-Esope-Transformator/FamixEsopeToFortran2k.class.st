@@ -8,9 +8,9 @@ Class {
 		'fast2kModel',
 		'includedFiles'
 	],
-	#category : 'Famix-Esope-Transformator-Core',
+	#category : 'Famix-Esope-Transformator-Main',
 	#package : 'Famix-Esope-Transformator',
-	#tag : 'Core'
+	#tag : 'Main'
 }
 
 { #category : 'running' }

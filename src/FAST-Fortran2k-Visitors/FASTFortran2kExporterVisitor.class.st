@@ -42,7 +42,7 @@ FASTFortran2kExporterVisitor >> export [
 				writeStreamDo: [ :aStream | 
 					programFile programUnits do: [ :programUnit | 
 						programUnit accept: self.
-						aStream << self outputStream contents.
+						aStream << self outputStream contents withUnixLineEndings.
 
 						self flag: 'FIXME: It emptied the outputstream to avoid accumulation'.
 						self outputStream: (WriteStream with: '') 
@@ -183,12 +183,15 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kAmpersand: aFASTFortran2kAmper
 
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kArrayRange: aFASTFortran2kArrayRange [
+	"not sure whether '(:)' is used in old Fortran.
+	 But it is needed in Fortran2k"
 
-	"self visitFASTFortran2kAbstractExpression: aFASTFortran2kArrayRange."
-	self acceptMeIfNotNil: aFASTFortran2kArrayRange upperBound.
-	self acceptMeIfNotNil: aFASTFortran2kArrayRange lowerBound.
-	"self acceptMeIfNotNil: aFASTFortran2kArrayRange parentVariableDeclarator."
+	aFASTFortran2kArrayRange upperBound ifNil: [
+		self << ':'.
+		^self
+	].
 
+	self visitFASTFortranArrayRange: aFASTFortran2kArrayRange
 ]
 
 { #category : 'visiting' }
@@ -1335,7 +1338,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarationStatement: 
 	self newLine
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarator: aFASTFortran2kVariableDeclarator [
 
 	^ self visitFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator
@@ -1461,12 +1464,6 @@ FASTFortran2kExporterVisitor >> visitFASTFortranVariableDeclarationStatement: aF
 	self visitNodeListSeparatedByCommas:
 		aFASTFortranVariableDeclarationStatement declarators.
 	self newLine
-]
-
-{ #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator [
-
-	^super visitFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator
 ]
 
 { #category : 'visiting' }
