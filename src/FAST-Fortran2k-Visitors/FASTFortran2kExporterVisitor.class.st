@@ -183,12 +183,15 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kAmpersand: aFASTFortran2kAmper
 
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kArrayRange: aFASTFortran2kArrayRange [
+	"not sure whether '(:)' is used in old Fortran.
+	 But it is needed in Fortran2k"
 
-	"self visitFASTFortran2kAbstractExpression: aFASTFortran2kArrayRange."
-	self acceptMeIfNotNil: aFASTFortran2kArrayRange upperBound.
-	self acceptMeIfNotNil: aFASTFortran2kArrayRange lowerBound.
-	"self acceptMeIfNotNil: aFASTFortran2kArrayRange parentVariableDeclarator."
+	aFASTFortran2kArrayRange upperBound ifNil: [
+		self << ':'.
+		^self
+	].
 
+	self visitFASTFortranArrayRange: aFASTFortran2kArrayRange
 ]
 
 { #category : 'visiting' }
