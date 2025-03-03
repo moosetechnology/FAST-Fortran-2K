@@ -154,9 +154,10 @@ FASTFortranDerivedTypeComponentFieldFactory >> isSegmentParameter [
 
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> makeAllocationCallForDimensionnedField: fieldName with: prefix [
+	"creating the array access (to fieldName) as a functionCall which is
+	 syntactically equivalent"
 
 	^self functionCallStatement: 'allocate' arguments: {
-		"creating the array access as a functioncall which is syntactically equivlent"
 		self
 			functionCall: fieldName
 			arguments: ((1 to: rank) collect: [ :i | self scalarVariable: (prefix , i asString) ])
