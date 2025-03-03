@@ -277,8 +277,8 @@ FASTFortranDerivedTypeFactory >> makeContainsStatement [
 FASTFortranDerivedTypeFactory >> makeInterfaces [
 
 	^model newFormattedCodeString
-		  content: '
-	 public assignment (=)
+		content: '
+    public assignment (=)
     interface assignment (=)
         module procedure {1}_assign_pointer_to_pointer
     end interface
@@ -361,8 +361,8 @@ FASTFortranDerivedTypeFactory >> makeInterfaces [
 
     public {1}_mypnt
     public {1}_load
-';
-		  values: { name }
+' ;
+		values: { name }
 ]
 
 { #category : 'helpers-codeString' }
@@ -919,7 +919,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegmentType [
 	^model newFormattedCodeString
 		  content: '
     subroutine {1}_seg_type(this, type_name)
-        ! ## Return the name of the segment type
+       ! ## Return the name of the segment type
         type({1}), pointer, intent(in) :: this
         character(len=segment_type_len), intent(out) :: type_name
 
