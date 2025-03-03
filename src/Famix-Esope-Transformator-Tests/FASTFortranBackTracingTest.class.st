@@ -12,8 +12,6 @@ Class {
 FASTFortranBackTracingTest >> testAssignementStatementLiteralValue [
 	| stmt res |
 	stmt := self assignementStatement: #aVar value: (self logicalLiteral: '.true.').
-	stmt variable famixVariable: (FamixF77Variable new
-		declaredType: (FamixF77TypeIntrinsic new)).
 	stmt
 		startPos: 5 ;
 		endPos: 17.
@@ -90,8 +88,6 @@ FASTFortranBackTracingTest >> testDerivedTypeDeclaration [
 FASTFortranBackTracingTest >> testStatementNoPosition [
 	| stmt res |
 	stmt := self assignementStatement: #aVar value: (self logicalLiteral: '.true.').
-	stmt variable famixVariable: (FamixF77Variable new
-		declaredType: (FamixF77TypeIntrinsic new)).
 
 	res := stmt accept: visitor.
 	

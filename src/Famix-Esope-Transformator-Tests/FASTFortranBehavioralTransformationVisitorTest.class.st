@@ -110,11 +110,26 @@ FASTFortranBehavioralTransformationVisitorTest >> testArrayVariable [
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementFunctionValue [
+	"in case of assigning the return value of a function, there is no famixVariable
+	 associated to the FAST variable"
+	| stmt res |
+	stmt := self assignementStatement: #aVar value: (self logicalLiteral: '.true.').
+	
+	res := stmt accept: visitor.
+	
+	self assert: res class equals: FASTFortran2kAssignmentStatement.
+	self assert: res variable class equals: FASTFortran2kScalarVariable.
+	self assert: res expression class equals: FASTFortran2kBooleanLiteral.
+	
+	self assert: res variable name equals: 'aVar'.
+	self assert: res expression primitiveValue equals: '.true.'.
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementLiteralValue [
 	| stmt res |
 	stmt := self assignementStatement: #aVar value: (self logicalLiteral: '.true.').
-	stmt variable famixVariable: (FamixF77Variable new
-		declaredType: (FamixF77TypeIntrinsic new)).
 	
 	res := stmt accept: visitor.
 	
@@ -139,6 +154,22 @@ FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementPointe
 	self assert: res variable class equals: FASTFortran2kScalarVariable.
 	self assert: res expression class equals: FASTFortran2kScalarVariable.
 	
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementToFieldAccess [
+	| stmt res fieldAccess |
+	fieldAccess := FASTFortranFieldAccess new
+		field: (self scalarVariable: 'att') ;
+		pointer: (self scalarVariable: 'aPtr') .
+	stmt := FASTFortranAssignmentStatement new
+		variable: fieldAccess ;
+		expression: (self makeSimpleExpression: (self logicalLiteral: '.true.')).
+	
+	res := stmt accept: visitor.
+	
+	self assert: res class equals: FASTFortran2kAssignmentStatement.
+	self assert: res variable class equals: FASTFortran2kDerivedTypeComponentAccess.
 ]
 
 { #category : 'tests-statement' }

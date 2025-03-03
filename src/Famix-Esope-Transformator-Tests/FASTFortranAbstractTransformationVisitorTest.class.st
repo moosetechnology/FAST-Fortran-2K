@@ -181,8 +181,6 @@ FASTFortranAbstractTransformationVisitorTest >> programWithExternalFunctionCall 
 	fastCallStatement := self
 		assignementStatement: 'aVar'
 		value: (self functionCall: 'fct' arguments: {}).
-	fastCallStatement variable famixVariable: (FamixF77Variable new
-		declaredType: (FamixF77TypeIntrinsic new)).
 
 	self programEmpty.
 	fastMainProgram statementBlock addStatement: fastCallStatement.
@@ -286,8 +284,6 @@ FASTFortranAbstractTransformationVisitorTest >> programWithFunctionStatementCall
 	fastCallStatement := self
 		assignementStatement: 'aVar'
 		value: (self functionCall: 'fct' arguments: {}).
-	fastCallStatement variable famixVariable: (FamixF77Variable new
-		declaredType: (FamixF77TypeIntrinsic new)).
 
 	self programEmpty.
 	fastMainProgram statementBlock addStatement: fastFunctionStatement.
@@ -510,8 +506,6 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunctionWithCall [
 	fastCallStatement := self
 		assignementStatement: 'aVar'
 		value: (self functionCall: 'fct' arguments: {}).
-	fastCallStatement variable famixVariable: (FamixF77Variable new
-		declaredType: (FamixF77TypeIntrinsic new)).
 
 	fastProcedures second statementBlock addStatement: fastCallStatement.
 
@@ -632,8 +626,6 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineWithFunctionStatementC
 	fastCallStatement := self
 		assignementStatement: 'aVar'
 		value: (self functionCall: 'fct' arguments: {}).
-	fastCallStatement variable famixVariable: (FamixF77Variable new
-		declaredType: (FamixF77TypeIntrinsic new)).
 
 
 	self subroutineEmpty.

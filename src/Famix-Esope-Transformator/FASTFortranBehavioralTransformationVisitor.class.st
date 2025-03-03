@@ -13,11 +13,18 @@ Class {
 
 { #category : 'private - helpers' }
 FASTFortranBehavioralTransformationVisitor >> assignmentStatementClass: aFASTFortranAssignmentStatement [
-	"Handle special class for pointer assignment"
+	"Handle special class for pointer assignment
+	 note: function return is done by assignment too and in that case there is no FamixVariable
+	 note: the #variable could also be a fieldAccess and there is an extra step in this case"
 
-	^(aFASTFortranAssignmentStatement variable famixVariable declaredType class = FamixEsopeSegment)
-		ifTrue: [ FASTFortran2kPointerAssignmentStatement ]
-		ifFalse: [ FASTFortran2kAssignmentStatement ]
+	| famixVar |
+	famixVar := (aFASTFortranAssignmentStatement variable class = FASTFortranFieldAccess)
+		ifTrue: [ aFASTFortranAssignmentStatement variable field famix ]
+		ifFalse: [ aFASTFortranAssignmentStatement variable famixVariable ].
+
+	famixVar ifNil: [ ^FASTFortran2kAssignmentStatement ].
+	(famixVar declaredType class = FamixEsopeSegment) ifTrue: [ ^FASTFortran2kPointerAssignmentStatement ].
+	^FASTFortran2kAssignmentStatement
 ]
 
 { #category : 'accessing - private tests' }
