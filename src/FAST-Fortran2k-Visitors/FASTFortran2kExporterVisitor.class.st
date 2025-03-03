@@ -1444,12 +1444,6 @@ FASTFortran2kExporterVisitor >> visitFASTFortranVariableDeclarationStatement: aF
 	self newLine
 ]
 
-{ #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator [
-
-	^super visitFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator
-]
-
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTTEntity: aFASTTEntity [
 	^ aFASTTEntity children do: [ :child | child accept: self ]
