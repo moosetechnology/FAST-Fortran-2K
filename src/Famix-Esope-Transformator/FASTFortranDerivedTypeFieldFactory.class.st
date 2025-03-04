@@ -10,13 +10,13 @@ Class {
 	#tag : 'Segment'
 }
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFieldFactory >> assignement: variable value: expression [
 
 	^derivedTypeFactory assignement: variable value: expression
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFieldFactory >> comment: aString [
 
 	^derivedTypeFactory comment: aString
@@ -28,13 +28,13 @@ FASTFortranDerivedTypeFieldFactory >> derivedTypeFactory: aFactory [
 	derivedTypeFactory := aFactory
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFieldFactory >> derivedTypeFieldAccessVariable: instanceName field: fieldName [
 
 	^derivedTypeFactory derivedTypeFieldAccessVariable: instanceName field: fieldName
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFieldFactory >> do: condition body: statements [
 
 	^derivedTypeFactory do: condition body: statements
@@ -47,34 +47,47 @@ FASTFortranDerivedTypeFieldFactory >> fast2kModel [
 	^self model
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFieldFactory >> formattedCode: aString values: values [
 
 	^derivedTypeFactory formattedCode: aString values: values
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFieldFactory >> functionCall: aString arguments: arguments [
 
 	^derivedTypeFactory functionCall: aString arguments: arguments
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFieldFactory >> functionCallStatement: aString arguments: arguments [
 
 	^derivedTypeFactory functionCallStatement: aString arguments: arguments
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFieldFactory >> if: condition then: statements [
 
 	^derivedTypeFactory if: condition then: statements
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFieldFactory >> literal: anObject [
 
 	^derivedTypeFactory literal: anObject
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeFieldFactory >> makeDeallocateStatement [
+
+	self isAllocatable ifFalse: [ ^nil ].
+
+	^self 
+		functionCallStatement: 'deallocate'
+		arguments: {
+			self derivedTypeFieldAccessVariable: 'this' field: name
+		}
+		
 ]
 
 { #category : 'accessing' }
@@ -101,7 +114,7 @@ FASTFortranDerivedTypeFieldFactory >> privateDerivedTypeFactory [
 	^derivedTypeFactory
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFieldFactory >> scalarVariable: variableName [
 
 	^derivedTypeFactory scalarVariable: variableName

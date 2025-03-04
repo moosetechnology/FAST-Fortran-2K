@@ -48,7 +48,24 @@ FASTFortranDerivedTypeThisFieldFactory >> createSegmentFieldDeclaration [
 ]
 
 { #category : 'testing' }
+FASTFortranDerivedTypeThisFieldFactory >> isAllocatable [ 
+
+	^true
+]
+
+{ #category : 'testing' }
 FASTFortranDerivedTypeThisFieldFactory >> isSegmentThisParameter [
 
 	^true
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeThisFieldFactory >> makeDeallocateStatement [
+
+	^self 
+		functionCallStatement: 'deallocate'
+		arguments: {
+			self scalarVariable: name
+		}
+		
 ]

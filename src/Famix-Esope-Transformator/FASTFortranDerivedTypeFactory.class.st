@@ -12,7 +12,7 @@ Class {
 	#tag : 'Segment'
 }
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> assignement: variable value: expression [
 
 	| var |
@@ -26,7 +26,7 @@ FASTFortranDerivedTypeFactory >> assignement: variable value: expression [
 		expression: expression
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> comment: aString [
 
 	^model newComment
@@ -81,7 +81,7 @@ FASTFortranDerivedTypeFactory >> createModule [
 	^module
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> declareMaxRankTemporaries: tempPrefix [
 
 		^(1 to: self rankMax)
@@ -90,7 +90,7 @@ FASTFortranDerivedTypeFactory >> declareMaxRankTemporaries: tempPrefix [
 			].
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> derivedTypeFieldAccessVariable: instanceName field: fieldName [
 
 	^model newDerivedTypeComponentAccess
@@ -98,7 +98,7 @@ FASTFortranDerivedTypeFactory >> derivedTypeFieldAccessVariable: instanceName fi
 		field: (self scalarVariable: fieldName)
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> do: condition body: statements [
 
 	| do |
@@ -141,7 +141,7 @@ FASTFortranDerivedTypeFactory >> fields: fastFortranDeclarations [
 	]
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> formattedCode: aString values: values [
 
 	^values
@@ -149,7 +149,7 @@ FASTFortranDerivedTypeFactory >> formattedCode: aString values: values [
 		ifNotEmpty: [ model newFormattedCodeString content: aString ; values: values ]
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> functionCall: aString arguments: aCollection [ 
 
 	^model newFunctionCall
@@ -158,7 +158,7 @@ FASTFortranDerivedTypeFactory >> functionCall: aString arguments: aCollection [
 		yourself
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> functionCallStatement: aString arguments: aCollection [ 
 
 	^model newFunctionCallStatement
@@ -197,7 +197,7 @@ FASTFortranDerivedTypeFactory >> getParameterFactories: fastFortranArrayRanges [
 	]
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> if: condition then: statements [
 
 	| if |
@@ -211,7 +211,7 @@ FASTFortranDerivedTypeFactory >> if: condition then: statements [
 
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> if: condition then: thenStatements else: elseStatements [
 
 	| if |
@@ -227,7 +227,7 @@ FASTFortranDerivedTypeFactory >> if: condition then: thenStatements else: elseSt
 
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> literal: anObject [
 
 	(anObject = true) ifTrue: [ ^model newBooleanLiteral primitiveValue: '.true.' ].
@@ -712,13 +712,16 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 	].
 
 	segini initBody.
-	segini addComment: '## Initialize a new "this" segment with default values'.
+	segini addComment: '## Initializes a new "this" segment with default values'.
 	segini addComment: '## using the given parameters'.
 	
 	segini addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
 	paramFactories do: [ :paramFactory |
 		segini addStatement: (paramFactory createSegcmdInFieldDeclaration)
 	].
+	segini addStatement: model newEmptyStatement.
+
+	segini statementBlock statements addAll: (self declareMaxRankTemporaries: 'ooo_dim').
 	segini addStatement: model newEmptyStatement.
 
 	segini addStatement: thisParameter createSeginiFieldInitialization.
@@ -871,12 +874,13 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegload [
 
 { #category : 'helper-segCommands' }
 FASTFortranDerivedTypeFactory >> makeProcedureSegloc [
-	| segloc  |
+	| segloc |
 
 	segloc := model newFunction
 		name: name , '_segloc' ;
 		declaredType: (model newSpecialIntrinsicType name: 'int64').
-	
+
+	segloc addParameter: (self scalarVariable: 'this').
 	segloc initBody.
 
 	segloc addStatement: (model newFormattedCodeString 
@@ -889,6 +893,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegloc [
         use, intrinsic :: iso_c_binding, only : c_loc
 
         type({1}), pointer, intent(in) :: this
+        integer(int64) :: this_loc
 
         {1}_segloc = transfer(c_loc(this), this_loc)';
 		values: { name }
@@ -1131,7 +1136,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegstore [
 
 { #category : 'helper-segCommands' }
 FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
-	| segsup thisParameter if |
+	| segsup thisParameter ifAssociated |
 
 	segsup := model newSubroutine
 		name: name , '_segsup'.
@@ -1143,42 +1148,35 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 	segsup addParameter: (self scalarVariable: 'this').
 	
 	segsup initBody.
-	segsup addComment: '## Delete ("supprimer" in French) the given "this" segment'.
+	segsup addComment: '## Deletes ("supprimer" in French) the given "this" segment'.
 
 	segsup addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
 	segsup addStatement: model newEmptyStatement.
 
-	if := model newIfBlockStatement.
-	if condition: (self 
+	ifAssociated := model newIfBlockStatement.
+	ifAssociated condition: (self 
 		functionCall: 'associated'
 		arguments: { self scalarVariable: 'this' }
 	).
-	if thenStatementBlock: (model newStatementBlock).
+
+	ifAssociated thenStatementBlock: (model newStatementBlock).
 	self components do: [ :fieldFactory |
-		if thenStatementBlock addStatement: ( self 
-			functionCallStatement: 'deallocate'
-			arguments: {
-				self derivedTypeFieldAccessVariable: 'this' field: fieldFactory name
-			}
-		)
+		fieldFactory makeDeallocateStatement
+			ifNotNil: [ :deallocate | ifAssociated thenStatementBlock addStatement: deallocate ]
 	].
-	
-	if thenStatementBlock addStatement: (model newFunctionCallStatement
-			name: 'deallocate';
-			addArgument: (self scalarVariable: 'this');
-			yourself
-	).
-	if thenStatementBlock addStatement: (model newFunctionCallStatement
+
+	ifAssociated thenStatementBlock addStatement: (thisParameter makeDeallocateStatement).
+	ifAssociated thenStatementBlock addStatement: (model newFunctionCallStatement
 			name: 'nullify';
 			addArgument: (self scalarVariable: 'this');
 			yourself
 	).
-	segsup addStatement: if.
+	segsup addStatement: ifAssociated.
 
 	^segsup
 ]
 
-{ #category : 'helper-segCommands' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> makeProceduresFromDimensioningExpressions [
 	
 	| paramFactories componentFactories dimensioningExpressionsProcedures |
@@ -1209,22 +1207,23 @@ FASTFortranDerivedTypeFactory >> makeProceduresFromDimensioningExpressions [
 				aFunction addStatement: (paramFactory createSegcmdInFieldDeclaration)
 			].
 			aFunction addStatement: model newEmptyStatement.
-			aFunction addStatement: (
-				self 
-					assignement: aFunctionName 
-					value: (componentFactory dimensioningExpressions at: i)
-			).
-			aFunction addStatement: model newEmptyStatement.
-			
+
+			"Old way to set the return value
+			aFunction addStatement: (self
+				assignement: aFunctionName 
+				value: (componentFactory dimensioningExpressions at: i)
+			)."
+
 			aFunction addStatement: (model newFormattedCodeString
-				content: 'call ignore({1}, ''{1}'', ''{2}::{3}_dim{4}'')' ;
-				values: { (paramFactories at: i) name . name . componentFactory name . i }
+				content: '    call check_post_condition({1} >= 0, ''{2}::{1}'', ''{1} >= 0'')
+
+    if ( ignore_do_trace ) then
+      call ignore({3}, ''{3}'', ''tlib::bstatu_dim1'')
+    end if
+' ;
+				values: { aFunctionName . name . (paramFactories at: i) name}
 			).
-			aFunction addStatement: (model newFormattedCodeString
-				content: 'call check_pre_condition(associated(this), ''{1}_segadj'', ''associated(this)'')' ;
-				values: { name }
-			).
-			
+
 			dimensioningExpressionsProcedures add: aFunction
 		]
 	].
@@ -1237,7 +1236,7 @@ FASTFortranDerivedTypeFactory >> makeProceduresFromDimensioningExpressions [
 
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> makeSegCall: segCommand arguments: arguments [
 
 	| stmt |
@@ -1251,7 +1250,7 @@ FASTFortranDerivedTypeFactory >> makeSegCall: segCommand arguments: arguments [
 	^stmt
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> makeSegadjCheckParamsChanged [
 
 	| statements paramFactories |
@@ -1278,7 +1277,7 @@ FASTFortranDerivedTypeFactory >> makeSegadjCheckParamsChanged [
 	^statements
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 
 	| thenStatements |
@@ -1300,7 +1299,7 @@ FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 		then: thenStatements
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> makeSegadjLocalDeclarations [
 
 		| statements |
@@ -1411,7 +1410,7 @@ FASTFortranDerivedTypeFactory >> rankMax [
 		ifNotEmpty: [ :collection | collection max ]
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> scalarVariable: variableName [
 
 	^model newScalarVariable

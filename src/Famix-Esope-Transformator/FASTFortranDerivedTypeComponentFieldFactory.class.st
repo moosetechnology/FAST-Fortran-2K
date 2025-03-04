@@ -164,6 +164,12 @@ FASTFortranDerivedTypeComponentFieldFactory >> fieldDeclarator: aFastFortranVari
 	])
 ]
 
+{ #category : 'testing' }
+FASTFortranDerivedTypeComponentFieldFactory >> isAllocatable [
+
+	^type class = FASTEsopeSegment
+]
+
 { #category : 'accessing' }
 FASTFortranDerivedTypeComponentFieldFactory >> isSegmentParameter [
 
@@ -208,6 +214,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeSegadjIfStatement [
 		assignement: ('ooo_' , (self asFieldAccess: 'ooo_stop'))
 		value: (self scalarVariable: ('this % ' , (self asFieldAccess: 'ooo_stop')))).
 	adjusterStatements add: self model newEmptyStatement.
+
 	adjusterStatements add: (self 
 		functionCallStatement: 'deallocate' 
 		arguments: { self derivedTypeFieldAccessVariable: 'this' field: name }
@@ -421,7 +428,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> temporariesForStopDimInitializati
 					self 
 						functionCall: 'size'
 						arguments: { 
-							self scalarVariable: ('oo_', name).
+							self scalarVariable: ('ooo_', name).
 							self model newIntegerLiteral primitiveValue: i
 						}
 					.
