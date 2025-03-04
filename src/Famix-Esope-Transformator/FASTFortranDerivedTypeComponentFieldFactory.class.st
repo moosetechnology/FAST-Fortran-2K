@@ -421,7 +421,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> temporariesForStopDimInitializati
 					self 
 						functionCall: 'size'
 						arguments: { 
-							self scalarVariable: ('oo_', name).
+							self scalarVariable: ('ooo_', name).
 							self model newIntegerLiteral primitiveValue: i
 						}
 					.
