@@ -1312,7 +1312,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUs
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUserDefinedType: aFASTFortran2kUserDefinedType [
 
 	self
-		<< 'type (';
+		<< 'type(';
 		<< aFASTFortran2kUserDefinedType name;
 		<< ')'
 ]

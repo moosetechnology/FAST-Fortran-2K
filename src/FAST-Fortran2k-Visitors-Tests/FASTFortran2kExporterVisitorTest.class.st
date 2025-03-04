@@ -333,7 +333,7 @@ end program demo
 	self
 		assertExport: stmt
 		equals:
-'type (point_t), pointer :: p
+'type(point_t), pointer :: p
 '
 ]
 
@@ -405,7 +405,7 @@ FASTFortran2kExporterVisitorTest >> testTypeBoxedBookDefinition [
 		assertExport: stmt
 		equals:
 'type, extends(segment) :: boxed_book
-  type (book), pointer, private :: this
+  type(book), pointer, private :: this
 end type boxed_book
 '
 ]
@@ -569,6 +569,14 @@ FASTFortran2kExporterVisitorTest >> testUseStatementWithRenamings [
 '
 ]
 
+{ #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testUserDefinedType [
+
+	self
+		assertExport: (FASTFortran2kUserDefinedType new name: 'someType')
+		equals: 'type(someType)'
+]
+
 { #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testVariableDeclarationStatementArray1Dim [
 
@@ -623,7 +631,7 @@ FASTFortran2kExporterVisitorTest >> testVariableDeclarationStatementPointer [
 	self
 		assertExport: stmt
 		equals:
-'type (point_t), pointer :: p1
+'type(point_t), pointer :: p1
 '
 ]
 
@@ -643,7 +651,7 @@ FASTFortran2kExporterVisitorTest >> testVariableDeclarationStatementPointerTwoVa
 	self
 		assertExport: stmt
 		equals:
-'type (point_t), pointer :: p1, p2
+'type(point_t), pointer :: p1, p2
 '
 ]
 
