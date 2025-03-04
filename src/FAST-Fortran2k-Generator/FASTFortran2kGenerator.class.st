@@ -167,7 +167,8 @@ Class {
 		'tWithModifiers',
 		'emptyStatement',
 		'functionCallStatement',
-		'tProcedure'
+		'tProcedure',
+		'specialIntrinsicType'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -391,6 +392,10 @@ FASTFortran2kGenerator >> defineClasses2k [
 		                    newClassNamed: #UseOnlyStatement
 		                    comment: 'I represent a only use statement'.
 
+	specialIntrinsicType := self
+		newClassNamed: #SpecialIntrinsicType
+		comment: 'I represent a special Fortran intrinsic type sucha as int16, int32, real32,...'.
+ 
 	userDefinedType := self
 		                   newClassNamed: #UserDefinedType
 		                   comment: 'I represent a user defined type'.
@@ -884,7 +889,10 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	useNoRenamedStatement --|> tNamedEntity.
 	
 	useOnlyStatement --|> useStatement.
-	
+
+	specialIntrinsicType --|> type.
+	specialIntrinsicType --|> tNamedEntity.
+
 	userDefinedType --|> type.
 	userDefinedType  --|> tNamedEntity.
 

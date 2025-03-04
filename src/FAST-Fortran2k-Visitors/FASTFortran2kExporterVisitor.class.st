@@ -1070,6 +1070,31 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSourceCodeString: aFASTFortran
 		newLine 
 ]
 
+{ #category : 'visiting' }
+FASTFortran2kExporterVisitor >> visitFASTFortran2kSpecialIntrinsicType: aFASTFortran2kSpecialIntrinsicType [
+	"not sure how it works exactly and when you should use, for example 'integer(int16)' or just 'int16' ?"
+
+	(aFASTFortran2kSpecialIntrinsicType name beginsWith: 'int')
+	ifTrue: [
+		self
+			<< 'integer(' ;
+			<< aFASTFortran2kSpecialIntrinsicType name ;
+			<< ')'.
+		^self
+	].
+
+	(aFASTFortran2kSpecialIntrinsicType name beginsWith: 'real')
+	ifTrue: [
+		self
+			<< 'real(' ;
+			<< aFASTFortran2kSpecialIntrinsicType name ;
+			<< ')'.
+		^self
+	].
+
+	self << aFASTFortran2kSpecialIntrinsicType name
+]
+
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kStatementBlock: aFASTFortran2kStatementBlock [
 
@@ -1312,7 +1337,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUs
 FASTFortran2kExporterVisitor >> visitFASTFortran2kUserDefinedType: aFASTFortran2kUserDefinedType [
 
 	self
-		<< 'type (';
+		<< 'type(';
 		<< aFASTFortran2kUserDefinedType name;
 		<< ')'
 ]

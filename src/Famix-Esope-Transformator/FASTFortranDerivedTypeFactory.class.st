@@ -874,13 +874,14 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegloc [
 	| segloc  |
 
 	segloc := model newFunction
-		name: name , '_segloc'.
+		name: name , '_segloc' ;
+		declaredType: (model newSpecialIntrinsicType name: 'int64').
 	
 	segloc initBody.
 
 	segloc addStatement: (model newFormattedCodeString 
 		content: '
-        ! ## Return a location of the "this" pointer
+        ! ## Returns a location of the "this" pointer
         ! ## just to trace pointers during debug,
         ! ## should not be use for other purpose !!!
 
@@ -888,10 +889,8 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegloc [
         use, intrinsic :: iso_c_binding, only : c_loc
 
         type({1}), pointer, intent(in) :: this
-        integer(int64) :: this_loc
 
-        this_loc = transfer(c_loc(this), this_loc)
-		';
+        {1}_segloc = transfer(c_loc(this), this_loc)';
 		values: { name }
 	).
 

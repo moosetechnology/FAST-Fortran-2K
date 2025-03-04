@@ -784,6 +784,13 @@ FASTFortran2kTEntityCreator >> newSourceCodeString [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newSpecialIntrinsicType [
+
+	<generated>
+	^ self add: FASTFortran2kSpecialIntrinsicType new
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newStatementBlock [
 
 	<generated>
