@@ -441,15 +441,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDefinition: aFASTFo
 		indented: 'public ' ;
 		<< aFASTFortran2kDerivedTypeDefinition name ;
 		newLine ;
-		indented: 'type '.
+		indented: 'type'.
 
-	aFASTFortran2kDerivedTypeDefinition modifiers
-		do: [ :modifier | 
-			self
-				space ;
-				<< modifier ]
-		separatedBy: [
-			self << ', ' ].
+	aFASTFortran2kDerivedTypeDefinition modifiers 
+		ifNotEmpty: [ :modifiers | 
+			self << ', '.
+			self visitNodeListSeparatedByCommas: modifiers
+		].
 
 	aFASTFortran2kDerivedTypeDefinition superType ifNotNil: [ :superType |
 		self
@@ -458,7 +456,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDefinition: aFASTFo
 			<< ')' ].
 
 	self
-		space ;
+		<< ' :: ';
 		<< aFASTFortran2kDerivedTypeDefinition name ;
 		newLine.
 
