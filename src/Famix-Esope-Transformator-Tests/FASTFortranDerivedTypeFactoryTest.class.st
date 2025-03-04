@@ -6,6 +6,22 @@ Class {
 }
 
 { #category : 'tests' }
+FASTFortranDerivedTypeFactoryTest >> testMakeProcedureSegloc [
+	| segloc |
+
+	segFactory name: 'blah'.
+
+	segloc := segFactory makeProcedureSegloc.
+
+	self assert: segloc class equals: FASTFortran2kFunction.
+	self assert: segloc name equals: 'blah_segloc'.
+	self assert: segloc parameters isEmpty.
+	self assert: segloc declaredType class equals: FASTFortran2kSpecialIntrinsicType.
+	self assert: segloc statementBlock statements size equals: 1.
+	self assert: segloc statementBlock statements anyOne class equals: FASTFortran2kFormattedCodeString.
+]
+
+{ #category : 'tests' }
 FASTFortranDerivedTypeFactoryTest >> testMakeSegadjCheckParamsChanged [
 	| statements |
 	(self makeFactory: FASTFortranDerivedTypeParameterFieldFactory)

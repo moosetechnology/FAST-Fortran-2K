@@ -875,7 +875,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegloc [
 
 	segloc := model newFunction
 		name: name , '_segloc' ;
-		declaredType: model newIntegerType.
+		declaredType: (model newSpecialIntrinsicType name: 'int64').
 	
 	segloc initBody.
 
