@@ -12,7 +12,7 @@ Class {
 	#tag : 'Segment'
 }
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> assignement: variable value: expression [
 
 	| var |
@@ -26,7 +26,7 @@ FASTFortranDerivedTypeFactory >> assignement: variable value: expression [
 		expression: expression
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> comment: aString [
 
 	^model newComment
@@ -81,7 +81,7 @@ FASTFortranDerivedTypeFactory >> createModule [
 	^module
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> declareMaxRankTemporaries: tempPrefix [
 
 		^(1 to: self rankMax)
@@ -90,7 +90,7 @@ FASTFortranDerivedTypeFactory >> declareMaxRankTemporaries: tempPrefix [
 			].
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> derivedTypeFieldAccessVariable: instanceName field: fieldName [
 
 	^model newDerivedTypeComponentAccess
@@ -98,7 +98,7 @@ FASTFortranDerivedTypeFactory >> derivedTypeFieldAccessVariable: instanceName fi
 		field: (self scalarVariable: fieldName)
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> do: condition body: statements [
 
 	| do |
@@ -141,7 +141,7 @@ FASTFortranDerivedTypeFactory >> fields: fastFortranDeclarations [
 	]
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> formattedCode: aString values: values [
 
 	^values
@@ -149,7 +149,7 @@ FASTFortranDerivedTypeFactory >> formattedCode: aString values: values [
 		ifNotEmpty: [ model newFormattedCodeString content: aString ; values: values ]
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> functionCall: aString arguments: aCollection [ 
 
 	^model newFunctionCall
@@ -158,7 +158,7 @@ FASTFortranDerivedTypeFactory >> functionCall: aString arguments: aCollection [
 		yourself
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> functionCallStatement: aString arguments: aCollection [ 
 
 	^model newFunctionCallStatement
@@ -197,7 +197,7 @@ FASTFortranDerivedTypeFactory >> getParameterFactories: fastFortranArrayRanges [
 	]
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> if: condition then: statements [
 
 	| if |
@@ -211,7 +211,7 @@ FASTFortranDerivedTypeFactory >> if: condition then: statements [
 
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> if: condition then: thenStatements else: elseStatements [
 
 	| if |
@@ -227,7 +227,7 @@ FASTFortranDerivedTypeFactory >> if: condition then: thenStatements else: elseSt
 
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> literal: anObject [
 
 	(anObject = true) ifTrue: [ ^model newBooleanLiteral primitiveValue: '.true.' ].
@@ -1237,7 +1237,7 @@ FASTFortranDerivedTypeFactory >> makeProceduresFromDimensioningExpressions [
 
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> makeSegCall: segCommand arguments: arguments [
 
 	| stmt |
@@ -1251,7 +1251,7 @@ FASTFortranDerivedTypeFactory >> makeSegCall: segCommand arguments: arguments [
 	^stmt
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> makeSegadjCheckParamsChanged [
 
 	| statements paramFactories |
@@ -1278,7 +1278,7 @@ FASTFortranDerivedTypeFactory >> makeSegadjCheckParamsChanged [
 	^statements
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 
 	| thenStatements |
@@ -1300,7 +1300,7 @@ FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 		then: thenStatements
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> makeSegadjLocalDeclarations [
 
 		| statements |
@@ -1411,7 +1411,7 @@ FASTFortranDerivedTypeFactory >> rankMax [
 		ifNotEmpty: [ :collection | collection max ]
 ]
 
-{ #category : 'entity creation' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> scalarVariable: variableName [
 
 	^model newScalarVariable
