@@ -71,12 +71,6 @@ FASTFortranDerivedTypeFieldFactory >> if: condition then: statements [
 	^derivedTypeFactory if: condition then: statements
 ]
 
-{ #category : 'testing' }
-FASTFortranDerivedTypeFieldFactory >> isAllocatable [
-
-	^false
-]
-
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeFieldFactory >> literal: anObject [
 

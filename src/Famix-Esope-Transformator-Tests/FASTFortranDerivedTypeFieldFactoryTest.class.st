@@ -345,6 +345,6 @@ FASTFortranDerivedTypeFieldFactoryTest >> testMakeDeallocateStatementThisParamet
 	self assert: stmt name equals: 'deallocate'.
 
 	self assert: stmt arguments size equals: 1.
-	self assert: stmt arguments anyOne class equals: FASTFortran2kDerivedTypeComponentAccess.
+	self assert: stmt arguments anyOne class equals: FASTFortran2kScalarVariable.
 
 ]

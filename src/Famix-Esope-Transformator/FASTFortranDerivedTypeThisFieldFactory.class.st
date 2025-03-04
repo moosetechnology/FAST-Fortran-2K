@@ -58,3 +58,14 @@ FASTFortranDerivedTypeThisFieldFactory >> isSegmentThisParameter [
 
 	^true
 ]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeThisFieldFactory >> makeDeallocateStatement [
+
+	^self 
+		functionCallStatement: 'deallocate'
+		arguments: {
+			self scalarVariable: name
+		}
+		
+]
