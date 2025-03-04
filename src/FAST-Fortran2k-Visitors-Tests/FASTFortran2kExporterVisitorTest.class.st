@@ -402,7 +402,8 @@ FASTFortran2kExporterVisitorTest >> testTypeBookDefinition [
 	self
 		assertExport: stmt
 		equals: 
-'type :: book
+'public book
+type :: book
   character(len=40) :: btitle
   integer :: bpages
   real :: budc
@@ -420,7 +421,8 @@ FASTFortran2kExporterVisitorTest >> testTypeBoxedBookDefinition [
 	self
 		assertExport: stmt
 		equals:
-'type, extends(segment) :: boxed_book
+'public boxed_book
+type, extends(segment) :: boxed_book
   type(book), pointer, private :: this
 end type boxed_book
 '
@@ -447,7 +449,8 @@ FASTFortran2kExporterVisitorTest >> testTypeDefinition [
 	self
 		assertExport: stmt
 		equals:
-'type :: point_t
+'public point_t
+type :: point_t
   character(len=*) :: label
   real :: x
 end type point_t

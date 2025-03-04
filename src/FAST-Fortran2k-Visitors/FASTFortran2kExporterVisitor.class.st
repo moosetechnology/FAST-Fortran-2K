@@ -437,7 +437,11 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDeclaration: aFASTF
 { #category : 'visiting' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDefinition: aFASTFortran2kDerivedTypeDefinition [
 
-	self indented: 'type'.
+	self
+		indented: 'public ' ;
+		<< aFASTFortran2kDerivedTypeDefinition name ;
+		newLine ;
+		indented: 'type'.
 
 	aFASTFortran2kDerivedTypeDefinition modifiers 
 		ifNotEmpty: [ :modifiers | 
