@@ -58,18 +58,45 @@ FASTFortranDerivedTypeComponentFieldFactory >> asFieldAccess: slicingLimitName [
 { #category : 'converting' }
 FASTFortranDerivedTypeComponentFieldFactory >> asVariableDeclaration [
 
-	| stmt declarator |
+	| stmt declarator modifiers |
+
 	stmt := self model newVariableDeclarationStatement.
 	stmt declaredType: (type accept: (FASTFortranBehavioralTransformationVisitor new 
 		model2k: self model )).
 
 	declarator := self model newVariableDeclarator.
 	declarator name: name.
-	1 to: rank do: [ :i | declarator addDimension: self model newArrayRange ].
 
-	stmt addDeclarator: declarator.
+	(rank > 0)
+		ifTrue: [
+			modifiers := #( pointer ).
+			1 to: rank do: [ :i | declarator addDimension: self model newArrayRange ]
+		]
+		ifFalse: [ modifiers := #() ].
+
+	stmt
+		addDeclarator: declarator ;
+		modifiers: modifiers.
 
 	^stmt
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> checkIfDimExtendable: iDim [
+
+	^self model newBinaryExpression
+		leftOperand: ( 
+			self functionCall: 'size'
+				arguments: { 
+					(self derivedTypeFieldAccessVariable: 'this' field: name) .
+					self model newIntegerLiteral primitiveValue: iDim
+				}
+		) ;
+
+		operator: '==' ;
+
+		rightOperand: (self scalarVariable: ('ooo_dim', iDim asString))
+				
 ]
 
 { #category : 'entity-creation' }
@@ -77,7 +104,6 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSegadjTemporaryDeclaration 
 
 	| stmt |
 	stmt := self asVariableDeclaration.
-	stmt modifiers: #( pointer ).
 	stmt declarators anyOne name: ('ooo_' , name).
 
 	^stmt
@@ -111,8 +137,10 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSeginiFieldInitialization [
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> createSegmentFieldDeclaration [
 
-	^self asVariableDeclaration
-		modifiers: #( public ) ;
+	| stmt |
+	stmt := self asVariableDeclaration.
+	^stmt
+		modifiers: ( stmt modifiers , #( public ) ) ;
 		yourself.
 ]
 
@@ -144,13 +172,59 @@ FASTFortranDerivedTypeComponentFieldFactory >> isSegmentParameter [
 
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> makeAllocationCallForDimensionnedField: fieldName with: prefix [
+	"creating the array access (to fieldName) as a functionCall which is
+	 syntactically equivalent"
 
 	^self functionCallStatement: 'allocate' arguments: {
-		"creating the array access as a functioncall which is syntactically equivlent"
 		self
 			functionCall: fieldName
 			arguments: ((1 to: rank) collect: [ :i | self scalarVariable: (prefix , i asString) ])
 	}
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> makeSegadjIfStatement [ 
+
+	| ifAdjuster statements adjusterStatements |
+
+	(rank > 0) ifFalse: [ ^#() ].
+
+	statements := OrderedCollection new.
+	
+	statements add: (self comment: ('-- this%' , name)).
+	statements addAll: self temporariesForDimInitialization.
+	statements addAll: self temporariesForDimCheckIfExtendableInitialization.
+
+	adjusterStatements := OrderedCollection new.
+	adjusterStatements add: (self 
+		makeAllocationCallForDimensionnedField: ('ooo_' , name) 
+		with: 'ooo_dim').
+	adjusterStatements add: (self
+		assignement: ('ooo_' , self asFieldAccess)
+		value: (self scalarVariable: self asDefaultValue)).
+	adjusterStatements add: self model newEmptyStatement.
+	adjusterStatements addAll: self temporariesForStopDimInitialization.
+	adjusterStatements add: (self
+		assignement: ('ooo_' , (self asFieldAccess: 'ooo_stop'))
+		value: (self scalarVariable: ('this % ' , (self asFieldAccess: 'ooo_stop')))).
+	adjusterStatements add: self model newEmptyStatement.
+	adjusterStatements add: (self 
+		functionCallStatement: 'deallocate' 
+		arguments: { self derivedTypeFieldAccessVariable: 'this' field: name }
+	).
+	adjusterStatements add: (self model newPointerAssignmentStatement
+		variable: (self derivedTypeFieldAccessVariable: 'this' field: name);
+		expression: (self scalarVariable: ('this%', name))).
+
+	ifAdjuster := self
+		if: (self model newUnaryExpression 
+			operator: '.not.';
+			expression: (self scalarVariable: 'ooo_eq_dims') 	)
+			then: adjusterStatements.
+
+	statements add: ifAdjuster.
+
+	^statements
 ]
 
 { #category : 'entity-creation' }
@@ -272,6 +346,12 @@ FASTFortranDerivedTypeComponentFieldFactory >> nestedDoLoops: dim of: maxDim all
 
 ]
 
+{ #category : 'accessing - private tests' }
+FASTFortranDerivedTypeComponentFieldFactory >> privateRank: anInt [
+
+	rank := anInt 
+]
+
 { #category : 'accessing' }
 FASTFortranDerivedTypeComponentFieldFactory >> rank [
 
@@ -295,26 +375,25 @@ FASTFortranDerivedTypeComponentFieldFactory >> temporariesAsArguments [
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> temporariesForDimCheckIfExtendableInitialization [
 
-	^(1 to: rank) collect: [ :i |
-		self
-			assignement: ('ooo_eq_dims')
-			value: (self model newBinaryExpression
-				operator: '.and.';
-				leftOperand: (self scalarVariable: 'ooo_eq_dims');
-				rightOperand: (self model newBinaryExpression
-					operator: '==';
-					leftOperand: ( 
-						self functionCall: 'size'
-							arguments: { 
-								(self derivedTypeFieldAccessVariable: 'this' field: name) .
-								self model newIntegerLiteral primitiveValue: i
-							}
-					);
-					rightOperand: (self scalarVariable: ('ooo_dim', i asString))
-				)
-			)
-	]
+	| statements |
 
+	statements := OrderedCollection new: rank.
+
+	statements add: (self
+		assignement: 'ooo_eq_dims'
+		value: (self checkIfDimExtendable: 1) ).
+
+	(2 to: rank) do: [ :iDim |
+		statements add: (self
+			assignement: 'ooo_eq_dims'
+			value: (self model newBinaryExpression
+				leftOperand: (self scalarVariable: 'ooo_eq_dims') ;
+				operator: '.and.' ;
+				rightOperand: (self checkIfDimExtendable: iDim)
+			))
+	].
+
+	^statements
 ]
 
 { #category : 'entity-creation' }
@@ -325,7 +404,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> temporariesForDimInitialization [
 			assignement: ('ooo_dim' , i asString)
 			value: (self
 				functionCall: (name , '_dim' , i asString)
-				arguments: (self derivedTypeFactory parameters
+				arguments: (self privateDerivedTypeFactory parameters
 					collect: [ :param | self scalarVariable: param name]))
 	].
 

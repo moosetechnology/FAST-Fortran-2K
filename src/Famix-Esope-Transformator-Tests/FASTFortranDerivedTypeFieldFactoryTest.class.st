@@ -1,35 +1,9 @@
 Class {
 	#name : 'FASTFortranDerivedTypeFieldFactoryTest',
-	#superclass : 'TestCase',
-	#instVars : [
-		'fastModel',
-		'segFactory',
-		'fast2kModel'
-	],
+	#superclass : 'FASTFortranDerivedTypeAbstractFactoryTest',
 	#category : 'Famix-Esope-Transformator-Tests',
 	#package : 'Famix-Esope-Transformator-Tests'
 }
-
-{ #category : 'running' }
-FASTFortranDerivedTypeFieldFactoryTest >> makeFactory: factoryClass [
-
-	| factory |
-	factory := factoryClass new.
-	factory derivedTypeFactory: FASTFortranDerivedTypeFactory new.
-	factory derivedTypeFactory model: fast2kModel.
-
-	^factory
-]
-
-{ #category : 'running' }
-FASTFortranDerivedTypeFieldFactoryTest >> setUp [
-
-	super setUp.
-
-	fastModel := FASTEsopeModel new.
-	fast2kModel := FASTFortran2kModel new.
-
-]
 
 { #category : 'tests' }
 FASTFortranDerivedTypeFieldFactoryTest >> testComponentAsFieldAccess1Rank [
@@ -152,9 +126,9 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegcmdInoutThisFieldDeclarat
 	factory := (self makeFactory: FASTFortranDerivedTypeThisFieldFactory)
 		name: 'this'.
 	factory derivedTypeFactory: FASTFortranDerivedTypeFactory new.
-	factory derivedTypeFactory model: fast2kModel.
-	factory derivedTypeFactory fields: #().
-	factory derivedTypeFactory name: 'bar'.
+	factory privateDerivedTypeFactory model: fast2kModel.
+	factory privateDerivedTypeFactory fields: #().
+	factory privateDerivedTypeFactory name: 'bar'.
 
 	fast2k := factory createSegcmdInoutFieldDeclaration.
 
@@ -183,9 +157,9 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiComponentInitializatio
 	paramFactory name: 'idim'.
 
 	factory derivedTypeFactory: FASTFortranDerivedTypeFactory new.
-	factory derivedTypeFactory model: fast2kModel.
-	factory derivedTypeFactory privateFields: { factory . paramFactory }.
-	factory derivedTypeFactory name: 'bar'.
+	factory privateDerivedTypeFactory model: fast2kModel.
+	factory privateDerivedTypeFactory privateFields: { factory . paramFactory }.
+	factory privateDerivedTypeFactory name: 'bar'.
 
 	fast2k := factory createSeginiFieldInitialization.
 
@@ -258,10 +232,39 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegmentComponentDeclaration 
 
 	self assert: fast2k class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType.
-	
+
+	self assert: fast2k modifiers size equals: 1.
+	self assert: fast2k modifiers anyOne equals: 'public'.
+
 	self assert: fast2k declarators size equals: 1.
 	self assert: fast2k declarators anyOne name equals: 'x'.
 	self assert: fast2k declarators anyOne dimensions size equals: 0.
+]
+
+{ #category : 'tests' }
+FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegmentComponentDeclarationWithDim [
+
+	| fast2k factory |
+	factory := self makeFactory: FASTFortranDerivedTypeComponentFieldFactory.
+	factory 
+		type: fastModel newIntegerType ;
+		fieldDeclarator: (fastModel newVariableDeclarator
+			name: 'x' ;
+			addDimension: (fastModel newArrayRange upperBound: (fastModel newScalarVariable name: 'dim1')) ;
+			yourself
+		).
+
+	fast2k := factory createSegmentFieldDeclaration.
+
+	self assert: fast2k class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType.
+	
+	self assert: fast2k modifiers size equals: 2.
+	self assert: fast2k modifiers first equals: 'pointer'.
+	self assert: fast2k modifiers second equals: 'public'.
+
+	self assert: fast2k declarators size equals: 1.
+	self assert: fast2k declarators anyOne name equals: 'x'.
 ]
 
 { #category : 'tests' }

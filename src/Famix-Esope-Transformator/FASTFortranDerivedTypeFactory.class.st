@@ -52,13 +52,9 @@ FASTFortranDerivedTypeFactory >> createModule [
 			self makeSegmentTypeName .
 
 			self makeBoxedTypeDefinition .
-			self makeInterfaces .
-			"self makeContainsStatement ."
+			self makeInterfaces
 		}
 	).
-
-	module procedures add: self makeContainsComment.
-	module procedures add: self makeContainsComment.
 
 	module procedures addAll: (self makeProceduresFromDimensioningExpressions).
 	
@@ -269,12 +265,6 @@ FASTFortranDerivedTypeFactory >> makeBoxedTypeDefinition [
 ]
 
 { #category : 'helpers-codeString' }
-FASTFortranDerivedTypeFactory >> makeContainsComment [
-
-	^model newSourceCodeString content: '! ## primary aspects'
-]
-
-{ #category : 'helpers-codeString' }
 FASTFortranDerivedTypeFactory >> makeContainsStatement [
 
 	^model newSourceCodeString
@@ -287,8 +277,8 @@ FASTFortranDerivedTypeFactory >> makeContainsStatement [
 FASTFortranDerivedTypeFactory >> makeInterfaces [
 
 	^model newFormattedCodeString
-		  content: '
-	 public assignment (=)
+		content: '
+    public assignment (=)
     interface assignment (=)
         module procedure {1}_assign_pointer_to_pointer
     end interface
@@ -371,8 +361,8 @@ FASTFortranDerivedTypeFactory >> makeInterfaces [
 
     public {1}_mypnt
     public {1}_load
-';
-		  values: { name }
+' ;
+		values: { name }
 ]
 
 { #category : 'helpers-codeString' }
@@ -632,34 +622,19 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
 	segadj addComment: '## using the given parameters'.
 	
 	segadj addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
-	paramFactories do: [ :paramFactory |
-		segadj addStatement: (paramFactory createSegcmdInFieldDeclaration)
-	].
-	segadj addStatement: model newEmptyStatement.
 
-	segadj statementBlock statements addAll: (self declareMaxRankTemporaries: 'ooo_dim').
-	segadj statementBlock statements addAll: (self declareMaxRankTemporaries: 'ooo_stop').
-
-	self components do: [ :componentFactory |
-		segadj addStatement: componentFactory createSegadjTemporaryDeclaration
-	].
-	segadj addStatement: (model newSourceCodeString content: 'logical :: ooo_eq_dims').
-	segadj addStatement: (model newSourceCodeString content: 'logical :: ooo_eq_pars').
-	segadj addStatement: model newEmptyStatement.
-	
-	segadj addStatement: thisParameter createSeginiFieldInitialization.
-	paramFactories do: [ :paramFactory |
-		segadj addStatement: paramFactory createSeginiFieldInitialization.
-	].
-	segadj addStatement: model newEmptyStatement.
+	paramFactories ifNotEmpty: [
+		segadj statementBlock statements addAll: self makeSegadjLocalDeclarations ].
 
 	segadj addStatement: (model newFormattedCodeString
 		content: 'call check_pre_condition(associated(this), ''{1}_segadj'', ''associated(this)'')' ;
 		values: { name } ).
-	segadj addStatement: model newEmptyStatement.
 
-	segadj addStatement: self makeSegadjIfStatement.
-	
+	paramFactories ifNotEmpty: [
+		segadj addStatement: model newEmptyStatement.
+		segadj addStatement: self makeSegadjIfStatement.
+	].
+
 	^segadj
 
 ]
@@ -929,7 +904,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegmentType [
 	^model newFormattedCodeString
 		  content: '
     subroutine {1}_seg_type(this, type_name)
-        ! ## Return the name of the segment type
+       ! ## Return the name of the segment type
         type({1}), pointer, intent(in) :: this
         character(len=segment_type_len), intent(out) :: type_name
 
@@ -1278,72 +1253,77 @@ FASTFortranDerivedTypeFactory >> makeSegCall: segCommand arguments: arguments [
 ]
 
 { #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> makeSegadjCheckParamsChanged [
+
+	| statements paramFactories |
+
+	paramFactories := self parameters.
+	statements := OrderedCollection new.
+	
+	statements add:
+		(model newFormattedCodeString
+			content: 'ooo_eq_pars = (this % {1} == {1})';
+			values: { paramFactories first name }).
+
+	paramFactories allButFirst do: [ :paramFactory |
+		statements add: (model newFormattedCodeString
+			content: 'ooo_eq_pars = ooo_eq_pars .and. (this % {1} == {1})';
+			values: { paramFactory name })
+	].
+
+	statements add:
+		(model newSourceCodeString content: 'if ( ooo_eq_pars ) return').
+
+	statements add: model newEmptyStatement.
+
+	^statements
+]
+
+{ #category : 'entity creation' }
 FASTFortranDerivedTypeFactory >> makeSegadjIfStatement [
 
-	| ifStatements paramFactories componentFactories adjusterStatements |
-	paramFactories := self parameters.
-	componentFactories := self components.
+	| thenStatements |
 
-	ifStatements := OrderedCollection new.
+	thenStatements := self makeSegadjCheckParamsChanged.
 
-	ifStatements add:
-		(model newSourceCodeString content: 'ooo_eq_pars = .true.').
-
-	ifStatements addAll: (paramFactories collect: [ :paramFactory |
-		 (model newFormattedCodeString
-				 content: 'ooo_eq_pars = ooo_eq_pars .and. (this%{1} == {1})';
-				 values: { paramFactory name }) ]).
-
-	ifStatements add:
-		(model newSourceCodeString content: 'if ( ooo_eq_pars ) return').
-	ifStatements add: model newEmptyStatement.
-
-	ifStatements addAll: (paramFactories collect: [ :paramFactory |
+	thenStatements addAll: (self parameters collect: [ :paramFactory |
 			paramFactory createSeginiFieldInitialization ]).
-	ifStatements add: model newEmptyStatement.
+	thenStatements add: model newEmptyStatement.
 
-	componentFactories do: [ :compFactory| | ifAdjuster |
-		ifStatements add: (self comment: ('-- this%' , compFactory name)).
-		ifStatements addAll: compFactory temporariesForDimInitialization.
-		ifStatements add: (model newSourceCodeString content: 'ooo_eq_dims = .true.').
-		ifStatements addAll: compFactory temporariesForDimCheckIfExtendableInitialization.
-
-		adjusterStatements := OrderedCollection new.
-		adjusterStatements add: (compFactory 
-					makeAllocationCallForDimensionnedField: ('oo_' , name) 
-					with: 'ooo_dim').
-		adjusterStatements add: (self
-					assignement: ('oo' , compFactory asFieldAccess)
-					value: (compFactory scalarVariable: compFactory asDefaultValue)).
-		adjusterStatements add: model newEmptyStatement.
-		adjusterStatements addAll: compFactory temporariesForStopDimInitialization.
-		adjusterStatements add: (self
-				assignement: (('oo_', name) , (compFactory asFieldAccess: 'ooo_stop'))
-				value: (self scalarVariable: (('this%', name) , (compFactory asFieldAccess: 'ooo_stop')))).
-		adjusterStatements add: model newEmptyStatement.
-		adjusterStatements add: (compFactory 
-			functionCallStatement: 'deallocate' 
-			arguments: { self derivedTypeFieldAccessVariable: 'this' field: name }
-		).
-		adjusterStatements add: (model newPointerAssignmentStatement
-				variable: (self derivedTypeFieldAccessVariable: 'this' field: name);
-				expression: (self scalarVariable: ('this%', name))).
-
-		ifAdjuster := self
-			if: (model newUnaryExpression 
-				operator: '.not.';
-				expression: (self scalarVariable: 'ooo_eq_dims') 	)
-			then: adjusterStatements.
-
-		ifStatements add: ifAdjuster.
-	].
+	self components do: [ :compFactory|
+		thenStatements addAll: compFactory makeSegadjIfStatement ].
 
 	^self
 		if: ( self 
 			functionCall: 'associated' 
 			arguments: {  self scalarVariable: 'this' }
 		)
-		then: ifStatements
+		then: thenStatements
+]
+
+{ #category : 'entity creation' }
+FASTFortranDerivedTypeFactory >> makeSegadjLocalDeclarations [
+
+		| statements |
+
+	statements := OrderedCollection new.
+
+	self parameters do: [ :paramFactory |
+		statements add: (paramFactory createSegcmdInFieldDeclaration)
+	].
+	statements add: model newEmptyStatement.
+
+	statements addAll: (self declareMaxRankTemporaries: 'ooo_dim').
+	statements addAll: (self declareMaxRankTemporaries: 'ooo_stop').
+
+	self components do: [ :componentFactory |
+		statements add: componentFactory createSegadjTemporaryDeclaration
+	].
+	statements add: (model newSourceCodeString content: 'logical :: ooo_eq_dims').
+	statements add: (model newSourceCodeString content: 'logical :: ooo_eq_pars').
+	statements add: model newEmptyStatement.
+
+	^statements
 ]
 
 { #category : 'helpers-codeString' }
