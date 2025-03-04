@@ -11,7 +11,7 @@ FASTFortranDerivedTypeThisFieldFactory >> createSegcmdFieldDeclaration [
 
 	^self model newVariableDeclarationStatement
 		addDeclarator: (self model newVariableDeclarator name: name) ;
-		declaredType: (self model newUserDefinedType name: self derivedTypeFactory name)
+		declaredType: (self model newUserDefinedType name: self privateDerivedTypeFactory name)
 ]
 
 { #category : 'entity-creation' }

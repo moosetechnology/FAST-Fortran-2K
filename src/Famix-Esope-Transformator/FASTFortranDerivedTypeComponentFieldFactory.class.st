@@ -327,6 +327,12 @@ FASTFortranDerivedTypeComponentFieldFactory >> nestedDoLoops: dim of: maxDim all
 
 ]
 
+{ #category : 'accessing - private tests' }
+FASTFortranDerivedTypeComponentFieldFactory >> privateRank: anInt [
+
+	rank := anInt 
+]
+
 { #category : 'accessing' }
 FASTFortranDerivedTypeComponentFieldFactory >> rank [
 
@@ -380,7 +386,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> temporariesForDimInitialization [
 			assignement: ('ooo_dim' , i asString)
 			value: (self
 				functionCall: (name , '_dim' , i asString)
-				arguments: (self derivedTypeFactory parameters
+				arguments: (self privateDerivedTypeFactory parameters
 					collect: [ :param | self scalarVariable: param name]))
 	].
 

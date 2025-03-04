@@ -1,11 +1,6 @@
 Class {
 	#name : 'FASTFortranDerivedTypeFieldFactoryTest',
-	#superclass : 'TestCase',
-	#instVars : [
-		'fastModel',
-		'segFactory',
-		'fast2kModel'
-	],
+	#superclass : 'FASTFortranDerivedTypeAbstractFactoryTest',
 	#category : 'Famix-Esope-Transformator-Tests',
 	#package : 'Famix-Esope-Transformator-Tests'
 }
@@ -152,9 +147,9 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegcmdInoutThisFieldDeclarat
 	factory := (self makeFactory: FASTFortranDerivedTypeThisFieldFactory)
 		name: 'this'.
 	factory derivedTypeFactory: FASTFortranDerivedTypeFactory new.
-	factory derivedTypeFactory model: fast2kModel.
-	factory derivedTypeFactory fields: #().
-	factory derivedTypeFactory name: 'bar'.
+	factory privateDerivedTypeFactory model: fast2kModel.
+	factory privateDerivedTypeFactory fields: #().
+	factory privateDerivedTypeFactory name: 'bar'.
 
 	fast2k := factory createSegcmdInoutFieldDeclaration.
 
@@ -183,9 +178,9 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSeginiComponentInitializatio
 	paramFactory name: 'idim'.
 
 	factory derivedTypeFactory: FASTFortranDerivedTypeFactory new.
-	factory derivedTypeFactory model: fast2kModel.
-	factory derivedTypeFactory privateFields: { factory . paramFactory }.
-	factory derivedTypeFactory name: 'bar'.
+	factory privateDerivedTypeFactory model: fast2kModel.
+	factory privateDerivedTypeFactory privateFields: { factory . paramFactory }.
+	factory privateDerivedTypeFactory name: 'bar'.
 
 	fast2k := factory createSeginiFieldInitialization.
 

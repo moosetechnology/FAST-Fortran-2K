@@ -22,12 +22,6 @@ FASTFortranDerivedTypeFieldFactory >> comment: aString [
 	^derivedTypeFactory comment: aString
 ]
 
-{ #category : 'accessing - private tests' }
-FASTFortranDerivedTypeFieldFactory >> derivedTypeFactory [
-
-	^derivedTypeFactory
-]
-
 { #category : 'accessing' }
 FASTFortranDerivedTypeFieldFactory >> derivedTypeFactory: aFactory [
 
@@ -99,6 +93,12 @@ FASTFortranDerivedTypeFieldFactory >> name [
 FASTFortranDerivedTypeFieldFactory >> name: aString [
 
 	name := aString 
+]
+
+{ #category : 'accessing - private tests' }
+FASTFortranDerivedTypeFieldFactory >> privateDerivedTypeFactory [
+
+	^derivedTypeFactory
 ]
 
 { #category : 'entity creation' }
