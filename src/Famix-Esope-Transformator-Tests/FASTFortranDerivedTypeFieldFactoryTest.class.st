@@ -5,27 +5,6 @@ Class {
 	#package : 'Famix-Esope-Transformator-Tests'
 }
 
-{ #category : 'running' }
-FASTFortranDerivedTypeFieldFactoryTest >> makeFactory: factoryClass [
-
-	| factory |
-	factory := factoryClass new.
-	factory derivedTypeFactory: FASTFortranDerivedTypeFactory new.
-	factory derivedTypeFactory model: fast2kModel.
-
-	^factory
-]
-
-{ #category : 'running' }
-FASTFortranDerivedTypeFieldFactoryTest >> setUp [
-
-	super setUp.
-
-	fastModel := FASTEsopeModel new.
-	fast2kModel := FASTFortran2kModel new.
-
-]
-
 { #category : 'tests' }
 FASTFortranDerivedTypeFieldFactoryTest >> testComponentAsFieldAccess1Rank [
 
