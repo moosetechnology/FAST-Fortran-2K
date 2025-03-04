@@ -712,13 +712,16 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 	].
 
 	segini initBody.
-	segini addComment: '## Initialize a new "this" segment with default values'.
+	segini addComment: '## Initializes a new "this" segment with default values'.
 	segini addComment: '## using the given parameters'.
 	
 	segini addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
 	paramFactories do: [ :paramFactory |
 		segini addStatement: (paramFactory createSegcmdInFieldDeclaration)
 	].
+	segini addStatement: model newEmptyStatement.
+
+	segini statementBlock statements addAll: (self declareMaxRankTemporaries: 'ooo_dim').
 	segini addStatement: model newEmptyStatement.
 
 	segini addStatement: thisParameter createSeginiFieldInitialization.
