@@ -621,10 +621,10 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFu
 
 	self
 		<< aFASTFortran2kFunctionCall name;
-		<< ' ( '.
+		<< '( '.
 
 	self visitNodeListSeparatedByCommas: aFASTFortran2kFunctionCall arguments.
-	self << ' )'
+	self << ')'
 ]
 
 { #category : 'visiting' }
