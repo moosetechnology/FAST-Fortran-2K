@@ -71,10 +71,29 @@ FASTFortranDerivedTypeFieldFactory >> if: condition then: statements [
 	^derivedTypeFactory if: condition then: statements
 ]
 
+{ #category : 'testing' }
+FASTFortranDerivedTypeFieldFactory >> isAllocatable [
+
+	^false
+]
+
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeFieldFactory >> literal: anObject [
 
 	^derivedTypeFactory literal: anObject
+]
+
+{ #category : 'entity-creation' }
+FASTFortranDerivedTypeFieldFactory >> makeDeallocateStatement [
+
+	self isAllocatable ifFalse: [ ^nil ].
+
+	^self 
+		functionCallStatement: 'deallocate'
+		arguments: {
+			self derivedTypeFieldAccessVariable: 'this' field: name
+		}
+		
 ]
 
 { #category : 'accessing' }

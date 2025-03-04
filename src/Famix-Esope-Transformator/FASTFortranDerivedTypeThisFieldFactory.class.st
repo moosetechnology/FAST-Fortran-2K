@@ -48,6 +48,12 @@ FASTFortranDerivedTypeThisFieldFactory >> createSegmentFieldDeclaration [
 ]
 
 { #category : 'testing' }
+FASTFortranDerivedTypeThisFieldFactory >> isAllocatable [ 
+
+	^true
+]
+
+{ #category : 'testing' }
 FASTFortranDerivedTypeThisFieldFactory >> isSegmentThisParameter [
 
 	^true

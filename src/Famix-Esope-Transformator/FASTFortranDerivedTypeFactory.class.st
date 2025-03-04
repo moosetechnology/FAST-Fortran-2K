@@ -1136,7 +1136,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegstore [
 
 { #category : 'helper-segCommands' }
 FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
-	| segsup thisParameter if |
+	| segsup thisParameter ifAssociated |
 
 	segsup := model newSubroutine
 		name: name , '_segsup'.
@@ -1148,37 +1148,30 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 	segsup addParameter: (self scalarVariable: 'this').
 	
 	segsup initBody.
-	segsup addComment: '## Delete ("supprimer" in French) the given "this" segment'.
+	segsup addComment: '## Deletes ("supprimer" in French) the given "this" segment'.
 
 	segsup addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
 	segsup addStatement: model newEmptyStatement.
 
-	if := model newIfBlockStatement.
-	if condition: (self 
+	ifAssociated := model newIfBlockStatement.
+	ifAssociated condition: (self 
 		functionCall: 'associated'
 		arguments: { self scalarVariable: 'this' }
 	).
-	if thenStatementBlock: (model newStatementBlock).
+
+	ifAssociated thenStatementBlock: (model newStatementBlock).
 	self components do: [ :fieldFactory |
-		if thenStatementBlock addStatement: ( self 
-			functionCallStatement: 'deallocate'
-			arguments: {
-				self derivedTypeFieldAccessVariable: 'this' field: fieldFactory name
-			}
-		)
+		fieldFactory makeDeallocateStatement
+			ifNotNil: [ :deallocate | ifAssociated thenStatementBlock addStatement: deallocate ]
 	].
-	
-	if thenStatementBlock addStatement: (model newFunctionCallStatement
-			name: 'deallocate';
-			addArgument: (self scalarVariable: 'this');
-			yourself
-	).
-	if thenStatementBlock addStatement: (model newFunctionCallStatement
+
+	ifAssociated thenStatementBlock addStatement: (thisParameter makeDeallocateStatement).
+	ifAssociated thenStatementBlock addStatement: (model newFunctionCallStatement
 			name: 'nullify';
 			addArgument: (self scalarVariable: 'this');
 			yourself
 	).
-	segsup addStatement: if.
+	segsup addStatement: ifAssociated.
 
 	^segsup
 ]

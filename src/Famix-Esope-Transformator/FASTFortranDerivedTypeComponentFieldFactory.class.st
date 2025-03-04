@@ -164,6 +164,12 @@ FASTFortranDerivedTypeComponentFieldFactory >> fieldDeclarator: aFastFortranVari
 	])
 ]
 
+{ #category : 'testing' }
+FASTFortranDerivedTypeComponentFieldFactory >> isAllocatable [
+
+	^type class = FASTEsopeSegment
+]
+
 { #category : 'accessing' }
 FASTFortranDerivedTypeComponentFieldFactory >> isSegmentParameter [
 

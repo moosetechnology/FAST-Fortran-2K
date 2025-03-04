@@ -297,3 +297,54 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegmentThisFieldDeclaration 
 
 	self assert: fast2k isNil
 ]
+
+{ #category : 'tests' }
+FASTFortranDerivedTypeFieldFactoryTest >> testMakeDeallocateStatement [
+
+	| stmt factory |
+	factory := self makeFactory: FASTFortranDerivedTypeComponentFieldFactory.
+	factory
+		name: 'x' ;
+		type: fastModel newSegment.
+
+	stmt := factory makeDeallocateStatement.
+
+	self assert: stmt class equals: FASTFortran2kFunctionCallStatement.
+	self assert: stmt name equals: 'deallocate'.
+
+	self assert: stmt arguments size equals: 1.
+	self assert: stmt arguments anyOne class equals: FASTFortran2kDerivedTypeComponentAccess.
+
+]
+
+{ #category : 'tests' }
+FASTFortranDerivedTypeFieldFactoryTest >> testMakeDeallocateStatementPrimitiveType [
+
+	| stmt factory |
+	factory := self makeFactory: FASTFortranDerivedTypeComponentFieldFactory.
+	factory
+		name: 'x' ;
+		type: fastModel newIntegerType.
+
+	stmt := factory makeDeallocateStatement.
+
+	self assert: stmt isNil
+]
+
+{ #category : 'tests' }
+FASTFortranDerivedTypeFieldFactoryTest >> testMakeDeallocateStatementThisParameter [
+
+	| stmt factory |
+	factory := self makeFactory: FASTFortranDerivedTypeThisFieldFactory.
+	factory
+		name: 'this'.
+
+	stmt := factory makeDeallocateStatement.
+
+	self assert: stmt class equals: FASTFortran2kFunctionCallStatement.
+	self assert: stmt name equals: 'deallocate'.
+
+	self assert: stmt arguments size equals: 1.
+	self assert: stmt arguments anyOne class equals: FASTFortran2kDerivedTypeComponentAccess.
+
+]
