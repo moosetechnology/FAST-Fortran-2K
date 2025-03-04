@@ -874,12 +874,13 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegload [
 
 { #category : 'helper-segCommands' }
 FASTFortranDerivedTypeFactory >> makeProcedureSegloc [
-	| segloc  |
+	| segloc |
 
 	segloc := model newFunction
 		name: name , '_segloc' ;
 		declaredType: (model newSpecialIntrinsicType name: 'int64').
-	
+
+	segloc addParameter: (self scalarVariable: 'this').
 	segloc initBody.
 
 	segloc addStatement: (model newFormattedCodeString 
@@ -892,6 +893,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegloc [
         use, intrinsic :: iso_c_binding, only : c_loc
 
         type({1}), pointer, intent(in) :: this
+        integer(int64) :: this_loc
 
         {1}_segloc = transfer(c_loc(this), this_loc)';
 		values: { name }
