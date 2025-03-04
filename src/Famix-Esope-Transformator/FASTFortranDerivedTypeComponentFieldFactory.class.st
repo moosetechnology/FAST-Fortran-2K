@@ -82,6 +82,24 @@ FASTFortranDerivedTypeComponentFieldFactory >> asVariableDeclaration [
 ]
 
 { #category : 'entity-creation' }
+FASTFortranDerivedTypeComponentFieldFactory >> checkIfDimExtendable: iDim [
+
+	^self model newBinaryExpression
+		leftOperand: ( 
+			self functionCall: 'size'
+				arguments: { 
+					(self derivedTypeFieldAccessVariable: 'this' field: name) .
+					self model newIntegerLiteral primitiveValue: iDim
+				}
+		) ;
+
+		operator: '==' ;
+
+		rightOperand: (self scalarVariable: ('ooo_dim', iDim asString))
+				
+]
+
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> createSegadjTemporaryDeclaration [
 
 	| stmt |
@@ -168,42 +186,43 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeAllocationCallForDimensionned
 FASTFortranDerivedTypeComponentFieldFactory >> makeSegadjIfStatement [ 
 
 	| ifAdjuster statements adjusterStatements |
-	
+
+	(rank > 0) ifFalse: [ ^#() ].
+
 	statements := OrderedCollection new.
 	
-		statements add: (self comment: ('-- this%' , name)).
-		statements addAll: self temporariesForDimInitialization.
-		statements add: (self model newSourceCodeString content: 'ooo_eq_dims = .true.').
-		statements addAll: self temporariesForDimCheckIfExtendableInitialization.
+	statements add: (self comment: ('-- this%' , name)).
+	statements addAll: self temporariesForDimInitialization.
+	statements addAll: self temporariesForDimCheckIfExtendableInitialization.
 
-		adjusterStatements := OrderedCollection new.
-		adjusterStatements add: (self 
-					makeAllocationCallForDimensionnedField: ('ooo_' , name) 
-					with: 'ooo_dim').
-		adjusterStatements add: (self
-					assignement: ('ooo' , self asFieldAccess)
-					value: (self scalarVariable: self asDefaultValue)).
-		adjusterStatements add: self model newEmptyStatement.
-		adjusterStatements addAll: self temporariesForStopDimInitialization.
-		adjusterStatements add: (self
-				assignement: (('ooo_', name) , (self asFieldAccess: 'ooo_stop'))
-				value: (self scalarVariable: (('this % ', name) , (self asFieldAccess: 'ooo_stop')))).
-		adjusterStatements add: self model newEmptyStatement.
-		adjusterStatements add: (self 
-			functionCallStatement: 'deallocate' 
-			arguments: { self derivedTypeFieldAccessVariable: 'this' field: name }
-		).
-		adjusterStatements add: (self model newPointerAssignmentStatement
-				variable: (self derivedTypeFieldAccessVariable: 'this' field: name);
-				expression: (self scalarVariable: ('this%', name))).
+	adjusterStatements := OrderedCollection new.
+	adjusterStatements add: (self 
+		makeAllocationCallForDimensionnedField: ('ooo_' , name) 
+		with: 'ooo_dim').
+	adjusterStatements add: (self
+		assignement: ('ooo_' , self asFieldAccess)
+		value: (self scalarVariable: self asDefaultValue)).
+	adjusterStatements add: self model newEmptyStatement.
+	adjusterStatements addAll: self temporariesForStopDimInitialization.
+	adjusterStatements add: (self
+		assignement: ('ooo_' , (self asFieldAccess: 'ooo_stop'))
+		value: (self scalarVariable: ('this % ' , (self asFieldAccess: 'ooo_stop')))).
+	adjusterStatements add: self model newEmptyStatement.
+	adjusterStatements add: (self 
+		functionCallStatement: 'deallocate' 
+		arguments: { self derivedTypeFieldAccessVariable: 'this' field: name }
+	).
+	adjusterStatements add: (self model newPointerAssignmentStatement
+		variable: (self derivedTypeFieldAccessVariable: 'this' field: name);
+		expression: (self scalarVariable: ('this%', name))).
 
-		ifAdjuster := self
-			if: (self model newUnaryExpression 
-				operator: '.not.';
-				expression: (self scalarVariable: 'ooo_eq_dims') 	)
+	ifAdjuster := self
+		if: (self model newUnaryExpression 
+			operator: '.not.';
+			expression: (self scalarVariable: 'ooo_eq_dims') 	)
 			then: adjusterStatements.
 
-		statements add: ifAdjuster.
+	statements add: ifAdjuster.
 
 	^statements
 ]
@@ -356,26 +375,25 @@ FASTFortranDerivedTypeComponentFieldFactory >> temporariesAsArguments [
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> temporariesForDimCheckIfExtendableInitialization [
 
-	^(1 to: rank) collect: [ :i |
-		self
-			assignement: ('ooo_eq_dims')
-			value: (self model newBinaryExpression
-				operator: '.and.';
-				leftOperand: (self scalarVariable: 'ooo_eq_dims');
-				rightOperand: (self model newBinaryExpression
-					operator: '==';
-					leftOperand: ( 
-						self functionCall: 'size'
-							arguments: { 
-								(self derivedTypeFieldAccessVariable: 'this' field: name) .
-								self model newIntegerLiteral primitiveValue: i
-							}
-					);
-					rightOperand: (self scalarVariable: ('ooo_dim', i asString))
-				)
-			)
-	]
+	| statements |
 
+	statements := OrderedCollection new: rank.
+
+	statements add: (self
+		assignement: 'ooo_eq_dims'
+		value: (self checkIfDimExtendable: 1) ).
+
+	(2 to: rank) do: [ :iDim |
+		statements add: (self
+			assignement: 'ooo_eq_dims'
+			value: (self model newBinaryExpression
+				leftOperand: (self scalarVariable: 'ooo_eq_dims') ;
+				operator: '.and.' ;
+				rightOperand: (self checkIfDimExtendable: iDim)
+			))
+	].
+
+	^statements
 ]
 
 { #category : 'entity-creation' }
