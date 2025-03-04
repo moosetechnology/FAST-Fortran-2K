@@ -15,7 +15,10 @@ FASTFortranDerivedTypeFactoryTest >> testMakeProcedureSegloc [
 
 	self assert: segloc class equals: FASTFortran2kFunction.
 	self assert: segloc name equals: 'blah_segloc'.
-	self assert: segloc parameters isEmpty.
+
+	self assert: segloc parameters size equals: 1.
+	self assert: segloc parameters anyOne name equals: 'this'.
+
 	self assert: segloc declaredType class equals: FASTFortran2kSpecialIntrinsicType.
 	self assert: segloc statementBlock statements size equals: 1.
 	self assert: segloc statementBlock statements anyOne class equals: FASTFortran2kFormattedCodeString.
