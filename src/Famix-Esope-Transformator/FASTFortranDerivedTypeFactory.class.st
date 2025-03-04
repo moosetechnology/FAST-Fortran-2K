@@ -1183,7 +1183,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 	^segsup
 ]
 
-{ #category : 'helper-segCommands' }
+{ #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> makeProceduresFromDimensioningExpressions [
 	
 	| paramFactories componentFactories dimensioningExpressionsProcedures |
@@ -1214,22 +1214,23 @@ FASTFortranDerivedTypeFactory >> makeProceduresFromDimensioningExpressions [
 				aFunction addStatement: (paramFactory createSegcmdInFieldDeclaration)
 			].
 			aFunction addStatement: model newEmptyStatement.
-			aFunction addStatement: (
-				self 
-					assignement: aFunctionName 
-					value: (componentFactory dimensioningExpressions at: i)
-			).
-			aFunction addStatement: model newEmptyStatement.
-			
+
+			"Old way to set the return value
+			aFunction addStatement: (self
+				assignement: aFunctionName 
+				value: (componentFactory dimensioningExpressions at: i)
+			)."
+
 			aFunction addStatement: (model newFormattedCodeString
-				content: 'call ignore({1}, ''{1}'', ''{2}::{3}_dim{4}'')' ;
-				values: { (paramFactories at: i) name . name . componentFactory name . i }
+				content: '    call check_post_condition({1} >= 0, ''{2}::{1}'', ''{1} >= 0'')
+
+    if ( ignore_do_trace ) then
+      call ignore({3}, ''{3}'', ''tlib::bstatu_dim1'')
+    end if
+' ;
+				values: { aFunctionName . name . (paramFactories at: i) name}
 			).
-			aFunction addStatement: (model newFormattedCodeString
-				content: 'call check_pre_condition(associated(this), ''{1}_segadj'', ''associated(this)'')' ;
-				values: { name }
-			).
-			
+
 			dimensioningExpressionsProcedures add: aFunction
 		]
 	].
