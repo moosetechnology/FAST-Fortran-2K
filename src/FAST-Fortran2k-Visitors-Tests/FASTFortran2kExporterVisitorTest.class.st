@@ -386,6 +386,14 @@ FASTFortran2kExporterVisitorTest >> testReadStatementWellFormatted [
 ]
 
 { #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testSpecialIntrinsicType [
+
+	self
+		assertExport: (FASTFortran2kSpecialIntrinsicType new name: 'int64')
+		equals: 'integer(int64)'
+]
+
+{ #category : 'testing - type-definitions' }
 FASTFortran2kExporterVisitorTest >> testTypeBookDefinition [
 
 	| stmt |

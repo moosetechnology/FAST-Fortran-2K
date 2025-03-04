@@ -1071,6 +1071,13 @@ FASTFortran2kTTraitVisitor >> visitFASTFortran2kSourceCodeString: aFASTFortran2k
 ]
 
 { #category : 'visiting' }
+FASTFortran2kTTraitVisitor >> visitFASTFortran2kSpecialIntrinsicType: aFASTFortran2kSpecialIntrinsicType [
+
+	self visitFASTFortran2kType: aFASTFortran2kSpecialIntrinsicType
+
+]
+
+{ #category : 'visiting' }
 FASTFortran2kTTraitVisitor >> visitFASTFortran2kStatementBlock: aFASTFortran2kStatementBlock [
 	<generated>
 
