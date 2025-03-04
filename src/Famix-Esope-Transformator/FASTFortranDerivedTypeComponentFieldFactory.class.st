@@ -208,6 +208,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeSegadjIfStatement [
 		assignement: ('ooo_' , (self asFieldAccess: 'ooo_stop'))
 		value: (self scalarVariable: ('this % ' , (self asFieldAccess: 'ooo_stop')))).
 	adjusterStatements add: self model newEmptyStatement.
+
 	adjusterStatements add: (self 
 		functionCallStatement: 'deallocate' 
 		arguments: { self derivedTypeFieldAccessVariable: 'this' field: name }
