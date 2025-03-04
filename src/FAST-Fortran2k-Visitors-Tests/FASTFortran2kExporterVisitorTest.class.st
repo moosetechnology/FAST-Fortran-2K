@@ -298,6 +298,14 @@ end program demo
 ]
 
 { #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testIntegerType [
+
+	self
+		assertExport: FASTFortran2kIntegerType new
+		equals: 'integer'
+]
+
+{ #category : 'testing - type-definitions' }
 FASTFortran2kExporterVisitorTest >> testOpenStatement [
 	| stmt |
 	stmt := FASTFortran2kOpenStatement new
