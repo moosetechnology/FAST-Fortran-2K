@@ -248,7 +248,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeCommandSegact [
 	dst := segCommand accept: visitor.
 
 	self assert: dst class equals: FASTFortran2kComment.
-	self assert: dst content equals: '[ooo] segact, v'
+	self assert: dst content equals: '[ooo] segact,v'
 ]
 
 { #category : 'running' }
@@ -260,7 +260,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeCommandSegdes [
 	dst := segCommand accept: visitor.
 
 	self assert: dst class equals: FASTFortran2kComment.
-	self assert: dst content equals: '[ooo] segdes, v'
+	self assert: dst content equals: '[ooo] segdes,v'
 ]
 
 { #category : 'running' }
