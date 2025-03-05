@@ -27,6 +27,22 @@ FASTFortranBehavioralTransformationVisitor >> assignmentStatementClass: aFASTFor
 	^FASTFortran2kAssignmentStatement
 ]
 
+{ #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> commentOutStatement: aFASTNode [
+
+	| visitor |
+
+	visitor := FASTEsopeExporterVisitor new.
+
+	String streamContents: [ :str |
+			visitor outputStream: str.
+			aFASTNode accept: visitor
+	].
+	
+	^self model2k newComment
+		content: '[ooo] ' , visitor outputStream contents trimBoth
+]
+
 { #category : 'accessing - private tests' }
 FASTFortranBehavioralTransformationVisitor >> externalDeclared [
 
@@ -145,30 +161,6 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandDimensionned:
 ]
 
 { #category : 'visiting - esope' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandNotMigrated: aFASTEsopeSegCommand [
-
-	^self model2k newComment
-		content: '[ooo] ' , aFASTEsopeSegCommand name
-]
-
-{ #category : 'visiting - esope' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandNotMigrated: commandName arguments: arguments [
-
-	^self model2k newComment
-		content: (String streamContents: [ :str |
-		 	str
-				<< '[ooo] ' ;
-				<< commandName ;
-				<< ', '.
-			arguments ifNotEmpty: [
-				FASTFortranExporterVisitor new
-					outputStream: str ;
-					visitNodeListSeparatedByCommas: arguments
-			]
-	])
-]
-
-{ #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandSimple: aFASTEsopeSegCommand named: aName [
 
 	^aFASTEsopeSegCommand variables 
@@ -253,7 +245,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegact: aFASTEsopeSegact [ 
 
-	^self visitFASTEsopeCommandNotMigrated: 'segact' arguments: aFASTEsopeSegact variables
+	^self commentOutStatement: aFASTEsopeSegact
 ]
 
 { #category : 'visiting - esope' }
@@ -277,7 +269,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegcop: aFASTEsopeSe
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegdes: aFASTEsopeSegdes [ 
 
-	^self visitFASTEsopeCommandNotMigrated: 'segdes' arguments: aFASTEsopeSegdes variables
+	^self commentOutStatement: aFASTEsopeSegdes
 ]
 
 { #category : 'visiting - esope' }
