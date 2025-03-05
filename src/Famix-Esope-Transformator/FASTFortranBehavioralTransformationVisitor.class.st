@@ -225,7 +225,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarationSt
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: aFASTEsopePointerDeclarator [ 
 	
-	| esopeDeclarator callerProgramUnit pointerDeclaredType |
+	| esopeDeclarator |
 
 	esopeDeclarator := self model2k newVariableDeclarationStatement
 		declaredType: (self model2k newUserDefinedType  
@@ -235,9 +235,6 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 		addDeclarator: (aFASTEsopePointerDeclarator variableDeclarator accept: self) ;
 		modifiers: #( pointer ) ;
 		yourself.
-
-	callerProgramUnit := stack top.
-	pointerDeclaredType := aFASTEsopePointerDeclarator variableDeclarator famixDeclaration declaredType.
 
 	^esopeDeclarator
 ]
@@ -376,7 +373,10 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranBooleanLiteral: aB
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCallStatement: aFASTFortranCallStatement [
 
-	| callStatement callerProgramUnit calledProgramFile |
+	| callStatement |
+
+	(self checkSpecialCallTreatment: aFASTFortranCallStatement)
+		ifNotNil: [ :specialStmt | ^specialStmt ].
 
 	callStatement := self
 		fortran2k: FASTFortran2kCallStatement
@@ -385,11 +385,6 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCallStatement: aFA
 	callStatement
 		name: aFASTFortranCallStatement name;
 		arguments: (self visitFASTFortranList: aFASTFortranCallStatement arguments).
-
-	callerProgramUnit := stack top.
-	calledProgramFile := aFASTFortranCallStatement famix candidates anyOne.
-
-	"useNeeded add: (callerProgramUnit -> calledProgramFile)."
 
 	^ callStatement
 
@@ -500,17 +495,15 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFieldAccess: aFAST
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFortranFunctionCall [
 
-	| functionCall callerProgramUnit calledProgramFile |
+	| functionCall |
+
+	(self checkSpecialCallTreatment: aFASTFortranFunctionCall)
+		ifNotNil: [ :specialStmt | ^specialStmt ].
 
 	functionCall := self model2k newFunctionCall
 		name: aFASTFortranFunctionCall name ;
 		arguments: (aFASTFortranFunctionCall arguments collect: [:arg | arg accept: self]) ;
 		yourself.
-
-	callerProgramUnit := stack top.
-	calledProgramFile := aFASTFortranFunctionCall famix candidates anyOne.
-
-	"useNeeded add: (callerProgramUnit -> calledProgramFile)."
 
 	^functionCall 
 ]
