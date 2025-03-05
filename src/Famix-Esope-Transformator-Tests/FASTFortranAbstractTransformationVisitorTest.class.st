@@ -11,7 +11,7 @@ Class {
 	#package : 'Famix-Esope-Transformator-Tests'
 }
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> esopeCommandClass: esopeCommandClass pointers: associations [
 	| variables |
 	
@@ -31,7 +31,7 @@ FASTFortranAbstractTransformationVisitorTest >> esopeCommandClass: esopeCommandC
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> functionEmpty [
 	"---- demo.f ----
 	integer function fct()
@@ -51,7 +51,7 @@ FASTFortranAbstractTransformationVisitorTest >> functionEmpty [
 		
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> functionWithSegment [
 	"  ---- demo.f ----
 	integer fct()
@@ -81,7 +81,7 @@ FASTFortranAbstractTransformationVisitorTest >> newVisitor [
 		yourself
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> pointerDeclaration [
 
 	| fastPointer |
@@ -101,7 +101,7 @@ FASTFortranAbstractTransformationVisitorTest >> pointerDeclaration [
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> procedureWithCommandSegadj [
 	"
 	subroutine sub
@@ -115,7 +115,7 @@ FASTFortranAbstractTransformationVisitorTest >> procedureWithCommandSegadj [
 	fastProcedures anyOne statementBlock addStatement: esopeCommand.
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> programEmpty [
 	"
      PROGRAM demo
@@ -132,7 +132,7 @@ FASTFortranAbstractTransformationVisitorTest >> programEmpty [
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> programWithCommandSegini [
     "
 +------ someFile.E ---------------------------------+
@@ -150,7 +150,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithCommandSegini [
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> programWithDeclarationStatement [
 	"  ---- demo.f ----
 	program demo
@@ -162,7 +162,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithDeclarationStatement 
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> programWithExternalFunctionCall [
 	"
 	function 'fct' defined in another externalFile.f'
@@ -194,7 +194,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithExternalFunctionCall 
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> programWithExternalSubroutineInvocation [
 	"
 	subrotine 'sub' defined in another externalFile.f'
@@ -225,7 +225,7 @@ C  -----end someFile.f --------------"
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> programWithFunctionStatement [
 	"
      PROGRAM demo
@@ -259,7 +259,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithFunctionStatement [
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> programWithFunctionStatementCalled [
 	"
      PROGRAM demo
@@ -302,7 +302,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithFunctionStatementCall
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> programWithPointeurDeclaration [
     "
 +------ someFile.E ---------------------------------+
@@ -321,7 +321,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithPointeurDeclaration [
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> programWithProcedureInvoked [
 	"
 	subroutine sub
@@ -352,7 +352,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithProcedureInvoked [
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> programWithSegment [
 	"  ---- demo.f ----
 	program demo
@@ -370,19 +370,19 @@ FASTFortranAbstractTransformationVisitorTest >> programWithSegment [
 		
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> segact: aCollection [
 	
 	^self segmentCommand: FASTEsopeSegact with: aCollection
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> segdes: aCollection [
 	
 	^self segmentCommand: FASTEsopeSegdes with: aCollection
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> segini: aCollection [
 	
 	^self segmentCommand: FASTEsopeSegini with: aCollection
@@ -399,7 +399,7 @@ FASTFortranAbstractTransformationVisitorTest >> segment: aName attributes: aDecl
 		yourself
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> segmentCommand: aCommandClass with: aCollection [
 	
 	| segmentCommand  |
@@ -430,7 +430,7 @@ FASTFortranAbstractTransformationVisitorTest >> setUp [
 	
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> statementFunctionWithExternalFunctionCall [
 	"
      PROGRAM demo
@@ -470,7 +470,7 @@ FASTFortranAbstractTransformationVisitorTest >> statementFunctionWithExternalFun
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunction [
 	"---- demo.f ----
 	function fct()
@@ -490,7 +490,7 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunction [
 	fastProcedures := { fastFunction . fastSubroutine }
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunctionWithCall [
 	"---- demo.f ----
 	function fct()
@@ -518,7 +518,7 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunctionWithCall [
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> subroutineEmpty [
 	"---- demo.f ----
 	subroutine sub
@@ -537,7 +537,7 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineEmpty [
 		
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> subroutineWithExternalSubroutineInvocation [
 	"
 	subrotine 'sub2' defined in another externalFile.f'
@@ -567,7 +567,7 @@ C  -----end someFile.f --------------"
 	fastProcedures anyOne statementBlock addStatement: fastCallStatement.
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> subroutineWithFunctionStatement [
 	"
      subroutine sub
@@ -601,7 +601,7 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineWithFunctionStatement 
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> subroutineWithFunctionStatementCalled [
 	"
      PROGRAM demo
@@ -644,7 +644,7 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineWithFunctionStatementC
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> subroutineWithPointeurDeclaration [
     " someFile.E
 
@@ -661,7 +661,7 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineWithPointeurDeclaratio
 
 ]
 
-{ #category : 'setup' }
+{ #category : 'entity-creation' }
 FASTFortranAbstractTransformationVisitorTest >> subroutineWithTwoSegment [
 	"  ---- demo.f ----
 	integer fct()

@@ -27,6 +27,31 @@ FASTFortranBehavioralTransformationVisitor >> assignmentStatementClass: aFASTFor
 	^FASTFortran2kAssignmentStatement
 ]
 
+{ #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> checkSpecialCallTreatment: aFASTInvocation [
+
+	^self specialCallTreatments
+		at: aFASTInvocation name
+		ifPresent: [ :action | self perform: action with: aFASTInvocation ]
+		ifAbsent: [ nil ]
+]
+
+{ #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> commentOutStatement: aFASTNode [
+
+	| visitor |
+
+	visitor := FASTEsopeExporterVisitor new.
+
+	String streamContents: [ :str |
+			visitor outputStream: str.
+			aFASTNode accept: visitor
+	].
+	
+	^self model2k newComment
+		content: '[ooo] ' , visitor outputStream contents trimBoth
+]
+
 { #category : 'accessing - private tests' }
 FASTFortranBehavioralTransformationVisitor >> externalDeclared [
 
@@ -101,6 +126,20 @@ FASTFortranBehavioralTransformationVisitor >> parentTransformator: anObject [
 ]
 
 { #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> prefixCallWithType: aFASTInvocation [
+	"call to 'mypnt' should be prefixed with the name of the type of the variable it is assigned to
+	 ex: type(user), pointer :: ur
+	     ur => user_mypnt(lib, 1)"
+
+	| typeName |
+	self assert: aFASTInvocation assignedIn isNotNil.
+
+	typeName := aFASTInvocation assignedIn variable famixVariable declaredType name.
+	aFASTInvocation name: (typeName , '_' , aFASTInvocation name).
+	^aFASTInvocation accept: self
+]
+
+{ #category : 'private - helpers' }
 FASTFortranBehavioralTransformationVisitor >> retrieveOtherArgumentNamesFromDimensioningExpressions: variable [
 
 	^variable famixVariable 
@@ -114,6 +153,12 @@ FASTFortranBehavioralTransformationVisitor >> retrieveOtherArgumentNamesFromDime
 				ifNil: [ #() ]
 		]
 		ifNil: [ #() ]
+]
+
+{ #category : 'accessing' }
+FASTFortranBehavioralTransformationVisitor >> specialCallTreatments [
+
+	^parentTransformator specialCallTreatments
 ]
 
 { #category : 'visiting - esope' }
@@ -142,30 +187,6 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandDimensionned:
 	anEsopeCommandCall arguments: arguments.
 
 	^anEsopeCommandCall
-]
-
-{ #category : 'visiting - esope' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandNotMigrated: aFASTEsopeSegCommand [
-
-	^self model2k newComment
-		content: '[ooo] ' , aFASTEsopeSegCommand name
-]
-
-{ #category : 'visiting - esope' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeCommandNotMigrated: commandName arguments: arguments [
-
-	^self model2k newComment
-		content: (String streamContents: [ :str |
-		 	str
-				<< '[ooo] ' ;
-				<< commandName ;
-				<< ', '.
-			arguments ifNotEmpty: [
-				FASTFortranExporterVisitor new
-					outputStream: str ;
-					visitNodeListSeparatedByCommas: arguments
-			]
-	])
 ]
 
 { #category : 'visiting - esope' }
@@ -233,7 +254,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarationSt
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: aFASTEsopePointerDeclarator [ 
 	
-	| esopeDeclarator callerProgramUnit pointerDeclaredType |
+	| esopeDeclarator |
 
 	esopeDeclarator := self model2k newVariableDeclarationStatement
 		declaredType: (self model2k newUserDefinedType  
@@ -244,16 +265,13 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 		modifiers: #( pointer ) ;
 		yourself.
 
-	callerProgramUnit := stack top.
-	pointerDeclaredType := aFASTEsopePointerDeclarator variableDeclarator famixDeclaration declaredType.
-
 	^esopeDeclarator
 ]
 
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegact: aFASTEsopeSegact [ 
 
-	^self visitFASTEsopeCommandNotMigrated: 'segact' arguments: aFASTEsopeSegact variables
+	^self commentOutStatement: aFASTEsopeSegact
 ]
 
 { #category : 'visiting - esope' }
@@ -277,7 +295,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegcop: aFASTEsopeSe
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegdes: aFASTEsopeSegdes [ 
 
-	^self visitFASTEsopeCommandNotMigrated: 'segdes' arguments: aFASTEsopeSegdes variables
+	^self commentOutStatement: aFASTEsopeSegdes
 ]
 
 { #category : 'visiting - esope' }
@@ -384,7 +402,10 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranBooleanLiteral: aB
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCallStatement: aFASTFortranCallStatement [
 
-	| callStatement callerProgramUnit calledProgramFile |
+	| callStatement |
+
+	(self checkSpecialCallTreatment: aFASTFortranCallStatement)
+		ifNotNil: [ :specialStmt | ^specialStmt ].
 
 	callStatement := self
 		fortran2k: FASTFortran2kCallStatement
@@ -393,11 +414,6 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCallStatement: aFA
 	callStatement
 		name: aFASTFortranCallStatement name;
 		arguments: (self visitFASTFortranList: aFASTFortranCallStatement arguments).
-
-	callerProgramUnit := stack top.
-	calledProgramFile := aFASTFortranCallStatement famix candidates anyOne.
-
-	"useNeeded add: (callerProgramUnit -> calledProgramFile)."
 
 	^ callStatement
 
@@ -508,17 +524,15 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFieldAccess: aFAST
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFortranFunctionCall [
 
-	| functionCall callerProgramUnit calledProgramFile |
+	| functionCall |
+
+	(self checkSpecialCallTreatment: aFASTFortranFunctionCall)
+		ifNotNil: [ :specialStmt | ^specialStmt ].
 
 	functionCall := self model2k newFunctionCall
 		name: aFASTFortranFunctionCall name ;
 		arguments: (aFASTFortranFunctionCall arguments collect: [:arg | arg accept: self]) ;
 		yourself.
-
-	callerProgramUnit := stack top.
-	calledProgramFile := aFASTFortranFunctionCall famix candidates anyOne.
-
-	"useNeeded add: (callerProgramUnit -> calledProgramFile)."
 
 	^functionCall 
 ]
