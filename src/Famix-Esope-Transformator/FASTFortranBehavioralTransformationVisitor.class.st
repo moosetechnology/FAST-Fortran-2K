@@ -28,6 +28,15 @@ FASTFortranBehavioralTransformationVisitor >> assignmentStatementClass: aFASTFor
 ]
 
 { #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> checkSpecialCallTreatment: aFASTInvocation [
+
+	^self specialCallTreatments
+		at: aFASTInvocation name
+		ifPresent: [ :action | self perform: action with: aFASTInvocation ]
+		ifAbsent: [ nil ]
+]
+
+{ #category : 'private - helpers' }
 FASTFortranBehavioralTransformationVisitor >> commentOutStatement: aFASTNode [
 
 	| visitor |
@@ -117,6 +126,20 @@ FASTFortranBehavioralTransformationVisitor >> parentTransformator: anObject [
 ]
 
 { #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> prefixCallWithType: aFASTInvocation [
+	"call to 'mypnt' should be prefixed with the name of the type of the variable it is assigned to
+	 ex: type(user), pointer :: ur
+	     ur => user_mypnt(lib, 1)"
+
+	| typeName |
+	self assert: aFASTInvocation assignedIn isNotNil.
+
+	typeName := aFASTInvocation assignedIn variable famixVariable declaredType name.
+	aFASTInvocation name: (typeName , '_' , aFASTInvocation name).
+	^aFASTInvocation accept: self
+]
+
+{ #category : 'private - helpers' }
 FASTFortranBehavioralTransformationVisitor >> retrieveOtherArgumentNamesFromDimensioningExpressions: variable [
 
 	^variable famixVariable 
@@ -130,6 +153,12 @@ FASTFortranBehavioralTransformationVisitor >> retrieveOtherArgumentNamesFromDime
 				ifNil: [ #() ]
 		]
 		ifNil: [ #() ]
+]
+
+{ #category : 'accessing' }
+FASTFortranBehavioralTransformationVisitor >> specialCallTreatments [
+
+	^parentTransformator specialCallTreatments
 ]
 
 { #category : 'visiting - esope' }

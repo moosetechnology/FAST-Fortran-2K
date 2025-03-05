@@ -6,7 +6,8 @@ Class {
 		'usesNeeded',
 		'famixModel',
 		'fast2kModel',
-		'includedFiles'
+		'includedFiles',
+		'specialCallTreatments'
 	],
 	#category : 'Famix-Esope-Transformator-Main',
 	#package : 'Famix-Esope-Transformator',
@@ -188,6 +189,17 @@ FamixEsopeToFortran2k >> run [
 				self perform: step value
 			] 
 		]
+]
+
+{ #category : 'accessing' }
+FamixEsopeToFortran2k >> specialCallTreatments [
+
+	^specialCallTreatments ifNil: [
+		specialCallTreatments := Dictionary newFrom: {
+			#oooeta -> #commentOutStatement: .
+			#actstr -> #commentOutStatement: .
+			#mypnt -> #prefixCallWithType:
+		} ]
 ]
 
 { #category : 'running' }

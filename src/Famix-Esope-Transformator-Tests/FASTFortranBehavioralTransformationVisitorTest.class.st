@@ -186,6 +186,18 @@ FASTFortranBehavioralTransformationVisitorTest >> testAsterisk [
 	
 ]
 
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> testCallToCommentOut [
+
+	| res stmt |
+	stmt := self callStatement: 'oooeta' arguments: #( lib libeta ).
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kComment.
+	self assert: res content equals: '[ooo] call oooeta(lib,libeta)'
+]
+
 { #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testCloseStatement [
 	| stmt res |
@@ -640,6 +652,24 @@ FASTFortranBehavioralTransformationVisitorTest >> testkWriteStatement [
 	self assert: res ioParameters first class equals: FASTFortran2kAsterisk.
 	self assert: res ioParameters second class equals: FASTFortran2kAsterisk.
 
+]
+
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> testprefixCallWithType [
+	"prefix call to actstr with the name of the type of the variable it is assigned to"
+
+	| res stmt |
+	stmt := self assignementStatement: 'ptr' value: (self
+		functionCall: 'mypnt' arguments: #( whatever )).
+	stmt variable famixVariable: (FamixF77Variable new
+		declaredType: (FamixEsopeSegment new
+			name: 'seg')).
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kPointerAssignmentStatement.
+	self assert: res expression class equals: FASTFortran2kFunctionCall.
+	self assert: res expression name equals: 'seg_mypnt'
 ]
 
 { #category : 'running' }
