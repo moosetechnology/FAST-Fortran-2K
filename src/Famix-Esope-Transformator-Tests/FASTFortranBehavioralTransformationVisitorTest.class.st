@@ -289,6 +289,18 @@ FASTFortranBehavioralTransformationVisitorTest >> testEsopeCommandSegini [
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testExitStatement [
+	| stmt res |
+
+	stmt := FASTFortranExitStatement new.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kExitStatement.
+
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testExternalDeclaration [
 	| stmt res |
 
