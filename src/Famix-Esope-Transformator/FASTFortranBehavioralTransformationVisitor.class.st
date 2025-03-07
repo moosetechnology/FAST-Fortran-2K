@@ -478,6 +478,14 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDoStatement: aDoSt
 ]
 
 { #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranExitStatement: aFASTFortranExitStatement [
+
+	^self
+		fortran2k: FASTFortran2kExitStatement
+		traceBack: aFASTFortranExitStatement 
+]
+
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranExternalStatement: aFASTFortranExternalStatement [
 
 	externalDeclared add: aFASTFortranExternalStatement name.
