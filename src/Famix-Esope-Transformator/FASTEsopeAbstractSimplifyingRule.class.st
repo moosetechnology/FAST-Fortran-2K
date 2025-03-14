@@ -10,3 +10,31 @@ Class {
 	#package : 'Famix-Esope-Transformator',
 	#tag : 'Simplification'
 }
+
+{ #category : 'as yet unclassified' }
+FASTEsopeAbstractSimplifyingRule >> commentOut: tag statement: aFASTStatement [
+
+	| visitor |
+
+	visitor := FASTEsopeExporterVisitor new.
+
+	String streamContents: [ :str |
+			visitor outputStream: str.
+			aFASTStatement accept: visitor
+	].
+	
+	^aFASTStatement mooseModel newComment
+		content: (String streamContents: [ : str |
+			str << '[ooo]'.
+			tag ifNotNil: [
+				str << '.' ; << tag asString ].
+			str
+				<< ' ' ;
+				<< visitor outputStream contents trimBoth
+		])
+]
+
+{ #category : 'as yet unclassified' }
+FASTEsopeAbstractSimplifyingRule >> substitueNode: aFASTNode withNode: aFASTReplacement [
+
+]

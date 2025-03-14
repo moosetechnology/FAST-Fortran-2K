@@ -5,3 +5,14 @@ Class {
 	#package : 'Famix-Esope-Transformator',
 	#tag : 'Simplification'
 }
+
+{ #category : 'accessing' }
+FASTEsopeObsoleteCommandRule >> invocationsToIgnore [
+	^#(oooeta actstr)
+]
+
+{ #category : 'visiting - statements' }
+FASTEsopeObsoleteCommandRule >> visitFASTFortranCallStatement: aFASTFortranCallStatement [
+
+	
+]
