@@ -6,6 +6,8 @@ I take take an AST and converts some instruction to comment to ""remove them"" f
 Class {
 	#name : 'FASTEsopeAbstractSimplifyingRule',
 	#superclass : 'FASTFortranVisitor',
+	#traits : 'FASTEsopeTVisitor',
+	#classTraits : 'FASTEsopeTVisitor classTrait',
 	#instVars : [
 		'nodeStack'
 	],
