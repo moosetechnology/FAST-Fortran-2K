@@ -17,7 +17,26 @@ Class {
 }
 
 { #category : 'helpers' }
-FASTEsopeAbstractSimplifyingRule >> commentOut: tag statement: aFASTStatement [
+FASTEsopeAbstractSimplifyingRule >> commentOut: commentTag statement: aFASTStatement [
+
+	| comment |
+	comment := self makeComment: commentTag fromStatement: aFASTStatement.
+	nodeStack top
+		substituteStatementNode: aFASTStatement
+		withNode: comment.
+	^comment
+]
+
+{ #category : 'initialization' }
+FASTEsopeAbstractSimplifyingRule >> initialize [ 
+
+	super initialize.
+
+	nodeStack := Stack new
+]
+
+{ #category : 'helpers' }
+FASTEsopeAbstractSimplifyingRule >> makeComment: tag fromStatement: aFASTStatement [
 
 	| visitor |
 
@@ -32,31 +51,21 @@ FASTEsopeAbstractSimplifyingRule >> commentOut: tag statement: aFASTStatement [
 		content: (String streamContents: [ : str |
 			str << '[ooo]'.
 			tag ifNotNil: [
-				str << '.' ; << tag asString ].
+				str
+					<< '.' ;
+				 	<< tag asString ;
+					<< ':'
+			].
 			str
 				<< ' ' ;
 				<< visitor outputStream contents trimBoth
 		])
 ]
 
-{ #category : 'initialization' }
-FASTEsopeAbstractSimplifyingRule >> initialize [ 
-
-	super initialize.
-
-	nodeStack := Stack new
-]
-
 { #category : 'accessing - private tests' }
 FASTEsopeAbstractSimplifyingRule >> nodeStack [
 
 	^nodeStack 
-]
-
-{ #category : 'helpers' }
-FASTEsopeAbstractSimplifyingRule >> substituteStatementNode: aFASTStatement withNode: aFASTReplacement [
-
-	nodeStack top substituteStatementNode: aFASTStatement withNode: aFASTReplacement 
 ]
 
 { #category : 'visiting - statements' }

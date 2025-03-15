@@ -13,42 +13,27 @@ FASTEsopeAbstractSimplifyingRuleTest >> newVisitor [
 ]
 
 { #category : 'tests' }
-FASTEsopeAbstractSimplifyingRuleTest >> testCommentOutSegact [
+FASTEsopeAbstractSimplifyingRuleTest >> testMakeCommentFromStatement [
 
 	| oldStatement newStatement |
-	oldStatement := (self segmentCommand: FASTEsopeSegact with: { #v })
-		mooseModel: FASTEsopeModel new.
-	newStatement := visitor commentOut: 'testing' statement: oldStatement.
+	oldStatement := (self assignementStatement: #x value: 5)
+		mooseModel: FASTFortranModel new.
+	newStatement := visitor makeComment: 'testing' fromStatement: oldStatement.
 
 	self assert: newStatement class equals: FASTFortranComment.
-	self assert: newStatement content equals: '[ooo].testing segact,v'.
+	self assert: newStatement content equals: '[ooo].testing: x = 5'.
 
 	self assert: newStatement mooseModel equals: oldStatement mooseModel
 
 ]
 
 { #category : 'tests' }
-FASTEsopeAbstractSimplifyingRuleTest >> testCommentOutStatement [
+FASTEsopeAbstractSimplifyingRuleTest >> testMakeCommentFromStatementNoTag [
 
 	| oldStatement newStatement |
 	oldStatement := (self assignementStatement: #x value: 5)
 		mooseModel: FASTFortranModel new.
-	newStatement := visitor commentOut: 'testing' statement: oldStatement.
-
-	self assert: newStatement class equals: FASTFortranComment.
-	self assert: newStatement content equals: '[ooo].testing x = 5'.
-
-	self assert: newStatement mooseModel equals: oldStatement mooseModel
-
-]
-
-{ #category : 'tests' }
-FASTEsopeAbstractSimplifyingRuleTest >> testCommentOutStatementNoTag [
-
-	| oldStatement newStatement |
-	oldStatement := (self assignementStatement: #x value: 5)
-		mooseModel: FASTFortranModel new.
-	newStatement := visitor commentOut: nil statement: oldStatement.
+	newStatement := visitor makeComment: nil fromStatement: oldStatement.
 
 	self assert: newStatement class equals: FASTFortranComment.
 	self assert: newStatement content equals: '[ooo] x = 5'.
@@ -58,10 +43,26 @@ FASTEsopeAbstractSimplifyingRuleTest >> testCommentOutStatementNoTag [
 ]
 
 { #category : 'tests' }
+FASTEsopeAbstractSimplifyingRuleTest >> testMakeCommentFromStatementSegact [
+
+	| oldStatement newStatement |
+	oldStatement := (self segmentCommand: FASTEsopeSegact with: { #v })
+		mooseModel: FASTEsopeModel new.
+	newStatement := visitor makeComment: 'testing' fromStatement: oldStatement.
+
+	self assert: newStatement class equals: FASTFortranComment.
+	self assert: newStatement content equals: '[ooo].testing: segact,v'.
+
+	self assert: newStatement mooseModel equals: oldStatement mooseModel
+
+]
+
+{ #category : 'tests' }
 FASTEsopeAbstractSimplifyingRuleTest >> testSubstituteStatementNodeWithNodeInBlock [
 
 	| parentNode oldStatement |
-	oldStatement := self assignementStatement: #x value: 5.
+	oldStatement := (self assignementStatement: #x value: 5)
+		mooseModel: FASTFortranModel new.
 	parentNode := self statementBlock: {
 		self declarationStatement: #x type: #integer.
 		self callStatement: #sub arguments: #() . 
@@ -70,7 +71,7 @@ FASTEsopeAbstractSimplifyingRuleTest >> testSubstituteStatementNodeWithNodeInBlo
 	}.
 
 	visitor nodeStack push: parentNode.
-	visitor substituteStatementNode: oldStatement withNode: (self comment: 'this is the substitution').
+	visitor commentOut: 'testing' statement: oldStatement.
 
 	self assert: parentNode statements size equals: 4.
 	
@@ -91,16 +92,16 @@ FASTEsopeAbstractSimplifyingRuleTest >> testSubstituteStatementNodeWithNodeInBlo
 FASTEsopeAbstractSimplifyingRuleTest >> testSubstituteStatementNodeWithNodeInLogicalIf [
 
 	| parentNode oldStatement |
-	oldStatement := self assignementStatement: #x value: 5.
+	oldStatement := (self assignementStatement: #x value: 5)
+		mooseModel: FASTFortranModel new.
 	parentNode := self
 		logicalIf: (self scalarVariable: #aBoolean)
 		statement: oldStatement.
 
 	visitor nodeStack push: parentNode.
-	visitor substituteStatementNode: oldStatement withNode: (self comment: 'this is the substitution').
+	visitor commentOut: oldStatement statement: oldStatement.
 
 	self assert: parentNode statement class equals: FASTFortranComment.
-	self assert: parentNode statement content equals: 'this is the substitution'.
 	self assert: parentNode statement parentIfStatement equals: parentNode.
 
 	self assert: oldStatement parentIfStatement isNil

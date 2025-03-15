@@ -35,7 +35,8 @@ FASTEsopeObsoleteCommandRuleTest >> testVisitCallStatementToKeep [
 
 	| statementBlock oldStatement |
 	oldStatement := (self callStatement: #sub arguments: #())
-		mooseModel: FASTFortranModel new.	statementBlock := self statementBlock: {
+		mooseModel: FASTFortranModel new.
+	statementBlock := self statementBlock: {
 		self declarationStatement: #x type: #integer.
 		self assignementStatement: #x value: 5. 
 		oldStatement .
