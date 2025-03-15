@@ -6,12 +6,15 @@ I take take an AST and converts some instruction to comment to ""remove them"" f
 Class {
 	#name : 'FASTEsopeAbstractSimplifyingRule',
 	#superclass : 'FASTFortranVisitor',
+	#instVars : [
+		'nodeStack'
+	],
 	#category : 'Famix-Esope-Transformator-Simplification',
 	#package : 'Famix-Esope-Transformator',
 	#tag : 'Simplification'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'helpers' }
 FASTEsopeAbstractSimplifyingRule >> commentOut: tag statement: aFASTStatement [
 
 	| visitor |
@@ -34,7 +37,36 @@ FASTEsopeAbstractSimplifyingRule >> commentOut: tag statement: aFASTStatement [
 		])
 ]
 
-{ #category : 'as yet unclassified' }
-FASTEsopeAbstractSimplifyingRule >> substitueNode: aFASTNode withNode: aFASTReplacement [
+{ #category : 'initialization' }
+FASTEsopeAbstractSimplifyingRule >> initialize [ 
 
+	super initialize.
+
+	nodeStack := Stack new
+]
+
+{ #category : 'helpers' }
+FASTEsopeAbstractSimplifyingRule >> substituteStatementNode: aFASTStatement withNode: aFASTReplacement [
+
+	nodeStack top substituteStatementNode: aFASTStatement withNode: aFASTReplacement 
+]
+
+{ #category : 'visiting - statements' }
+FASTEsopeAbstractSimplifyingRule >> visitFASTFortranIfLogicalStatement: aFASTFortranIfLogicalStatement [
+
+	nodeStack push: aFASTFortranIfLogicalStatement.
+
+	super visitFASTFortranIfLogicalStatement: aFASTFortranIfLogicalStatement.
+
+	nodeStack pop
+]
+
+{ #category : 'visiting - statements' }
+FASTEsopeAbstractSimplifyingRule >> visitFASTFortranStatementBlock: aFASTFortranStatementBlock [
+
+	nodeStack push: aFASTFortranStatementBlock.
+
+	super visitFASTFortranStatementBlock: aFASTFortranStatementBlock.
+
+	nodeStack pop
 ]
