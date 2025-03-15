@@ -13,6 +13,21 @@ FASTEsopeAbstractSimplifyingRuleTest >> newVisitor [
 ]
 
 { #category : 'tests' }
+FASTEsopeAbstractSimplifyingRuleTest >> testCommentOutSegact [
+
+	| oldStatement newStatement |
+	oldStatement := (self segmentCommand: FASTEsopeSegact with: { #v })
+		mooseModel: FASTEsopeModel new.
+	newStatement := visitor commentOut: 'testing' statement: oldStatement.
+
+	self assert: newStatement class equals: FASTFortranComment.
+	self assert: newStatement content equals: '[ooo].testing segact,v'.
+
+	self assert: newStatement mooseModel equals: oldStatement mooseModel
+
+]
+
+{ #category : 'tests' }
 FASTEsopeAbstractSimplifyingRuleTest >> testCommentOutStatement [
 
 	| oldStatement newStatement |
