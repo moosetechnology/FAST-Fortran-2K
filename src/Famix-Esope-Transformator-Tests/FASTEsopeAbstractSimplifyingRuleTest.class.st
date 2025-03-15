@@ -1,14 +1,30 @@
 Class {
 	#name : 'FASTEsopeAbstractSimplifyingRuleTest',
 	#superclass : 'FASTFortranAbstractVisitorTest',
-	#category : 'Famix-Esope-Transformator-Tests',
-	#package : 'Famix-Esope-Transformator-Tests'
+	#category : 'Famix-Esope-Transformator-Tests-Simplification',
+	#package : 'Famix-Esope-Transformator-Tests',
+	#tag : 'Simplification'
 }
 
 { #category : 'running' }
 FASTEsopeAbstractSimplifyingRuleTest >> newVisitor [
 
 	^FASTEsopeAbstractSimplifyingRule new
+]
+
+{ #category : 'tests' }
+FASTEsopeAbstractSimplifyingRuleTest >> testCommentOutStatement [
+
+	| oldStatement newStatement |
+	oldStatement := (self assignementStatement: #x value: 5)
+		mooseModel: FASTFortranModel new.
+	newStatement := visitor commentOut: 'testing' statement: oldStatement.
+
+	self assert: newStatement class equals: FASTFortranComment.
+	self assert: newStatement content equals: '[ooo].testing x = 5'.
+
+	self assert: newStatement mooseModel equals: oldStatement mooseModel
+
 ]
 
 { #category : 'tests' }
