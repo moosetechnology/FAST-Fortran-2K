@@ -45,6 +45,12 @@ FASTEsopeAbstractSimplifyingRule >> initialize [
 	nodeStack := Stack new
 ]
 
+{ #category : 'accessing - private tests' }
+FASTEsopeAbstractSimplifyingRule >> nodeStack [
+
+	^nodeStack 
+]
+
 { #category : 'helpers' }
 FASTEsopeAbstractSimplifyingRule >> substituteStatementNode: aFASTStatement withNode: aFASTReplacement [
 
