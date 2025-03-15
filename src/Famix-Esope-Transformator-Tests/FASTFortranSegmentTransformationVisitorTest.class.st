@@ -3,9 +3,10 @@ A FASTFortranSegmentTransformationVisitorTest is a test class for testing the be
 "
 Class {
 	#name : 'FASTFortranSegmentTransformationVisitorTest',
-	#superclass : 'FASTFortranAbstractTransformationVisitorTest',
-	#category : 'Famix-Esope-Transformator-Tests',
-	#package : 'Famix-Esope-Transformator-Tests'
+	#superclass : 'FASTEsopeAbstractTransformationVisitorTest',
+	#category : 'Famix-Esope-Transformator-Tests-Visitors',
+	#package : 'Famix-Esope-Transformator-Tests',
+	#tag : 'Visitors'
 }
 
 { #category : 'running' }

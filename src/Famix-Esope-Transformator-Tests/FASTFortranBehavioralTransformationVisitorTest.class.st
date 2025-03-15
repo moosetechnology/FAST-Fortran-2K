@@ -1,11 +1,12 @@
 Class {
 	#name : 'FASTFortranBehavioralTransformationVisitorTest',
-	#superclass : 'FASTFortranAbstractTransformationVisitorTest',
+	#superclass : 'FASTEsopeAbstractTransformationVisitorTest',
 	#instVars : [
 		'parentVisitor'
 	],
-	#category : 'Famix-Esope-Transformator-Tests',
-	#package : 'Famix-Esope-Transformator-Tests'
+	#category : 'Famix-Esope-Transformator-Tests-Visitors',
+	#package : 'Famix-Esope-Transformator-Tests',
+	#tag : 'Visitors'
 }
 
 { #category : 'running' }
@@ -186,18 +187,6 @@ FASTFortranBehavioralTransformationVisitorTest >> testAsterisk [
 	
 ]
 
-{ #category : 'running' }
-FASTFortranBehavioralTransformationVisitorTest >> testCallToCommentOut [
-
-	| res stmt |
-	stmt := self callStatement: 'oooeta' arguments: #( lib libeta ).
-
-	res := stmt accept: visitor.
-
-	self assert: res class equals: FASTFortran2kComment.
-	self assert: res content equals: '[ooo] call oooeta(lib,libeta)'
-]
-
 { #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testCloseStatement [
 	| stmt res |
@@ -252,34 +241,10 @@ FASTFortranBehavioralTransformationVisitorTest >> testDoStatement [
 ]
 
 { #category : 'running' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeCommandSegact [
-
-	| dst segCommand |
-	segCommand := self segact: { #v }.
-
-	dst := segCommand accept: visitor.
-
-	self assert: dst class equals: FASTFortran2kComment.
-	self assert: dst content equals: '[ooo] segact,v'
-]
-
-{ #category : 'running' }
-FASTFortranBehavioralTransformationVisitorTest >> testEsopeCommandSegdes [
-
-	| dst segCommand |
-	segCommand := self segdes: { #v }.
-
-	dst := segCommand accept: visitor.
-
-	self assert: dst class equals: FASTFortran2kComment.
-	self assert: dst content equals: '[ooo] segdes,v'
-]
-
-{ #category : 'running' }
 FASTFortranBehavioralTransformationVisitorTest >> testEsopeCommandSegini [
 
 	| dst segCommand |
-	segCommand := self segini: { #v }.
+	segCommand := self segmentCommand: FASTEsopeSegini with: { #v }.
 
 	dst := segCommand accept: visitor.
 

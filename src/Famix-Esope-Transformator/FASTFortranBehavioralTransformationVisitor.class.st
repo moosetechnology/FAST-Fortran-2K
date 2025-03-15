@@ -1,3 +1,8 @@
+"
+A generic transformation visitor that converts a FASTEsope AST to a FASTFortran2k AST
+
+note: does not use FASTEsopeTVisitor because it overrides all of its methods
+"
 Class {
 	#name : 'FASTFortranBehavioralTransformationVisitor',
 	#superclass : 'FASTFortranAbstractTransformationVisitor',
@@ -34,22 +39,6 @@ FASTFortranBehavioralTransformationVisitor >> checkSpecialCallTreatment: aFASTIn
 		at: aFASTInvocation name
 		ifPresent: [ :action | self perform: action with: aFASTInvocation ]
 		ifAbsent: [ nil ]
-]
-
-{ #category : 'private - helpers' }
-FASTFortranBehavioralTransformationVisitor >> commentOutStatement: aFASTNode [
-
-	| visitor |
-
-	visitor := FASTEsopeExporterVisitor new.
-
-	String streamContents: [ :str |
-			visitor outputStream: str.
-			aFASTNode accept: visitor
-	].
-	
-	^self model2k newComment
-		content: '[ooo] ' , visitor outputStream contents trimBoth
 ]
 
 { #category : 'accessing - private tests' }
@@ -290,12 +279,6 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegcop: aFASTEsopeSe
 		segini p=q, which will first allocate memory space for p and copy the contents of q into p
 	"
 	self shouldBeImplemented
-]
-
-{ #category : 'visiting - esope' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegdes: aFASTEsopeSegdes [ 
-
-	^self commentOutStatement: aFASTEsopeSegdes
 ]
 
 { #category : 'visiting - esope' }

@@ -1,15 +1,16 @@
 Class {
 	#name : 'FASTFortranUseTransformationVisitorTest',
-	#superclass : 'FASTFortranAbstractTransformationVisitorTest',
-	#category : 'Famix-Esope-Transformator-Tests',
-	#package : 'Famix-Esope-Transformator-Tests'
+	#superclass : 'FASTEsopeAbstractTransformationVisitorTest',
+	#category : 'Famix-Esope-Transformator-Tests-Visitors',
+	#package : 'Famix-Esope-Transformator-Tests',
+	#tag : 'Visitors'
 }
 
 { #category : 'running' }
 FASTFortranUseTransformationVisitorTest >> newVisitor [
 	"override because there is no model in FASTFortranUseTransformationVisitor"
 	| transformator |
-	transformator := FamixEsopeToFortran2k new.
+	transformator := self visitorClass new.
 
 	^FASTFortranUseTransformationVisitor new 
 		parentTransformator: transformator ;
@@ -200,4 +201,10 @@ FASTFortranUseTransformationVisitorTest >> testSubroutineWithFunctionStatementCa
 FASTFortranUseTransformationVisitorTest >> usesNeeded [ 
 
 	^visitor parentTransformator usesNeeded
+]
+
+{ #category : 'running' }
+FASTFortranUseTransformationVisitorTest >> visitorClass [ 
+
+	^FamixEsopeToFortran2k
 ]
