@@ -1,6 +1,6 @@
 Class {
 	#name : 'FASTEsopeAbstractSimplifyingRuleTest',
-	#superclass : 'FASTFortranAbstractVisitorTest',
+	#superclass : 'FASTEsopeAbstractVisitorTest',
 	#category : 'Famix-Esope-Transformator-Tests-Simplification',
 	#package : 'Famix-Esope-Transformator-Tests',
 	#tag : 'Simplification'

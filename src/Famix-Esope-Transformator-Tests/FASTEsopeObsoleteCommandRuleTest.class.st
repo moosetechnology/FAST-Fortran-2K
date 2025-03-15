@@ -1,16 +1,10 @@
 Class {
 	#name : 'FASTEsopeObsoleteCommandRuleTest',
-	#superclass : 'FASTFortranAbstractVisitorTest',
+	#superclass : 'FASTEsopeAbstractVisitorTest',
 	#category : 'Famix-Esope-Transformator-Tests-Simplification',
 	#package : 'Famix-Esope-Transformator-Tests',
 	#tag : 'Simplification'
 }
-
-{ #category : 'running' }
-FASTEsopeObsoleteCommandRuleTest >> newVisitor [
-
-	^FASTEsopeObsoleteCommandRule new
-]
 
 { #category : 'tests' }
 FASTEsopeObsoleteCommandRuleTest >> testVisitCallStatementToIgnore [
@@ -57,4 +51,10 @@ FASTEsopeObsoleteCommandRuleTest >> testVisitCallStatementToKeep [
 	self assert: statementBlock statements third class equals: FASTFortranCallStatement.
 	self assert: statementBlock statements fourth class equals: FASTFortranReturnStatement.
 
+]
+
+{ #category : 'running' }
+FASTEsopeObsoleteCommandRuleTest >> visitorClass [ 
+
+	^FASTEsopeObsoleteCommandRule
 ]

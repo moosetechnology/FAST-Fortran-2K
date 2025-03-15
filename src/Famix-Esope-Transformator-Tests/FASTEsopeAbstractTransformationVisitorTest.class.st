@@ -1,59 +1,13 @@
 Class {
-	#name : 'FASTFortranAbstractTransformationVisitorTest',
-	#superclass : 'FASTFortranAbstractVisitorTest',
-	#instVars : [
-		'fastProgramFile',
-		'famixProgramFile',
-		'fastMainProgram',
-		'fastProcedures'
-	],
+	#name : 'FASTEsopeAbstractTransformationVisitorTest',
+	#superclass : 'FASTEsopeAbstractVisitorTest',
 	#category : 'Famix-Esope-Transformator-Tests-Visitors',
 	#package : 'Famix-Esope-Transformator-Tests',
 	#tag : 'Visitors'
 }
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> esopeCommandClass: esopeCommandClass pointers: associations [
-	| variables |
-	
-	variables := associations collect: [ :assoc | 
-		FASTFortranScalarVariable new 
-			name: assoc key;
-			famixParameter: (FamixF77Parameter new 
-            name: assoc key; 
-            declaredType: (FamixEsopeSegment new name: assoc value); 
-            yourself 
-        )	
-	].
-
-	^esopeCommandClass new
-   		variables: variables;
-        yourself.
-
-]
-
-{ #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> functionEmpty [
-	"---- demo.f ----
-	integer function fct()
-	end function fct"
-
-	| famix |
-	famix := FamixF77PUFunction new
-			name: 'fct' ; 
-			declaredType: (FamixF77TypeIntrinsic new name: 'integer') ;
-			programFile: famixProgramFile.
-
-	fastProcedures := { FASTFortranFunction new 
-		name: 'fct' ;
-		statementBlock: FASTFortranStatementBlock new ;
-		famix: famix ;
-		programFile: fastProgramFile }.
-		
-]
-
-{ #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> functionWithSegment [
+FASTEsopeAbstractTransformationVisitorTest >> functionWithSegment [
 	"  ---- demo.f ----
 	integer fct()
 	  segment foo
@@ -71,39 +25,19 @@ FASTFortranAbstractTransformationVisitorTest >> functionWithSegment [
 ]
 
 { #category : 'running' }
-FASTFortranAbstractTransformationVisitorTest >> newVisitor [
+FASTEsopeAbstractTransformationVisitorTest >> newVisitor [
 
 	| transformator |
 	transformator := FamixEsopeToFortran2k new.
 
-	^ self visitorClass new 
+	^super newVisitor
 		parentTransformator: transformator ;
 		model2k: FASTFortran2kModel new ;
 		yourself
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> pointerDeclaration [
-
-	| fastPointer |
-	fastPointer := (self variableDeclarator: #f)
-		famixDeclaration: (FamixEsopePointer new 
-            name: 'f'; 
-            declaredType: (FamixEsopeSegment new name: 'foo'); 
-            yourself).
-
-	^FASTEsopePointerDeclarationStatement new
-        addPointerDeclarator: (FASTEsopePointerDeclarator new 
-            pointedTypeName: 'foo' ;
-            variableDeclarator: fastPointer ;
-            yourself
-        ) ;
-        yourself.
-
-]
-
-{ #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> procedureWithCommandSegadj [
+FASTEsopeAbstractTransformationVisitorTest >> procedureWithCommandSegadj [
 	"
 	subroutine sub
 	segadj aPtr
@@ -117,24 +51,7 @@ FASTFortranAbstractTransformationVisitorTest >> procedureWithCommandSegadj [
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> programEmpty [
-	"
-     PROGRAM demo
-     END"
-
-	fastMainProgram := FASTFortranProgramMain new 
-		name: 'demo' ; 
-		statementBlock: FASTFortranStatementBlock new ; 
-		programFile: fastProgramFile ;
-		famix: (FamixF77PUMain new
-			name: 'demo' ;
-			programFile: famixProgramFile) ;
-		yourself.
-
-]
-
-{ #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> programWithCommandSegini [
+FASTEsopeAbstractTransformationVisitorTest >> programWithCommandSegini [
     "
 +------ someFile.E ---------------------------------+
 |      program main                                 |
@@ -152,7 +69,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithCommandSegini [
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> programWithDeclarationStatement [
+FASTEsopeAbstractTransformationVisitorTest >> programWithDeclarationStatement [
 	"  ---- demo.f ----
 	program demo
 	character*20 str
@@ -164,7 +81,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithDeclarationStatement 
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> programWithExternalFunctionCall [
+FASTEsopeAbstractTransformationVisitorTest >> programWithExternalFunctionCall [
 	"
 	function 'fct' defined in another externalFile.f'
 
@@ -196,7 +113,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithExternalFunctionCall 
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> programWithExternalSubroutineInvocation [
+FASTEsopeAbstractTransformationVisitorTest >> programWithExternalSubroutineInvocation [
 	"
 	subrotine 'sub' defined in another externalFile.f'
 
@@ -227,7 +144,7 @@ C  -----end someFile.f --------------"
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> programWithFunctionStatement [
+FASTEsopeAbstractTransformationVisitorTest >> programWithFunctionStatement [
 	"
      PROGRAM demo
      fct(x)  = x + 2
@@ -261,7 +178,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithFunctionStatement [
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> programWithFunctionStatementCalled [
+FASTEsopeAbstractTransformationVisitorTest >> programWithFunctionStatementCalled [
 	"
      PROGRAM demo
      fct()  = 5
@@ -304,7 +221,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithFunctionStatementCall
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> programWithPointeurDeclaration [
+FASTEsopeAbstractTransformationVisitorTest >> programWithPointeurDeclaration [
     "
 +------ someFile.E ---------------------------------+
 |      program main                                 |
@@ -323,7 +240,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithPointeurDeclaration [
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> programWithProcedureInvoked [
+FASTEsopeAbstractTransformationVisitorTest >> programWithProcedureInvoked [
 	"
 	subroutine sub
 	end
@@ -354,7 +271,7 @@ FASTFortranAbstractTransformationVisitorTest >> programWithProcedureInvoked [
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> programWithSegment [
+FASTEsopeAbstractTransformationVisitorTest >> programWithSegment [
 	"  ---- demo.f ----
 	program demo
 	  segment foo
@@ -371,58 +288,11 @@ FASTFortranAbstractTransformationVisitorTest >> programWithSegment [
 		
 ]
 
-{ #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> segact: aCollection [
-	
-	^self segmentCommand: FASTEsopeSegact with: aCollection
-]
-
-{ #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> segdes: aCollection [
-	
-	^self segmentCommand: FASTEsopeSegdes with: aCollection
-]
-
-{ #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> segini: aCollection [
-	
-	^self segmentCommand: FASTEsopeSegini with: aCollection
-]
-
 { #category : 'running' }
-FASTFortranAbstractTransformationVisitorTest >> segment: aName attributes: aDeclarationStatements [
-
-	^FASTEsopeSegment new 
-		name: aName;
-		statements: (aDeclarationStatements collect: [:assoc | 
-			self declarationStatement: assoc key type: assoc value
-		]);
-		yourself
-]
-
-{ #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> segmentCommand: aCommandClass with: aCollection [
-	
-	| segmentCommand  |
-	aCollection ifEmpty: [ ^nil ].
-
-	segmentCommand := aCommandClass new.
-	aCollection do: [ :varName | | var |
-		var := self scalarVariable: varName.
-		var famixVariable: (FamixF77Variable new name: varName).
-		var segCommand: segmentCommand.
-		segmentCommand addVariable: var.
-	].
-
-	^segmentCommand
-]
-
-{ #category : 'running' }
-FASTFortranAbstractTransformationVisitorTest >> setUp [ 
+FASTEsopeAbstractTransformationVisitorTest >> setUp [ 
 
 	super setUp.
 
-	
 	fastProgramFile := FASTFortranProgramFile new.
 	famixProgramFile := FamixF77ProgramFile new filename: 'someFile.f'.
 
@@ -432,47 +302,7 @@ FASTFortranAbstractTransformationVisitorTest >> setUp [
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> statementFunctionWithExternalFunctionCall [
-	"
-     PROGRAM demo
-     fct()  = toto()
-     END"
-
-	| fastStmtFunction famixStmtFunction famixExternalFunction fastCallExpression |
-
-	famixExternalFunction := FamixF77PUFunction new
-		name: 'toto' ;
-		declaredType: (FamixF77TypeIntrinsic new name: 'real') ;
-		programFile: (FamixF77ProgramFile new filename: 'externalFile.f') ;
-		yourself.
-
-	famixStmtFunction := FamixF77StatementFunction new 
-		name: 'fct';
-		declaredType: (FamixF77TypeIntrinsic new name: 'real') ;
-		parentEntity: (FamixF77PUMain new
-			name: 'demo' ;
-			programFile: famixProgramFile ) ;
-		yourself.
-	
-	fastCallExpression := (self functionCall: 'toto' arguments: #())
-		famix: (FamixF77Invocation new
-			sender: famixStmtFunction ;
-			candidates: { famixExternalFunction } ).
-
-	fastStmtFunction := FASTFortranFunctionStatement new
-						name: 'fct';
-						parameters: #();
-						expression: fastCallExpression ;
-						famix: famixStmtFunction ;
-						yourself.
-
-	self programEmpty.
-	fastMainProgram statementBlock addStatement: fastStmtFunction.
-
-]
-
-{ #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunction [
+FASTEsopeAbstractTransformationVisitorTest >> subroutineAndFunction [
 	"---- demo.f ----
 	function fct()
 	end function
@@ -492,7 +322,7 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunction [
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunctionWithCall [
+FASTEsopeAbstractTransformationVisitorTest >> subroutineAndFunctionWithCall [
 	"---- demo.f ----
 	function fct()
 	end function
@@ -520,26 +350,7 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineAndFunctionWithCall [
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> subroutineEmpty [
-	"---- demo.f ----
-	subroutine sub
-	end"
-
-	| famix |
-	famix := FamixF77PUSubroutine new
-			name: 'sub' ; 
-			programFile: famixProgramFile.
-
-	fastProcedures := { FASTFortranSubroutine new 
-		name: 'sub' ;
-		statementBlock: FASTFortranStatementBlock new ;
-		famix: famix ;
-		programFile: fastProgramFile }
-		
-]
-
-{ #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> subroutineWithExternalSubroutineInvocation [
+FASTEsopeAbstractTransformationVisitorTest >> subroutineWithExternalSubroutineInvocation [
 	"
 	subrotine 'sub2' defined in another externalFile.f'
 
@@ -569,7 +380,7 @@ C  -----end someFile.f --------------"
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> subroutineWithFunctionStatement [
+FASTEsopeAbstractTransformationVisitorTest >> subroutineWithFunctionStatement [
 	"
      subroutine sub
      fct(x)  = x + 2
@@ -603,7 +414,7 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineWithFunctionStatement 
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> subroutineWithFunctionStatementCalled [
+FASTEsopeAbstractTransformationVisitorTest >> subroutineWithFunctionStatementCalled [
 	"
      PROGRAM demo
      fct()  = 5
@@ -646,7 +457,7 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineWithFunctionStatementC
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> subroutineWithPointeurDeclaration [
+FASTEsopeAbstractTransformationVisitorTest >> subroutineWithPointeurDeclaration [
     " someFile.E
 
       subroutine sub
@@ -663,7 +474,7 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineWithPointeurDeclaratio
 ]
 
 { #category : 'entity-creation' }
-FASTFortranAbstractTransformationVisitorTest >> subroutineWithTwoSegment [
+FASTEsopeAbstractTransformationVisitorTest >> subroutineWithTwoSegment [
 	"  ---- demo.f ----
 	integer fct()
 	  segment foo
@@ -681,10 +492,4 @@ FASTFortranAbstractTransformationVisitorTest >> subroutineWithTwoSegment [
 	self subroutineEmpty.
 	fastProcedures anyOne statementBlock: (self statementBlock: {segment_foo . segment_bar }).
 		
-]
-
-{ #category : 'running' }
-FASTFortranAbstractTransformationVisitorTest >> visitorClass [ 
-
-	self subclassResponsibility 
 ]

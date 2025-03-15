@@ -1,6 +1,6 @@
 Class {
 	#name : 'FASTFortranBehavioralTransformationVisitorTest',
-	#superclass : 'FASTFortranAbstractTransformationVisitorTest',
+	#superclass : 'FASTEsopeAbstractTransformationVisitorTest',
 	#instVars : [
 		'parentVisitor'
 	],

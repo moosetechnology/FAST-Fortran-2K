@@ -1,6 +1,6 @@
 Class {
 	#name : 'FASTFortranBackTracingTest',
-	#superclass : 'FASTFortranAbstractTransformationVisitorTest',
+	#superclass : 'FASTEsopeAbstractTransformationVisitorTest',
 	#instVars : [
 		'parentVisitor'
 	],
