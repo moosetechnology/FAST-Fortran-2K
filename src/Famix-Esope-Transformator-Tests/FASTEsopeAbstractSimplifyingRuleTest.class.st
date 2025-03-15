@@ -28,6 +28,21 @@ FASTEsopeAbstractSimplifyingRuleTest >> testCommentOutStatement [
 ]
 
 { #category : 'tests' }
+FASTEsopeAbstractSimplifyingRuleTest >> testCommentOutStatementNoTag [
+
+	| oldStatement newStatement |
+	oldStatement := (self assignementStatement: #x value: 5)
+		mooseModel: FASTFortranModel new.
+	newStatement := visitor commentOut: nil statement: oldStatement.
+
+	self assert: newStatement class equals: FASTFortranComment.
+	self assert: newStatement content equals: '[ooo] x = 5'.
+
+	self assert: newStatement mooseModel equals: oldStatement mooseModel
+
+]
+
+{ #category : 'tests' }
 FASTEsopeAbstractSimplifyingRuleTest >> testSubstituteStatementNodeWithNodeInBlock [
 
 	| parentNode oldStatement |
