@@ -14,5 +14,10 @@ FASTEsopeObsoleteCommandRule >> invocationsToIgnore [
 { #category : 'visiting - statements' }
 FASTEsopeObsoleteCommandRule >> visitFASTFortranCallStatement: aFASTFortranCallStatement [
 
-	
+	(self invocationsToIgnore includes: aFASTFortranCallStatement name)
+		ifTrue: [
+			self
+				substituteStatementNode: aFASTFortranCallStatement
+				withNode: (self commentOut: nil statement: aFASTFortranCallStatement)
+		]
 ]
