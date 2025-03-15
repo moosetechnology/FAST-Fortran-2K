@@ -51,7 +51,11 @@ FASTEsopeAbstractSimplifyingRule >> makeComment: tag fromStatement: aFASTStateme
 		content: (String streamContents: [ : str |
 			str << '[ooo]'.
 			tag ifNotNil: [
-				str << '.' ; << tag asString ].
+				str
+					<< '.' ;
+				 	<< tag asString ;
+					<< ':'
+			].
 			str
 				<< ' ' ;
 				<< visitor outputStream contents trimBoth

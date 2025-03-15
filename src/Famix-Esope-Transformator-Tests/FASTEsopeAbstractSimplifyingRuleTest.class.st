@@ -21,7 +21,7 @@ FASTEsopeAbstractSimplifyingRuleTest >> testMakeCommentFromStatement [
 	newStatement := visitor makeComment: 'testing' fromStatement: oldStatement.
 
 	self assert: newStatement class equals: FASTFortranComment.
-	self assert: newStatement content equals: '[ooo].testing x = 5'.
+	self assert: newStatement content equals: '[ooo].testing: x = 5'.
 
 	self assert: newStatement mooseModel equals: oldStatement mooseModel
 
@@ -51,7 +51,7 @@ FASTEsopeAbstractSimplifyingRuleTest >> testMakeCommentFromStatementSegact [
 	newStatement := visitor makeComment: 'testing' fromStatement: oldStatement.
 
 	self assert: newStatement class equals: FASTFortranComment.
-	self assert: newStatement content equals: '[ooo].testing segact,v'.
+	self assert: newStatement content equals: '[ooo].testing: segact,v'.
 
 	self assert: newStatement mooseModel equals: oldStatement mooseModel
 
