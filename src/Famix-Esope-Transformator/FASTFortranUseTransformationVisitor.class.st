@@ -1,6 +1,14 @@
+"
+I collect all uses needed in programUnits
+
+uses are stored in `usesNeedded` as a collection of associations: needing entity -> needed entity
+Later this will generate appropriate use statements in appropriate program units
+"
 Class {
 	#name : 'FASTFortranUseTransformationVisitor',
 	#superclass : 'FASTFortranAbstractTransformationVisitor',
+	#traits : 'FASTEsopeTVisitor',
+	#classTraits : 'FASTEsopeTVisitor classTrait',
 	#instVars : [
 		'parentTransformator'
 	],
@@ -8,6 +16,13 @@ Class {
 	#package : 'Famix-Esope-Transformator',
 	#tag : 'Visitors'
 }
+
+{ #category : 'accessing' }
+FASTFortranUseTransformationVisitor >> model2k [
+	"not needed here"
+
+	self shouldNotImplement 
+]
 
 { #category : 'accessing' }
 FASTFortranUseTransformationVisitor >> parentTransformator [
@@ -61,7 +76,7 @@ FASTFortranUseTransformationVisitor >> visitFASTEsopePointerDeclarator: aFASTEso
 ]
 
 { #category : 'visiting' }
-FASTFortranUseTransformationVisitor >> visitFASTEsopeSegCommand: aFASTEsopeSegCommand [
+FASTFortranUseTransformationVisitor >> visitFASTEsopeSeg: aFASTEsopeSegCommand command: commandName [
 
 	aFASTEsopeSegCommand variables 
 		do: [ :variable |  | programUnit segment |
@@ -70,48 +85,6 @@ FASTFortranUseTransformationVisitor >> visitFASTEsopeSegCommand: aFASTEsopeSegCo
 
 			self useNeeded: (programUnit -> segment)
 		]
-]
-
-{ #category : 'visiting' }
-FASTFortranUseTransformationVisitor >> visitFASTEsopeSegact: aFASTEsopeSegact [ 
-
-	self visitFASTEsopeSegCommand: aFASTEsopeSegact
-]
-
-{ #category : 'visiting' }
-FASTFortranUseTransformationVisitor >> visitFASTEsopeSegadj: aFASTEsopeSegadj [ 
-
-	self visitFASTEsopeSegCommand: aFASTEsopeSegadj
-]
-
-{ #category : 'visiting' }
-FASTFortranUseTransformationVisitor >> visitFASTEsopeSegdes: aFASTEsopeSegdes [ 
-
-	self visitFASTEsopeSegCommand: aFASTEsopeSegdes
-]
-
-{ #category : 'visiting' }
-FASTFortranUseTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSegini [ 
-
-	self visitFASTEsopeSegCommand: aFASTEsopeSegini
-]
-
-{ #category : 'visiting - expressions' }
-FASTFortranUseTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
-
-	self visitFASTFortranList: aFASTEsopeSegmentNode statements
-]
-
-{ #category : 'visiting' }
-FASTFortranUseTransformationVisitor >> visitFASTEsopeSegprt: aFASTEsopeSegprt [ 
-
-	self visitFASTEsopeSegCommand: aFASTEsopeSegprt
-]
-
-{ #category : 'visiting' }
-FASTFortranUseTransformationVisitor >> visitFASTEsopeSegsup: aFASTEsopeSegsup [ 
-
-	self visitFASTEsopeSegCommand: aFASTEsopeSegsup
 ]
 
 { #category : 'visiting - expressions' }
