@@ -7,8 +7,9 @@ Class {
 	#classInstVars : [
 		'visitor'
 	],
-	#category : 'Famix-Esope-Transformator-Tests',
-	#package : 'Famix-Esope-Transformator-Tests'
+	#category : 'Famix-Esope-Transformator-Tests-Segment',
+	#package : 'Famix-Esope-Transformator-Tests',
+	#tag : 'Segment'
 }
 
 { #category : 'running' }

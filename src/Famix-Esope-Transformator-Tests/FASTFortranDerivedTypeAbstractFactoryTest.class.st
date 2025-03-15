@@ -6,8 +6,9 @@ Class {
 		'segFactory',
 		'fast2kModel'
 	],
-	#category : 'Famix-Esope-Transformator-Tests',
-	#package : 'Famix-Esope-Transformator-Tests'
+	#category : 'Famix-Esope-Transformator-Tests-Segment',
+	#package : 'Famix-Esope-Transformator-Tests',
+	#tag : 'Segment'
 }
 
 { #category : 'running' }

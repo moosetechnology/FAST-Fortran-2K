@@ -4,8 +4,9 @@ Class {
 	#instVars : [
 		'parentVisitor'
 	],
-	#category : 'Famix-Esope-Transformator-Tests',
-	#package : 'Famix-Esope-Transformator-Tests'
+	#category : 'Famix-Esope-Transformator-Tests-Visitors',
+	#package : 'Famix-Esope-Transformator-Tests',
+	#tag : 'Visitors'
 }
 
 { #category : 'tests-statement' }
