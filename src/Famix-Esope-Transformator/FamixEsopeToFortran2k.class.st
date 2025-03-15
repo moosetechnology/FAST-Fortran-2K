@@ -14,6 +14,16 @@ Class {
 	#tag : 'Main'
 }
 
+{ #category : 'migration-substeps' }
+FamixEsopeToFortran2k >> collectUsesNeeded: aFASTProgramUnit [
+
+	| visitor |
+	visitor := FASTFortranUseTransformationVisitor new
+		           parentTransformator: self;
+		           yourself.
+	aFASTProgramUnit accept: visitor.
+]
+
 { #category : 'running' }
 FamixEsopeToFortran2k >> exportFAST2k [
 
@@ -25,32 +35,43 @@ FamixEsopeToFortran2k >> exportFAST2k [
 { #category : 'running' }
 FamixEsopeToFortran2k >> famixEsopeToFast2k [
 
+	"too short to go in the progress bar (?)"
+	| toProcess |
 	(famixModel allWithType: FamixF77ProgramFile) do: [ :famixProgFile |
 		famixProgFile fast: (FASTFortranProgramFile new
 			filename: famixProgFile filename)
 	].
 
 	"dealing with all IncludedFile-s"
-	(famixModel allWithType: FamixF77IncludedFile) do: [ :famixIncludedFile || fastPUIncludedFile |
-		fastPUIncludedFile := self fastModelFor: famixIncludedFile in: famixIncludedFile programFile.
-
-		self migrateIncludedFileToFAST2k: fastPUIncludedFile.
-	].
+	toProcess := famixModel allWithType: FamixF77IncludedFile.
+	UIManager default displayProgress: ''
+		from: 1 to: (toProcess size)
+		during: [:bar |
+			bar label: 'Migrating include files'.
+			toProcess withIndexDo: [ :famixIncludedFile :i || fastPUIncludedFile |
+				bar current: i.
+				fastPUIncludedFile := self fastModelFor: famixIncludedFile in: famixIncludedFile programFile.
+				self migrateIncludedFileFAST2k: fastPUIncludedFile.
+			] 
+		].
 
 	"dealing with 'normal' PrugramUnit-s"
-	(famixModel allWithType: FamixF77ProgramFile) do: [ :famixProgFile |
-		famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
-			(famixProgUnit class = FamixF77IncludedFile)
-				ifFalse: [ 
-					fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgUnit programFile.
-
-					self migrateToFAST2k: fastProgramUnit.
-
-				"self flag: '#FIXME: cleaning, quid revolveUses'.
-				fastProgramUnit accept: fastProgramUnit mooseModel carrefourBinderCleaner"
-			 ]
+	toProcess := famixModel allWithType: FamixF77ProgramFile.
+	UIManager default displayProgress: ''
+		from: 1 to: (toProcess size)
+		during: [:bar |
+			bar label: 'Migrating program files'.
+			toProcess withIndexDo: [ :famixProgFile :i |
+				bar current: i.
+				famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
+					(famixProgUnit class = FamixF77IncludedFile)
+						ifFalse: [ 
+							fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgUnit programFile.
+							self migrateProgramUnitFAST2k: fastProgramUnit.
+						 ]
+				]
+			] 
 		]
-	]
 
 ]
 
@@ -72,7 +93,7 @@ FamixEsopeToFortran2k >> fast2kModel [
 	^ fast2kModel
 ]
 
-{ #category : 'running' }
+{ #category : 'helper' }
 FamixEsopeToFortran2k >> fastModelFor: famixProgUnit in: famixProgFile [
 
 	| fastProgramUnit |
@@ -85,7 +106,7 @@ FamixEsopeToFortran2k >> fastModelFor: famixProgUnit in: famixProgFile [
 	^fastProgramUnit 
 ]
 
-{ #category : 'helpers - segment' }
+{ #category : 'accessing' }
 FamixEsopeToFortran2k >> getModule: filename ifAbsentPut: aBlock [
 
 	^allModules
@@ -113,7 +134,7 @@ FamixEsopeToFortran2k >> initialize [
 ]
 
 { #category : 'running' }
-FamixEsopeToFortran2k >> migrateIncludedFileToFAST2k: aFASTIncludedFile [
+FamixEsopeToFortran2k >> migrateIncludedFileFAST2k: aFASTIncludedFile [
 
 	| visitor includedStatements |
 
@@ -131,22 +152,24 @@ FamixEsopeToFortran2k >> migrateIncludedFileToFAST2k: aFASTIncludedFile [
 
 ]
 
-{ #category : 'running' }
-FamixEsopeToFortran2k >> migrateToFAST2k: aFASTProgramUnit [
+{ #category : 'migration-substeps' }
+FamixEsopeToFortran2k >> migrateProgramUnitAST: aFASTProgramUnit [
 
 	| visitor |
-
-	visitor := self transformationVisitor: aFASTProgramUnit transformationVisitorClass.
+	visitor := self transformationVisitor:
+		           aFASTProgramUnit transformationVisitorClass.
 	visitor filename: aFASTProgramUnit programFile filename.
 	aFASTProgramUnit accept: visitor.
+]
 
-	visitor := FASTFortranUseTransformationVisitor new
-		parentTransformator: self;
-		yourself.
-	aFASTProgramUnit accept: visitor.
+{ #category : 'running' }
+FamixEsopeToFortran2k >> migrateProgramUnitFAST2k: aFASTProgramUnit [
 
-	^fast2kModel
+	self simplifyFASTProgramUnit: aFASTProgramUnit.
+	self migrateProgramUnitAST: aFASTProgramUnit.
+	self collectUsesNeeded: aFASTProgramUnit.
 
+	^ fast2kModel
 ]
 
 { #category : 'running' }
@@ -191,13 +214,19 @@ FamixEsopeToFortran2k >> run [
 		]
 ]
 
+{ #category : 'migration-substeps' }
+FamixEsopeToFortran2k >> simplifyFASTProgramUnit: aFASTProgramUnit [
+
+	aFASTProgramUnit accept: FASTEsopeObsoleteCommandRule new.
+]
+
 { #category : 'accessing' }
 FamixEsopeToFortran2k >> specialCallTreatments [
 
 	^specialCallTreatments ifNil: [
 		specialCallTreatments := Dictionary newFrom: {
-			#oooeta -> #commentOutStatement: .
-			#actstr -> #commentOutStatement: .
+			"#oooeta -> #commentOutStatement: .
+			#actstr -> #commentOutStatement: ."
 			#mypnt -> #prefixCallWithType:
 		} ]
 ]
