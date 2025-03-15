@@ -12,6 +12,12 @@ Class {
 	#tag : 'Simplification'
 }
 
+{ #category : 'accessing - private tests' }
+FASTEsopeUnassignedVariableRule >> assignedVariables [ 
+
+	^assignedVariables 
+]
+
 { #category : 'initialization' }
 FASTEsopeUnassignedVariableRule >> initialize [ 
 
@@ -58,6 +64,13 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortranProgramMain: aFASTFortranProg
 	super visitFASTFortranProgramMain: aFASTFortranProgramMain
 ]
 
+{ #category : 'visiting - expressions' }
+FASTEsopeUnassignedVariableRule >> visitFASTFortranScalarVariable: aFASTFortranScalarVariable [
+
+	self visitFASTFortranVariable: aFASTFortranScalarVariable 
+
+]
+
 { #category : 'visiting - statements' }
 FASTEsopeUnassignedVariableRule >> visitFASTFortranStatementBlock: aFASTFortranStatementBlock [
 	"must override to not push twice the statementBlock on the stack"
@@ -74,11 +87,11 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortranStatementBlock: aFASTFortranS
 
 { #category : 'visiting - traits' }
 FASTEsopeUnassignedVariableRule >> visitFASTFortranTAssignment: aFASTFortranTAssignment [
-	"should check that all varibales in #expression are 'valid' (ie. assigned)"
+	"should check that all variables in #expression are 'valid' (ie. assigned)"
 
-	assignedVariables add: aFASTFortranTAssignment variable.
+	assignedVariables add: aFASTFortranTAssignment variable name.
 
-	super visitFASTFortranTAssignment: aFASTFortranTAssignment
+	aFASTFortranTAssignment expression accept: self
 
 ]
 
@@ -102,6 +115,7 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortranVariable: aFASTFortranVariabl
 	   finishing to visit the parentStatement"
 
 	| expressionStatement |
+
 	(assignedVariables includes: aFASTFortranVariable name)
 		ifTrue: [ ^self ].
 
@@ -113,11 +127,21 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortranVariable: aFASTFortranVariabl
 
 ]
 
+{ #category : 'visiting - statements' }
+FASTEsopeUnassignedVariableRule >> visitFASTFortranWriteStatement: aFASTFortranWriteStatement [
+	nodeStack push: aFASTFortranWriteStatement.
+
+	self visitFASTFortranTWithIOParameters: aFASTFortranWriteStatement.
+	self visitFASTFortranTWithArguments: aFASTFortranWriteStatement.
+
+	nodeStack pop
+]
+
 { #category : 'visiting - traits' }
 FASTEsopeUnassignedVariableRule >> visitParameter: aFASTFortranScalarVariable [
 	"parameters are considered assigned when entering the subprogram"
 
-	assignedVariables add: aFASTFortranScalarVariable.
+	assignedVariables add: aFASTFortranScalarVariable name.
 
 	super visitParameter: aFASTFortranScalarVariable
 ]
