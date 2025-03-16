@@ -7,6 +7,78 @@ Class {
 }
 
 { #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementConditionAndThenToRemove [
+
+	| body writeStatement statement |
+
+	writeStatement := (self writeStatement: #( booleanVar ))
+		mooseModel: FASTFortranModel new.
+	statement := FASTFortranIfLogicalStatement new
+		mooseModel: writeStatement mooseModel ;
+		condition: (self scalarVariable: #booleanVar) ;
+		statement: writeStatement ;
+		yourself.
+
+	self function: #fctBigSmall type: #(character 20).
+	self addStatement: statement.
+
+	ast accept: visitor.
+
+	body := ast statementBlock statements.
+	self assert: body size equals: 1.
+	
+	self assert: body anyOne class equals: FASTFortranComment.
+	self assert: body anyOne content equals: '[ooo].empty-var: if (booleanVar) write (*,*) booleanVar'
+
+]
+
+{ #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementConditionToRemove [
+
+	| body statement |
+	statement := FASTFortranIfLogicalStatement new
+		mooseModel: FASTFortranModel new ;
+		condition: (self scalarVariable: #booleanVar) ;
+		statement: (self returnStatement: nil) ;
+		yourself.
+
+	self function: #fctBigSmall type: #(character 20).
+	self addStatement: statement.
+
+	ast accept: visitor.
+
+	body := ast statementBlock statements.
+	self assert: body size equals: 1.
+	
+	self assert: body anyOne class equals: FASTFortranComment.
+	self assert: body anyOne content equals: '[ooo].empty-var: if (booleanVar) return'
+
+]
+
+{ #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementThenToRemove [
+
+	| body statement |
+	statement := (self writeStatement: #( booleanVar ))
+		mooseModel: FASTFortranModel new.
+
+	self function: #fctBigSmall type: #(character 20).
+	self addStatement: (FASTFortranIfLogicalStatement new
+		condition: (self logicalLiteral: '.true.') ;
+		statement: statement).
+
+	ast accept: visitor.
+
+	body := ast statementBlock statements.
+	self assert: body size equals: 1.
+	
+	self assert: body anyOne class equals: FASTFortranIfLogicalStatement.
+	self assert: body anyOne statement class equals: FASTFortranComment.
+
+	self assert: body anyOne statement content equals: '[ooo].empty-var: write (*,*) booleanVar'
+]
+
+{ #category : 'tests' }
 FASTEsopeUnassignedVariableRuleTest >> testVisitAssignement [
 
 	self assert: visitor assignedVariables isEmpty.
