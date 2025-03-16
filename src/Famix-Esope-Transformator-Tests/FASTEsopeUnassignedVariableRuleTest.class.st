@@ -7,7 +7,7 @@ Class {
 }
 
 { #category : 'tests' }
-FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementConditionAndThenToRemove [
+FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementConditionAndThenToSimplify [
 
 	| body writeStatement statement |
 
@@ -22,7 +22,9 @@ FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementConditionAndThenToR
 	self function: #fctBigSmall type: #(character 20).
 	self addStatement: statement.
 
-	ast accept: visitor.
+	visitor simplify: ast.
+
+	self assert: visitor simplified.
 
 	body := ast statementBlock statements.
 	self assert: body size equals: 1.
@@ -33,7 +35,7 @@ FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementConditionAndThenToR
 ]
 
 { #category : 'tests' }
-FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementConditionToRemove [
+FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementConditionToSimplify [
 
 	| body statement |
 	statement := FASTFortranIfLogicalStatement new
@@ -45,7 +47,9 @@ FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementConditionToRemove [
 	self function: #fctBigSmall type: #(character 20).
 	self addStatement: statement.
 
-	ast accept: visitor.
+	visitor simplify: ast.
+
+	self assert: visitor simplified.
 
 	body := ast statementBlock statements.
 	self assert: body size equals: 1.
@@ -56,7 +60,7 @@ FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementConditionToRemove [
 ]
 
 { #category : 'tests' }
-FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementThenToRemove [
+FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementThenToSimplify [
 
 	| body statement |
 	statement := (self writeStatement: #( booleanVar ))
@@ -67,7 +71,9 @@ FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementThenToRemove [
 		condition: (self logicalLiteral: '.true.') ;
 		statement: statement).
 
-	ast accept: visitor.
+	visitor simplify: ast.
+
+	self assert: visitor simplified.
 
 	body := ast statementBlock statements.
 	self assert: body size equals: 1.
@@ -119,7 +125,10 @@ FASTEsopeUnassignedVariableRuleTest >> testWriteStatementAfterAssignment [
 	self addStatement: (self assignementStatement: #x value: 1).
 	self addStatement: writeStatement.
 
-	ast accept: visitor.
+
+	visitor simplify: ast.
+
+	self deny: visitor simplified.
 
 	body := ast statementBlock statements.
 
@@ -140,7 +149,9 @@ FASTEsopeUnassignedVariableRuleTest >> testWriteStatementForParameter [
 	self addParameter: #x type: #integer.
 	self addStatement: writeStatement.
 
-	ast accept: visitor.
+	visitor simplify: ast.
+
+	self deny: visitor simplified.
 
 	body := ast statementBlock statements.
 	self assert: body size equals: 2.
@@ -151,7 +162,7 @@ FASTEsopeUnassignedVariableRuleTest >> testWriteStatementForParameter [
 ]
 
 { #category : 'tests' }
-FASTEsopeUnassignedVariableRuleTest >> testWriteStatementToRemove [
+FASTEsopeUnassignedVariableRuleTest >> testWriteStatementToSimplify [
 
 	| body writeStatement |
 	writeStatement := (self writeStatement: #( y ))
@@ -162,7 +173,9 @@ FASTEsopeUnassignedVariableRuleTest >> testWriteStatementToRemove [
 	self addStatement: (self assignementStatement: #x value: 1).
 	self addStatement: writeStatement.
 
-	ast accept: visitor.
+	visitor simplify: ast.
+
+	self assert: visitor simplified.
 
 	body := ast statementBlock statements.
 
