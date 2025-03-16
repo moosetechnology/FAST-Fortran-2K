@@ -11,3 +11,22 @@ Class {
 	#package : 'Famix-Esope-Transformator',
 	#tag : 'Simplification'
 }
+
+{ #category : 'instance creation' }
+FASTEsopeSimplifier class >> on: aFASTEntity [
+
+	^self new
+		on: aFASTEntity
+]
+
+{ #category : 'instance creation' }
+FASTEsopeSimplifier >> on: aFASTEntity [
+
+	(FASTEsopeObsoleteCommandRule simplify: aFASTEntity)
+		ifFalse: [^self].
+
+	[ 
+		(FASTEsopeUnassignedVariableRule simplify: aFASTEntity)
+	]
+		whileTrue 
+]

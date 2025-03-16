@@ -217,7 +217,7 @@ FamixEsopeToFortran2k >> run [
 { #category : 'migration-substeps' }
 FamixEsopeToFortran2k >> simplifyFASTProgramUnit: aFASTProgramUnit [
 
-	aFASTProgramUnit accept: FASTEsopeObsoleteCommandRule new.
+	FASTEsopeSimplifier on: aFASTProgramUnit
 ]
 
 { #category : 'accessing' }

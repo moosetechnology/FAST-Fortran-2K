@@ -9,17 +9,28 @@ Class {
 	#traits : 'FASTEsopeTVisitor',
 	#classTraits : 'FASTEsopeTVisitor classTrait',
 	#instVars : [
-		'nodeStack'
+		'nodeStack',
+		'simplified'
 	],
 	#category : 'Famix-Esope-Transformator-Simplification',
 	#package : 'Famix-Esope-Transformator',
 	#tag : 'Simplification'
 }
 
+{ #category : 'as yet unclassified' }
+FASTEsopeAbstractSimplifyingRule class >> simplify: aFASTEntity [
+
+	^self new
+		simplify: aFASTEntity
+]
+
 { #category : 'helpers' }
 FASTEsopeAbstractSimplifyingRule >> commentOut: commentTag statement: aFASTStatement [
 
 	| comment |
+
+	simplified := true.
+
 	comment := self makeComment: commentTag fromStatement: aFASTStatement.
 	nodeStack top
 		substituteStatementNode: aFASTStatement
@@ -32,6 +43,7 @@ FASTEsopeAbstractSimplifyingRule >> initialize [
 
 	super initialize.
 
+	simplified := false.
 	nodeStack := Stack new
 ]
 
@@ -68,6 +80,22 @@ FASTEsopeAbstractSimplifyingRule >> nodeStack [
 	^nodeStack 
 ]
 
+{ #category : 'accessing' }
+FASTEsopeAbstractSimplifyingRule >> simplified [
+
+	^simplified
+]
+
+{ #category : 'run' }
+FASTEsopeAbstractSimplifyingRule >> simplify: aFASTEntity [
+
+	simplified := false.
+
+	aFASTEntity accept: self.
+
+	^simplified
+]
+
 { #category : 'visiting - statements' }
 FASTEsopeAbstractSimplifyingRule >> visitFASTFortranIfLogicalStatement: aFASTFortranIfLogicalStatement [
 
@@ -83,7 +111,7 @@ FASTEsopeAbstractSimplifyingRule >> visitFASTFortranStatementBlock: aFASTFortran
 
 	nodeStack push: aFASTFortranStatementBlock.
 
-	super visitFASTFortranStatementBlock: aFASTFortranStatementBlock.
+	aFASTFortranStatementBlock statements do: [:stmt | stmt accept: self ].
 
 	nodeStack pop
 ]
