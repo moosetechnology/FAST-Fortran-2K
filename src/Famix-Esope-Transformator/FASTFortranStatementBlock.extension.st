@@ -7,6 +7,10 @@ FASTFortranStatementBlock >> substituteStatementNode: aFASTStatement withNode: a
 	 has ripple effect on the node itself through Famix slots automatic actions"
 
 	| tempList |
+
+	aFASTReplacement startPos: aFASTStatement startPos.
+	aFASTReplacement endPos: aFASTStatement endPos.
+
 	tempList := Array withAll: statements.
 	tempList
 		at: (tempList indexOf: aFASTStatement)
