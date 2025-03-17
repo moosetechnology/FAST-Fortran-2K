@@ -5,7 +5,8 @@ Class {
 	#name : 'FASTEsopeUnassignedVariableRule',
 	#superclass : 'FASTEsopeAbstractSimplifyingRule',
 	#instVars : [
-		'assignedVariables'
+		'assignedVariables',
+		'inAssignment'
 	],
 	#category : 'Famix-Esope-Transformator-Simplification',
 	#package : 'Famix-Esope-Transformator',
@@ -23,17 +24,28 @@ FASTEsopeUnassignedVariableRule >> initialize [
 
 	super initialize.
 
-	assignedVariables := Set new
+	assignedVariables := Set new.
+	inAssignment := false
 ]
 
 { #category : 'visiting - expressions' }
 FASTEsopeUnassignedVariableRule >> visitFASTFortranArrayVariable: aFASTFortranArrayVariable [
 
+	| tmpAssignment |
 	self visitFASTFortranVariable: aFASTFortranArrayVariable.
 
+	tmpAssignment := inAssignment.
+	inAssignment := false.
 	aFASTFortranArrayVariable indices do: [ :indice |
 		indice accept: self
-	]
+	].
+	inAssignment := tmpAssignment
+]
+
+{ #category : 'visiting - statements' }
+FASTEsopeUnassignedVariableRule >> visitFASTFortranAssignmentStatement: aFASTFortranAssignmentStatement [
+
+	self visitFASTFortranTAssignment: aFASTFortranAssignmentStatement
 ]
 
 { #category : 'visiting - statements' }
@@ -144,6 +156,29 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortranEquivalenceStatement: aFASTFo
 	super visitFASTFortranEquivalenceStatement: aFASTFortranNode.
 
 	nodeStack pop
+]
+
+{ #category : 'visiting - expressions' }
+FASTEsopeUnassignedVariableRule >> visitFASTFortranFieldAccess: aFASTFortranFieldAccess [ 
+	"similar to #visitFASTFortranVariable, but variable name includes pointer name"
+
+	| fullname expressionStatement |
+
+	fullname := aFASTFortranFieldAccess pointer name , aFASTFortranFieldAccess field name.
+
+	inAssignment ifTrue: [
+		assignedVariables add: fullname.
+		^self
+	].
+
+	(assignedVariables includes: fullname) ifTrue: [ ^self ].
+
+	expressionStatement := nodeStack pop.
+	
+	nodeStack push: ((expressionStatement class = FASTFortranComment)
+		ifTrue: [ expressionStatement ]
+		ifFalse: [ self commentOut: 'empty-var' statement: expressionStatement ]).
+
 ]
 
 { #category : 'visiting - statements' }
@@ -303,7 +338,9 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortranScalarVariable: aFASTFortranS
 FASTEsopeUnassignedVariableRule >> visitFASTFortranTAssignment: aFASTFortranTAssignment [
 	"should check that all variables in #expression are 'valid' (ie. assigned)"
 
-	assignedVariables add: aFASTFortranTAssignment variable name.
+	inAssignment := true.
+	aFASTFortranTAssignment variable accept: self.
+	inAssignment := false.
 
 	aFASTFortranTAssignment expression accept: self
 
@@ -311,7 +348,9 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortranTAssignment: aFASTFortranTAss
 
 { #category : 'visiting - expressions' }
 FASTEsopeUnassignedVariableRule >> visitFASTFortranVariable: aFASTFortranVariable [
-	"if the variable was never assigned, we want to remove the statement
+	"If we are in an assignment then register that this variable is assigned.
+	 Otherwise, it's a use of the variable.
+ 	 If it was never assigned, we want to remove the statement
 	 The expressionStatement (owning the expression) is on the top of the stack
 	 We check that it is not already commented out (in case 2 or more variables were not assigned)
 	 To comment out this expressionStatement we need its parent to be on top of the nodeStack
@@ -320,8 +359,12 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortranVariable: aFASTFortranVariabl
 
 	| expressionStatement |
 
-	(assignedVariables includes: aFASTFortranVariable name)
-		ifTrue: [ ^self ].
+	inAssignment ifTrue: [
+		assignedVariables add: aFASTFortranVariable name.
+		^self
+	].
+
+	(assignedVariables includes: aFASTFortranVariable name) ifTrue: [ ^self ].
 
 	expressionStatement := nodeStack pop.
 	
