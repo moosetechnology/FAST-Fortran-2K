@@ -45,7 +45,12 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortranArrayVariable: aFASTFortranAr
 { #category : 'visiting - statements' }
 FASTEsopeUnassignedVariableRule >> visitFASTFortranAssignmentStatement: aFASTFortranAssignmentStatement [
 
-	self visitFASTFortranTAssignment: aFASTFortranAssignmentStatement
+	nodeStack push: aFASTFortranAssignmentStatement.
+
+	self visitFASTFortranTAssignment: aFASTFortranAssignmentStatement.
+
+	nodeStack pop
+
 ]
 
 { #category : 'visiting - statements' }
