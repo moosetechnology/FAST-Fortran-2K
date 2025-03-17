@@ -7,6 +7,111 @@ Class {
 }
 
 { #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testArrayVariableAssignment [
+
+	| varAccess body |
+	varAccess := FASTFortranArrayVariable new
+		name: #x ;
+		indices: { self makeSimpleExpression: 1 }.
+	self subroutine: #something.
+	self addStatement: (FASTFortranAssignmentStatement new
+		variable: varAccess ;
+		expression: (self makeSimpleExpression: 6) ).
+
+	visitor simplify: ast.
+
+	self deny: visitor simplified.
+
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 1.
+
+	self assert: body first class equals: FASTFortranAssignmentStatement
+]
+
+{ #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testArrayVariableToSimplify [
+
+	| varAccess body writeStatement |
+
+	varAccess := FASTFortranArrayVariable new
+		name: #x ;
+		indices: { self makeSimpleExpression: 1 }.
+	writeStatement := (self writeStatement: { varAccess })
+		mooseModel: FASTFortranModel new.
+
+	self subroutine: #something.
+	self addStatement: writeStatement.
+
+	visitor simplify: ast.
+
+	self assert: visitor simplified.
+
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 1.
+	
+	self assert: body first class equals: FASTFortranComment.
+
+	self assert: body first content equals: '[ooo].empty-var: write (*,*) x(1)'
+
+]
+
+{ #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testFieldAccessAssignment [
+
+	| varAccess body |
+	varAccess := FASTFortranFieldAccess new
+		pointer: (self scalarVariable: #p) ;
+		field: (self scalarVariable: #x).
+	self subroutine: #something.
+	self addStatement: (FASTFortranAssignmentStatement new
+		variable: varAccess ;
+		expression: (self makeSimpleExpression: 6) ).
+	self addStatement: (self writeStatement: {  varAccess copy }).
+
+	visitor simplify: ast.
+
+	self deny: visitor simplified.
+
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 2.
+
+	self assert: body first class equals: FASTFortranAssignmentStatement.
+	self assert: body second class equals: FASTFortranWriteStatement.
+]
+
+{ #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testFieldAccessToSimplify [
+
+	| varAccess body writeStatement |
+
+	varAccess := FASTFortranFieldAccess new
+		pointer: (self scalarVariable: #p) ;
+		field: (self scalarVariable: #x).
+
+	writeStatement := (self writeStatement: {  varAccess })
+		mooseModel: FASTFortranModel new.
+
+	self subroutine: #something.
+	self addStatement: writeStatement.
+
+	visitor simplify: ast.
+
+	self assert: visitor simplified.
+
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 1.
+
+	self assert: body first class equals: FASTFortranComment.
+
+	self assert: body first content equals: '[ooo].empty-var: write (*,*) p.x'
+
+]
+
+{ #category : 'tests' }
 FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementConditionAndThenToSimplify [
 
 	| body writeStatement statement |
