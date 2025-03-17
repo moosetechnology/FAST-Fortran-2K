@@ -58,6 +58,31 @@ FASTEsopeUnassignedVariableRuleTest >> testArrayVariableToSimplify [
 ]
 
 { #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testAssignmentStatementToSimplify [
+
+	| body stmt |
+	stmt := (self assignementStatement: #x value: #v)
+		mooseModel: FASTFortranModel new.
+	self function: #fctBigSmall type: #(character 20).
+	self addStatement: (self declarationStatement: #x type: #integer).
+	self addStatement: stmt.
+
+	visitor simplify: ast.
+
+	self assert: visitor simplified.
+
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 2.
+	
+	self assert: body first class equals: FASTFortranVariableDeclarationStatement.
+	self assert: body second class equals: FASTFortranComment.
+
+	self assert: body second content equals: '[ooo].empty-var: x = v'
+
+]
+
+{ #category : 'tests' }
 FASTEsopeUnassignedVariableRuleTest >> testFieldAccessAssignment [
 
 	| varAccess body |
