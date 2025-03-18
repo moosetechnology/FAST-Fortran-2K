@@ -1389,11 +1389,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVolatileStatement: aFASTFortra
 { #category : 'visiting - statements' }
 FASTFortran2kExporterVisitor >> visitFASTFortran2kWriteStatement: aFASTFortran2kWriteStatement [
 
-	self 
-		skipLine: aFASTFortran2kWriteStatement ;
-		indented: '' ;
-	   visitFASTFortranWriteStatement: aFASTFortran2kWriteStatement ;
-		newLine
+	self visitFASTFortranWriteStatement: aFASTFortran2kWriteStatement
 ]
 
 { #category : 'visiting - statements' }

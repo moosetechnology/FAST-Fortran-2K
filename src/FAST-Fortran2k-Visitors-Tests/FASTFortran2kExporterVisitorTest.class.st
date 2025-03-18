@@ -674,6 +674,18 @@ FASTFortran2kExporterVisitorTest >> testVariableDeclarationStatementPointerTwoVa
 '
 ]
 
+{ #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testWriteStatement [
+	| stmt |
+	stmt := self writeStatement: #( 'message' ).
+
+	self
+		assertExport: stmt
+		equals: 
+'write (*, *) ''message''
+'
+]
+
 { #category : 'running' }
 FASTFortran2kExporterVisitorTest >> typeSize: dimension [
 	dimension isNumber ifTrue: [ ^self integerLiteral: dimension asString ].
