@@ -140,7 +140,7 @@ FASTFortran2kExporterVisitor >> skipLine: entity [
 FASTFortran2kExporterVisitor >> upToSixSpaces: preceedingSize [
 	"no more mandatory six spaces at the begining of line in Fortran 2k
 	 but the method is called by superclass: FASTFortranExporterVisitor
-	 We keep the ide of the indent level"
+	 We keep the idea of the indent level"
 
 	| nbSpaces |
 	nbSpaces := (self indentLevel * 2) - preceedingSize.
