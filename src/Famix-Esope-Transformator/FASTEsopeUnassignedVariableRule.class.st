@@ -28,6 +28,17 @@ FASTEsopeUnassignedVariableRule >> initialize [
 	inAssignment := false
 ]
 
+{ #category : 'visiting' }
+FASTEsopeUnassignedVariableRule >> visitFASTEsopeSeg: aFASTEsopeSegCommand command: commandName [
+
+	nodeStack push: aFASTEsopeSegCommand.
+
+	super visitFASTEsopeSeg: aFASTEsopeSegCommand command: commandName.
+
+	nodeStack pop
+
+]
+
 { #category : 'visiting - expressions' }
 FASTEsopeUnassignedVariableRule >> visitFASTFortranArrayVariable: aFASTFortranArrayVariable [
 
