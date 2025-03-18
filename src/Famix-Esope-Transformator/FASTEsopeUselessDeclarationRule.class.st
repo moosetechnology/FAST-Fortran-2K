@@ -1,8 +1,15 @@
+"
+I am looking for variable that are declared but not used.
+By default all declarations are assumed useless.
+Then if the variable is used somewhere in the code, it is removed from the useless list.
+
+In the end everything that remains in the list are the declarations that can be removed
+"
 Class {
 	#name : 'FASTEsopeUselessDeclarationRule',
 	#superclass : 'FASTEsopeAbstractSimplifyingRule',
 	#instVars : [
-		'declaredVariables'
+		'uselessDeclarations'
 	],
 	#category : 'Famix-Esope-Transformator-Simplification',
 	#package : 'Famix-Esope-Transformator',
@@ -14,7 +21,13 @@ FASTEsopeUselessDeclarationRule >> initialize [
 
 	super initialize.
 
-	declaredVariables := Dictionary new
+	uselessDeclarations := Dictionary new
+]
+
+{ #category : 'accessing - private tests' }
+FASTEsopeUselessDeclarationRule >> uselessDeclarations [
+
+	^uselessDeclarations 
 ]
 
 { #category : 'visiting' }
@@ -25,6 +38,17 @@ FASTEsopeUselessDeclarationRule >> visitFASTEsopePointerDeclarationStatement: aF
 	super visitFASTEsopePointerDeclarationStatement: aFASTEsopePointerDeclaration.
 
 	nodeStack pop
+]
+
+{ #category : 'visiting - expressions' }
+FASTEsopeUselessDeclarationRule >> visitFASTFortranArrayVariable: aFASTFortranArrayVariable [
+
+	self visitFASTFortranVariable: aFASTFortranArrayVariable.
+
+	aFASTFortranArrayVariable indices do: [ :indice |
+		indice accept: self
+	].
+
 ]
 
 { #category : 'visiting - programUnits' }
@@ -54,9 +78,16 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortranProgramMain: aFASTFortranProg
 ]
 
 { #category : 'visiting - expressions' }
+FASTEsopeUselessDeclarationRule >> visitFASTFortranScalarVariable: aFASTFortranScalarVariable [
+
+	self visitFASTFortranVariable: aFASTFortranScalarVariable 
+
+]
+
+{ #category : 'visiting - expressions' }
 FASTEsopeUselessDeclarationRule >> visitFASTFortranVariable: aFASTFortranVariable [
 
-	declaredVariables at: aFASTFortranVariable name put: nil
+	uselessDeclarations removeKey: aFASTFortranVariable name ifAbsent: [ "nothing" ]
 ]
 
 { #category : 'visiting - statements' }
@@ -78,7 +109,7 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortranVariableDeclarator: aFASTFort
 	| declarationStatement |
 	declarationStatement := nodeStack pop.
 
-	declaredVariables
+	uselessDeclarations
 		at: aFASTFortranVariableDeclarator name
 		put: { nodeStack top . declarationStatement }.
 
