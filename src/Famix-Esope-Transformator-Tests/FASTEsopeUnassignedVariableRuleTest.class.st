@@ -108,6 +108,7 @@ FASTEsopeUnassignedVariableRuleTest >> testEsopeCommandToSimplify [
 
 { #category : 'tests' }
 FASTEsopeUnassignedVariableRuleTest >> testFieldAccessAssignment [
+	"Assignment to pointer is absurd but we are only interested in assigning something to it"
 
 	| varAccess body |
 	varAccess := FASTFortranFieldAccess new
@@ -115,7 +116,7 @@ FASTEsopeUnassignedVariableRuleTest >> testFieldAccessAssignment [
 		field: (self scalarVariable: #x).
 	self subroutine: #something.
 	self addStatement: (FASTFortranAssignmentStatement new
-		variable: varAccess ;
+		variable: (self scalarVariable: #p) ;
 		expression: (self makeSimpleExpression: 6) ).
 	self addStatement: (self writeStatement: {  varAccess copy }).
 

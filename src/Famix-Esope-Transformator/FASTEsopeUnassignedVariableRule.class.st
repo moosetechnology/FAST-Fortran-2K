@@ -176,24 +176,9 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortranEquivalenceStatement: aFASTFo
 
 { #category : 'visiting - expressions' }
 FASTEsopeUnassignedVariableRule >> visitFASTFortranFieldAccess: aFASTFortranFieldAccess [ 
-	"similar to #visitFASTFortranVariable, but variable name includes pointer name"
+	"consider all fieldAccess-es as access-es to the pointer"
 
-	| fullname expressionStatement |
-
-	fullname := aFASTFortranFieldAccess pointer name , aFASTFortranFieldAccess field name.
-
-	inAssignment ifTrue: [
-		assignedVariables add: fullname.
-		^self
-	].
-
-	(assignedVariables includes: fullname) ifTrue: [ ^self ].
-
-	expressionStatement := nodeStack pop.
-	
-	nodeStack push: ((expressionStatement class = FASTFortranComment)
-		ifTrue: [ expressionStatement ]
-		ifFalse: [ self commentOut: 'empty-var' statement: expressionStatement ]).
+	self visitFASTFortranVariable: aFASTFortranFieldAccess pointer.
 
 ]
 
