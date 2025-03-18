@@ -54,26 +54,32 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortranArrayVariable: aFASTFortranAr
 { #category : 'visiting - programUnits' }
 FASTEsopeUselessDeclarationRule >> visitFASTFortranProcedure: aFASTFortranProcedure [
 
-	declaredVariables := Dictionary new.
+	uselessDeclarations := Dictionary new.
 
 	super visitFASTFortranProcedure: aFASTFortranProcedure.
 
-	declaredVariables do: [ :toSimplify |
-		(toSimplify second accept: FASTEsopeExporterVisitor new)
-			traceCr.
+	uselessDeclarations do: [ :toSimplify ||visitor|
+		toSimplify ifNotNil: [
+			visitor := FASTEsopeExporterVisitor new.
+			toSimplify second accept: visitor.
+			visitor outputStream contents trimBoth traceCr
+		]
 	]
 ]
 
 { #category : 'visiting - programUnits' }
 FASTEsopeUselessDeclarationRule >> visitFASTFortranProgramMain: aFASTFortranProgramMain [
 
-	declaredVariables := Dictionary new.
+	uselessDeclarations := Dictionary new.
 
 	super visitFASTFortranProgramMain: aFASTFortranProgramMain.
 
-	declaredVariables do: [ :toSimplify |
-		(toSimplify second accept: FASTEsopeExporterVisitor new)
-			traceCr.
+	uselessDeclarations do: [ :toSimplify ||visitor|
+		toSimplify ifNotNil: [
+			visitor := FASTEsopeExporterVisitor new.
+			toSimplify second accept: visitor.
+			visitor outputStream contents trimBoth traceCr
+		]
 	]
 ]
 

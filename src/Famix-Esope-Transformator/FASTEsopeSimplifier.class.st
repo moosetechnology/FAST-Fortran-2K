@@ -25,7 +25,7 @@ FASTEsopeSimplifier >> on: aFASTEntity [
 	(FASTEsopeObsoleteCommandRule simplify: aFASTEntity)
 		ifFalse: [^self].
 
-	[1halt. 
+	[ aFASTEntity name traceCr.
 		(FASTEsopeUnassignedVariableRule simplify: aFASTEntity)
 		or: [ FASTEsopeUselessDeclarationRule simplify: aFASTEntity ]
 	]
