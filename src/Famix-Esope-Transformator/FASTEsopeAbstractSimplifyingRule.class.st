@@ -27,7 +27,7 @@ FASTEsopeAbstractSimplifyingRule class >> simplify: aFASTEntity [
 { #category : 'accessing' }
 FASTEsopeAbstractSimplifyingRule >> fastExporter [
 
-	^ FASTFortran2kExporterVisitor new
+	^ FASTFortran2kProgramFileExporterVisitor new
 ]
 
 { #category : 'initialization' }
@@ -83,6 +83,14 @@ FASTEsopeAbstractSimplifyingRule >> visitFASTFortran2kIfLogicalStatement: aFASTF
 	nodeStack pop
 ]
 
+{ #category : 'visiting - programUnits' }
+FASTEsopeAbstractSimplifyingRule >> visitFASTFortran2kProgramFile: aFASTFortran2kProgramFile [
+
+	aFASTFortran2kProgramFile programUnits do: [ :programunit |
+		programunit accept: self
+	]
+]
+
 { #category : 'visiting - statements' }
 FASTEsopeAbstractSimplifyingRule >> visitFASTFortran2kStatementBlock: aFASTFortranStatementBlock [
 
@@ -91,4 +99,14 @@ FASTEsopeAbstractSimplifyingRule >> visitFASTFortran2kStatementBlock: aFASTFortr
 	aFASTFortranStatementBlock statements do: [:stmt | stmt accept: self ].
 
 	nodeStack pop
+]
+
+{ #category : 'generated' }
+FASTEsopeAbstractSimplifyingRule >> visitFASTTEntity: aFASTTEntity [
+
+]
+
+{ #category : 'generated' }
+FASTEsopeAbstractSimplifyingRule >> visitFASTTNamedEntity: aFASTAssociation [
+
 ]
