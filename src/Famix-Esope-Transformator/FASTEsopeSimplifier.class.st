@@ -22,11 +22,9 @@ FASTEsopeSimplifier class >> on: aFASTEntity [
 { #category : 'instance creation' }
 FASTEsopeSimplifier >> on: aFASTEntity [
 
-	(FASTEsopeObsoleteCommandRule simplify: aFASTEntity)
-		ifFalse: [^self].
-
-	[ 
+	[
 		(FASTEsopeUnassignedVariableRule simplify: aFASTEntity)
+		"or: [ FASTEsopeUselessDeclarationRule simplify: aFASTEntity ]"
 	]
-		whileTrue 
+		whileTrue
 ]

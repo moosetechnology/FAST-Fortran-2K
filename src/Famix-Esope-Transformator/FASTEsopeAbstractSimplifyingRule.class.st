@@ -5,9 +5,9 @@ I take take an AST and converts some instruction to comment to ""remove them"" f
 "
 Class {
 	#name : 'FASTEsopeAbstractSimplifyingRule',
-	#superclass : 'FASTFortranVisitor',
-	#traits : 'FASTEsopeTVisitor',
-	#classTraits : 'FASTEsopeTVisitor classTrait',
+	#superclass : 'FASTFortran2kAbstractVisitor',
+	#traits : 'FASTTSimplifier',
+	#classTraits : 'FASTTSimplifier classTrait',
 	#instVars : [
 		'nodeStack',
 		'simplified'
@@ -17,25 +17,17 @@ Class {
 	#tag : 'Simplification'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'entity-creation' }
 FASTEsopeAbstractSimplifyingRule class >> simplify: aFASTEntity [
 
 	^self new
 		simplify: aFASTEntity
 ]
 
-{ #category : 'helpers' }
-FASTEsopeAbstractSimplifyingRule >> commentOut: commentTag statement: aFASTStatement [
+{ #category : 'accessing' }
+FASTEsopeAbstractSimplifyingRule >> fastExporter [
 
-	| comment |
-
-	simplified := true.
-
-	comment := self makeComment: commentTag fromStatement: aFASTStatement.
-	nodeStack top
-		substituteStatementNode: aFASTStatement
-		withNode: comment.
-	^comment
+	^ FASTFortran2kProgramFileExporterVisitor new
 ]
 
 { #category : 'initialization' }
@@ -47,37 +39,16 @@ FASTEsopeAbstractSimplifyingRule >> initialize [
 	nodeStack := Stack new
 ]
 
-{ #category : 'helpers' }
-FASTEsopeAbstractSimplifyingRule >> makeComment: tag fromStatement: aFASTStatement [
-
-	| visitor |
-
-	visitor := FASTEsopeExporterVisitor new.
-
-	String streamContents: [ :str |
-			visitor outputStream: str.
-			aFASTStatement accept: visitor
-	].
-	
-	^aFASTStatement mooseModel newComment
-		content: (String streamContents: [ : str |
-			str << '[ooo]'.
-			tag ifNotNil: [
-				str
-					<< '.' ;
-				 	<< tag asString ;
-					<< ':'
-			].
-			str
-				<< ' ' ;
-				<< visitor outputStream contents trimBoth
-		])
-]
-
 { #category : 'accessing - private tests' }
 FASTEsopeAbstractSimplifyingRule >> nodeStack [
 
 	^nodeStack 
+]
+
+{ #category : 'accessing' }
+FASTEsopeAbstractSimplifyingRule >> parentStatement [
+
+	^ nodeStack top
 ]
 
 { #category : 'accessing' }
@@ -96,22 +67,46 @@ FASTEsopeAbstractSimplifyingRule >> simplify: aFASTEntity [
 	^simplified
 ]
 
+{ #category : 'accessing' }
+FASTEsopeAbstractSimplifyingRule >> toggleSimplifiedOn [
+
+	simplified := true
+]
+
 { #category : 'visiting - statements' }
-FASTEsopeAbstractSimplifyingRule >> visitFASTFortranIfLogicalStatement: aFASTFortranIfLogicalStatement [
+FASTEsopeAbstractSimplifyingRule >> visitFASTFortran2kIfLogicalStatement: aFASTFortranIfLogicalStatement [
 
 	nodeStack push: aFASTFortranIfLogicalStatement.
 
-	super visitFASTFortranIfLogicalStatement: aFASTFortranIfLogicalStatement.
+	super visitFASTFortran2kIfLogicalStatement: aFASTFortranIfLogicalStatement.
 
 	nodeStack pop
 ]
 
+{ #category : 'visiting - programUnits' }
+FASTEsopeAbstractSimplifyingRule >> visitFASTFortran2kProgramFile: aFASTFortran2kProgramFile [
+
+	aFASTFortran2kProgramFile programUnits do: [ :programunit |
+		programunit accept: self
+	]
+]
+
 { #category : 'visiting - statements' }
-FASTEsopeAbstractSimplifyingRule >> visitFASTFortranStatementBlock: aFASTFortranStatementBlock [
+FASTEsopeAbstractSimplifyingRule >> visitFASTFortran2kStatementBlock: aFASTFortranStatementBlock [
 
 	nodeStack push: aFASTFortranStatementBlock.
 
 	aFASTFortranStatementBlock statements do: [:stmt | stmt accept: self ].
 
 	nodeStack pop
+]
+
+{ #category : 'generated' }
+FASTEsopeAbstractSimplifyingRule >> visitFASTTEntity: aFASTTEntity [
+
+]
+
+{ #category : 'generated' }
+FASTEsopeAbstractSimplifyingRule >> visitFASTTNamedEntity: aFASTAssociation [
+
 ]
