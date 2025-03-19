@@ -89,11 +89,11 @@ FASTEsopeUnassignedVariableRuleTest >> testAssignmentStatementToSimplify [
 ]
 
 { #category : 'tests' }
-FASTEsopeUnassignedVariableRuleTest >> testEsopeCommandToSimplify [
+FASTEsopeUnassignedVariableRuleTest >> testEsopeCommandArgumentToSimplify [
 
 	| body segStatement |
-	segStatement := FASTEsopeModel new newSegadj.
-	segStatement addVariable: (self scalarVariable: #v).
+	segStatement := (self callStatement: #segadj arguments: #(var1 var2))
+		mooseModel: FASTFortran2kModel new.
 
 	self subroutine: #sub.
 	self addStatement: segStatement.
@@ -106,9 +106,9 @@ FASTEsopeUnassignedVariableRuleTest >> testEsopeCommandToSimplify [
 
 	self assert: body size equals: 1.
 
-	self assert: body first class equals: FASTFortranComment.
+	self assert: body first class equals: FASTFortran2kComment.
 
-	self assert: body first content equals: '[ooo].empty-var: segadj,v'
+	self assert: body first content equals: '[ooo].empty-var: call segadj(var1, var2)'
 
 ]
 
