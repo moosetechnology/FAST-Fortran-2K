@@ -15,7 +15,7 @@ FASTFortran2kExporterVisitorTest >> assertExport: anEntity equals: expectedStrin
 { #category : 'running' }
 FASTFortran2kExporterVisitorTest >> newVisitor [
 
-	^FASTFortran2kExporterVisitor new
+	^FASTFortran2kProgramFileExporterVisitor new
 ]
 
 { #category : 'testing - statements' }
