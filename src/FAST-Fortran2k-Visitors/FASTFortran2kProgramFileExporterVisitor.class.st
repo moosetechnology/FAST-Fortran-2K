@@ -1,10 +1,11 @@
 "
-An exporter for FASTFortran2k models
+An exporter for FASTFortran2kProgramFile
+The result is in `outputStream`
 
 Note: Inherits from FASTFortranExporterVisitor and not FASTFortran2kAbstractVisitor to reuse the export logic of statements/expressions
 "
 Class {
-	#name : 'FASTFortran2kExporterVisitor',
+	#name : 'FASTFortran2kProgramFileExporterVisitor',
 	#superclass : 'FASTFortranExporterVisitor',
 	#traits : 'FASTFortran2kTTraitVisitor',
 	#classTraits : 'FASTFortran2kTTraitVisitor classTrait',
@@ -20,7 +21,7 @@ Class {
 }
 
 { #category : 'outputting' }
-FASTFortran2kExporterVisitor >> end: programUnit named: aName [
+FASTFortran2kProgramFileExporterVisitor >> end: programUnit named: aName [
 
 	self
 		indented: 'end ' ;
@@ -31,29 +32,8 @@ FASTFortran2kExporterVisitor >> end: programUnit named: aName [
 		newLine
 ]
 
-{ #category : 'exporting' }
-FASTFortran2kExporterVisitor >> export [
-	"visiting each file and export it to corresponding f2k file"
-
-	(self model allWithType: FASTFortran2kProgramFile)
-		do: [ :programFile | | toFilename |
-
-			toFilename := programFile filename.
-			toFilename asFileReference 
-				writeStreamDo: [ :aStream | 
-					programFile programUnits do: [ :programUnit | 
-						programUnit accept: self.
-						aStream << self outputStream contents withUnixLineEndings.
-
-						self flag: 'FIXME: It emptied the outputstream to avoid accumulation'.
-						self outputStream: (WriteStream with: '') 
-					]
-				]
-		]
-]
-
 { #category : 'initialization' }
-FASTFortran2kExporterVisitor >> initialize [ 
+FASTFortran2kProgramFileExporterVisitor >> initialize [ 
 
 	super initialize.
 
@@ -62,25 +42,25 @@ FASTFortran2kExporterVisitor >> initialize [
 ]
 
 { #category : 'accessing - private tests' }
-FASTFortran2kExporterVisitor >> linesDescription: aCollection [
+FASTFortran2kProgramFileExporterVisitor >> linesDescription: aCollection [
 
 	linesDescription := aCollection
 ]
 
 { #category : 'accessing' }
-FASTFortran2kExporterVisitor >> model [
+FASTFortran2kProgramFileExporterVisitor >> model [
 
 	^ modelIn
 ]
 
 { #category : 'accessing' }
-FASTFortran2kExporterVisitor >> model: anObject [
+FASTFortran2kProgramFileExporterVisitor >> model: anObject [
 
 	modelIn := anObject
 ]
 
 { #category : 'initialization' }
-FASTFortran2kExporterVisitor >> modernRelationalOperators [
+FASTFortran2kProgramFileExporterVisitor >> modernRelationalOperators [
 
 	^ModernRelationalOperators ifNil: [	
 		ModernRelationalOperators := { 
@@ -95,7 +75,7 @@ FASTFortran2kExporterVisitor >> modernRelationalOperators [
 ]
 
 { #category : 'outputting' }
-FASTFortran2kExporterVisitor >> setLineDescriptions: aFilename [
+FASTFortran2kProgramFileExporterVisitor >> setLineDescriptions: aFilename [
 	"For each line, creates a description consisting of 
 	 last-position in the line -> whether the line is empty"
 
@@ -116,7 +96,7 @@ FASTFortran2kExporterVisitor >> setLineDescriptions: aFilename [
 ]
 
 { #category : 'outputting' }
-FASTFortran2kExporterVisitor >> skipLine: entity [
+FASTFortran2kProgramFileExporterVisitor >> skipLine: entity [
 	"if line before anEntity is empty then produce an empty line
 	 For this, we need the end position of the 2 lines before the entity (line-1 and line-2)
 	 (and difference should be < 2 because the carriage-return is included"
@@ -137,7 +117,7 @@ FASTFortran2kExporterVisitor >> skipLine: entity [
 ]
 
 { #category : 'outputting' }
-FASTFortran2kExporterVisitor >> upToSixSpaces: preceedingSize [
+FASTFortran2kProgramFileExporterVisitor >> upToSixSpaces: preceedingSize [
 	"no more mandatory six spaces at the begining of line in Fortran 2k
 	 but the method is called by superclass: FASTFortranExporterVisitor
 	 We keep the idea of the indent level"
@@ -149,41 +129,41 @@ FASTFortran2kExporterVisitor >> upToSixSpaces: preceedingSize [
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kAbstractExpression: aFASTFortran2kAbstractExpression [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kAbstractExpression: aFASTFortran2kAbstractExpression [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kAbstractIOStatement: aFASTFortran2kAbstractIOStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kAbstractIOStatement: aFASTFortran2kAbstractIOStatement [
 
 	self visitList: aFASTFortran2kAbstractIOStatement ioParameters.
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kAbstractLiteral: aFASTFortran2kAbstractLiteral [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kAbstractLiteral: aFASTFortran2kAbstractLiteral [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kAbstractStatement: aFASTFortran2kAbstractStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kAbstractStatement: aFASTFortran2kAbstractStatement [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kAcceptStatement: aFASTFortran2kAcceptStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kAcceptStatement: aFASTFortran2kAcceptStatement [
 
 
 	self newLine
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kAmpersand: aFASTFortran2kAmpersand [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kAmpersand: aFASTFortran2kAmpersand [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kArrayRange: aFASTFortran2kArrayRange [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kArrayRange: aFASTFortran2kArrayRange [
 	"not sure whether '(:)' is used in old Fortran.
 	 But it is needed in Fortran2k"
 
@@ -196,19 +176,19 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kArrayRange: aFASTFortran2kArra
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kArrayVariable: aFASTFortran2kArrayVariable [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kArrayVariable: aFASTFortran2kArrayVariable [
 
 	self visitFASTFortranArrayVariable: aFASTFortran2kArrayVariable
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentExpression: aFASTFortran2kAssignmentExpression [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kAssignmentExpression: aFASTFortran2kAssignmentExpression [
 
 	self visitFASTFortranAssignmentExpression: aFASTFortran2kAssignmentExpression
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentStatement: aFASTFortran2kAssignmentStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kAssignmentStatement: aFASTFortran2kAssignmentStatement [
 
 	self skipLine: aFASTFortran2kAssignmentStatement.
 
@@ -220,27 +200,27 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kAssignmentStatement: aFASTFort
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kAsterisk: aFASTFortran2kAsterisk [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kAsterisk: aFASTFortran2kAsterisk [
 
 	self << '*'
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kAutomaticStatement: aFASTFortran2kAutomaticStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kAutomaticStatement: aFASTFortran2kAutomaticStatement [
 
 
 	self newLine
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kBackspaceStatement: aFASTFortran2kBackspaceStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kBackspaceStatement: aFASTFortran2kBackspaceStatement [
 
 
 	self newLine
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kBinaryExpression: aFASTFortran2kBinaryExpression [ 
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kBinaryExpression: aFASTFortran2kBinaryExpression [ 
 
 	aFASTFortran2kBinaryExpression leftOperand accept: self.
 	self 
@@ -254,23 +234,23 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kBinaryExpression: aFASTFortran
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kBlockData: aFASTFortran2kBlockData [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kBlockData: aFASTFortran2kBlockData [
 
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kBooleanLiteral: aFASTFortran2kBooleanLiteral [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kBooleanLiteral: aFASTFortran2kBooleanLiteral [
 
 	self visitFASTFortranBooleanLiteral: aFASTFortran2kBooleanLiteral
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kByteType: aFASTFortran2kByteType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kByteType: aFASTFortran2kByteType [
 
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kCallStatement: aFASTFortran2kCallStatement [ 
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kCallStatement: aFASTFortran2kCallStatement [ 
 
 
 	self skipLine: aFASTFortran2kCallStatement.
@@ -286,7 +266,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kCallStatement: aFASTFortran2kC
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kCharacterLiteral: aFASTFortran2kCharacterLiteral [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kCharacterLiteral: aFASTFortran2kCharacterLiteral [
 
 	self 
 		<< '''';
@@ -295,25 +275,25 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kCharacterLiteral: aFASTFortran
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kCharacterType: aFASTFortran2kCharacterType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kCharacterType: aFASTFortran2kCharacterType [
 
 	^ self visitFASTFortranCharacterType: aFASTFortran2kCharacterType
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kClassDeclarationStatement: aFASTFortran2kClassDeclarationStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kClassDeclarationStatement: aFASTFortran2kClassDeclarationStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kCloseStatement: aFASTFortran2kCloseStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kCloseStatement: aFASTFortran2kCloseStatement [
 
 	self visitFASTFortranCloseStatement: aFASTFortran2kCloseStatement
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kComment: aFASTFortran2kComment [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kComment: aFASTFortran2kComment [
 
 	self skipLine: aFASTFortran2kComment.
 
@@ -324,51 +304,51 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kComment: aFASTFortran2kComment
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kCommonGroup: aFASTFortran2kCommonGroup [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kCommonGroup: aFASTFortran2kCommonGroup [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kCommonStatement: aFASTFortran2kCommonStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kCommonStatement: aFASTFortran2kCommonStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kComplexLiteral: aFASTFortran2kComplexLiteral [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kComplexLiteral: aFASTFortran2kComplexLiteral [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kComplexType: aFASTFortran2kComplexType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kComplexType: aFASTFortran2kComplexType [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kConditionalStatement: aFASTFortran2kConditionalStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kConditionalStatement: aFASTFortran2kConditionalStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kContinueStatement: aFASTFortran2kContinueStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kContinueStatement: aFASTFortran2kContinueStatement [
 
 	self visitFASTFortranContinueStatement: aFASTFortran2kContinueStatement
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDataGroup: aFASTFortran2kDataGroup [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDataGroup: aFASTFortran2kDataGroup [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDataStatement: aFASTFortran2kDataStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDataStatement: aFASTFortran2kDataStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDecodeStatement: aFASTFortran2kDecodeStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDecodeStatement: aFASTFortran2kDecodeStatement [
 
 
 	self indented: 'decode '.
@@ -377,7 +357,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDecodeStatement: aFASTFortran2
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedType: aFASTFortran2kDerivedType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDerivedType: aFASTFortran2kDerivedType [
 
 	self << ('type :: ', aFASTFortran2kDerivedType name).
 	self indent.
@@ -391,12 +371,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedType: aFASTFortran2kDer
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeAbstractField: aFASTFortran2kDerivedTypeAbstractField [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDerivedTypeAbstractField: aFASTFortran2kDerivedTypeAbstractField [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponent: aFASTFortran2kDerivedTypeComponent [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDerivedTypeComponent: aFASTFortran2kDerivedTypeComponent [
 
 	self indented: ''.
 	aFASTFortran2kDerivedTypeComponent declaredType accept: self.
@@ -415,7 +395,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponent: aFASTFor
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponentAccess: aFASTFortran2kDerivedTypeComponentAccess [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDerivedTypeComponentAccess: aFASTFortran2kDerivedTypeComponentAccess [
 
 	self acceptMeIfNotNil: aFASTFortran2kDerivedTypeComponentAccess instance.
 	self << ' % '.
@@ -424,18 +404,18 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponentAccess: aF
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeComponentDimension: aFASTFortran2kDerivedTypeComponentDimension [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDerivedTypeComponentDimension: aFASTFortran2kDerivedTypeComponentDimension [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDeclaration: aFASTFortran2kDerivedTypeDeclaration [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDerivedTypeDeclaration: aFASTFortran2kDerivedTypeDeclaration [
 
 	^ self visitFASTFortranTypeDeclarationStatement: aFASTFortran2kDerivedTypeDeclaration
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDefinition: aFASTFortran2kDerivedTypeDefinition [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDerivedTypeDefinition: aFASTFortran2kDerivedTypeDefinition [
 
 	self
 		indented: 'public ' ;
@@ -472,56 +452,56 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kDerivedTypeDefinition: aFASTFo
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDimensionStatement: aFASTFortran2kDimensionStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDimensionStatement: aFASTFortran2kDimensionStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDoStatement: aFASTFortran2kDoStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDoStatement: aFASTFortran2kDoStatement [
 
 	self visitFASTFortranDoStatement: aFASTFortran2kDoStatement
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDoWhileStatement: aFASTFortran2kDoWhileStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDoWhileStatement: aFASTFortran2kDoWhileStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDoubleComplexLiteral: aFASTFortran2kDoubleComplexLiteral [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDoubleComplexLiteral: aFASTFortran2kDoubleComplexLiteral [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDoubleComplexType: aFASTFortran2kDoubleComplexType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDoubleComplexType: aFASTFortran2kDoubleComplexType [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDoublePrecisionLiteral: aFASTFortran2kDoublePrecisionLiteral [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDoublePrecisionLiteral: aFASTFortran2kDoublePrecisionLiteral [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kDoublePrecisionType: aFASTFortran2kDoublePrecisionType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDoublePrecisionType: aFASTFortran2kDoublePrecisionType [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kElseStatement: aFASTFortran2kElseStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kElseStatement: aFASTFortran2kElseStatement [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kEmptyStatement: aFASTFortran2kEmptyStatement [ 
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kEmptyStatement: aFASTFortran2kEmptyStatement [ 
 
 	self newLine
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kEncodeStatement: aFASTFortran2kEncodeStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kEncodeStatement: aFASTFortran2kEncodeStatement [
 
 	self indented: 'encode '.
 	self visitFASTFortran2kAbstractIOStatement: aFASTFortran2kEncodeStatement.
@@ -530,7 +510,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kEncodeStatement: aFASTFortran2
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kEndFileStatement: aFASTFortran2kEndFileStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kEndFileStatement: aFASTFortran2kEndFileStatement [
 
 	self indented: 'endfile '.
 	self visitFASTFortran2kAbstractIOStatement: aFASTFortran2kEndFileStatement.
@@ -539,37 +519,37 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kEndFileStatement: aFASTFortran
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kEntryStatement: aFASTFortran2kEntryStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kEntryStatement: aFASTFortran2kEntryStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kEquivalenceGroup: aFASTFortran2kEquivalenceGroup [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kEquivalenceGroup: aFASTFortran2kEquivalenceGroup [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kEquivalenceStatement: aFASTFortran2kEquivalenceStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kEquivalenceStatement: aFASTFortran2kEquivalenceStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kExitStatement: aFASTFortran2kExitStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kExitStatement: aFASTFortran2kExitStatement [
 
 	self visitFASTFortranExitStatement: aFASTFortran2kExitStatement.
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kExternalStatement: aFASTFortran2kExternalStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kExternalStatement: aFASTFortran2kExternalStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kFieldAccess: aFASTFortran2kFieldAccess [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kFieldAccess: aFASTFortran2kFieldAccess [
 
 	self acceptMeIfNotNil: aFASTFortran2kFieldAccess pointer.
 	self << ' % '.
@@ -578,13 +558,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFieldAccess: aFASTFortran2kFie
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kFormatStatement: aFASTFortran2kFormatStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kFormatStatement: aFASTFortran2kFormatStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kFormattedCodeString: aFASTFortran2kFormattedCodeString [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kFormattedCodeString: aFASTFortran2kFormattedCodeString [
 
 	self 
 		skipLine: aFASTFortran2kFormattedCodeString ;
@@ -595,7 +575,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFormattedCodeString: aFASTFort
 ]
 
 { #category : 'visiting - programUnits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFunction [ 
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFunction [ 
 
 	aFASTFortran2kFunction backTrace 
 		ifNotNil: [ self setLineDescriptions: aFASTFortran2kFunction backTrace ].
@@ -621,7 +601,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFunction: aFASTFortran2kFuncti
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCall [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFunctionCall [
 
 	self
 		<< aFASTFortran2kFunctionCall name;
@@ -632,7 +612,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFu
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCallStatement: aFASTFortran2kFunctionCallStatement [ 
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kFunctionCallStatement: aFASTFortran2kFunctionCallStatement [ 
 
 	self skipLine: aFASTFortran2kFunctionCallStatement.
 
@@ -643,48 +623,48 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionCallStatement: aFASTFo
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionReturnStatement: aFASTFortran2kFunctionReturnStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kFunctionReturnStatement: aFASTFortran2kFunctionReturnStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionStatement: aFASTFortran2kFunctionStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kFunctionStatement: aFASTFortran2kFunctionStatement [
 
 	self visitFASTFortranFunctionStatement: aFASTFortran2kFunctionStatement.
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kFunctionTypeDeclarationStatement: aFASTFortran2kFunctionTypeDeclarationStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kFunctionTypeDeclarationStatement: aFASTFortran2kFunctionTypeDeclarationStatement [
 
 	self visitFASTFortranFunctionTypeDeclarationStatement: aFASTFortran2kFunctionTypeDeclarationStatement
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kGoToAssignedStatement: aFASTFortran2kGoToAssignedStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kGoToAssignedStatement: aFASTFortran2kGoToAssignedStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kGoToComputedStatement: aFASTFortran2kGoToComputedStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kGoToComputedStatement: aFASTFortran2kGoToComputedStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kGoToStatement: aFASTFortran2kGoToStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kGoToStatement: aFASTFortran2kGoToStatement [
 
 	self visitFASTFortranGoToStatement: aFASTFortran2kGoToStatement
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kIModuleProcedureSummary: aFASTFortran2kIModuleProcedureSummary [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIModuleProcedureSummary: aFASTFortran2kIModuleProcedureSummary [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kIOParameter: aFASTFortran2kIOParameter [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIOParameter: aFASTFortran2kIOParameter [
 
 	self 
 		<< aFASTFortran2kIOParameter name;
@@ -694,13 +674,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kIOParameter: aFASTFortran2kIOP
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kIfArithmeticStatement: aFASTFortran2kIfArithmeticStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIfArithmeticStatement: aFASTFortran2kIfArithmeticStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kIfBlockStatement: aFASTFortran2kIfBlockStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIfBlockStatement: aFASTFortran2kIfBlockStatement [
 	"note: can we have a label on an else line ?"
 
 	self skipLine: aFASTFortran2kIfBlockStatement.
@@ -724,45 +704,45 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kIfBlockStatement: aFASTFortran
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kIfLogicalStatement: aFASTFortran2kIfLogicalStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIfLogicalStatement: aFASTFortran2kIfLogicalStatement [
 
 	self visitFASTFortranIfLogicalStatement: aFASTFortran2kIfLogicalStatement
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kImplicitRange: aFASTFortran2kImplicitRange [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kImplicitRange: aFASTFortran2kImplicitRange [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kImplicitStatement: aFASTFortran2kImplicitStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kImplicitStatement: aFASTFortran2kImplicitStatement [
 
 	self visitFASTFortranImplicitStatement: aFASTFortran2kImplicitStatement 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kImplicitTypingRule: aFASTFortran2kImplicitTypingRule [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kImplicitTypingRule: aFASTFortran2kImplicitTypingRule [
 
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kImpliedDoExpression: aFASTFortran2kImpliedDoExpression [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kImpliedDoExpression: aFASTFortran2kImpliedDoExpression [
 
 	self visitFASTFortranImpliedDoExpression: aFASTFortran2kImpliedDoExpression
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kImportStatement: aFASTFortran2kImportStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kImportStatement: aFASTFortran2kImportStatement [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kIncludeStatement: aFASTFortran2kIncludeStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIncludeStatement: aFASTFortran2kIncludeStatement [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kInquireStatement: aFASTFortran2kInquireStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kInquireStatement: aFASTFortran2kInquireStatement [
 
 	self indented: 'inquire '.
 	self visitFASTFortran2kAbstractIOStatement: aFASTFortran2kInquireStatement.
@@ -771,34 +751,34 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kInquireStatement: aFASTFortran
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kIntegerLiteral: aFASTFortran2kIntegerLiteral [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIntegerLiteral: aFASTFortran2kIntegerLiteral [
 
 	^ self visitFASTFortranIntegerLiteral: aFASTFortran2kIntegerLiteral
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kIntegerType: aFASTFortran2kIntegerType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIntegerType: aFASTFortran2kIntegerType [
 
 	^ self visitFASTFortranIntegerType: aFASTFortran2kIntegerType
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kInterface: aFASTFortran2kInterface [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kInterface: aFASTFortran2kInterface [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kInterfaceProcedure: aFASTFortran2kInterfaceProcedure [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kInterfaceProcedure: aFASTFortran2kInterfaceProcedure [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kInternalProcedure: aFASTFortran2kInternalProcedure [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kInternalProcedure: aFASTFortran2kInternalProcedure [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kIntrinsicStatement: aFASTFortran2kIntrinsicStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIntrinsicStatement: aFASTFortran2kIntrinsicStatement [
 
 	self indented: 'intrinsic '.
 	self visitFASTFortran2kTVariableGroup: aFASTFortran2kIntrinsicStatement.
@@ -807,38 +787,38 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kIntrinsicStatement: aFASTFortr
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kLabelReference: aFASTFortran2kLabelReference [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kLabelReference: aFASTFortran2kLabelReference [
 
 	self visitFASTFortranLabelReference: aFASTFortran2kLabelReference
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kLogicalType: aFASTFortran2kLogicalType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kLogicalType: aFASTFortran2kLogicalType [
 
 	self visitFASTFortranLogicalType: aFASTFortran2kLogicalType.
 
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kLoopControlExpression: aFASTFortran2kLoopControlExpression [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kLoopControlExpression: aFASTFortran2kLoopControlExpression [
 
 	self visitFASTFortranLoopControlExpression: aFASTFortran2kLoopControlExpression
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kMapStatement: aFASTFortran2kMapStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kMapStatement: aFASTFortran2kMapStatement [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kModifier: aFASTFortran2kModifier [ 
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kModifier: aFASTFortran2kModifier [ 
 
 	self
 		<< aFASTFortran2kModifier token
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kModifiers: modifiers [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kModifiers: modifiers [
 	"modifier are simple bytestring"
 
 	modifiers ifNotEmpty: [  
@@ -850,7 +830,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kModifiers: modifiers [
 ]
 
 { #category : 'visiting - programUnits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kModule: aFASTFortranModule [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kModule: aFASTFortranModule [
 
 	| moduleName |
 
@@ -880,52 +860,52 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kModule: aFASTFortranModule [
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kNameEntity: aFASTFortran2kNameEntity [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kNameEntity: aFASTFortran2kNameEntity [
 
 	self << aFASTFortran2kNameEntity name
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kNameListStatement: aFASTFortran2kNameListStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kNameListStatement: aFASTFortran2kNameListStatement [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kNumericalConstant: aFASTFortran2kNumericalConstant [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kNumericalConstant: aFASTFortran2kNumericalConstant [
 
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kOpenStatement: aFASTFortran2kOpenStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kOpenStatement: aFASTFortran2kOpenStatement [
 
 	self visitFASTFortranOpenStatement: aFASTFortran2kOpenStatement
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kOptionsStatement: aFASTFortran2kOptionsStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kOptionsStatement: aFASTFortran2kOptionsStatement [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kPTVariable: aFASTFortran2kPTVariable [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kPTVariable: aFASTFortran2kPTVariable [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kParameterStatement: aFASTFortran2kParameterStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kParameterStatement: aFASTFortran2kParameterStatement [
 
 	self visitFASTFortranParameterStatement: aFASTFortran2kParameterStatement 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kPauseStatement: aFASTFortran2kPauseStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kPauseStatement: aFASTFortran2kPauseStatement [
 
 	self visitFASTFortranPauseStatement: aFASTFortran2kPauseStatement.
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kPointerAssignmentStatement: aFASTFortran2kPointerAssignmentStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kPointerAssignmentStatement: aFASTFortran2kPointerAssignmentStatement [
 
 	self indented: ''.
 	aFASTFortran2kPointerAssignmentStatement variable accept: self.
@@ -937,19 +917,19 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kPointerAssignmentStatement: aF
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kPointerVariable: aFASTFortran2kPointerVariable [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kPointerVariable: aFASTFortran2kPointerVariable [
 
 	self visitFASTFortranScalarVariable: aFASTFortran2kPointerVariable.
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kPragmaStatement: aFASTFortran2kPragmaStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kPragmaStatement: aFASTFortran2kPragmaStatement [
 
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kPrintStatement: aFASTFortran2kPrintStatement [ 
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kPrintStatement: aFASTFortran2kPrintStatement [ 
 
 	self skipLine: aFASTFortran2kPrintStatement.
 
@@ -964,7 +944,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kPrintStatement: aFASTFortran2k
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kPrivateStatement: aFASTFortran2kPrivateStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kPrivateStatement: aFASTFortran2kPrivateStatement [
 
 	self indented: 'private '.
 	self visitList: aFASTFortran2kPrivateStatement nameEntities.
@@ -973,17 +953,17 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kPrivateStatement: aFASTFortran
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kProcedure: aFASTFortran2kProcedure [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kProcedure: aFASTFortran2kProcedure [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramFile: aFASTFortran2kProgramFile [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kProgramFile: aFASTFortran2kProgramFile [
 
 ]
 
 { #category : 'visiting - programUnits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramMain: aFASTFortran2kProgramNode [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kProgramMain: aFASTFortran2kProgramNode [
 
 	self setLineDescriptions: aFASTFortran2kProgramNode backTrace.
 
@@ -998,12 +978,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramMain: aFASTFortran2kPro
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kProgramUnit: aFASTFortran2kProgramUnit [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kProgramUnit: aFASTFortran2kProgramUnit [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kPublicStatement: aFASTFortran2kPublicStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kPublicStatement: aFASTFortran2kPublicStatement [
 
 	self indented: 'public '.
 	self visitList: aFASTFortran2kPublicStatement nameEntities.
@@ -1012,7 +992,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kPublicStatement: aFASTFortran2
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kReadStatement: aFASTFortran2kReadStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kReadStatement: aFASTFortran2kReadStatement [
 
 	self 
 		skipLine: aFASTFortran2kReadStatement ;
@@ -1023,25 +1003,25 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kReadStatement: aFASTFortran2kR
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kRealLiteral: aFASTFortran2kRealLiteral [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kRealLiteral: aFASTFortran2kRealLiteral [
 
 	self visitFASTFortranRealLiteral: aFASTFortran2kRealLiteral
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kRealType: aFASTFortran2kRealType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kRealType: aFASTFortran2kRealType [
 
 	^ self visitFASTFortranRealType: aFASTFortran2kRealType
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kReturnStatement: aFASTFortran2kReturnStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kReturnStatement: aFASTFortran2kReturnStatement [
 
 	self visitFASTFortranReturnStatement: aFASTFortran2kReturnStatement
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kRewindStatement: aFASTFortran2kRewindStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kRewindStatement: aFASTFortran2kRewindStatement [
 
 	self indented: 'rewind '.
 	self visitFASTFortran2kAbstractIOStatement: aFASTFortran2kRewindStatement.
@@ -1050,7 +1030,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kRewindStatement: aFASTFortran2
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kSaveStatement: aFASTFortran2kSaveStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kSaveStatement: aFASTFortran2kSaveStatement [
 
 	self
 		indented: 'save';
@@ -1058,14 +1038,14 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSaveStatement: aFASTFortran2kS
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kScalarVariable: aFASTFortran2kScalarVariable [ 
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kScalarVariable: aFASTFortran2kScalarVariable [ 
 
 	self 
 		<< aFASTFortran2kScalarVariable name
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kSourceCodeString: aFASTFortran2kSourceCodeString [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kSourceCodeString: aFASTFortran2kSourceCodeString [
 
 	self 
 		skipLine: aFASTFortran2kSourceCodeString ;
@@ -1075,7 +1055,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSourceCodeString: aFASTFortran
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kSpecialIntrinsicType: aFASTFortran2kSpecialIntrinsicType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kSpecialIntrinsicType: aFASTFortran2kSpecialIntrinsicType [
 	"not sure how it works exactly and when you should use, for example 'integer(int16)' or just 'int16' ?"
 
 	(aFASTFortran2kSpecialIntrinsicType name beginsWith: 'int')
@@ -1100,7 +1080,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSpecialIntrinsicType: aFASTFor
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kStatementBlock: aFASTFortran2kStatementBlock [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kStatementBlock: aFASTFortran2kStatementBlock [
 
 	self skipLine: aFASTFortran2kStatementBlock.
 
@@ -1114,24 +1094,24 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kStatementBlock: aFASTFortran2k
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kStaticStatement: aFASTFortran2kStaticStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kStaticStatement: aFASTFortran2kStaticStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kStopStatement: aFASTFortran2kStopStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kStopStatement: aFASTFortran2kStopStatement [
 
 	self visitFASTFortranStopStatement: aFASTFortran2kStopStatement
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kSubprogram: aFASTFortran2kSubprogram [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kSubprogram: aFASTFortran2kSubprogram [
 
 ]
 
 { #category : 'visiting - programUnits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kSubroutine: aFASTFortran2kSubroutine [ 
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kSubroutine: aFASTFortran2kSubroutine [ 
 
 	aFASTFortran2kSubroutine backTrace
 		ifNotNil: [ self setLineDescriptions: aFASTFortran2kSubroutine backTrace ].
@@ -1153,97 +1133,97 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kSubroutine: aFASTFortran2kSubr
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kSubstring: aFASTFortran2kSubstring [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kSubstring: aFASTFortran2kSubstring [
 
 ]
 
 { #category : 'visiting - traits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTDeclaration: aFASTFortran2kTDeclaration [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTDeclaration: aFASTFortran2kTDeclaration [
 
 ]
 
 { #category : 'visiting - traits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTDeclaredType: aFASTFortran2kTDeclaredType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTDeclaredType: aFASTFortran2kTDeclaredType [
 
 ]
 
 { #category : 'visiting - traits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTEntryArgument: aFASTFortran2kTEntryArgument [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTEntryArgument: aFASTFortran2kTEntryArgument [
 
 ]
 
 { #category : 'visiting - traits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTFormat: aFASTFortran2kTFormat [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTFormat: aFASTFortran2kTFormat [
 
 ]
 
 { #category : 'visiting - traits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTIOParameter: aFASTFortran2kTIOParameter [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTIOParameter: aFASTFortran2kTIOParameter [
 
 ]
 
 { #category : 'visiting - traits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTPointerAssignment: aFASTFortran2kTPointerAssignment [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTPointerAssignment: aFASTFortran2kTPointerAssignment [
 
 ]
 
 { #category : 'visiting - traits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTVariableGroup: aFASTFortran2kTVariableGroup [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTVariableGroup: aFASTFortran2kTVariableGroup [
 
 ]
 
 { #category : 'visiting - traits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTWithDeclarations: aFASTFortran2kTWithDeclarations [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTWithDeclarations: aFASTFortran2kTWithDeclarations [
 
 ]
 
 { #category : 'visiting - traits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTWithDeclarators: aFASTFortran2kTWithDeclarators [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTWithDeclarators: aFASTFortran2kTWithDeclarators [
 
 ]
 
 { #category : 'visiting - traits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTWithFormat: aFASTFortran2kTWithFormat [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTWithFormat: aFASTFortran2kTWithFormat [
 
 ]
 
 { #category : 'visiting - traits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTWithLabelReferences: aFASTFortran2kTWithLabelReferences [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTWithLabelReferences: aFASTFortran2kTWithLabelReferences [
 
 ]
 
 { #category : 'visiting - traits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTWithLoopControl: aFASTFortran2kTWithLoopControl [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTWithLoopControl: aFASTFortran2kTWithLoopControl [
 
 ]
 
 { #category : 'visiting - traits' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTWithVariableGroups: aFASTFortran2kTWithVariableGroups [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTWithVariableGroups: aFASTFortran2kTWithVariableGroups [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTargetVariable: aFASTFortran2kTargetVariable [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTargetVariable: aFASTFortran2kTargetVariable [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kType: aFASTFortran2kType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kType: aFASTFortran2kType [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTypeBoundProcedure: aFASTFortran2kTypeBoundProcedure [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTypeBoundProcedure: aFASTFortran2kTypeBoundProcedure [
 
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kTypePBFinal: aFASTFortran2kTypePBFinal [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kTypePBFinal: aFASTFortran2kTypePBFinal [
 
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kUnaryExpression: aFASTFortran2kUnaryExpression [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUnaryExpression: aFASTFortran2kUnaryExpression [
 
 	self
 		outputExpression: [
@@ -1258,19 +1238,19 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUnaryExpression: aFASTFortran2
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kUnionStatement: aFASTFortran2kUnionStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUnionStatement: aFASTFortran2kUnionStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kUseNoRenamedStatement: aFASTFortran2kUseNoRenamedStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseNoRenamedStatement: aFASTFortran2kUseNoRenamedStatement [
 
 	self indented: aFASTFortran2kUseNoRenamedStatement name
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kUseOnlyStatement: aFASTFortran2kUseOnlyStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseOnlyStatement: aFASTFortran2kUseOnlyStatement [
 
 	self skipLine: aFASTFortran2kUseOnlyStatement.
 
@@ -1295,7 +1275,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseOnlyStatement: aFASTFortran
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kUseRenamedStatement: aFASTFortran2kUseRenamedStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseRenamedStatement: aFASTFortran2kUseRenamedStatement [
 
 	self skipLine: aFASTFortran2kUseRenamedStatement.
 
@@ -1306,7 +1286,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseRenamedStatement: aFASTFort
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUseStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUseStatement [
 
 	self skipLine: aFASTFortran2kUseStatement.
 
@@ -1338,7 +1318,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUs
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kUserDefinedType: aFASTFortran2kUserDefinedType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUserDefinedType: aFASTFortran2kUserDefinedType [
 
 	self
 		<< 'type(';
@@ -1347,13 +1327,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kUserDefinedType: aFASTFortran2
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kVariable: aFASTFortran2kVariable [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kVariable: aFASTFortran2kVariable [
 
 	self visitFASTFortranVariable: aFASTFortran2kVariable 
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarationStatement: aFASTFortran2kVariableDeclarationStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kVariableDeclarationStatement: aFASTFortran2kVariableDeclarationStatement [
 
 	self skipLine: aFASTFortran2kVariableDeclarationStatement.
 
@@ -1369,31 +1349,31 @@ FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarationStatement: 
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kVariableDeclarator: aFASTFortran2kVariableDeclarator [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kVariableDeclarator: aFASTFortran2kVariableDeclarator [
 
 	^ self visitFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kVirtualStatement: aFASTFortran2kVirtualStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kVirtualStatement: aFASTFortran2kVirtualStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kVolatileStatement: aFASTFortran2kVolatileStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kVolatileStatement: aFASTFortran2kVolatileStatement [
 
 	self newLine
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortran2kWriteStatement: aFASTFortran2kWriteStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kWriteStatement: aFASTFortran2kWriteStatement [
 
 	self visitFASTFortranWriteStatement: aFASTFortran2kWriteStatement
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortranAbstractStatement: aFASTFortranAbstractStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranAbstractStatement: aFASTFortranAbstractStatement [
 	"Checking line numbers  to add possible 'gap' lines (empty lines)"
 
 	self skipLine: aFASTFortranAbstractStatement .
@@ -1402,26 +1382,26 @@ FASTFortran2kExporterVisitor >> visitFASTFortranAbstractStatement: aFASTFortranA
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortranAttribute: aFASTFortran2kAttribute [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranAttribute: aFASTFortran2kAttribute [
 
 	^ self visitFASTFortranVariableDeclarationStatement: aFASTFortran2kAttribute
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortranColon: aFASTFortran2kColon [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranColon: aFASTFortran2kColon [
 
 	self << '(len=:)'
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortranTBehaviouralEntity: aFASTFortranTBehaviouralEntity [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranTBehaviouralEntity: aFASTFortranTBehaviouralEntity [
 
 	aFASTFortranTBehaviouralEntity statementBlock 
 		ifNotNil: [ aFASTFortranTBehaviouralEntity statementBlock accept: self ]
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortranType: aFASTFortran2kType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranType: aFASTFortran2kType [
 
 	aFASTFortran2kType size 
 		ifNotNil: [ :length |
@@ -1436,7 +1416,7 @@ FASTFortran2kExporterVisitor >> visitFASTFortranType: aFASTFortran2kType [
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortranTypeDeclarationStatement: aFASTFortran2kTypeDeclarationStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranTypeDeclarationStatement: aFASTFortran2kTypeDeclarationStatement [
 
 	self skipLine: aFASTFortran2kTypeDeclarationStatement.
 
@@ -1451,13 +1431,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortranTypeDeclarationStatement: aFASTF
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortranUsedEntity: aFASTFortran2kUsedEntity [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranUsedEntity: aFASTFortran2kUsedEntity [
 
 	self << aFASTFortran2kUsedEntity name
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortranUsedEntityRenamed: anEntity [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranUsedEntityRenamed: anEntity [
 
 	self
 		<< anEntity localName ;
@@ -1466,13 +1446,13 @@ FASTFortran2kExporterVisitor >> visitFASTFortranUsedEntityRenamed: anEntity [
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTFortranUserDefinedType: aFASTFortran2kUserDefinedType [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranUserDefinedType: aFASTFortran2kUserDefinedType [
 
 	self << aFASTFortran2kUserDefinedType name
 ]
 
 { #category : 'visiting - statements' }
-FASTFortran2kExporterVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
 
 	| comma |
 
@@ -1493,12 +1473,12 @@ FASTFortran2kExporterVisitor >> visitFASTFortranVariableDeclarationStatement: aF
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitFASTTEntity: aFASTTEntity [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTTEntity: aFASTTEntity [
 	^ aFASTTEntity children do: [ :child | child accept: self ]
 ]
 
 { #category : 'visiting - expressions' }
-FASTFortran2kExporterVisitor >> visitFASTTNumericalLiteral: aFASTTNumericalLiteral [
+FASTFortran2kProgramFileExporterVisitor >> visitFASTTNumericalLiteral: aFASTTNumericalLiteral [
 
 	self
 		<< '(len=';
@@ -1507,7 +1487,7 @@ FASTFortran2kExporterVisitor >> visitFASTTNumericalLiteral: aFASTTNumericalLiter
 ]
 
 { #category : 'visiting' }
-FASTFortran2kExporterVisitor >> visitNodeListSeparatedByCommas: aCollection [
+FASTFortran2kProgramFileExporterVisitor >> visitNodeListSeparatedByCommas: aCollection [
 
 	aCollection
 		do: [ :node | node accept: self ]
