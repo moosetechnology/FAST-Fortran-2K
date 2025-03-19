@@ -17,7 +17,7 @@ Class {
 	#tag : 'Simplification'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'entity-creation' }
 FASTEsopeAbstractSimplifyingRule class >> simplify: aFASTEntity [
 
 	^self new
