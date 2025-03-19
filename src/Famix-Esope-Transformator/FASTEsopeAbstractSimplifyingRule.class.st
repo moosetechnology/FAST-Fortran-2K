@@ -6,6 +6,8 @@ I take take an AST and converts some instruction to comment to ""remove them"" f
 Class {
 	#name : 'FASTEsopeAbstractSimplifyingRule',
 	#superclass : 'FASTFortran2kAbstractVisitor',
+	#traits : 'FASTTSimplifier',
+	#classTraits : 'FASTTSimplifier classTrait',
 	#instVars : [
 		'nodeStack',
 		'simplified'
@@ -22,18 +24,10 @@ FASTEsopeAbstractSimplifyingRule class >> simplify: aFASTEntity [
 		simplify: aFASTEntity
 ]
 
-{ #category : 'helpers' }
-FASTEsopeAbstractSimplifyingRule >> commentOut: commentTag statement: aFASTStatement [
+{ #category : 'accessing' }
+FASTEsopeAbstractSimplifyingRule >> fastExporter [
 
-	| comment |
-
-	simplified := true.
-
-	comment := self makeComment: commentTag fromStatement: aFASTStatement.
-	nodeStack top
-		substituteStatementNode: aFASTStatement
-		withNode: comment.
-	^comment
+	^ FASTFortran2kExporterVisitor new
 ]
 
 { #category : 'initialization' }
@@ -45,37 +39,16 @@ FASTEsopeAbstractSimplifyingRule >> initialize [
 	nodeStack := Stack new
 ]
 
-{ #category : 'helpers' }
-FASTEsopeAbstractSimplifyingRule >> makeComment: tag fromStatement: aFASTStatement [
-
-	| visitor |
-
-	visitor := FASTFortran2kExporterVisitor new.
-
-	String streamContents: [ :str |
-			visitor outputStream: str.
-			aFASTStatement accept: visitor
-	].
-	
-	^aFASTStatement mooseModel newComment
-		content: (String streamContents: [ : str |
-			str << '[ooo]'.
-			tag ifNotNil: [
-				str
-					<< '.' ;
-				 	<< tag asString ;
-					<< ':'
-			].
-			str
-				<< ' ' ;
-				<< visitor outputStream contents trimBoth
-		])
-]
-
 { #category : 'accessing - private tests' }
 FASTEsopeAbstractSimplifyingRule >> nodeStack [
 
 	^nodeStack 
+]
+
+{ #category : 'accessing' }
+FASTEsopeAbstractSimplifyingRule >> parentStatement [
+
+	^ nodeStack top
 ]
 
 { #category : 'accessing' }
@@ -92,6 +65,12 @@ FASTEsopeAbstractSimplifyingRule >> simplify: aFASTEntity [
 	aFASTEntity accept: self.
 
 	^simplified
+]
+
+{ #category : 'accessing' }
+FASTEsopeAbstractSimplifyingRule >> toggleSimplifiedOn [
+
+	simplified := true
 ]
 
 { #category : 'visiting - statements' }
