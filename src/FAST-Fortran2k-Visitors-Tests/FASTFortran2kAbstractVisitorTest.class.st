@@ -8,7 +8,7 @@ Class {
 	#package : 'FAST-Fortran2k-Visitors-Tests'
 }
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> assignementExpression: aName value: value [
 
 	^FASTFortran2kAssignmentExpression new
@@ -17,7 +17,26 @@ FASTFortran2kAbstractVisitorTest >> assignementExpression: aName value: value [
 		yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> assignementStatement: aName value: rhs [
+
+	^FASTFortran2kAssignmentStatement new
+		variable: (self scalarVariable: aName) ;
+		expression: (self makeSimpleExpression: rhs) ;
+		yourself
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> callStatement: aName arguments: aCollection [	
+	"end position is approximate, test should adjust if a real value is needed"
+
+	^FASTFortran2kCallStatement new
+		name: aName ;
+		arguments: (aCollection collect: [ :expr | self makeSimpleExpression: expr]) ;
+		yourself
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> characterLiteral: value [
 
 	^FASTFortran2kCharacterLiteral new
@@ -25,14 +44,30 @@ FASTFortran2kAbstractVisitorTest >> characterLiteral: value [
 		yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> characterType: dimension [
 	^FASTFortran2kCharacterType new
 		size: (self typeSize: dimension) ;
 		yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> declarationStatement: name type: typeDescription [ 
+
+	^self declarationStatement: name type: typeDescription init: nil
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> declarationStatement: aName type: typeDescription init: expression [
+
+	| decl |
+	decl := (self declarationStatement: (self makeType: typeDescription) variables: { aName }).
+	decl declarators anyOne expression: (self makeSimpleExpression: expression).
+
+	^decl
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> declarationStatement: typeDescription variables: aCollection [
 	"Bulk declaration of several variables"
 
@@ -42,21 +77,21 @@ FASTFortran2kAbstractVisitorTest >> declarationStatement: typeDescription variab
 		yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> integerLiteral: value [
 	^FASTFortran2kIntegerLiteral new
 		primitiveValue: value ;
 		yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> integerType: dimension [
 	^FASTFortran2kIntegerType new
 		size: (self typeSize: dimension) ;
 		yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> ioParameter: aName value: expression [
 
 	^FASTFortran2kIOParameter new
@@ -65,23 +100,30 @@ FASTFortran2kAbstractVisitorTest >> ioParameter: aName value: expression [
 		yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> ioStatement: aClass ioParams: params arguments: args [
 
 	^aClass new
 		ioParameters: (params collect: [:each | self makeSimpleExpression: each]) ;
 		arguments: (args collect: [:each | self makeSimpleExpression: each]) ;
-		startPos: 1 ;
-		endPos: 30 ;
 		yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> logicalIf: condition statement: statement [
+
+	^ FASTFortran2kIfLogicalStatement new
+		  condition: (self makeSimpleExpression: condition);
+		  statement: statement;
+		  yourself
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> logicalType: dimension [
 	^FASTFortran2kLogicalType new
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> makeSimpleExpression: description [
 
 	description ifNil: [ ^nil ].
@@ -95,7 +137,7 @@ FASTFortran2kAbstractVisitorTest >> makeSimpleExpression: description [
 	ShouldBeImplemented signal: 'ExpressionDescription: ' , description class name
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> makeType: typeDescription [
 	"typeDescription can be a FamixType, a symbol (eg. #integer) or a pair: #(character '*')"
 
@@ -117,13 +159,13 @@ FASTFortran2kAbstractVisitorTest >> newVisitor [
 	self subclassResponsibility 
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> readStatement: args ioParams: params [
 
 	^self ioStatement: FASTFortran2kReadStatement ioParams: params arguments: args
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> realLiteral: value [
 
 	^FASTFortran2kRealLiteral new
@@ -131,14 +173,22 @@ FASTFortran2kAbstractVisitorTest >> realLiteral: value [
 		yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> realType: dimension [
 	^FASTFortran2kRealType new
 		size: (self typeSize: dimension) ;
 		yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> returnStatement: expressionDescription [
+
+	^FASTFortran2kReturnStatement new
+		expression: (self makeSimpleExpression: expressionDescription) ;
+		yourself
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> scalarVariable: aName [
 
 	^FASTFortran2kScalarVariable new
@@ -146,7 +196,7 @@ FASTFortran2kAbstractVisitorTest >> scalarVariable: aName [
 		yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> segmentBookDefinition [
 
 	^ FASTFortran2kDerivedTypeDefinition new
@@ -168,7 +218,7 @@ FASTFortran2kAbstractVisitorTest >> segmentBookDefinition [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> segmentBoxedBookDefinition [
 
 	^ FASTFortran2kDerivedTypeDefinition new
@@ -185,21 +235,18 @@ FASTFortran2kAbstractVisitorTest >> segmentBoxedBookDefinition [
 		  yourself
 ]
 
-{ #category : 'testing - statements' }
-FASTFortran2kAbstractVisitorTest >> setBacktraceLines: aPoint to: aFASTStatementEntity [
-
-	| famixEntity |
-	famixEntity := Mock new.
-	famixEntity stub startLine willReturn: aPoint x.
-	famixEntity stub endLine willReturn: aPoint y.
-	aFASTStatementEntity backTrace: famixEntity
-]
-
 { #category : 'running' }
 FASTFortran2kAbstractVisitorTest >> setUp [
 	super setUp.
 
 	visitor := self newVisitor
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> statementBlock: aCollection [
+	^FASTFortran2kStatementBlock new
+		statements: aCollection ;
+		yourself
 ]
 
 { #category : 'running' }
@@ -214,32 +261,32 @@ FASTFortran2kAbstractVisitorTest >> stubFile [
 	^stubFile
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> typeSize: dimension [
 	dimension isNumber ifTrue: [ ^self integerLiteral: dimension asString ].
 	dimension = '*' ifTrue: [ ^FASTFortran2kAsterisk new ].
 	^nil
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> variableDeclarator: aName [
 	^FASTFortran2kVariableDeclarator new
 		name: aName ;
 		yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> variableDeclarators: aCollectionOfString [
 	^aCollectionOfString collect: [ :aString | self variableDeclarator: aString ]
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> writeStatement: aCollection [
 
 	^self writeStatement: aCollection ioParams: #( * * )
 ]
 
-{ #category : 'running' }
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> writeStatement: args ioParams: params [
 
 	^self 
