@@ -19,17 +19,15 @@ FamixEsopeToFortran2k >> collectUsesNeeded: aFASTProgramUnit [
 
 	| visitor |
 	visitor := FASTFortranUseTransformationVisitor new
-		           parentTransformator: self;
-		           yourself.
+		parentTransformator: self;
+		yourself.
 	aFASTProgramUnit accept: visitor.
 ]
 
 { #category : 'running' }
 FamixEsopeToFortran2k >> exportFAST2k [
 
-	FASTFortran2kExporterVisitor new
-		model: fast2kModel ;
-		export
+	FASTFortran2kExporter on: fast2kModel
 ]
 
 { #category : 'running' }
@@ -152,14 +150,20 @@ FamixEsopeToFortran2k >> migrateProgramUnitAST: aFASTProgramUnit [
 	| visitor |
 	visitor := self transformationVisitor: aFASTProgramUnit transformationVisitorClass.
 	visitor filename: aFASTProgramUnit programFile filename.
-	aFASTProgramUnit accept: visitor.
+	^aFASTProgramUnit accept: visitor.
 ]
 
-{ #category : 'running' }
+{ #category : 'migration-substeps' }
 FamixEsopeToFortran2k >> migrateProgramUnitFAST2k: aFASTProgramUnit [
 
-	self simplifyFASTProgramUnit: aFASTProgramUnit.
-	self migrateProgramUnitAST: aFASTProgramUnit.
+	| fastFortran2kProgramUnit |
+
+	FASTEsopeObsoleteCommandRule simplify: aFASTProgramUnit.
+
+	fastFortran2kProgramUnit := self migrateProgramUnitAST: aFASTProgramUnit.
+
+	self simplifyFASTProgramUnit: fastFortran2kProgramUnit.
+
 	self collectUsesNeeded: aFASTProgramUnit.
 
 	^ fast2kModel
@@ -224,7 +228,7 @@ FamixEsopeToFortran2k >> run [
 	"usesNeeded := Set new." 
 
 	UIManager default displayProgress: ''
-		from: 0 to: (self migrationSteps size - 1)
+		from: 1 to: self migrationSteps size
 		during: [:bar |
 			self migrationSteps withIndexDo: [ :step :i |
 				bar label: step key.
@@ -236,9 +240,9 @@ FamixEsopeToFortran2k >> run [
 ]
 
 { #category : 'migration-substeps' }
-FamixEsopeToFortran2k >> simplifyFASTProgramUnit: aFASTProgramUnit [
+FamixEsopeToFortran2k >> simplifyFASTProgramUnit: aFAST2kProgramUnit [
 
-	FASTEsopeSimplifier on: aFASTProgramUnit
+	FASTEsopeSimplifier on: aFAST2kProgramUnit
 ]
 
 { #category : 'accessing' }
@@ -252,7 +256,7 @@ FamixEsopeToFortran2k >> specialCallTreatments [
 		} ]
 ]
 
-{ #category : 'running' }
+{ #category : 'helper' }
 FamixEsopeToFortran2k >> transformationVisitor: visitorClass [
 
 	^visitorClass new
