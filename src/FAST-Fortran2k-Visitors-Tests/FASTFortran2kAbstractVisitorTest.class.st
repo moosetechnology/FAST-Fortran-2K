@@ -2,11 +2,37 @@ Class {
 	#name : 'FASTFortran2kAbstractVisitorTest',
 	#superclass : 'TestCase',
 	#instVars : [
-		'visitor'
+		'visitor',
+		'ast'
 	],
 	#category : 'FAST-Fortran2k-Visitors-Tests',
 	#package : 'FAST-Fortran2k-Visitors-Tests'
 }
+
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> add: statementBlock statement: aStatement [
+
+	^statementBlock addStatement: aStatement.
+
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> addParameter: name type: typeDescription [
+	"assume #ast contains a function definition"
+
+	self entity: ast parameters: ((ast parameters collect: #name)
+			 add: name asString;
+			 yourself).
+
+	^ self addStatement: (self declarationStatement: name type: typeDescription)
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> addStatement: aStatement [
+
+	^self add: ast statementBlock statement: aStatement
+
+]
 
 { #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> assignementExpression: aName value: value [
@@ -78,6 +104,34 @@ FASTFortran2kAbstractVisitorTest >> declarationStatement: typeDescription variab
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> entity: owner parameters: aCollection [
+	^owner
+		parameters: (self scalarVariables: aCollection) ;
+		yourself
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> function: name type: typeDescription [
+
+	ast := self functionDeclaration: name.
+	ast declaredType: (self makeType: typeDescription).
+
+	^ast
+
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> functionDeclaration: aName [
+
+	^FASTFortran2kFunction new
+		name: aName ;
+		declaredType: FASTFortran2kRealType new ;
+		parameters: {  } ;
+		statementBlock: FASTFortran2kStatementBlock new
+		yourself.
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> integerLiteral: value [
 	^FASTFortran2kIntegerLiteral new
 		primitiveValue: value ;
@@ -116,6 +170,13 @@ FASTFortran2kAbstractVisitorTest >> logicalIf: condition statement: statement [
 		  condition: (self makeSimpleExpression: condition);
 		  statement: statement;
 		  yourself
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> logicalLiteral: value [
+	^FASTFortran2kBooleanLiteral new
+		primitiveValue: value ;
+		yourself
 ]
 
 { #category : 'entity creation' }
@@ -197,6 +258,12 @@ FASTFortran2kAbstractVisitorTest >> scalarVariable: aName [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> scalarVariables: aCollectionOfString [
+
+	^aCollectionOfString collect: [ :aString | self scalarVariable: aString ]
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> segmentBookDefinition [
 
 	^ FASTFortran2kDerivedTypeDefinition new
@@ -259,6 +326,17 @@ FASTFortran2kAbstractVisitorTest >> stubFile [
 	stubFile stub contents willReturn: ''.
 
 	^stubFile
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> subroutine: aName [
+
+	ast := FASTFortran2kSubroutine new
+		name: aName ;
+		statementBlock: (self statementBlock: #()) ;
+		yourself.
+
+	^ast
 ]
 
 { #category : 'entity creation' }
