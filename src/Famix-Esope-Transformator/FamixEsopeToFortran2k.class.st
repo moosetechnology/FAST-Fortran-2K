@@ -35,44 +35,13 @@ FamixEsopeToFortran2k >> exportFAST2k [
 { #category : 'running' }
 FamixEsopeToFortran2k >> famixEsopeToFast2k [
 
-	"too short to go in the progress bar (?)"
-	| toProcess |
+	"too quick to go in the progress bar (?)"
 	(famixModel allWithType: FamixF77ProgramFile) do: [ :famixProgFile |
-		famixProgFile fast: (FASTFortranProgramFile new
-			filename: famixProgFile filename)
-	].
+		famixProgFile fast:
+			(FASTFortranProgramFile new filename: famixProgFile filename) ].
 
-	"dealing with all IncludedFile-s"
-	toProcess := famixModel allWithType: FamixF77IncludedFile.
-	UIManager default displayProgress: ''
-		from: 1 to: (toProcess size)
-		during: [:bar |
-			bar label: 'Migrating include files'.
-			toProcess withIndexDo: [ :famixIncludedFile :i || fastPUIncludedFile |
-				bar current: i.
-				fastPUIncludedFile := self fastModelFor: famixIncludedFile in: famixIncludedFile programFile.
-				self migrateIncludedFileFAST2k: fastPUIncludedFile.
-			] 
-		].
-
-	"dealing with 'normal' PrugramUnit-s"
-	toProcess := famixModel allWithType: FamixF77ProgramFile.
-	UIManager default displayProgress: ''
-		from: 1 to: (toProcess size)
-		during: [:bar |
-			bar label: 'Migrating program files'.
-			toProcess withIndexDo: [ :famixProgFile :i |
-				bar current: i.
-				famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
-					(famixProgUnit class = FamixF77IncludedFile)
-						ifFalse: [ 
-							fastProgramUnit := self fastModelFor: famixProgUnit in: famixProgUnit programFile.
-							self migrateProgramUnitFAST2k: fastProgramUnit.
-						 ]
-				]
-			] 
-		]
-
+	self migrateIncludedFiles.
+	self migrateProgramUnits
 ]
 
 { #category : 'accessing' }
@@ -133,7 +102,7 @@ FamixEsopeToFortran2k >> initialize [
 
 ]
 
-{ #category : 'running' }
+{ #category : 'migration-substeps' }
 FamixEsopeToFortran2k >> migrateIncludedFileFAST2k: aFASTIncludedFile [
 
 	| visitor includedStatements |
@@ -153,11 +122,35 @@ FamixEsopeToFortran2k >> migrateIncludedFileFAST2k: aFASTIncludedFile [
 ]
 
 { #category : 'migration-substeps' }
+FamixEsopeToFortran2k >> migrateIncludedFiles [
+	"dealing with all IncludedFile-s"
+
+	| toProcess |
+	toProcess := famixModel allWithType: FamixF77IncludedFile.
+
+	UIManager default
+		displayProgress: ''
+		from: 1
+		to: toProcess size
+		during: [ :bar |
+			bar label: 'Migrating include files'.
+			toProcess withIndexDo: [ :famixIncludedFile :i || fastPUIncludedFile |
+				bar current: i.
+
+				fastPUIncludedFile := self
+					fastModelFor: famixIncludedFile
+					in: famixIncludedFile programFile.
+				self migrateIncludedFileFAST2k: fastPUIncludedFile ]
+		].
+
+	^ toProcess
+]
+
+{ #category : 'migration-substeps' }
 FamixEsopeToFortran2k >> migrateProgramUnitAST: aFASTProgramUnit [
 
 	| visitor |
-	visitor := self transformationVisitor:
-		           aFASTProgramUnit transformationVisitorClass.
+	visitor := self transformationVisitor: aFASTProgramUnit transformationVisitorClass.
 	visitor filename: aFASTProgramUnit programFile filename.
 	aFASTProgramUnit accept: visitor.
 ]
@@ -170,6 +163,34 @@ FamixEsopeToFortran2k >> migrateProgramUnitFAST2k: aFASTProgramUnit [
 	self collectUsesNeeded: aFASTProgramUnit.
 
 	^ fast2kModel
+]
+
+{ #category : 'migration-substeps' }
+FamixEsopeToFortran2k >> migrateProgramUnits [
+	"dealing with 'normal' PrugramUnit-s"
+
+	| toProcess |
+	
+	toProcess := famixModel allWithType: FamixF77ProgramFile.
+
+	UIManager default
+		displayProgress: ''
+		from: 1
+		to: toProcess size
+		during: [ :bar |
+			bar label: 'Migrating program files'.
+			toProcess withIndexDo: [ :famixProgFile :i |
+				bar current: i.
+
+				famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
+					famixProgUnit class = FamixF77IncludedFile ifFalse: [
+						fastProgramUnit := self
+							fastModelFor: famixProgUnit
+							in: famixProgUnit programFile.
+						self migrateProgramUnitFAST2k: fastProgramUnit ] ] ]
+		].
+
+	^ toProcess
 ]
 
 { #category : 'running' }
