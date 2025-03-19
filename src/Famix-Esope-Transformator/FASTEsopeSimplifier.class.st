@@ -27,7 +27,7 @@ FASTEsopeSimplifier >> on: aFASTEntity [
 
 	[ aFASTEntity name traceCr.
 		(FASTEsopeUnassignedVariableRule simplify: aFASTEntity)
-		or: [ FASTEsopeUselessDeclarationRule simplify: aFASTEntity ]
+		"or: [ FASTEsopeUselessDeclarationRule simplify: aFASTEntity ]"
 	]
 		whileTrue
 ]

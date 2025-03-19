@@ -28,22 +28,11 @@ FASTEsopeUnassignedVariableRule >> initialize [
 	inAssignment := false
 ]
 
-{ #category : 'visiting' }
-FASTEsopeUnassignedVariableRule >> visitFASTEsopeSeg: aFASTEsopeSegCommand command: commandName [
-
-	nodeStack push: aFASTEsopeSegCommand.
-
-	super visitFASTEsopeSeg: aFASTEsopeSegCommand command: commandName.
-
-	nodeStack pop
-
-]
-
 { #category : 'visiting - expressions' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranArrayVariable: aFASTFortranArrayVariable [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kArrayVariable: aFASTFortranArrayVariable [
 
 	| tmpAssignment |
-	self visitFASTFortranVariable: aFASTFortranArrayVariable.
+	self visitFASTFortran2kVariable: aFASTFortranArrayVariable.
 
 	tmpAssignment := inAssignment.
 	inAssignment := false.
@@ -54,7 +43,7 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortranArrayVariable: aFASTFortranAr
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranAssignmentStatement: aFASTFortranAssignmentStatement [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kAssignmentStatement: aFASTFortranAssignmentStatement [
 
 	nodeStack push: aFASTFortranAssignmentStatement.
 
@@ -65,290 +54,268 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortranAssignmentStatement: aFASTFor
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranBackspaceStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kBackspaceStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranBackspaceStatement: aFASTFortranNode.
+	super visitFASTFortran2kBackspaceStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranCallStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kCallStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranCallStatement: aFASTFortranNode.
+	super visitFASTFortran2kCallStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranCloseStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kCloseStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranCloseStatement: aFASTFortranNode.
+	super visitFASTFortran2kCloseStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranDataStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kDataStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranDataStatement: aFASTFortranNode.
+	super visitFASTFortran2kDataStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranDecodeStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kDecodeStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranDecodeStatement: aFASTFortranNode.
+	super visitFASTFortran2kDecodeStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranDimensionStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kDimensionStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranDimensionStatement: aFASTFortranNode.
+	super visitFASTFortran2kDimensionStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranDoStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kDoStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranDoStatement: aFASTFortranNode.
+	super visitFASTFortran2kDoStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranDoWhileStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kDoWhileStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranDoWhileStatement: aFASTFortranNode.
+	super visitFASTFortran2kDoWhileStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranEncodeStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kEncodeStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranEncodeStatement: aFASTFortranNode.
+	super visitFASTFortran2kEncodeStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranEndFileStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kEndFileStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranEndFileStatement: aFASTFortranNode.
+	super visitFASTFortran2kEndFileStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranEquivalenceStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kEquivalenceStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranEquivalenceStatement: aFASTFortranNode.
+	super visitFASTFortran2kEquivalenceStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - expressions' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranFieldAccess: aFASTFortranFieldAccess [ 
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kFieldAccess: aFASTFortranFieldAccess [ 
 	"consider all fieldAccess-es as access-es to the pointer"
 
-	self visitFASTFortranVariable: aFASTFortranFieldAccess pointer.
+	self visitFASTFortran2kVariable: aFASTFortranFieldAccess pointer.
 
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranFormatStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kFormatStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranFormatStatement: aFASTFortranNode.
+	super visitFASTFortran2kFormatStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranFunctionStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kFunctionStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranFunctionStatement: aFASTFortranNode.
+	super visitFASTFortran2kFunctionStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranFunctionTypeDeclarationStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kGoToComputedStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranFunctionTypeDeclarationStatement: aFASTFortranNode.
+	super visitFASTFortran2kGoToComputedStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranGoToComputedStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kIfArithmeticStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranGoToComputedStatement: aFASTFortranNode.
+	super visitFASTFortran2kIfArithmeticStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranIfArithmeticStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kIfBlockStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranIfArithmeticStatement: aFASTFortranNode.
+	super visitFASTFortran2kIfBlockStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranIfBlockStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kInquireStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranIfBlockStatement: aFASTFortranNode.
+	super visitFASTFortran2kInquireStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranInquireStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kIntrinsicStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranInquireStatement: aFASTFortranNode.
+	super visitFASTFortran2kIntrinsicStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranIntrinsicStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kOpenStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranIntrinsicStatement: aFASTFortranNode.
+	super visitFASTFortran2kOpenStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranOpenStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kPrintStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranOpenStatement: aFASTFortranNode.
-
-	nodeStack pop
-]
-
-{ #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranPrintStatement: aFASTFortranNode [
-
-	nodeStack push: aFASTFortranNode.
-
-	super visitFASTFortranPrintStatement: aFASTFortranNode.
+	super visitFASTFortran2kPrintStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - programUnits' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranProcedure: aFASTFortranProcedure [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kProcedure: aFASTFortranProcedure [
 
 	assignedVariables := Set new.
 
-	super visitFASTFortranProcedure: aFASTFortranProcedure
+	super visitFASTFortran2kProcedure: aFASTFortranProcedure
 ]
 
 { #category : 'visiting - programUnits' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranProgramMain: aFASTFortranProgramMain [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kProgramMain: aFASTFortranProgramMain [
 
 	assignedVariables := Set new.
 
-	super visitFASTFortranProgramMain: aFASTFortranProgramMain
+	super visitFASTFortran2kProgramMain: aFASTFortranProgramMain
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranReadStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kReadStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranReadStatement: aFASTFortranNode.
+	super visitFASTFortran2kReadStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranReturnStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kReturnStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranReturnStatement: aFASTFortranNode.
+	super visitFASTFortran2kReturnStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranRewindStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kRewindStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranRewindStatement: aFASTFortranNode.
+	super visitFASTFortran2kRewindStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - expressions' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranScalarVariable: aFASTFortranScalarVariable [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kScalarVariable: aFASTFortranScalarVariable [
 
-	self visitFASTFortranVariable: aFASTFortranScalarVariable 
-
-]
-
-{ #category : 'visiting - traits' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranTAssignment: aFASTFortranTAssignment [
-	"should check that all variables in #expression are 'valid' (ie. assigned)"
-
-	inAssignment := true.
-	aFASTFortranTAssignment variable accept: self.
-	inAssignment := false.
-
-	aFASTFortranTAssignment expression accept: self
+	self visitFASTFortran2kVariable: aFASTFortranScalarVariable 
 
 ]
 
 { #category : 'visiting - expressions' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranVariable: aFASTFortranVariable [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kVariable: aFASTFortranVariable [
 	"If we are in an assignment then register that this variable is assigned.
 	 Otherwise, it's a use of the variable.
  	 If it was never assigned, we want to remove the statement
@@ -369,30 +336,51 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortranVariable: aFASTFortranVariabl
 
 	expressionStatement := nodeStack pop.
 	
-	nodeStack push: ((expressionStatement class = FASTFortranComment)
+	nodeStack push: ((expressionStatement class = FASTFortran2kComment)
 		ifTrue: [ expressionStatement ]
 		ifFalse: [ self commentOut: 'empty-var' statement: expressionStatement ])
 
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranVariableDeclarationStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kVariableDeclarationStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranVariableDeclarationStatement: aFASTFortranNode.
+	super visitFASTFortran2kVariableDeclarationStatement: aFASTFortranNode.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranWriteStatement: aFASTFortranNode [
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kWriteStatement: aFASTFortranNode [
 
 	nodeStack push: aFASTFortranNode.
 
-	super visitFASTFortranWriteStatement: aFASTFortranNode.
+	super visitFASTFortran2kWriteStatement: aFASTFortranNode.
 
 	nodeStack pop
+]
+
+{ #category : 'visiting - traits' }
+FASTEsopeUnassignedVariableRule >> visitFASTFortranTAssignment: aFASTFortranTAssignment [
+	"should check that all variables in #expression are 'valid' (ie. assigned)"
+
+	inAssignment := true.
+	aFASTFortranTAssignment variable accept: self.
+	inAssignment := false.
+
+	aFASTFortranTAssignment expression accept: self
+
+]
+
+{ #category : 'visiting - traits' }
+FASTEsopeUnassignedVariableRule >> visitFASTTWithParameters: aFASTFortran2kTWithParameters [
+	"parameters are considered assigned when entering the subprogram"
+
+	aFASTFortran2kTWithParameters parameters do: [ :param |
+		assignedVariables add: param name ]
+
 ]
 
 { #category : 'visiting - traits' }
