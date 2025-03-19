@@ -382,12 +382,3 @@ FASTEsopeUnassignedVariableRule >> visitFASTTWithParameters: aFASTFortran2kTWith
 		assignedVariables add: param name ]
 
 ]
-
-{ #category : 'visiting - traits' }
-FASTEsopeUnassignedVariableRule >> visitParameter: aFASTFortranScalarVariable [
-	"parameters are considered assigned when entering the subprogram"
-
-	assignedVariables add: aFASTFortranScalarVariable name.
-
-	super visitParameter: aFASTFortranScalarVariable
-]
