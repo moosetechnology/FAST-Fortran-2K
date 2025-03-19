@@ -103,9 +103,11 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kBackspaceStatement: aFASTFortr
 
 { #category : 'visiting - expressions' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kBinaryExpression: aFASTFortran2kBinaryExpression [
-	<generated>
-	self visitFASTTBinaryExpression: aFASTFortran2kBinaryExpression.
+
 	self visitFASTFortran2kAbstractExpression: aFASTFortran2kBinaryExpression.
+
+	aFASTFortran2kBinaryExpression leftOperand accept: self.
+	aFASTFortran2kBinaryExpression rightOperand accept: self
 
 ]
 
@@ -131,7 +133,7 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kByteType: aFASTFortran2kByteTy
 
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kCallStatement: aFASTFortran2kCallStatement [
 	<generated>
 	self visitFASTTWithArguments: aFASTFortran2kCallStatement.
@@ -338,8 +340,6 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kEndFileStatement: aFASTFortran
 
 { #category : 'visiting' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kEntity: aFASTFortran2kEntity [
-	<generated>
-	self visitMooseEntity: aFASTFortran2kEntity.
 
 ]
 
@@ -952,9 +952,10 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kTypePBFinal: aFASTFortran2kTyp
 
 { #category : 'visiting - expressions' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kUnaryExpression: aFASTFortran2kUnaryExpression [
-	<generated>
-	self visitFASTTUnaryExpression: aFASTFortran2kUnaryExpression.
+
 	self visitFASTFortran2kAbstractExpression: aFASTFortran2kUnaryExpression.
+
+	aFASTFortran2kUnaryExpression expression accept: self
 
 ]
 
@@ -1046,6 +1047,27 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kWriteStatement: aFASTFortran2k
 	<generated>
 	self visitFASTTWithArguments: aFASTFortran2kWriteStatement.
 	self visitFASTFortran2kAbstractIOStatement: aFASTFortran2kWriteStatement.
+
+]
+
+{ #category : 'visiting - traits' }
+FASTFortran2kAbstractVisitor >> visitFASTTAssignment: aFASTFortranTAssignment [
+
+	aFASTFortranTAssignment variable accept: self.
+	aFASTFortranTAssignment expression accept: self
+]
+
+{ #category : 'visiting - traits' }
+FASTFortran2kAbstractVisitor >> visitFASTTWithArguments: aFASTFortran2kTWithArguments [
+
+	aFASTFortran2kTWithArguments arguments do: [ :arg | arg accept: self ]
+
+]
+
+{ #category : 'visiting - traits' }
+FASTFortran2kAbstractVisitor >> visitFASTTWithComments: aFASTTWithComments [
+
+	aFASTTWithComments comments do: [ :arg | arg accept: self ]
 
 ]
 
