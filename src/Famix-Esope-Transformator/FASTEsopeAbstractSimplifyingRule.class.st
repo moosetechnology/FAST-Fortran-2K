@@ -5,9 +5,7 @@ I take take an AST and converts some instruction to comment to ""remove them"" f
 "
 Class {
 	#name : 'FASTEsopeAbstractSimplifyingRule',
-	#superclass : 'FASTFortranVisitor',
-	#traits : 'FASTEsopeTVisitor',
-	#classTraits : 'FASTEsopeTVisitor classTrait',
+	#superclass : 'FASTFortran2kAbstractVisitor',
 	#instVars : [
 		'nodeStack',
 		'simplified'
@@ -52,7 +50,7 @@ FASTEsopeAbstractSimplifyingRule >> makeComment: tag fromStatement: aFASTStateme
 
 	| visitor |
 
-	visitor := FASTEsopeExporterVisitor new.
+	visitor := FASTFortran2kExporterVisitor new.
 
 	String streamContents: [ :str |
 			visitor outputStream: str.
@@ -97,17 +95,17 @@ FASTEsopeAbstractSimplifyingRule >> simplify: aFASTEntity [
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeAbstractSimplifyingRule >> visitFASTFortranIfLogicalStatement: aFASTFortranIfLogicalStatement [
+FASTEsopeAbstractSimplifyingRule >> visitFASTFortran2kIfLogicalStatement: aFASTFortranIfLogicalStatement [
 
 	nodeStack push: aFASTFortranIfLogicalStatement.
 
-	super visitFASTFortranIfLogicalStatement: aFASTFortranIfLogicalStatement.
+	super visitFASTFortran2kIfLogicalStatement: aFASTFortranIfLogicalStatement.
 
 	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeAbstractSimplifyingRule >> visitFASTFortranStatementBlock: aFASTFortranStatementBlock [
+FASTEsopeAbstractSimplifyingRule >> visitFASTFortran2kStatementBlock: aFASTFortranStatementBlock [
 
 	nodeStack push: aFASTFortranStatementBlock.
 
