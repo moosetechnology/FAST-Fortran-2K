@@ -209,9 +209,8 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kComplexType: aFASTFortran2kCom
 
 { #category : 'visiting - statements' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kConditionalStatement: aFASTFortran2kConditionalStatement [
-	<generated>
-	self visitFASTFortran2kAbstractStatement: aFASTFortran2kConditionalStatement.
 
+	aFASTFortran2kConditionalStatement condition accept: self
 ]
 
 { #category : 'visiting - statements' }
@@ -460,16 +459,19 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kIfArithmeticStatement: aFASTFo
 
 { #category : 'visiting - statements' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kIfBlockStatement: aFASTFortran2kIfBlockStatement [
-	<generated>
+
 	self visitFASTFortran2kConditionalStatement: aFASTFortran2kIfBlockStatement.
+	aFASTFortran2kIfBlockStatement thenStatementBlock accept: self.
+	aFASTFortran2kIfBlockStatement elseStatementBlock ifNotNil: [
+		:elseBlock | elseBlock accept: self ].
 
 ]
 
 { #category : 'visiting - statements' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kIfLogicalStatement: aFASTFortran2kIfLogicalStatement [
-	<generated>
-	self visitFASTFortran2kConditionalStatement: aFASTFortran2kIfLogicalStatement.
 
+	self visitFASTFortran2kConditionalStatement: aFASTFortran2kIfLogicalStatement.
+	aFASTFortran2kIfLogicalStatement statement accept: self
 ]
 
 { #category : 'visiting' }
@@ -1051,16 +1053,16 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kWriteStatement: aFASTFortran2k
 ]
 
 { #category : 'visiting - traits' }
-FASTFortran2kAbstractVisitor >> visitFASTFortranTBehaviouralEntity: aFASTFortranTBehaviouralEntity [
-
-	aFASTFortranTBehaviouralEntity statementBlock accept: self
-]
-
-{ #category : 'visiting - traits' }
 FASTFortran2kAbstractVisitor >> visitFASTTAssignment: aFASTFortranTAssignment [
 
 	aFASTFortranTAssignment variable accept: self.
 	aFASTFortranTAssignment expression accept: self
+]
+
+{ #category : 'visiting - traits' }
+FASTFortran2kAbstractVisitor >> visitFASTTBehaviouralEntity: aFASTTBehaviouralEntity [
+
+	aFASTTBehaviouralEntity statementBlock accept: self
 ]
 
 { #category : 'visiting - traits' }
