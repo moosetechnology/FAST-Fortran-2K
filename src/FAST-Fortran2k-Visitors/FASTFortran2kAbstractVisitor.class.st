@@ -1051,6 +1051,12 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kWriteStatement: aFASTFortran2k
 ]
 
 { #category : 'visiting - traits' }
+FASTFortran2kAbstractVisitor >> visitFASTFortranTBehaviouralEntity: aFASTFortranTBehaviouralEntity [
+
+	aFASTFortranTBehaviouralEntity statementBlock accept: self
+]
+
+{ #category : 'visiting - traits' }
 FASTFortran2kAbstractVisitor >> visitFASTTAssignment: aFASTFortranTAssignment [
 
 	aFASTFortranTAssignment variable accept: self.
@@ -1073,4 +1079,6 @@ FASTFortran2kAbstractVisitor >> visitFASTTWithComments: aFASTTWithComments [
 
 { #category : 'visiting - traits' }
 FASTFortran2kAbstractVisitor >> visitFASTTWithParameters: aFASTFortran2kTWithParameters [
+
+	aFASTFortran2kTWithParameters parameters do: [ :param | param accept: self ]
 ]
