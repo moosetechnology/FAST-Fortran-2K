@@ -58,7 +58,7 @@ FASTEsopeAbstractSimplifyingRuleTest >> testCommentOutStatementInLogicalIf [
 	visitor commentOut: oldStatement statement: oldStatement.
 
 	self assert: visitor simplified.
-	self assert: parentNode statement class equals: FASTFortranComment.
+	self assert: parentNode statement class equals: FASTFortran2kComment.
 	self assert: parentNode statement parentIfStatement equals: parentNode.
 
 	self assert: oldStatement parentIfStatement isNil
@@ -72,7 +72,7 @@ FASTEsopeAbstractSimplifyingRuleTest >> testMakeCommentFromStatement [
 		mooseModel: FASTFortran2kModel new.
 	newStatement := visitor makeComment: 'testing' fromStatement: oldStatement.
 
-	self assert: newStatement class equals: FASTFortranComment.
+	self assert: newStatement class equals: FASTFortran2kComment.
 	self assert: newStatement content equals: '[ooo].testing: x = 5'.
 
 	self assert: newStatement mooseModel equals: oldStatement mooseModel
@@ -87,7 +87,7 @@ FASTEsopeAbstractSimplifyingRuleTest >> testMakeCommentFromStatementNoTag [
 		mooseModel: FASTFortran2kModel new.
 	newStatement := visitor makeComment: nil fromStatement: oldStatement.
 
-	self assert: newStatement class equals: FASTFortranComment.
+	self assert: newStatement class equals: FASTFortran2kComment.
 	self assert: newStatement content equals: '[ooo] x = 5'.
 
 	self assert: newStatement mooseModel equals: oldStatement mooseModel
