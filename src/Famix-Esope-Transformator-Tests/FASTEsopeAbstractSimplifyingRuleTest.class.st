@@ -1,6 +1,6 @@
 Class {
 	#name : 'FASTEsopeAbstractSimplifyingRuleTest',
-	#superclass : 'FASTEsopeAbstractVisitorTest',
+	#superclass : 'FASTFortran2kAbstractVisitorTest',
 	#category : 'Famix-Esope-Transformator-Tests-Simplification',
 	#package : 'Famix-Esope-Transformator-Tests',
 	#tag : 'Simplification'
@@ -17,7 +17,7 @@ FASTEsopeAbstractSimplifyingRuleTest >> testCommentOutStatementInBlock [
 
 	| parentNode oldStatement |
 	oldStatement := (self assignementStatement: #x value: 5)
-		mooseModel: FASTFortranModel new.
+		mooseModel: FASTFortran2kModel new.
 	parentNode := self statementBlock: {
 		self declarationStatement: #x type: #integer.
 		self callStatement: #sub arguments: #() . 
@@ -31,10 +31,10 @@ FASTEsopeAbstractSimplifyingRuleTest >> testCommentOutStatementInBlock [
 	self assert: visitor simplified.
 	self assert: parentNode statements size equals: 4.
 	
-	self assert: parentNode statements first class equals: FASTFortranVariableDeclarationStatement.
-	self assert: parentNode statements second class equals: FASTFortranCallStatement.
-	self assert: parentNode statements third class equals: FASTFortranComment.
-	self assert: parentNode statements fourth class equals: FASTFortranReturnStatement.
+	self assert: parentNode statements first class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: parentNode statements second class equals: FASTFortran2kCallStatement.
+	self assert: parentNode statements third class equals: FASTFortran2kComment.
+	self assert: parentNode statements fourth class equals: FASTFortran2kReturnStatement.
 
 	self assert: parentNode statements first  statementContainer equals: parentNode.
 	self assert: parentNode statements second statementContainer equals: parentNode.
@@ -49,7 +49,7 @@ FASTEsopeAbstractSimplifyingRuleTest >> testCommentOutStatementInLogicalIf [
 
 	| parentNode oldStatement |
 	oldStatement := (self assignementStatement: #x value: 5)
-		mooseModel: FASTFortranModel new.
+		mooseModel: FASTFortran2kModel new.
 	parentNode := self
 		logicalIf: (self scalarVariable: #aBoolean)
 		statement: oldStatement.
@@ -69,7 +69,7 @@ FASTEsopeAbstractSimplifyingRuleTest >> testMakeCommentFromStatement [
 
 	| oldStatement newStatement |
 	oldStatement := (self assignementStatement: #x value: 5)
-		mooseModel: FASTFortranModel new.
+		mooseModel: FASTFortran2kModel new.
 	newStatement := visitor makeComment: 'testing' fromStatement: oldStatement.
 
 	self assert: newStatement class equals: FASTFortranComment.
@@ -84,7 +84,7 @@ FASTEsopeAbstractSimplifyingRuleTest >> testMakeCommentFromStatementNoTag [
 
 	| oldStatement newStatement |
 	oldStatement := (self assignementStatement: #x value: 5)
-		mooseModel: FASTFortranModel new.
+		mooseModel: FASTFortran2kModel new.
 	newStatement := visitor makeComment: nil fromStatement: oldStatement.
 
 	self assert: newStatement class equals: FASTFortranComment.
@@ -98,6 +98,8 @@ FASTEsopeAbstractSimplifyingRuleTest >> testMakeCommentFromStatementNoTag [
 FASTEsopeAbstractSimplifyingRuleTest >> testMakeCommentFromStatementSegact [
 
 	| oldStatement newStatement |
+	self skip: 'still needed now that we are on FASTFortran2k instead of FASTEsope?'.
+	
 	oldStatement := (self segmentCommand: FASTEsopeSegact with: { #v })
 		mooseModel: FASTEsopeModel new.
 	newStatement := visitor makeComment: 'testing' fromStatement: oldStatement.
