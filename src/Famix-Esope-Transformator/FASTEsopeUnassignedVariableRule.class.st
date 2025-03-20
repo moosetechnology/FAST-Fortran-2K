@@ -47,7 +47,7 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortran2kAssignmentStatement: aFASTF
 
 	nodeStack push: aFASTFortranAssignmentStatement.
 
-	self visitFASTFortranTAssignment: aFASTFortranAssignmentStatement.
+	self visitFASTTAssignment: aFASTFortranAssignmentStatement.
 
 	nodeStack pop
 
@@ -240,6 +240,15 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortran2kIntrinsicStatement: aFASTFo
 	nodeStack pop
 ]
 
+{ #category : 'visiting - expressions' }
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kLoopControlExpression: aFASTFortran2kLoopControlExpression [
+
+	aFASTFortran2kLoopControlExpression init ifNotNil: [ :node | node accept: self].
+	aFASTFortran2kLoopControlExpression limit ifNotNil: [ :node | node accept: self].
+	aFASTFortran2kLoopControlExpression increment ifNotNil: [ :node | node accept: self].
+
+]
+
 { #category : 'visiting - statements' }
 FASTEsopeUnassignedVariableRule >> visitFASTFortran2kOpenStatement: aFASTFortranNode [
 
@@ -255,7 +264,7 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortran2kPointerAssignmentStatement:
 
 	nodeStack push: aFASTFortran2kPointerAssignmentStatement.
 
-	self visitFASTFortranTAssignment: aFASTFortran2kPointerAssignmentStatement.
+	self visitFASTTAssignment: aFASTFortran2kPointerAssignmentStatement.
 
 	nodeStack pop
 
@@ -373,7 +382,7 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortran2kWriteStatement: aFASTFortra
 ]
 
 { #category : 'visiting - traits' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortranTAssignment: aFASTFortranTAssignment [
+FASTEsopeUnassignedVariableRule >> visitFASTTAssignment: aFASTFortranTAssignment [
 	"should check that all variables in #expression are 'valid' (ie. assigned)"
 
 	inAssignment := true.

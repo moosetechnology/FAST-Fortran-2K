@@ -64,6 +64,37 @@ FASTEsopeUnassignedVariableRuleTest >> testArrayVariableToSimplify [
 ]
 
 { #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testAssignmentExpression [
+	"SUBROUTINE sub()
+	   DO i=1, 10
+	     x = 5
+	   END
+	 END"
+
+	| stmt body |
+
+	stmt := FASTFortran2kDoStatement new.
+	stmt loopControl: (FASTFortran2kLoopControlExpression new
+		init: (self assignementExpression: #i value: 1) ;
+		limit: (self integerLiteral: 10)).
+	stmt statementBlock: FASTFortran2kStatementBlock new.
+	stmt statementBlock addStatement: (self assignementStatement: #x value: 5).
+
+	self subroutine: 'sub'.
+	self addStatement: stmt.
+
+	visitor simplify: ast.
+
+	self deny: visitor simplified.
+
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 1.
+
+	self assert: body first class equals: FASTFortran2kDoStatement 
+]
+
+{ #category : 'tests' }
 FASTEsopeUnassignedVariableRuleTest >> testAssignmentStatementToSimplify [
 
 	| body stmt |
