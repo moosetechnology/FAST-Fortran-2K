@@ -121,6 +121,15 @@ FASTFortran2kAbstractVisitorTest >> function: name type: typeDescription [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> functionCall: aName arguments: aCollection [
+
+	^FASTFortran2kFunctionCall new
+		name: aName ;
+		arguments: (aCollection collect: [:exp | self makeSimpleExpression: exp]) ;
+		yourself
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> functionDeclaration: aName [
 
 	^FASTFortran2kFunction new
