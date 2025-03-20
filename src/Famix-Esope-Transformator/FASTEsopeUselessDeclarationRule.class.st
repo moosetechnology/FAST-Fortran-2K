@@ -16,6 +16,17 @@ Class {
 	#tag : 'Simplification'
 }
 
+{ #category : 'private' }
+FASTEsopeUselessDeclarationRule >> checkUselessDeclarations [
+
+	uselessDeclarations do: [ :toSimplify |
+		| visitor |
+		toSimplify ifNotNil: [
+			visitor := FASTFortran2kProgramFileExporterVisitor new.
+			toSimplify second accept: visitor.
+			visitor outputStream contents trimBoth traceCr ] ]
+]
+
 { #category : 'initialization' }
 FASTEsopeUselessDeclarationRule >> initialize [
 
@@ -41,9 +52,9 @@ FASTEsopeUselessDeclarationRule >> visitFASTEsopePointerDeclarationStatement: aF
 ]
 
 { #category : 'visiting - expressions' }
-FASTEsopeUselessDeclarationRule >> visitFASTFortranArrayVariable: aFASTFortranArrayVariable [
+FASTEsopeUselessDeclarationRule >> visitFASTFortran2kArrayVariable: aFASTFortranArrayVariable [
 
-	self visitFASTFortranVariable: aFASTFortranArrayVariable.
+	self visitFASTFortran2kVariable: aFASTFortranArrayVariable.
 
 	aFASTFortranArrayVariable indices do: [ :indice |
 		indice accept: self
@@ -51,64 +62,65 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortranArrayVariable: aFASTFortranAr
 
 ]
 
-{ #category : 'visiting - programUnits' }
-FASTEsopeUselessDeclarationRule >> visitFASTFortranProcedure: aFASTFortranProcedure [
+{ #category : 'visiting' }
+FASTEsopeUselessDeclarationRule >> visitFASTFortran2kDerivedTypeComponentAccess: aFASTFortran2kDerivedTypeComponentAccess [ 
 
-	uselessDeclarations := Dictionary new.
+	self visitFASTFortran2kVariable: aFASTFortran2kDerivedTypeComponentAccess instance.
 
-	super visitFASTFortranProcedure: aFASTFortranProcedure.
-
-	uselessDeclarations do: [ :toSimplify ||visitor|
-		toSimplify ifNotNil: [
-			visitor := FASTEsopeExporterVisitor new.
-			toSimplify second accept: visitor.
-			visitor outputStream contents trimBoth traceCr
-		]
-	]
 ]
 
 { #category : 'visiting - programUnits' }
-FASTEsopeUselessDeclarationRule >> visitFASTFortranProgramMain: aFASTFortranProgramMain [
+FASTEsopeUselessDeclarationRule >> visitFASTFortran2kProcedure: aFASTFortranProcedure [
 
 	uselessDeclarations := Dictionary new.
+aFASTFortranProcedure name traceCr.
+	super visitFASTFortran2kProcedure: aFASTFortranProcedure.
+	self checkUselessDeclarations
+]
 
-	super visitFASTFortranProgramMain: aFASTFortranProgramMain.
+{ #category : 'visiting - programUnits' }
+FASTEsopeUselessDeclarationRule >> visitFASTFortran2kProgramMain: aFASTFortranProgramMain [
 
-	uselessDeclarations do: [ :toSimplify ||visitor|
-		toSimplify ifNotNil: [
-			visitor := FASTEsopeExporterVisitor new.
-			toSimplify second accept: visitor.
-			visitor outputStream contents trimBoth traceCr
-		]
+	uselessDeclarations := Dictionary new.
+aFASTFortranProgramMain name traceCr.
+	super visitFASTFortran2kProgramMain: aFASTFortranProgramMain.
+	self checkUselessDeclarations
+]
+
+{ #category : 'visiting - expressions' }
+FASTEsopeUselessDeclarationRule >> visitFASTFortran2kScalarVariable: aFASTFortranScalarVariable [
+
+	self visitFASTFortran2kVariable: aFASTFortranScalarVariable 
+
+]
+
+{ #category : 'visiting - traits' }
+FASTEsopeUselessDeclarationRule >> visitFASTFortran2kTWithDeclarators: aFASTFortran2kTWithDeclarators [
+
+	aFASTFortran2kTWithDeclarators declarators do: [ :declarator |
+		declarator accept: self
 	]
 ]
 
 { #category : 'visiting - expressions' }
-FASTEsopeUselessDeclarationRule >> visitFASTFortranScalarVariable: aFASTFortranScalarVariable [
-
-	self visitFASTFortranVariable: aFASTFortranScalarVariable 
-
-]
-
-{ #category : 'visiting - expressions' }
-FASTEsopeUselessDeclarationRule >> visitFASTFortranVariable: aFASTFortranVariable [
+FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariable: aFASTFortranVariable [
 
 	uselessDeclarations removeKey: aFASTFortranVariable name ifAbsent: [ "nothing" ]
 ]
 
 { #category : 'visiting - statements' }
-FASTEsopeUselessDeclarationRule >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
+FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
 
 	nodeStack push: aFASTFortranVariableDeclarationStatement.
 
-	super visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement.
+	super visitFASTFortran2kVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement.
 
 	nodeStack pop
 
 ]
 
 { #category : 'visiting' }
-FASTEsopeUselessDeclarationRule >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
+FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarator: aFASTFortranVariableDeclarator [
 	"need to keep the context of the declaration:
 	   declarationStatement + parentStatement"
 
