@@ -38,8 +38,8 @@ FASTFortran2kExporterVisitorTest >> testAssignmentStatementPointer [
 	| stmt |
 
 	stmt := FASTFortran2kPointerAssignmentStatement new
-		variable: (FASTFortran2kScalarVariable new name: 'x') ;
-		expression: (FASTFortran2kScalarVariable new name: 'y') ;
+		variable: (self scalarVariable: 'x') ;
+		expression: (self scalarVariable: 'y') ;
 		yourself.
 
 	self assertExport: stmt equals: 'x => y
