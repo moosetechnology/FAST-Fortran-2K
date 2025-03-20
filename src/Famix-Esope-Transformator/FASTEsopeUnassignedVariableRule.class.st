@@ -103,6 +103,13 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortran2kDecodeStatement: aFASTFortr
 	nodeStack pop
 ]
 
+{ #category : 'visiting' }
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kDerivedTypeComponentAccess: aFASTFortran2kDerivedTypeComponentAccess [ 
+
+	self visitFASTFortran2kVariable: aFASTFortran2kDerivedTypeComponentAccess instance.
+
+]
+
 { #category : 'visiting - statements' }
 FASTEsopeUnassignedVariableRule >> visitFASTFortran2kDimensionStatement: aFASTFortranNode [
 
@@ -161,14 +168,6 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortran2kEquivalenceStatement: aFAST
 	super visitFASTFortran2kEquivalenceStatement: aFASTFortranNode.
 
 	nodeStack pop
-]
-
-{ #category : 'visiting - expressions' }
-FASTEsopeUnassignedVariableRule >> visitFASTFortran2kFieldAccess: aFASTFortranFieldAccess [ 
-	"consider all fieldAccess-es as access-es to the pointer"
-
-	self visitFASTFortran2kVariable: aFASTFortranFieldAccess pointer.
-
 ]
 
 { #category : 'visiting - statements' }
@@ -249,6 +248,17 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortran2kOpenStatement: aFASTFortran
 	super visitFASTFortran2kOpenStatement: aFASTFortranNode.
 
 	nodeStack pop
+]
+
+{ #category : 'visiting - statements' }
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kPointerAssignmentStatement: aFASTFortran2kPointerAssignmentStatement [
+
+	nodeStack push: aFASTFortran2kPointerAssignmentStatement.
+
+	self visitFASTFortranTAssignment: aFASTFortran2kPointerAssignmentStatement.
+
+	nodeStack pop
+
 ]
 
 { #category : 'visiting - statements' }
