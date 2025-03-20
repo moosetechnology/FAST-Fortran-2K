@@ -612,9 +612,12 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kMapStatement: aFASTFortran2kMa
 
 { #category : 'visiting - programUnits' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kModule: aFASTFortran2kModule [
-	<generated>
+
 	self visitFASTFortran2kProgramUnit: aFASTFortran2kModule.
 
+	aFASTFortran2kModule procedures do: [ :procedure |
+		procedure accept: self
+	]
 ]
 
 { #category : 'visiting' }
