@@ -96,6 +96,10 @@ FASTEsopeUnassignedVariableRuleTest >> testAssignmentExpression [
 
 { #category : 'tests' }
 FASTEsopeUnassignedVariableRuleTest >> testAssignmentStatementToSimplify [
+	"CHARACTER*20 fctBigSmall()
+	   INTEGER :: x
+	   x = v
+	"
 
 	| body stmt |
 	stmt := (self assignementStatement: #x value: #v)
@@ -380,6 +384,34 @@ FASTEsopeUnassignedVariableRuleTest >> testPointeRhsrInAssignmentToSimplify [
 
 	self assert: body second content equals: '[ooo].empty-var: x = p % f'
 
+]
+
+{ #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testReadStatementToKeep [
+	"CHARACTER*20 fctBigSmall()
+	   INTEGER :: x
+	   READ (1), v
+	   x = v
+	"
+
+	| body |
+
+	self function: #fctBigSmall type: #(character 20).
+	self addStatement: (self declarationStatement: #x type: #integer).
+	self addStatement: (self readStatement: #(v) ioParams: #(1)).
+	self addStatement: (self assignementStatement: #x value: #v).
+
+	visitor simplify: ast.
+
+	self deny: visitor simplified.
+
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 3.
+	
+	self assert: body first class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: body second class equals: FASTFortran2kReadStatement.
+	self assert: body third class equals: FASTFortran2kAssignmentStatement 
 ]
 
 { #category : 'tests' }

@@ -299,11 +299,12 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortran2kProgramMain: aFASTFortranPr
 { #category : 'visiting - statements' }
 FASTEsopeUnassignedVariableRule >> visitFASTFortran2kReadStatement: aFASTFortranNode [
 
-	nodeStack push: aFASTFortranNode.
+	self visitFASTFortran2kAbstractIOStatement: aFASTFortranNode.
 
-	super visitFASTFortran2kReadStatement: aFASTFortranNode.
+	inAssignment := true.
+	self visitFASTTWithArguments: aFASTFortranNode.
+	inAssignment := false.
 
-	nodeStack pop
 ]
 
 { #category : 'visiting - statements' }
