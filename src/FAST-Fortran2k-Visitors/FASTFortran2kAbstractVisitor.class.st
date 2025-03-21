@@ -62,7 +62,7 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kArrayVariable: aFASTFortran2kA
 
 ]
 
-{ #category : 'visiting - expressions' }
+{ #category : 'visiting' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kAssignmentExpression: aFASTFortran2kAssignmentExpression [
 	<generated>
 	self visitFASTFortran2kTIOParameter: aFASTFortran2kAssignmentExpression.
@@ -274,17 +274,21 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kDimensionStatement: aFASTFortr
 
 { #category : 'visiting - statements' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kDoStatement: aFASTFortran2kDoStatement [
-	<generated>
+
 	self visitFASTFortran2kTWithLabelReferences: aFASTFortran2kDoStatement.
 	self visitFASTFortran2kTWithLoopControl: aFASTFortran2kDoStatement.
 	self visitFASTFortran2kAbstractStatement: aFASTFortran2kDoStatement.
+
+	aFASTFortran2kDoStatement statementBlock accept: self
 
 ]
 
 { #category : 'visiting - statements' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kDoWhileStatement: aFASTFortran2kDoWhileStatement [
-	<generated>
+
 	self visitFASTFortran2kConditionalStatement: aFASTFortran2kDoWhileStatement.
+
+	aFASTFortran2kDoWhileStatement statementBlock accept: self
 
 ]
 
@@ -599,7 +603,10 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kLogicalType: aFASTFortran2kLog
 
 { #category : 'visiting - expressions' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kLoopControlExpression: aFASTFortran2kLoopControlExpression [
-	<generated>
+
+	aFASTFortran2kLoopControlExpression init ifNotNil: [ :node | node accept: self].
+	aFASTFortran2kLoopControlExpression limit ifNotNil: [ :node | node accept: self].
+	aFASTFortran2kLoopControlExpression increment ifNotNil: [ :node | node accept: self].
 
 ]
 
@@ -612,9 +619,12 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kMapStatement: aFASTFortran2kMa
 
 { #category : 'visiting - programUnits' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kModule: aFASTFortran2kModule [
-	<generated>
+
 	self visitFASTFortran2kProgramUnit: aFASTFortran2kModule.
 
+	aFASTFortran2kModule procedures do: [ :procedure |
+		procedure accept: self
+	]
 ]
 
 { #category : 'visiting' }
@@ -677,8 +687,8 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kPauseStatement: aFASTFortran2k
 
 { #category : 'visiting - statements' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kPointerAssignmentStatement: aFASTFortran2kPointerAssignmentStatement [
-	<generated>
-	self visitFASTFortran2kTPointerAssignment: aFASTFortran2kPointerAssignmentStatement.
+
+	self visitFASTTAssignment: aFASTFortran2kPointerAssignmentStatement.
 
 ]
 
@@ -915,8 +925,8 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kTWithLabelReferences: aFASTFor
 
 { #category : 'visiting - traits' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kTWithLoopControl: aFASTFortran2kTWithLoopControl [
-	<generated>
 
+	aFASTFortran2kTWithLoopControl loopControl accept: self
 ]
 
 { #category : 'visiting - traits' }

@@ -64,6 +64,37 @@ FASTEsopeUnassignedVariableRuleTest >> testArrayVariableToSimplify [
 ]
 
 { #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testAssignmentExpression [
+	"SUBROUTINE sub()
+	   DO i=1, 10
+	     x = 5
+	   END
+	 END"
+
+	| stmt body |
+
+	stmt := FASTFortran2kDoStatement new.
+	stmt loopControl: (FASTFortran2kLoopControlExpression new
+		init: (self assignementExpression: #i value: 1) ;
+		limit: (self integerLiteral: 10)).
+	stmt statementBlock: FASTFortran2kStatementBlock new.
+	stmt statementBlock addStatement: (self assignementStatement: #x value: 5).
+
+	self subroutine: 'sub'.
+	self addStatement: stmt.
+
+	visitor simplify: ast.
+
+	self deny: visitor simplified.
+
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 1.
+
+	self assert: body first class equals: FASTFortran2kDoStatement 
+]
+
+{ #category : 'tests' }
 FASTEsopeUnassignedVariableRuleTest >> testAssignmentStatementToSimplify [
 
 	| body stmt |
@@ -89,36 +120,12 @@ FASTEsopeUnassignedVariableRuleTest >> testAssignmentStatementToSimplify [
 ]
 
 { #category : 'tests' }
-FASTEsopeUnassignedVariableRuleTest >> testEsopeCommandArgumentToSimplify [
-
-	| body segStatement |
-	segStatement := (self callStatement: #segadj arguments: #(var1 var2))
-		mooseModel: FASTFortran2kModel new.
-
-	self subroutine: #sub.
-	self addStatement: segStatement.
-
-	visitor simplify: ast.
-
-	self assert: visitor simplified.
-
-	body := ast statementBlock statements.
-
-	self assert: body size equals: 1.
-
-	self assert: body first class equals: FASTFortran2kComment.
-
-	self assert: body first content equals: '[ooo].empty-var: call segadj(var1, var2)'
-
-]
-
-{ #category : 'tests' }
-FASTEsopeUnassignedVariableRuleTest >> testFieldAccessAssignment [
+FASTEsopeUnassignedVariableRuleTest >> testDerivedTypeComponentAccess [
 	"the assignment to the pointer is absurd but we are only interested in assigning something to it"
 
 	| varAccess body |
-	varAccess := FASTFortran2kFieldAccess new
-		pointer: (self scalarVariable: #p) ;
+	varAccess := FASTFortran2kDerivedTypeComponentAccess new
+		instance: (self scalarVariable: #p) ;
 		field: (self scalarVariable: #x).
 	self subroutine: #something.
 	self addStatement: (FASTFortran2kAssignmentStatement new
@@ -139,12 +146,12 @@ FASTEsopeUnassignedVariableRuleTest >> testFieldAccessAssignment [
 ]
 
 { #category : 'tests' }
-FASTEsopeUnassignedVariableRuleTest >> testFieldAccessToSimplify [
+FASTEsopeUnassignedVariableRuleTest >> testDerivedTypeComponentAccessToSimplify [
 
 	| varAccess body writeStatement |
 
-	varAccess := FASTFortran2kFieldAccess new
-		pointer: (self scalarVariable: #p) ;
+	varAccess := FASTFortran2kDerivedTypeComponentAccess new
+		instance: (self scalarVariable: #p) ;
 		field: (self scalarVariable: #x).
 
 	writeStatement := (self writeStatement: {  varAccess })
@@ -164,6 +171,30 @@ FASTEsopeUnassignedVariableRuleTest >> testFieldAccessToSimplify [
 	self assert: body first class equals: FASTFortran2kComment.
 
 	self assert: body first content equals: '[ooo].empty-var: write (*, *) p % x'
+
+]
+
+{ #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testEsopeCommandArgumentToSimplify [
+
+	| body segStatement |
+	segStatement := (self callStatement: #segadj arguments: #(var1 var2))
+		mooseModel: FASTFortran2kModel new.
+
+	self subroutine: #sub.
+	self addStatement: segStatement.
+
+	visitor simplify: ast.
+
+	self assert: visitor simplified.
+
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 1.
+
+	self assert: body first class equals: FASTFortran2kComment.
+
+	self assert: body first content equals: '[ooo].empty-var: call segadj(var1, var2)'
 
 ]
 
@@ -243,6 +274,112 @@ FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementThenToSimplify [
 	self assert: body anyOne statement class equals: FASTFortran2kComment.
 
 	self assert: body anyOne statement content equals: '[ooo].empty-var: write (*, *) booleanVar'
+]
+
+{ #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testPointeLhsInAssignmentToSimplify [
+
+	"CHARACTER*20 FUNCTION fctBigSmall()
+	  INTEGER x
+	  p % f => v
+	END
+	"
+	| body stmt pointer |
+	pointer := FASTFortran2kModel new
+		newDerivedTypeComponentAccess
+			instance: (self scalarVariable: #p) ;
+			field: (self scalarVariable: #f).
+	stmt := pointer mooseModel newPointerAssignmentStatement
+		variable: pointer ;
+		expression: (self scalarVariable: #v).
+
+	self function: #fctBigSmall type: #(character 20).
+	self addStatement: (self declarationStatement: #x type: #integer).
+	self addStatement: stmt.
+
+	visitor simplify: ast.
+
+	self assert: visitor simplified.
+
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 2.
+	
+	self assert: body first class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: body second class equals: FASTFortran2kComment.
+
+	self assert: body second content equals: '[ooo].empty-var: p % f => v'
+
+]
+
+{ #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testPointeRhsrInAssignmentToKeep [
+
+	"CHARACTER*20 FUNCTION fctBigSmall()
+	  p % f => 5
+	  x = p % f
+	END
+	"
+	| body stmt pointer |
+
+	pointer := FASTFortran2kModel new
+		newDerivedTypeComponentAccess
+			instance: (self scalarVariable: #p) ;
+			field: (self scalarVariable: #f).
+	stmt := pointer mooseModel newPointerAssignmentStatement
+		variable: pointer ;
+		expression: ((self makeSimpleExpression: 5)).
+
+	self function: #fctBigSmall type: #(character 20).
+	self addStatement: stmt.
+	self addStatement: (self assignementStatement: #x value: pointer copy).
+
+	visitor simplify: ast.
+
+	self deny: visitor simplified.
+
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 2.
+	
+	self assert: body first class equals: FASTFortran2kPointerAssignmentStatement.
+	self assert: body second class equals: FASTFortran2kAssignmentStatement.
+
+]
+
+{ #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testPointeRhsrInAssignmentToSimplify [
+
+	"CHARACTER*20 FUNCTION fctBigSmall()
+	  INTEGER x
+	  x = p % f
+	END
+	"
+	| body stmt pointer |
+	pointer := FASTFortran2kModel new
+		newDerivedTypeComponentAccess
+			instance: (self scalarVariable: #p) ;
+			field: (self scalarVariable: #f).
+	stmt := (self assignementStatement: #x value: pointer)
+		mooseModel: pointer mooseModel.
+
+	self function: #fctBigSmall type: #(character 20).
+	self addStatement: (self declarationStatement: #x type: #integer).
+	self addStatement: stmt.
+
+	visitor simplify: ast.
+
+	self assert: visitor simplified.
+
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 2.
+	
+	self assert: body first class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: body second class equals: FASTFortran2kComment.
+
+	self assert: body second content equals: '[ooo].empty-var: x = p % f'
+
 ]
 
 { #category : 'tests' }

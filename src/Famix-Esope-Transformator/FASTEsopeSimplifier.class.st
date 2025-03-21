@@ -22,9 +22,18 @@ FASTEsopeSimplifier class >> on: aFASTEntity [
 { #category : 'instance creation' }
 FASTEsopeSimplifier >> on: aFASTEntity [
 
+	| nbComments tmp |
+
+	nbComments := (aFASTEntity mooseModel allWithType: FASTFortran2kComment) size.
+
 	[
 		(FASTEsopeUnassignedVariableRule simplify: aFASTEntity)
-		"or: [ FASTEsopeUselessDeclarationRule simplify: aFASTEntity ]"
+		or: [ FASTEsopeUselessDeclarationRule simplify: aFASTEntity ]
 	]
-		whileTrue
+		whileTrue: [ 
+			"sanity check"
+			tmp := (aFASTEntity mooseModel allWithType: FASTFortran2kComment) size.
+			self assert: (tmp > nbComments).
+			nbComments := tmp
+		]
 ]
