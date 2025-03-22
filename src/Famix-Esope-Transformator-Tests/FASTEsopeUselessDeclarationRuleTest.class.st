@@ -171,14 +171,22 @@ FASTEsopeUselessDeclarationRuleTest >> testVariableDeclarationStatementIsUseful 
 ]
 
 { #category : 'tests' }
-FASTEsopeUselessDeclarationRuleTest >> testVariableDeclarationStatementIsUseless [
+FASTEsopeUselessDeclarationRuleTest >> testVariableDeclarationStatementToSimplify [
+
+	| stmt body |
+	stmt := self declarationStatement: #x type: #integer.
+	stmt mooseModel: FASTFortran2kModel new.
 
 	self subroutine: 'sub'.
-	self addStatement: (self declarationStatement: #x type: #integer).
+	self addStatement: stmt.
 
 	visitor simplify: ast.
 
-	self assert: visitor uselessDeclarations size equals: 1.
-	self assert: visitor uselessDeclarations keys anyOne equals: 'x'.
+	self assert: visitor simplified.
 
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 1.
+	self assert: body anyOne class equals: FASTFortran2kComment.
+	self assert: body anyOne content equals: '[ooo].not-used: integer :: x'
 ]

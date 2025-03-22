@@ -20,11 +20,12 @@ Class {
 FASTEsopeUselessDeclarationRule >> checkUselessDeclarations [
 
 	uselessDeclarations do: [ :toSimplify |
-		| visitor |
 		toSimplify ifNotNil: [
-			visitor := FASTFortran2kProgramFileExporterVisitor new.
-			toSimplify second accept: visitor.
-			visitor outputStream contents trimBoth traceCr ] ]
+			nodeStack push: toSimplify first.
+			self commentOut: 'not-used' statement: toSimplify second.
+			nodeStack pop
+		]
+	]
 ]
 
 { #category : 'initialization' }
@@ -39,16 +40,6 @@ FASTEsopeUselessDeclarationRule >> initialize [
 FASTEsopeUselessDeclarationRule >> uselessDeclarations [
 
 	^uselessDeclarations 
-]
-
-{ #category : 'visiting' }
-FASTEsopeUselessDeclarationRule >> visitFASTEsopePointerDeclarationStatement: aFASTEsopePointerDeclaration [
-
-	nodeStack push: aFASTEsopePointerDeclaration.
-
-	super visitFASTEsopePointerDeclarationStatement: aFASTEsopePointerDeclaration.
-
-	nodeStack pop
 ]
 
 { #category : 'visiting - expressions' }
@@ -67,6 +58,16 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kDerivedTypeComponentAccess:
 
 	self visitFASTFortran2kVariable: aFASTFortran2kDerivedTypeComponentAccess instance.
 
+]
+
+{ #category : 'visiting' }
+FASTEsopeUselessDeclarationRule >> visitFASTFortran2kPointerAssignmentStatement: aFASTEsopePointerDeclaration [
+
+	nodeStack push: aFASTEsopePointerDeclaration.
+
+	super visitFASTFortran2kPointerAssignmentStatement: aFASTEsopePointerDeclaration.
+
+	nodeStack pop
 ]
 
 { #category : 'visiting - programUnits' }
