@@ -75,6 +75,15 @@ FASTFortran2kProgramFileExporterVisitor >> modernRelationalOperators [
 ]
 
 { #category : 'outputting' }
+FASTFortran2kProgramFileExporterVisitor >> newLine [
+	"redefines to deal with line length
+	 writes directly to the outputStream so that the return does not count for one column"
+
+	column := 0.
+	self outputStream << OSPlatform current lineEnding
+]
+
+{ #category : 'outputting' }
 FASTFortran2kProgramFileExporterVisitor >> setLineDescriptions: aFilename [
 	"For each line, creates a description consisting of 
 	 last-position in the line -> whether the line is empty"
@@ -423,11 +432,7 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDerivedTypeDefiniti
 		newLine ;
 		indented: 'type'.
 
-	aFASTFortran2kDerivedTypeDefinition modifiers 
-		ifNotEmpty: [ :modifiers | 
-			self << ', '.
-			self visitNodeListSeparatedByCommas: modifiers
-		].
+	self visitFASTFortran2kModifiers: aFASTFortran2kDerivedTypeDefinition modifiers.
 
 	aFASTFortran2kDerivedTypeDefinition superType ifNotNil: [ :superType |
 		self
@@ -1243,6 +1248,12 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUnionStatement: aFA
 	self newLine
 ]
 
+{ #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseNoRename: aFASTFortran2kUseNoRename [
+
+	self indented: aFASTFortran2kUseNoRename name
+]
+
 { #category : 'visiting - statements' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseNoRenamedStatement: aFASTFortran2kUseNoRenamedStatement [
 
@@ -1259,19 +1270,23 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseOnlyStatement: a
 		<< aFASTFortran2kUseOnlyStatement name;
 		<< ', only: '.
 
-	self visitNodeListSeparatedByCommas: aFASTFortran2kUseOnlyStatement useNoRenamedStatements.
+	self visitNodeListSeparatedByCommas: aFASTFortran2kUseOnlyStatement useNoRenames.
 	
-	aFASTFortran2kUseOnlyStatement useRenamedStatements ifNotNil: [ :useRenamedStatements |  
-		useRenamedStatements ifNotEmpty: [ 
-			self << ', '.
-			self visitNodeListSeparatedByCommas: useRenamedStatements 
-		] 
+	aFASTFortran2kUseOnlyStatement useRenames ifNotEmpty: [ :useRenames | 
+		self << ', '.
+		self visitNodeListSeparatedByCommas: useRenames 
 	].
-	self newLine 
-	
-	
-	 
-	
+	self newLine
+]
+
+{ #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseRename: aFASTFortran2kUseRename [ 
+
+	self 
+		skipLine: aFASTFortran2kUseRename ;
+		<< aFASTFortran2kUseRename alias ;
+		<< ' => ' ;
+		<< aFASTFortran2kUseRename name
 ]
 
 { #category : 'visiting - statements' }
@@ -1298,19 +1313,19 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseStatement: aFAST
 		<< ' :: ';
 		<< aFASTFortran2kUseStatement name.
 
-	aFASTFortran2kUseStatement useRenamedStatements 
-		ifNotNil: [:useRenamedStatement | 
-			useRenamedStatement ifNotEmpty: [ 
+	aFASTFortran2kUseStatement useRenames 
+		ifNotNil: [:useRenames | 
+			useRenames ifNotEmpty: [ 
 				self << ', '.
-				self visitNodeListSeparatedByCommas: useRenamedStatement
+				self visitNodeListSeparatedByCommas: useRenames
 			]
 		].
 
-	aFASTFortran2kUseStatement useNoRenamedStatements 
-		ifNotNil: [ :onlyList |
-			onlyList ifNotEmpty: [ 
+	aFASTFortran2kUseStatement useNoRenames 
+		ifNotNil: [ :useNoRenames |
+			useNoRenames ifNotEmpty: [ 
 				self << ', only: '.
-				self visitNodeListSeparatedByCommas: onlyList
+				self visitNodeListSeparatedByCommas: useNoRenames
 			]
 		].
 
@@ -1351,7 +1366,21 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kVariableDeclaration
 { #category : 'visiting - statements' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kVariableDeclarator: aFASTFortran2kVariableDeclarator [
 
-	^ self visitFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator
+	self << aFASTFortran2kVariableDeclarator name.
+
+	aFASTFortran2kVariableDeclarator dimensions ifNotEmpty: [ :dimensions |
+		self
+			outputExpression: [ dimensions 
+				do: [ :node | self << ':' ]
+				separatedBy: [ self << ', ' ]	
+			]
+			inParentheses: aFASTFortran2kVariableDeclarator dimensions isNotEmpty ].
+
+	aFASTFortran2kVariableDeclarator expression ifNotNil: [ :expression |
+		self << (aFASTFortran2kVariableDeclarator dimensions 
+			ifEmpty: [ ' = ' ]
+			ifNotEmpty: [ ' => ' ]).
+		self outputTopLevelExpression: [ expression accept: self ] ]
 ]
 
 { #category : 'visiting' }
@@ -1379,12 +1408,6 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranAbstractStatement: aF
 	self skipLine: aFASTFortranAbstractStatement .
 
 	super visitFASTFortranAbstractStatement: aFASTFortranAbstractStatement
-]
-
-{ #category : 'visiting' }
-FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranAttribute: aFASTFortran2kAttribute [
-
-	^ self visitFASTFortranVariableDeclarationStatement: aFASTFortran2kAttribute
 ]
 
 { #category : 'visiting' }
@@ -1449,27 +1472,6 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranUsedEntityRenamed: an
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranUserDefinedType: aFASTFortran2kUserDefinedType [
 
 	self << aFASTFortran2kUserDefinedType name
-]
-
-{ #category : 'visiting - statements' }
-FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
-
-	| comma |
-
-	self skipLine: aFASTFortranVariableDeclarationStatement.
-
-	self indented: ''.
-	aFASTFortranVariableDeclarationStatement declaredType accept: self.
-
-	comma := ''.
-	"aFASTFortranVariableDeclarationStatement isPointer ifTrue: [ self << comma ; << ' pointer'. comma := ',' ].
-	aFASTFortranVariableDeclarationStatement visibility ifNotNil: [ :viz | self << comma ; << viz. comma := ',' ]. "
-	self flag: #TODO. "aFASTFortranVariableDeclarationStatement isTarget ifTrue: [ :viz | self << comma ; << ' target'. comma := ',' ]. "
-	
-	self << ' :: '.
-	self visitNodeListSeparatedByCommas:
-		aFASTFortranVariableDeclarationStatement declarators.
-	self newLine
 ]
 
 { #category : 'visiting' }

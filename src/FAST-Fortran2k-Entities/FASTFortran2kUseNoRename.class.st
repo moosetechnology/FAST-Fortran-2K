@@ -1,5 +1,5 @@
 "
-I represent a non use renamed statement
+I represent a name of an entity used in programUnit
 
 ## Relations
 ======================
@@ -8,7 +8,7 @@ I represent a non use renamed statement
 | Relation | Origin | Opposite | Type | Comment |
 |---|
 | `invokedIn` | `FASTTNamedEntity` | `invoked` | `FASTTInvocation` | Optional invocation where this name is used|
-| `useOnlyStatement` | `FASTFortran2kUseNoRenamedStatement` | `useNoRenamedStatements` | `FASTFortran2kUseOnlyStatement` | |
+| `useOnlyStatement` | `FASTFortran2kUseNoRename` | `useNoRenames` | `FASTFortran2kUseOnlyStatement` | |
 
 
 ## Properties
@@ -22,12 +22,12 @@ I represent a non use renamed statement
 
 "
 Class {
-	#name : 'FASTFortran2kUseNoRenamedStatement',
+	#name : 'FASTFortran2kUseNoRename',
 	#superclass : 'FASTFortran2kEntity',
 	#traits : 'FASTTNamedEntity',
 	#classTraits : 'FASTTNamedEntity classTrait',
 	#instVars : [
-		'#useOnlyStatement => FMOne type: #FASTFortran2kUseOnlyStatement opposite: #useNoRenamedStatements'
+		'#useOnlyStatement => FMOne type: #FASTFortran2kUseOnlyStatement opposite: #useNoRenames'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -35,17 +35,17 @@ Class {
 }
 
 { #category : 'meta' }
-FASTFortran2kUseNoRenamedStatement class >> annotation [
+FASTFortran2kUseNoRename class >> annotation [
 
-	<FMClass: #UseNoRenamedStatement super: #FASTFortran2kEntity>
+	<FMClass: #UseNoRename super: #FASTFortran2kEntity>
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
 ]
 
 { #category : 'accessing' }
-FASTFortran2kUseNoRenamedStatement >> useOnlyStatement [
-	"Relation named: #useOnlyStatement type: #FASTFortran2kUseOnlyStatement opposite: #useNoRenamedStatements"
+FASTFortran2kUseNoRename >> useOnlyStatement [
+	"Relation named: #useOnlyStatement type: #FASTFortran2kUseOnlyStatement opposite: #useNoRenames"
 
 	<generated>
 	<container>
@@ -53,14 +53,14 @@ FASTFortran2kUseNoRenamedStatement >> useOnlyStatement [
 ]
 
 { #category : 'accessing' }
-FASTFortran2kUseNoRenamedStatement >> useOnlyStatement: anObject [
+FASTFortran2kUseNoRename >> useOnlyStatement: anObject [
 
 	<generated>
 	useOnlyStatement := anObject
 ]
 
 { #category : 'navigation' }
-FASTFortran2kUseNoRenamedStatement >> useOnlyStatementGroup [
+FASTFortran2kUseNoRename >> useOnlyStatementGroup [
 	<generated>
 	<navigation: 'UseOnlyStatement'>
 	^ MooseSpecializedGroup with: self useOnlyStatement

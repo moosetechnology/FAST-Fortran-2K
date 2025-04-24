@@ -626,6 +626,12 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
 	paramFactories ifNotEmpty: [
 		segadj statementBlock statements addAll: self makeSegadjLocalDeclarations ].
 
+	segadj addStatement: thisParameter createSeginiFieldInitialization.
+	paramFactories do: [ :paramFactory |
+		segadj addStatement: paramFactory createSeginiFieldInitialization.
+	].
+	segadj addStatement: model newEmptyStatement.
+
 	segadj addStatement: (model newFormattedCodeString
 		content: 'call check_pre_condition(associated(this), ''{1}_segadj'', ''associated(this)'')' ;
 		values: { name } ).
@@ -874,29 +880,47 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegload [
 
 { #category : 'helper-segCommands' }
 FASTFortranDerivedTypeFactory >> makeProcedureSegloc [
-	| segloc |
+	| segloc  thisParameter functionName |
+
+	functionName := name , '_segloc'.
 
 	segloc := model newFunction
-		name: name , '_segloc' ;
+		name: functionName;
 		declaredType: (model newSpecialIntrinsicType name: 'int64').
 
+	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'this' ;
+		derivedTypeFactory: self).
+
 	segloc addParameter: (self scalarVariable: 'this').
+	
 	segloc initBody.
+	segloc addComment: '## Return a location of the "this" pointer'.
+	segloc addComment: '## just to trace pointers during debug,'.
+	segloc addComment: '## should not be use for other purpose !!!'.
+	segloc addStatement: model newEmptyStatement.
 
-	segloc addStatement: (model newFormattedCodeString 
-		content: '
-        ! ## Returns a location of the "this" pointer
-        ! ## just to trace pointers during debug,
-        ! ## should not be use for other purpose !!!
+	segloc addStatement: (thisParameter createSegcmdInFieldDeclaration).
+	segloc addStatement: (model newUseOnlyStatement 
+		name: 'iso_fortran_env';
+		modifiers: #( intrinsic );
+		useNoRenames: { model newUseNoRename name: 'int64' }
+	).
+	segloc addStatement: (model newUseOnlyStatement 
+		name: 'iso_c_binding';
+		modifiers: #( intrinsic );
+		useNoRenames: { model newUseNoRename name: 'c_loc' }
+	).
+	segloc addStatement: model newEmptyStatement.
 
-        use, intrinsic :: iso_fortran_env, only : int64
-        use, intrinsic :: iso_c_binding, only : c_loc
-
-        type({1}), pointer, intent(in) :: this
-        integer(int64) :: this_loc
-
-        {1}_segloc = transfer(c_loc(this), this_loc)';
-		values: { name }
+	segloc addStatement: (self 
+		assignement: functionName 
+		value: (self 
+			functionCall: 'transfer'
+			arguments: {
+				self functionCall: 'c_loc' arguments: { self scalarVariable: 'this' } .
+				self scalarVariable: functionName 
+			})
 	).
 
 	^segloc
@@ -1355,6 +1379,7 @@ FASTFortranDerivedTypeFactory >> makeTypeDefinition [
 
 	| segment |
 	segment := model newDerivedTypeDefinition
+		modifiers: #( public );
 		name: name.
 
 	fields do: [ :fieldFactory |

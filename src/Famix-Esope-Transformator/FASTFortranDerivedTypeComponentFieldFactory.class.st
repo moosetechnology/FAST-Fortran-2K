@@ -58,11 +58,13 @@ FASTFortranDerivedTypeComponentFieldFactory >> asFieldAccess: slicingLimitName [
 { #category : 'converting' }
 FASTFortranDerivedTypeComponentFieldFactory >> asVariableDeclaration [
 
-	| stmt declarator modifiers |
+	| stmt declarator modifiers declaredType initValue |
+
+	declaredType := (type accept: (FASTFortranBehavioralTransformationVisitor new 
+		model2k: self model )).
 
 	stmt := self model newVariableDeclarationStatement.
-	stmt declaredType: (type accept: (FASTFortranBehavioralTransformationVisitor new 
-		model2k: self model )).
+	stmt declaredType: declaredType.
 
 	declarator := self model newVariableDeclarator.
 	declarator name: name.
@@ -70,9 +72,19 @@ FASTFortranDerivedTypeComponentFieldFactory >> asVariableDeclaration [
 	(rank > 0)
 		ifTrue: [
 			modifiers := #( pointer ).
-			1 to: rank do: [ :i | declarator addDimension: self model newArrayRange ]
+			1 to: rank do: [ :i | declarator addDimension: self model newArrayRange ].
+
+			initValue := ( self model newFunctionCall
+				name: 'null' ;
+				arguments: #()
+			)
 		]
-		ifFalse: [ modifiers := #() ].
+		ifFalse: [ 
+			modifiers := #().
+			initValue := declaredType initialValue
+		].
+
+	declarator expression: initValue.
 
 	stmt
 		addDeclarator: declarator ;
@@ -120,7 +132,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSeginiFieldInitialization [
 
 	(rank > 0) ifTrue: [
 		statements add: (self 
-			makeAllocationCallForDimensionnedField: ('this%' , name) 
+			makeAllocationCallForDimensionnedField: ('this % ' , name) 
 			with: 'ooo_dim'
 		)
 	].

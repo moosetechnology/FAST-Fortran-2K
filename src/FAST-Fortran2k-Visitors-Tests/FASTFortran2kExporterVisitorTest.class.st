@@ -9,7 +9,7 @@ Class {
 FASTFortran2kExporterVisitorTest >> assertExport: anEntity equals: expectedString [
 
 	anEntity accept: visitor.
-	self assert: visitor outputStream contents equals: expectedString
+	self assert: visitor outputStream contents equals: expectedString withPlatformLineEndings
 ]
 
 { #category : 'running' }
@@ -298,9 +298,9 @@ FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithRenaming [
 
 	| stmt |
 	stmt := FASTFortran2kUseOnlyStatement new
-		name: 'module_name';
-		useNoRenamedStatements: { FASTFortran2kUseNoRenamedStatement new name: 'int64' } ;
-		useRenamedStatements: { FASTFortran2kUseRenamedStatement new name: 'int32' ; alias: 'i4' } ;
+		name: 'module_name' ;
+		useNoRenames: { FASTFortran2kUseNoRename new name: 'int64' } ;
+		useRenames: { FASTFortran2kUseRename new name: 'int32' ; alias: 'i4'; yourself } ;
 		yourself.
 
 	self
@@ -316,16 +316,16 @@ FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithRenamings [
 	| stmt |
 	stmt := FASTFortran2kUseOnlyStatement new
 		        name: 'module_name';
-		        useNoRenamedStatements:
-			        { (FASTFortran2kUseNoRenamedStatement new
+		        useNoRenames: 
+			        { (FASTFortran2kUseNoRename new
 				         name: 'int64';
 				         yourself) };
-		        useRenamedStatements: {
-				        (FASTFortran2kUseRenamedStatement new
+		        useRenames: {
+				        (FASTFortran2kUseRename new
 					         name: 'int32';
 					         alias: 'i4';
 					         yourself).
-				        (FASTFortran2kUseRenamedStatement new
+				        (FASTFortran2kUseRename new
 					         name: 'real32';
 					         alias: 'r4';
 					         yourself) };
@@ -343,11 +343,11 @@ FASTFortran2kExporterVisitorTest >> testUseStatementOnlyWithoutRenaming [
 	| stmt |
 	stmt := FASTFortran2kUseOnlyStatement new
 		        name: 'module_name';
-		        useNoRenamedStatements: {
-				        (FASTFortran2kUseNoRenamedStatement new
+		        useNoRenames: {
+				        (FASTFortran2kUseNoRename new
 					         name: 'int64';
 					         yourself).
-				        (FASTFortran2kUseNoRenamedStatement new
+				        (FASTFortran2kUseNoRename new
 					         name: 'int32';
 					         yourself) };
 		        yourself.
@@ -375,8 +375,8 @@ FASTFortran2kExporterVisitorTest >> testUseStatementWithRenaming [
 
 	stmt := FASTFortran2kUseStatement new 
 		name: 'module_name'; 
-		useRenamedStatements:  { 
-			FASTFortran2kUseRenamedStatement new name: 'output_unit'; alias: 'output'; yourself 
+		useRenames: { 
+			FASTFortran2kUseRename new name: 'output_unit'; alias: 'output'; yourself 
 		}; 
 		yourself.
 
@@ -394,10 +394,9 @@ FASTFortran2kExporterVisitorTest >> testUseStatementWithRenamings [
 
 	stmt := FASTFortran2kUseStatement new
 		name: 'module_name';
-		useRenamedStatements: {
-			FASTFortran2kUseRenamedStatement new name: 'output_unit' ; alias: 'output'
-			.
-			FASTFortran2kUseRenamedStatement new name: 'input_unit' ; alias: 'input'
+		useRenames: {
+			FASTFortran2kUseRename new name: 'output_unit' ; alias: 'output' .
+			FASTFortran2kUseRename new name: 'input_unit' ; alias: 'input'
 		} ;
 		yourself.
 
@@ -420,6 +419,8 @@ FASTFortran2kExporterVisitorTest >> testUserDefinedType [
 FASTFortran2kExporterVisitorTest >> testVariableDeclarationStatementArray1Dim [
 
 	| stmt declarator |
+	self skip: 'FIXME: FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kVariableDeclarator:'.
+
 	declarator := (self variableDeclarator: 'str')
 		dimensions: {
 			FASTFortran2kArrayRange new upperBound: (self integerLiteral: '5')

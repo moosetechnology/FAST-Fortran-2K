@@ -12,10 +12,12 @@ I am the super class of all Fortran expressions
 | `assignementExpressionOwner` | `FASTFortran2kAbstractExpression` | `expression` | `FASTFortran2kFunctionStatement` | The AssignementExpression owner (if possible)|
 | `expressionStatementOwner` | `FASTTExpression` | `expression` | `FASTTExpressionStatement` | The expression statement that own me (if it's the case|
 | `ioSpecifier` | `FASTTExpression` | `expression` | `FASTFortran2kIOParameter` | name of the parameter (keyword argument)|
-| `parentArrayDimensionDeclarator` | `FASTFortran2kAbstractExpression` | `upperBound` | `FASTFortran2kArrayRange` | Parent array dimension declarator|
+| `kindOwner` | `FASTFortran2kAbstractExpression` | `kind` | `FASTFortran2kType` | |
 | `parentArrayDimensionDeclarator` | `FASTFortran2kAbstractExpression` | `lowerBound` | `FASTFortran2kArrayRange` | Parent array dimension declarator|
+| `parentArrayDimensionDeclarator` | `FASTFortran2kAbstractExpression` | `upperBound` | `FASTFortran2kArrayRange` | Parent array dimension declarator|
 | `parentArrayExpression` | `FASTFortran2kAbstractExpression` | `indices` | `FASTFortran2kArrayVariable` | an ArrayVariable expression of which I am an indice|
 | `parentConditionalStatement` | `FASTFortran2kAbstractExpression` | `condition` | `FASTFortran2kConditionalStatement` | Parent conditional statement (if-block, if-logical, ...)|
+| `parentConditionalStatement` | `FASTTExpression` | `condition` | `FASTTConditionalStatement` | Optional condition statement where this expression is used|
 | `parentDataStatement` | `FASTFortran2kAbstractExpression` | `dataConstants` | `FASTFortran2kDataGroup` | |
 | `parentExpression` | `FASTTExpression` | `expression` | `FASTTUnaryExpression` | Parent (unary) expression|
 | `parentExpressionLeft` | `FASTTExpression` | `leftOperand` | `FASTTBinaryExpression` | Parent (binary) expression of which I am left side|
@@ -44,17 +46,18 @@ Class {
 	#traits : 'FASTTExpression',
 	#classTraits : 'FASTTExpression classTrait',
 	#instVars : [
+		'#assignementExpressionOwner => FMOne type: #FASTFortran2kFunctionStatement opposite: #expression',
+		'#kindOwner => FMOne type: #FASTFortran2kType opposite: #kind',
 		'#parentArrayDimensionDeclarator => FMOne type: #FASTFortran2kArrayRange opposite: #upperBound',
 		'#parentArrayExpression => FMOne type: #FASTFortran2kArrayVariable opposite: #indices',
-		'#parentDataStatement => FMOne type: #FASTFortran2kDataGroup opposite: #dataConstants',
-		'#variableDeclaratorOwner => FMOne type: #FASTFortran2kVariableDeclarator opposite: #expression',
-		'#assignementExpressionOwner => FMOne type: #FASTFortran2kFunctionStatement opposite: #expression',
-		'#parentGotoComputedStatement => FMOne type: #FASTFortran2kGoToComputedStatement opposite: #selectorExpression',
-		'#parentGotoAssignedStatement => FMOne type: #FASTFortran2kGoToAssignedStatement opposite: #selectorExpression',
 		'#parentConditionalStatement => FMOne type: #FASTFortran2kConditionalStatement opposite: #condition',
+		'#parentDataStatement => FMOne type: #FASTFortran2kDataGroup opposite: #dataConstants',
+		'#parentGotoAssignedStatement => FMOne type: #FASTFortran2kGoToAssignedStatement opposite: #selectorExpression',
+		'#parentGotoComputedStatement => FMOne type: #FASTFortran2kGoToComputedStatement opposite: #selectorExpression',
 		'#parentLoopControlIncrement => FMOne type: #FASTFortran2kLoopControlExpression opposite: #increment',
 		'#parentLoopControlLimit => FMOne type: #FASTFortran2kLoopControlExpression opposite: #limit',
-		'#parentTypeSize => FMOne type: #FASTFortran2kType opposite: #size'
+		'#parentTypeSize => FMOne type: #FASTFortran2kType opposite: #size',
+		'#variableDeclaratorOwner => FMOne type: #FASTFortran2kVariableDeclarator opposite: #expression'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -93,6 +96,30 @@ FASTFortran2kAbstractExpression >> assignementExpressionOwnerGroup [
 	<generated>
 	<navigation: 'AssignementExpressionOwner'>
 	^ MooseSpecializedGroup with: self assignementExpressionOwner
+]
+
+{ #category : 'accessing' }
+FASTFortran2kAbstractExpression >> kindOwner [
+	"Relation named: #kindOwner type: #FASTFortran2kType opposite: #kind"
+
+	<generated>
+	<container>
+	<derived>
+	^ kindOwner
+]
+
+{ #category : 'accessing' }
+FASTFortran2kAbstractExpression >> kindOwner: anObject [
+
+	<generated>
+	kindOwner := anObject
+]
+
+{ #category : 'navigation' }
+FASTFortran2kAbstractExpression >> kindOwnerGroup [
+	<generated>
+	<navigation: 'KindOwner'>
+	^ MooseSpecializedGroup with: self kindOwner
 ]
 
 { #category : 'accessing' }

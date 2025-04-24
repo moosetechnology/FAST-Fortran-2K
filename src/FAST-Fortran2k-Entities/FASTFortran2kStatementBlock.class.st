@@ -9,8 +9,9 @@ Contains the block of Fortran statements
 |---|
 | `fastBehaviouralParent` | `FASTTStatementBlock` | `statementBlock` | `FASTTBehaviouralEntity` | Behavioural entity containing the statement block.|
 | `parentDoStatement` | `FASTFortran2kStatementBlock` | `statementBlock` | `FASTFortran2kDoStatement` | Parent do statement|
-| `parentIfBlock` | `FASTFortran2kStatementBlock` | `elseStatementBlock` | `FASTFortran2kIfBlockStatement` | Parent if block|
 | `parentIfBlock` | `FASTFortran2kStatementBlock` | `thenStatementBlock` | `FASTFortran2kIfBlockStatement` | Parent if block|
+| `parentIfBlock` | `FASTFortran2kStatementBlock` | `elseStatementBlock` | `FASTFortran2kIfBlockStatement` | Parent if block|
+| `parentLoopStatement` | `FASTTStatement` | `body` | `FASTTLoopStatement` | Optional loop of which this statement is the body|
 | `statementContainer` | `FASTTStatement` | `statements` | `FASTTStatementBlock` | Block containing this statement.|
 
 ### Children

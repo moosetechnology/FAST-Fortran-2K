@@ -1,5 +1,5 @@
 "
-I represent a use renamed statement
+I represent a name with an alias of entity used in programUnit
 
 ## Relations
 ======================
@@ -8,7 +8,7 @@ I represent a use renamed statement
 | Relation | Origin | Opposite | Type | Comment |
 |---|
 | `invokedIn` | `FASTTNamedEntity` | `invoked` | `FASTTInvocation` | Optional invocation where this name is used|
-| `useStatement` | `FASTFortran2kUseRenamedStatement` | `useRenamedStatements` | `FASTFortran2kUseStatement` | |
+| `useStatement` | `FASTFortran2kUseRename` | `useRenames` | `FASTFortran2kUseStatement` | |
 
 
 ## Properties
@@ -23,13 +23,13 @@ I represent a use renamed statement
 
 "
 Class {
-	#name : 'FASTFortran2kUseRenamedStatement',
+	#name : 'FASTFortran2kUseRename',
 	#superclass : 'FASTFortran2kEntity',
 	#traits : 'FASTTNamedEntity',
 	#classTraits : 'FASTTNamedEntity classTrait',
 	#instVars : [
 		'#alias => FMProperty',
-		'#useStatement => FMOne type: #FASTFortran2kUseStatement opposite: #useRenamedStatements'
+		'#useStatement => FMOne type: #FASTFortran2kUseStatement opposite: #useRenames'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -37,16 +37,16 @@ Class {
 }
 
 { #category : 'meta' }
-FASTFortran2kUseRenamedStatement class >> annotation [
+FASTFortran2kUseRename class >> annotation [
 
-	<FMClass: #UseRenamedStatement super: #FASTFortran2kEntity>
+	<FMClass: #UseRename super: #FASTFortran2kEntity>
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
 ]
 
 { #category : 'accessing' }
-FASTFortran2kUseRenamedStatement >> alias [
+FASTFortran2kUseRename >> alias [
 
 	<FMProperty: #alias type: #String>
 	<generated>
@@ -55,14 +55,14 @@ FASTFortran2kUseRenamedStatement >> alias [
 ]
 
 { #category : 'accessing' }
-FASTFortran2kUseRenamedStatement >> alias: anObject [
+FASTFortran2kUseRename >> alias: anObject [
 	<generated>
 	alias := anObject
 ]
 
 { #category : 'accessing' }
-FASTFortran2kUseRenamedStatement >> useStatement [
-	"Relation named: #useStatement type: #FASTFortran2kUseStatement opposite: #useRenamedStatements"
+FASTFortran2kUseRename >> useStatement [
+	"Relation named: #useStatement type: #FASTFortran2kUseStatement opposite: #useRenames"
 
 	<generated>
 	<container>
@@ -70,14 +70,14 @@ FASTFortran2kUseRenamedStatement >> useStatement [
 ]
 
 { #category : 'accessing' }
-FASTFortran2kUseRenamedStatement >> useStatement: anObject [
+FASTFortran2kUseRename >> useStatement: anObject [
 
 	<generated>
 	useStatement := anObject
 ]
 
 { #category : 'navigation' }
-FASTFortran2kUseRenamedStatement >> useStatementGroup [
+FASTFortran2kUseRename >> useStatementGroup [
 	<generated>
 	<navigation: 'UseStatement'>
 	^ MooseSpecializedGroup with: self useStatement

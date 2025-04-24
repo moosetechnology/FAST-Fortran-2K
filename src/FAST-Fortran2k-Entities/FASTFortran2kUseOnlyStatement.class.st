@@ -7,7 +7,7 @@ I represent a only use statement
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `useNoRenamedStatements` | `FASTFortran2kUseOnlyStatement` | `useOnlyStatement` | `FASTFortran2kUseNoRenamedStatement` | |
+| `useNoRenames` | `FASTFortran2kUseOnlyStatement` | `useOnlyStatement` | `FASTFortran2kUseNoRename` | |
 
 
 
@@ -16,7 +16,7 @@ Class {
 	#name : 'FASTFortran2kUseOnlyStatement',
 	#superclass : 'FASTFortran2kUseStatement',
 	#instVars : [
-		'#useNoRenamedStatements => FMMany type: #FASTFortran2kUseNoRenamedStatement opposite: #useOnlyStatement'
+		'#useNoRenames => FMMany type: #FASTFortran2kUseNoRename opposite: #useOnlyStatement'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -33,30 +33,30 @@ FASTFortran2kUseOnlyStatement class >> annotation [
 ]
 
 { #category : 'adding' }
-FASTFortran2kUseOnlyStatement >> addUseNoRenamedStatement: anObject [
+FASTFortran2kUseOnlyStatement >> addUseNoRename: anObject [
 	<generated>
-	^ self useNoRenamedStatements add: anObject
+	^ self useNoRenames add: anObject
 ]
 
 { #category : 'accessing' }
-FASTFortran2kUseOnlyStatement >> useNoRenamedStatements [
-	"Relation named: #useNoRenamedStatements type: #FASTFortran2kUseNoRenamedStatement opposite: #useOnlyStatement"
+FASTFortran2kUseOnlyStatement >> useNoRenames [
+	"Relation named: #useNoRenames type: #FASTFortran2kUseNoRename opposite: #useOnlyStatement"
 
 	<generated>
 	<derived>
-	^ useNoRenamedStatements
+	^ useNoRenames
 ]
 
 { #category : 'accessing' }
-FASTFortran2kUseOnlyStatement >> useNoRenamedStatements: anObject [
+FASTFortran2kUseOnlyStatement >> useNoRenames: anObject [
 
 	<generated>
-	useNoRenamedStatements value: anObject
+	useNoRenames value: anObject
 ]
 
 { #category : 'navigation' }
-FASTFortran2kUseOnlyStatement >> useNoRenamedStatementsGroup [
+FASTFortran2kUseOnlyStatement >> useNoRenamesGroup [
 	<generated>
-	<navigation: 'UseNoRenamedStatements'>
-	^ MooseSpecializedGroup withAll: self useNoRenamedStatements asSet
+	<navigation: 'UseNoRenames'>
+	^ MooseSpecializedGroup withAll: self useNoRenames asSet
 ]
