@@ -168,7 +168,9 @@ Class {
 		'emptyStatement',
 		'functionCallStatement',
 		'tProcedure',
-		'specialIntrinsicType'
+		'specialIntrinsicType',
+		'useRename',
+		'useNoRename'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -301,108 +303,112 @@ FASTFortran2kGenerator >> defineClasses [
 FASTFortran2kGenerator >> defineClasses2k [
 
 	classDeclarationStatement := self
-		                             newClassNamed:
-		                             #ClassDeclarationStatement
-		                             comment:
-		                             '`class(type_name) [, pointer/allocatable/target] [, other_attributes ] :: declarators`'.
+		newClassNamed: #ClassDeclarationStatement
+		comment: '`class(type_name) [, pointer/allocatable/target] [, other_attributes ] :: declarators`'.
 
 	derivedTypeDefinition := self
-		                         newClassNamed: #DerivedTypeDefinition
-		                         comment:
-		                         self commentForDerivedTypeDefinition.
+		newClassNamed: #DerivedTypeDefinition
+		comment: self commentForDerivedTypeDefinition.
 
 	derivedTypeComponentAccess := self
-		                              newClassNamed:
-		                              #DerivedTypeComponentAccess
-		                              comment:
-		                              'I represent an access to object % field in derived type (therefore an expression)'.
+		newClassNamed: #DerivedTypeComponentAccess
+		comment: 'I represent an access to object % field in derived type (therefore an expression)'.
 
 	interface := self
-		             newClassNamed: #Interface
-		             comment: 'I represent an interface'.
+		newClassNamed: #Interface
+		comment: 'I represent an interface'.
+
 	interfaceProcedure := self
-		                      newClassNamed: #InterfaceProcedure
-		                      comment:
-		                      'I represent an interface procedure declaration'.
+		newClassNamed: #InterfaceProcedure
+		comment: 'I represent an interface procedure declaration'.
 
 	interfaceModuleProcedureSummary := self
-		                                   newClassNamed:
-		                                   #IModuleProcedureSummary
-		                                   comment: ''.
-
+		newClassNamed: #IModuleProcedureSummary
+		comment: ''.
 
 	internalProcedure := self
-		                     newAbstractClassNamed: #InternalProcedure
-		                     comment: 'I represent a internal procedure'.
+		newAbstractClassNamed: #InternalProcedure
+		comment: 'I represent a internal procedure'.
 
 	internalFunction := self
-		                    newClassNamed: #InternalFunction
-		                    comment: 'I represent a internal procedure'.
+		newClassNamed: #InternalFunction
+		comment: 'I represent a internal procedure'.
 
 	internalSubroutine := self
-		                      newClassNamed: #InternalSubroutine
-		                      comment: 'I represent a internal procedure'.
+		newClassNamed: #InternalSubroutine
+		comment: 'I represent a internal procedure'.
 
-	importStatement := self newClassNamed: #ImportStatement comment: ''.
+	importStatement := self 
+		newClassNamed: #ImportStatement 
+		comment: ''.
 
-	module := self newClassNamed: #Module comment: 'I represent a module'.
+	module := self 
+		newClassNamed: #Module 
+		comment: 'I represent a module'.
 
 	nameEntity := self
-		              newClassNamed: #NameEntity
-		              comment: 'Im an item of access-id-list'.
+		newClassNamed: #NameEntity
+		comment: 'Im an item of access-id-list'.
 
 	pointerAssignmentStatement := self
-		                              newClassNamed:
-		                              #PointerAssignmentStatement
-		                              comment: ''.
+		newClassNamed: #PointerAssignmentStatement
+		comment: ''.
 
 	publicStatement := self
-		                   newClassNamed: #PublicStatement
-		                   comment: 'Im a public statement'.
+		newClassNamed: #PublicStatement
+		comment: 'Im a public statement'.
 
 	privateStatement := self
-		                    newClassNamed: #PrivateStatement
-		                    comment: 'Im a private statement'.
+		newClassNamed: #PrivateStatement
+		comment: 'Im a private statement'.
 
-	sourceCodeString := self newClassNamed: #SourceCodeString comment: ''.
+	sourceCodeString := self 
+		newClassNamed: #SourceCodeString 
+		comment: ''.
+
 	formattedCodeString := self
-		                       newClassNamed: #FormattedCodeString
-		                       comment: ''.
+		newClassNamed: #FormattedCodeString
+		comment: ''.
 
 	typeBoundProcedure := self
-		                      newClassNamed: #TypeBoundProcedure
-		                      comment: 'Im a type-bound-procedure'.
+		newClassNamed: #TypeBoundProcedure
+		comment: 'Im a type-bound-procedure'.
 
 	typeBPFinal := self
-		               newClassNamed: #TypePBFinal
-		               comment: 'I represent a finalizer'.
+		newClassNamed: #TypePBFinal
+		comment: 'I represent a finalizer'.
 
 	useStatement := self
-		                newClassNamed: #UseStatement
-		                comment: 'I represent a use statement'.
-	useRenamedStatement := self
-		                       newClassNamed: #UseRenamedStatement
-		                       comment:
-		                       'I represent a use renamed statement'.
-	useNoRenamedStatement := self
-		                         newClassNamed: #UseNoRenamedStatement
-		                         comment:
-		                         'I represent a non use renamed statement'.
-	useOnlyStatement := self
-		                    newClassNamed: #UseOnlyStatement
-		                    comment: 'I represent a only use statement'.
+		newClassNamed: #UseStatement
+		comment: 'I represent a use statement'.
 
+	useOnlyStatement := self
+		newClassNamed: #UseOnlyStatement
+		comment: 'I represent a only use statement'.
+
+	useRename := self
+		newClassNamed: #UseRename
+		comment: 'I represent a name with an alias of entity used in programUnit'.
+
+	useNoRename := self
+		newClassNamed: #UseNoRename
+		comment: 'I represent a name of an entity used in programUnit'.
+	
 	specialIntrinsicType := self
 		newClassNamed: #SpecialIntrinsicType
 		comment: 'I represent a special Fortran intrinsic type sucha as int16, int32, real32,...'.
- 
+
 	userDefinedType := self
-		                   newClassNamed: #UserDefinedType
-		                   comment: 'I represent a user defined type'.
+		newClassNamed: #UserDefinedType
+		comment: 'I represent a user defined type'.
 
-	emptyStatement := self newClassNamed: #EmptyStatement comment: 'I represent an empty statement, maybe useful to add empty line'.
+	emptyStatement := self 
+		newClassNamed: #EmptyStatement
+		comment: 'I represent an empty statement, maybe useful to add empty line'.
 
-	functionCallStatement := self newClassNamed: #FunctionCallStatement comment: 'I represent a function call statement'.
+	functionCallStatement := self 
+		newClassNamed: #FunctionCallStatement 
+		comment: 'I represent a function call statement'.
 ]
 
 { #category : 'definition' }
@@ -885,11 +891,11 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	useStatement --|> tWithModifiers.
 	useStatement --|> abstractStatement.
 	
-	useRenamedStatement --|> tNamedEntity.
-	useNoRenamedStatement --|> tNamedEntity.
-	
 	useOnlyStatement --|> useStatement.
 
+	useNoRename --|> tNamedEntity.
+	useRename --|> tNamedEntity.
+	
 	specialIntrinsicType --|> type.
 	specialIntrinsicType --|> tNamedEntity.
 
@@ -965,7 +971,7 @@ FASTFortran2kGenerator >> defineProperties2k [
 	(typeBoundProcedure property: #interface type: #String)
 		comment: 'I represent the name of the interface'.
 		
-	(useRenamedStatement property: #alias type: #String)
+	(useRename property: #alias type: #String)
 		comment: 'I represent the alias of the used entity'.
 		
 ]
@@ -1152,10 +1158,12 @@ FASTFortran2kGenerator >> defineRelations2k [
 
 	publicStatement <>-* nameEntity.
 	privateStatement <>-* nameEntity.
-	useStatement <>-* useRenamedStatement.
-	useOnlyStatement <>-* useNoRenamedStatement.
+	useStatement <>-* useRename.
+	useOnlyStatement <>-* useNoRename.
 
 	interface <>-* interfaceProcedure.
+	((type property: #kind) comment: 'a kind for the selected type')
+	<>- (abstractExpression property: #kindOwner).
 ]
 
 { #category : 'definition' }
