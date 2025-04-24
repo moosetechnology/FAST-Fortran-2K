@@ -626,6 +626,12 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
 	paramFactories ifNotEmpty: [
 		segadj statementBlock statements addAll: self makeSegadjLocalDeclarations ].
 
+	segadj addStatement: thisParameter createSeginiFieldInitialization.
+	paramFactories do: [ :paramFactory |
+		segadj addStatement: paramFactory createSeginiFieldInitialization.
+	].
+	segadj addStatement: model newEmptyStatement.
+
 	segadj addStatement: (model newFormattedCodeString
 		content: 'call check_pre_condition(associated(this), ''{1}_segadj'', ''associated(this)'')' ;
 		values: { name } ).
