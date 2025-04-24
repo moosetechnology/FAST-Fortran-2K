@@ -132,7 +132,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSeginiFieldInitialization [
 
 	(rank > 0) ifTrue: [
 		statements add: (self 
-			makeAllocationCallForDimensionnedField: ('this%' , name) 
+			makeAllocationCallForDimensionnedField: ('this % ' , name) 
 			with: 'ooo_dim'
 		)
 	].
