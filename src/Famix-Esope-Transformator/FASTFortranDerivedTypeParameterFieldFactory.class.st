@@ -59,10 +59,17 @@ FASTFortranDerivedTypeParameterFieldFactory >> createSeginiFieldInitialization [
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeParameterFieldFactory >> createSegmentFieldDeclaration [
 
+
+	| declaredType |
+	declaredType := self model newIntegerType.
+
 	^self model newVariableDeclarationStatement
 		modifiers: #( private) ;
-		addDeclarator: (self model newVariableDeclarator name: name) ;
-		declaredType: self model newIntegerType
+		addDeclarator: (self model newVariableDeclarator 
+			name: name ;
+			expression: declaredType initialValue 
+		) ;
+		declaredType: declaredType
 ]
 
 { #category : 'testing' }
