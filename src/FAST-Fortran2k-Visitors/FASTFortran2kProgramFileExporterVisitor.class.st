@@ -1357,7 +1357,21 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kVariableDeclaration
 { #category : 'visiting - statements' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kVariableDeclarator: aFASTFortran2kVariableDeclarator [
 
-	^ self visitFASTFortranVariableDeclarator: aFASTFortran2kVariableDeclarator
+	self << aFASTFortran2kVariableDeclarator name.
+
+	aFASTFortran2kVariableDeclarator dimensions ifNotEmpty: [ :dimensions |
+		self
+			outputExpression: [ dimensions 
+				do: [ :node | self << ':' ]
+				separatedBy: [ self << ', ' ]	
+			]
+			inParentheses: aFASTFortran2kVariableDeclarator dimensions isNotEmpty ].
+
+	aFASTFortran2kVariableDeclarator expression ifNotNil: [ :expression |
+		self << (aFASTFortran2kVariableDeclarator dimensions 
+			ifEmpty: [ ' = ' ]
+			ifNotEmpty: [ ' => ' ]).
+		self outputTopLevelExpression: [ expression accept: self ] ]
 ]
 
 { #category : 'visiting' }
