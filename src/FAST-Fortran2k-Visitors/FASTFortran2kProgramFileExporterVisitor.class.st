@@ -1265,19 +1265,13 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseOnlyStatement: a
 		<< aFASTFortran2kUseOnlyStatement name;
 		<< ', only: '.
 
-	self visitNodeListSeparatedByCommas: aFASTFortran2kUseOnlyStatement useNoRenamedStatements.
+	self visitNodeListSeparatedByCommas: aFASTFortran2kUseOnlyStatement useNoRenames.
 	
-	aFASTFortran2kUseOnlyStatement useRenamedStatements ifNotNil: [ :useRenamedStatements |  
-		useRenamedStatements ifNotEmpty: [ 
-			self << ', '.
-			self visitNodeListSeparatedByCommas: useRenamedStatements 
-		] 
+	aFASTFortran2kUseOnlyStatement useRenames ifNotEmpty: [ :useRenames | 
+		self << ', '.
+		self visitNodeListSeparatedByCommas: useRenames 
 	].
-	self newLine 
-	
-	
-	 
-	
+	self newLine
 ]
 
 { #category : 'visiting' }
@@ -1314,19 +1308,19 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseStatement: aFAST
 		<< ' :: ';
 		<< aFASTFortran2kUseStatement name.
 
-	aFASTFortran2kUseStatement useRenamedStatements 
-		ifNotNil: [:useRenamedStatement | 
-			useRenamedStatement ifNotEmpty: [ 
+	aFASTFortran2kUseStatement useRenames 
+		ifNotNil: [:useRenames | 
+			useRenames ifNotEmpty: [ 
 				self << ', '.
-				self visitNodeListSeparatedByCommas: useRenamedStatement
+				self visitNodeListSeparatedByCommas: useRenames
 			]
 		].
 
-	aFASTFortran2kUseStatement useNoRenamedStatements 
-		ifNotNil: [ :onlyList |
-			onlyList ifNotEmpty: [ 
+	aFASTFortran2kUseStatement useNoRenames 
+		ifNotNil: [ :useNoRenames |
+			useNoRenames ifNotEmpty: [ 
 				self << ', only: '.
-				self visitNodeListSeparatedByCommas: onlyList
+				self visitNodeListSeparatedByCommas: useNoRenames
 			]
 		].
 
