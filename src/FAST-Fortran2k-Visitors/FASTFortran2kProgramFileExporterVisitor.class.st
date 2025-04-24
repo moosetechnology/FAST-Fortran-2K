@@ -1392,12 +1392,6 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranAbstractStatement: aF
 ]
 
 { #category : 'visiting' }
-FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranAttribute: aFASTFortran2kAttribute [
-
-	^ self visitFASTFortranVariableDeclarationStatement: aFASTFortran2kAttribute
-]
-
-{ #category : 'visiting' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranColon: aFASTFortran2kColon [
 
 	self << '(len=:)'
@@ -1459,27 +1453,6 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranUsedEntityRenamed: an
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranUserDefinedType: aFASTFortran2kUserDefinedType [
 
 	self << aFASTFortran2kUserDefinedType name
-]
-
-{ #category : 'visiting - statements' }
-FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement [
-
-	| comma |
-
-	self skipLine: aFASTFortranVariableDeclarationStatement.
-
-	self indented: ''.
-	aFASTFortranVariableDeclarationStatement declaredType accept: self.
-
-	comma := ''.
-	"aFASTFortranVariableDeclarationStatement isPointer ifTrue: [ self << comma ; << ' pointer'. comma := ',' ].
-	aFASTFortranVariableDeclarationStatement visibility ifNotNil: [ :viz | self << comma ; << viz. comma := ',' ]. "
-	self flag: #TODO. "aFASTFortranVariableDeclarationStatement isTarget ifTrue: [ :viz | self << comma ; << ' target'. comma := ',' ]. "
-	
-	self << ' :: '.
-	self visitNodeListSeparatedByCommas:
-		aFASTFortranVariableDeclarationStatement declarators.
-	self newLine
 ]
 
 { #category : 'visiting' }
