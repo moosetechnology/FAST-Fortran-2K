@@ -75,6 +75,15 @@ FASTFortran2kProgramFileExporterVisitor >> modernRelationalOperators [
 ]
 
 { #category : 'outputting' }
+FASTFortran2kProgramFileExporterVisitor >> newLine [
+	"redefines to deal with line length
+	 writes directly to the outputStream so that the return does not count for one column"
+
+	column := 0.
+	self outputStream << OSPlatform current lineEnding
+]
+
+{ #category : 'outputting' }
 FASTFortran2kProgramFileExporterVisitor >> setLineDescriptions: aFilename [
 	"For each line, creates a description consisting of 
 	 last-position in the line -> whether the line is empty"

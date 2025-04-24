@@ -9,7 +9,7 @@ Class {
 FASTFortran2kExporterVisitorTest >> assertExport: anEntity equals: expectedString [
 
 	anEntity accept: visitor.
-	self assert: visitor outputStream contents equals: expectedString
+	self assert: visitor outputStream contents equals: expectedString withPlatformLineEndings
 ]
 
 { #category : 'running' }
