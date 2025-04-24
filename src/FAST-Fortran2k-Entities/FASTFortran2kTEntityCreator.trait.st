@@ -868,10 +868,10 @@ FASTFortran2kTEntityCreator >> newUnionStatement [
 ]
 
 { #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newUseNoRenamedStatement [
+FASTFortran2kTEntityCreator >> newUseNoRename [
 
 	<generated>
-	^ self add: FASTFortran2kUseNoRenamedStatement new
+	^ self add: FASTFortran2kUseNoRename new
 ]
 
 { #category : 'entity creation' }
@@ -882,10 +882,10 @@ FASTFortran2kTEntityCreator >> newUseOnlyStatement [
 ]
 
 { #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newUseRenamedStatement [
+FASTFortran2kTEntityCreator >> newUseRename [
 
 	<generated>
-	^ self add: FASTFortran2kUseRenamedStatement new
+	^ self add: FASTFortran2kUseRename new
 ]
 
 { #category : 'entity creation' }

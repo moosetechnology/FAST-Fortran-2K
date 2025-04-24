@@ -13,6 +13,7 @@ I represent Fortran Type statement
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
+| `kind` | `FASTFortran2kType` | `kindOwner` | `FASTFortran2kAbstractExpression` | a kind for the selected type|
 | `size` | `FASTFortran2kType` | `parentTypeSize` | `FASTFortran2kAbstractExpression` | a data size in bytes|
 
 
@@ -22,6 +23,7 @@ Class {
 	#name : 'FASTFortran2kType',
 	#superclass : 'FASTFortran2kEntity',
 	#instVars : [
+		'#kind => FMOne type: #FASTFortran2kAbstractExpression opposite: #kindOwner',
 		'#parentDeclaration => FMOne type: #FASTFortran2kTDeclaredType opposite: #declaredType',
 		'#parentImplicitRule => FMOne type: #FASTFortran2kImplicitTypingRule opposite: #type',
 		'#size => FMOne type: #FASTFortran2kAbstractExpression opposite: #parentTypeSize'
@@ -38,6 +40,29 @@ FASTFortran2kType class >> annotation [
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
+]
+
+{ #category : 'accessing' }
+FASTFortran2kType >> kind [
+	"Relation named: #kind type: #FASTFortran2kAbstractExpression opposite: #kindOwner"
+
+	<generated>
+	<FMComment: 'a kind for the selected type'>
+	^ kind
+]
+
+{ #category : 'accessing' }
+FASTFortran2kType >> kind: anObject [
+
+	<generated>
+	kind := anObject
+]
+
+{ #category : 'navigation' }
+FASTFortran2kType >> kindGroup [
+	<generated>
+	<navigation: 'Kind'>
+	^ MooseSpecializedGroup with: self kind
 ]
 
 { #category : 'accessing' }

@@ -12,7 +12,7 @@ I represent a use statement
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `useRenamedStatements` | `FASTFortran2kUseStatement` | `useStatement` | `FASTFortran2kUseRenamedStatement` | |
+| `useRenames` | `FASTFortran2kUseStatement` | `useStatement` | `FASTFortran2kUseRename` | |
 
 
 ## Properties
@@ -32,7 +32,7 @@ Class {
 	#traits : 'FASTFortran2kTWithModifiers + FASTTNamedEntity',
 	#classTraits : 'FASTFortran2kTWithModifiers classTrait + FASTTNamedEntity classTrait',
 	#instVars : [
-		'#useRenamedStatements => FMMany type: #FASTFortran2kUseRenamedStatement opposite: #useStatement'
+		'#useRenames => FMMany type: #FASTFortran2kUseRename opposite: #useStatement'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -49,30 +49,30 @@ FASTFortran2kUseStatement class >> annotation [
 ]
 
 { #category : 'adding' }
-FASTFortran2kUseStatement >> addUseRenamedStatement: anObject [
+FASTFortran2kUseStatement >> addUseRename: anObject [
 	<generated>
-	^ self useRenamedStatements add: anObject
+	^ self useRenames add: anObject
 ]
 
 { #category : 'accessing' }
-FASTFortran2kUseStatement >> useRenamedStatements [
-	"Relation named: #useRenamedStatements type: #FASTFortran2kUseRenamedStatement opposite: #useStatement"
+FASTFortran2kUseStatement >> useRenames [
+	"Relation named: #useRenames type: #FASTFortran2kUseRename opposite: #useStatement"
 
 	<generated>
 	<derived>
-	^ useRenamedStatements
+	^ useRenames
 ]
 
 { #category : 'accessing' }
-FASTFortran2kUseStatement >> useRenamedStatements: anObject [
+FASTFortran2kUseStatement >> useRenames: anObject [
 
 	<generated>
-	useRenamedStatements value: anObject
+	useRenames value: anObject
 ]
 
 { #category : 'navigation' }
-FASTFortran2kUseStatement >> useRenamedStatementsGroup [
+FASTFortran2kUseStatement >> useRenamesGroup [
 	<generated>
-	<navigation: 'UseRenamedStatements'>
-	^ MooseSpecializedGroup withAll: self useRenamedStatements asSet
+	<navigation: 'UseRenames'>
+	^ MooseSpecializedGroup withAll: self useRenames asSet
 ]
