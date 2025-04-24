@@ -1243,6 +1243,12 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUnionStatement: aFA
 	self newLine
 ]
 
+{ #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseNoRename: aFASTFortran2kUseNoRename [
+
+	self indented: aFASTFortran2kUseNoRename name
+]
+
 { #category : 'visiting - statements' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseNoRenamedStatement: aFASTFortran2kUseNoRenamedStatement [
 
@@ -1272,6 +1278,16 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseOnlyStatement: a
 	
 	 
 	
+]
+
+{ #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseRename: aFASTFortran2kUseRename [ 
+
+	self 
+		skipLine: aFASTFortran2kUseRename ;
+		<< aFASTFortran2kUseRename alias ;
+		<< ' => ' ;
+		<< aFASTFortran2kUseRename name
 ]
 
 { #category : 'visiting - statements' }
