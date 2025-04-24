@@ -423,11 +423,7 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kDerivedTypeDefiniti
 		newLine ;
 		indented: 'type'.
 
-	aFASTFortran2kDerivedTypeDefinition modifiers 
-		ifNotEmpty: [ :modifiers | 
-			self << ', '.
-			self visitNodeListSeparatedByCommas: modifiers
-		].
+	self visitFASTFortran2kModifiers: aFASTFortran2kDerivedTypeDefinition modifiers.
 
 	aFASTFortran2kDerivedTypeDefinition superType ifNotNil: [ :superType |
 		self
