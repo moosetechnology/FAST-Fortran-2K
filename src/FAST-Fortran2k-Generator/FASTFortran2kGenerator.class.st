@@ -170,7 +170,9 @@ Class {
 		'tProcedure',
 		'specialIntrinsicType',
 		'useRename',
-		'useNoRename'
+		'useNoRename',
+		'tConditionalStatement',
+		'tLoopStatement'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -697,6 +699,7 @@ FASTFortran2kGenerator >> defineHierarchy [
 	closeStatement --|> abstractIOStatement.
 	commonStatement --|> abstractStatement.
 	conditionalStatement --|> abstractStatement.
+	conditionalStatement --|> tConditionalStatement.
 	continueStatement --|> abstractStatement.
 	dataStatement --|> abstractStatement.
 	dataStatement --|> tWithVariableGroup.
@@ -705,8 +708,10 @@ FASTFortran2kGenerator >> defineHierarchy [
 	dimensionStatement --|> tWithDeclarators.
 	doStatement --|> abstractStatement.
 	doStatement --|> tWithLabelReferences.
+	doStatement --|> tLoopStatement.
 	doStatement --|> tWithLoopControl.
 	doWhileStatement --|> conditionalStatement.
+	doWhileStatement --|> tLoopStatement.
 	elseStatement --|> abstractStatement.
 	encodeStatement --|> abstractIOStatement.
 	endFileStatement --|> abstractIOStatement.
@@ -1043,11 +1048,6 @@ FASTFortran2kGenerator >> defineRelations [
 	<>-
 	((loopControlExpression property: #parentLoop) comment: 'Parent loop').
 
-	((doStatement property: #statementBlock) comment:
-		 'Statement block containing statements of the do body ')
-	<>- ((statementBlock property: #parentDoStatement) comment:
-			 'Parent do statement').
-
 	(entryStatement property: #entryArguments)
 	<>-* (tEntryArgument property: #entryStatement).
 
@@ -1061,10 +1061,6 @@ FASTFortran2kGenerator >> defineRelations [
 
 	((goToAssignedStatement property: #selectorExpression) comment: 'The expression which value selects the label to go to')
 	<>- (abstractExpression property: #parentGotoAssignedStatement).
-
-	((conditionalStatement property: #condition) comment: 'Condition')
-	<>-
-	((abstractExpression property: #parentConditionalStatement) comment: 'Parent conditional statement (if-block, if-logical, ...)').
 
 	((ifLogicalStatement property: #statement) comment:
 		 'Statement of the logical if')
@@ -1404,6 +1400,8 @@ FASTFortran2kGenerator >> defineTraits [
 	tNamedEntity := self remoteTrait: #TNamedEntity withPrefix: #FAST.
 	tNumericalLiteral := self remoteTrait: #TNumericalLiteral withPrefix: #FAST.
 	tStatement := self remoteTrait: #TStatement withPrefix: #FAST.
+	tConditionalStatement := self remoteTrait: #TConditionalStatement withPrefix: #FAST.
+	tLoopStatement := self remoteTrait: #TLoopStatement withPrefix: #FAST.
 	tStatementBlock := self remoteTrait: #TStatementBlock withPrefix: #FAST.
 	tReturnStatement := self remoteTrait: #TReturnStatement withPrefix: #FAST.
 	tUnaryExpression := self remoteTrait: #TUnaryExpression withPrefix: #FAST. 
