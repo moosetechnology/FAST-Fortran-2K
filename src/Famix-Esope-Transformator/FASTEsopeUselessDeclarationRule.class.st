@@ -9,7 +9,8 @@ Class {
 	#name : 'FASTEsopeUselessDeclarationRule',
 	#superclass : 'FASTEsopeAbstractSimplifyingRule',
 	#instVars : [
-		'uselessDeclarations'
+		'uselessDeclarations',
+		'allParameters'
 	],
 	#category : 'Famix-Esope-Transformator-Simplification',
 	#package : 'Famix-Esope-Transformator',
@@ -74,7 +75,6 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kPointerAssignmentStatement:
 FASTEsopeUselessDeclarationRule >> visitFASTFortran2kProcedure: aFASTFortranProcedure [
 
 	uselessDeclarations := Dictionary new.
-aFASTFortranProcedure name traceCr.
 	super visitFASTFortran2kProcedure: aFASTFortranProcedure.
 	self checkUselessDeclarations
 ]
@@ -83,7 +83,6 @@ aFASTFortranProcedure name traceCr.
 FASTEsopeUselessDeclarationRule >> visitFASTFortran2kProgramMain: aFASTFortranProgramMain [
 
 	uselessDeclarations := Dictionary new.
-aFASTFortranProgramMain name traceCr.
 	super visitFASTFortran2kProgramMain: aFASTFortranProgramMain.
 	self checkUselessDeclarations
 ]
