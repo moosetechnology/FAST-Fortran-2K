@@ -611,6 +611,38 @@ FASTFortranBehavioralTransformationVisitorTest >> testVariableDeclarationsSomeEx
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testkCloseStatement [
+	| stmt res |
+
+	stmt := FASTFortranCloseStatement new
+		ioParameters: { self assignementExpression: #unit value: #libunt } .
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kCloseStatement.
+	self assert: res ioParameters size equals: 1.
+
+	self assert: res ioParameters first class equals: FASTFortran2kAssignmentExpression.
+
+]
+
+{ #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testkOpenStatement [
+	| stmt res |
+
+	stmt := FASTFortranOpenStatement new
+		ioParameters: { self assignementExpression: #unit value: #libunt } .
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kOpenStatement.
+	self assert: res ioParameters size equals: 1.
+
+	self assert: res ioParameters first class equals: FASTFortran2kAssignmentExpression.
+
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testkWriteStatement [
 	| stmt res entity |
 
