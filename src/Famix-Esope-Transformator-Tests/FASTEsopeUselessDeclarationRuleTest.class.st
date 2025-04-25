@@ -158,6 +158,19 @@ FASTEsopeUselessDeclarationRuleTest >> testExpressionInPointerAssignmentIsUseful
 ]
 
 { #category : 'tests' }
+FASTEsopeUselessDeclarationRuleTest >> testParameterIsUseful [
+
+	self function: #fctBigSmall type: #(character 20).
+	self addParameter: #x type: #integer.
+	self addParameter: #y type: #integer.
+
+	visitor simplify: ast.
+
+	self assert: visitor uselessDeclarations size equals: 0
+
+]
+
+{ #category : 'tests' }
 FASTEsopeUselessDeclarationRuleTest >> testVariableDeclarationStatementIsUseful [
 
 	self subroutine: 'sub'.

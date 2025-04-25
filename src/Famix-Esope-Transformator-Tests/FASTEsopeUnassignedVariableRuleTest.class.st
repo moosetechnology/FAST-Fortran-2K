@@ -427,9 +427,26 @@ FASTEsopeUnassignedVariableRuleTest >> testVisitAssignement [
 ]
 
 { #category : 'tests' }
-FASTEsopeUnassignedVariableRuleTest >> testVisitParameter [
+FASTEsopeUnassignedVariableRuleTest >> testVisitFunctionParameter [
 
 	self function: #fctBigSmall type: #(character 20).
+	self addParameter: #x type: #integer.
+	self addParameter: #y type: #integer.
+
+	self assert: visitor assignedVariables isEmpty.
+
+	ast accept: visitor.
+
+	self assert: visitor assignedVariables size equals: 2.
+	self assert: (visitor assignedVariables includes: 'x').
+	self assert: (visitor assignedVariables includes: 'y').
+
+]
+
+{ #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testVisitSubroutineParameter [
+
+	self subroutine: #sub.
 	self addParameter: #x type: #integer.
 	self addParameter: #y type: #integer.
 

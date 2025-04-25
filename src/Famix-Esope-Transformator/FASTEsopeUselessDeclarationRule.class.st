@@ -125,6 +125,9 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarator: aFASTFo
 	   declarationStatement + parentStatement"
 
 	| declarationStatement |
+	(allParameters includes: aFASTFortranVariableDeclarator name)
+		ifTrue: [ ^nil ].
+
 	declarationStatement := nodeStack pop.
 
 	uselessDeclarations
@@ -136,4 +139,11 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarator: aFASTFo
 	^ aFASTFortranVariableDeclarator expression
 		  ifNotNil: [ :expression | expression accept: self ]
 		  ifNil: [ nil ]
+]
+
+{ #category : 'visiting - expressions' }
+FASTEsopeUselessDeclarationRule >> visitFASTTWithParameters: aFASTFortran2kTWithParameters [
+	"parameters are considered always used so we keep their names ghere to not add them to the useless list"
+
+	allParameters :=  aFASTFortran2kTWithParameters parameters collect: #name
 ]
