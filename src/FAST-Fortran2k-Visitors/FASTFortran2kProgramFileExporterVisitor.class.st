@@ -11,7 +11,8 @@ Class {
 	#classTraits : 'FASTFortran2kTTraitVisitor classTrait',
 	#instVars : [
 		'modelIn',
-		'linesDescription'
+		'linesDescription',
+		'inIOStatement'
 	],
 	#classVars : [
 		'ModernRelationalOperators'
@@ -202,9 +203,7 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kAssignmentStatement
 	self skipLine: aFASTFortran2kAssignmentStatement.
 
 	self indented: ''.
-	aFASTFortran2kAssignmentStatement variable accept: self.
-	self << ' = '.
-	aFASTFortran2kAssignmentStatement expression accept: self.
+	self visitFASTFortranTAssignment: aFASTFortran2kAssignmentStatement.
 	self newLine
 ]
 
