@@ -16,7 +16,6 @@ I am the super class of all Fortran expressions
 | `parentArrayDimensionDeclarator` | `FASTFortran2kAbstractExpression` | `lowerBound` | `FASTFortran2kArrayRange` | Parent array dimension declarator|
 | `parentArrayDimensionDeclarator` | `FASTFortran2kAbstractExpression` | `upperBound` | `FASTFortran2kArrayRange` | Parent array dimension declarator|
 | `parentArrayExpression` | `FASTFortran2kAbstractExpression` | `indices` | `FASTFortran2kArrayVariable` | an ArrayVariable expression of which I am an indice|
-| `parentConditionalStatement` | `FASTFortran2kAbstractExpression` | `condition` | `FASTFortran2kConditionalStatement` | Parent conditional statement (if-block, if-logical, ...)|
 | `parentConditionalStatement` | `FASTTExpression` | `condition` | `FASTTConditionalStatement` | Optional condition statement where this expression is used|
 | `parentDataStatement` | `FASTFortran2kAbstractExpression` | `dataConstants` | `FASTFortran2kDataGroup` | |
 | `parentExpression` | `FASTTExpression` | `expression` | `FASTTUnaryExpression` | Parent (unary) expression|
@@ -50,7 +49,6 @@ Class {
 		'#kindOwner => FMOne type: #FASTFortran2kType opposite: #kind',
 		'#parentArrayDimensionDeclarator => FMOne type: #FASTFortran2kArrayRange opposite: #upperBound',
 		'#parentArrayExpression => FMOne type: #FASTFortran2kArrayVariable opposite: #indices',
-		'#parentConditionalStatement => FMOne type: #FASTFortran2kConditionalStatement opposite: #condition',
 		'#parentDataStatement => FMOne type: #FASTFortran2kDataGroup opposite: #dataConstants',
 		'#parentGotoAssignedStatement => FMOne type: #FASTFortran2kGoToAssignedStatement opposite: #selectorExpression',
 		'#parentGotoComputedStatement => FMOne type: #FASTFortran2kGoToComputedStatement opposite: #selectorExpression',
@@ -71,6 +69,14 @@ FASTFortran2kAbstractExpression class >> annotation [
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
+]
+
+{ #category : '*FAST-Fortran2k-Visitors' }
+FASTFortran2kAbstractExpression >> accept: aVisitor [
+	<generated>
+
+	^ aVisitor visitFASTFortran2kAbstractExpression: self.
+
 ]
 
 { #category : 'accessing' }
@@ -169,31 +175,6 @@ FASTFortran2kAbstractExpression >> parentArrayExpressionGroup [
 	<generated>
 	<navigation: 'ParentArrayExpression'>
 	^ MooseSpecializedGroup with: self parentArrayExpression
-]
-
-{ #category : 'accessing' }
-FASTFortran2kAbstractExpression >> parentConditionalStatement [
-	"Relation named: #parentConditionalStatement type: #FASTFortran2kConditionalStatement opposite: #condition"
-
-	<generated>
-	<FMComment: 'Parent conditional statement (if-block, if-logical, ...)'>
-	<container>
-	<derived>
-	^ parentConditionalStatement
-]
-
-{ #category : 'accessing' }
-FASTFortran2kAbstractExpression >> parentConditionalStatement: anObject [
-
-	<generated>
-	parentConditionalStatement := anObject
-]
-
-{ #category : 'navigation' }
-FASTFortran2kAbstractExpression >> parentConditionalStatementGroup [
-	<generated>
-	<navigation: 'ParentConditionalStatement'>
-	^ MooseSpecializedGroup with: self parentConditionalStatement
 ]
 
 { #category : 'accessing' }
