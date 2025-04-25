@@ -158,6 +158,24 @@ FASTEsopeUselessDeclarationRuleTest >> testExpressionInPointerAssignmentIsUseful
 ]
 
 { #category : 'tests' }
+FASTEsopeUselessDeclarationRuleTest >> testMainHaveNoParameters [
+
+	| stmt |
+	ast := FASTFortran2kProgramMain new
+		name: #main ;
+		statementBlock: (self statementBlock: #()) ;
+		yourself.
+	stmt := self declarationStatement: #x type: #integer.
+	stmt mooseModel: FASTFortran2kModel new.
+	self addStatement: stmt.
+
+	visitor simplify: ast.
+
+	self assert: visitor uselessDeclarations size equals: 1
+
+]
+
+{ #category : 'tests' }
 FASTEsopeUselessDeclarationRuleTest >> testParameterIsUseful [
 
 	self function: #fctBigSmall type: #(character 20).

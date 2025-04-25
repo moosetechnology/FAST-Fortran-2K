@@ -34,7 +34,8 @@ FASTEsopeUselessDeclarationRule >> initialize [
 
 	super initialize.
 
-	uselessDeclarations := Dictionary new
+	uselessDeclarations := Dictionary new.
+	allParameters := #()
 ]
 
 { #category : 'accessing - private tests' }
