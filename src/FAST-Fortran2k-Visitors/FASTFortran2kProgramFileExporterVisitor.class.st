@@ -1001,8 +1001,7 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kReadStatement: aFAS
 	self 
 		skipLine: aFASTFortran2kReadStatement ;
 		indented: '' ;
-		visitFASTFortranReadStatement: aFASTFortran2kReadStatement ;
-		newLine
+		visitFASTFortranReadStatement: aFASTFortran2kReadStatement
 		
 ]
 

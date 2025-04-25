@@ -46,6 +46,23 @@ FASTFortran2kExporterVisitorTest >> testAssignmentStatementPointer [
 '
 ]
 
+{ #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testCloseStatement [
+	| stmt |
+	stmt := FASTFortran2kCloseStatement new
+		ioParameters: {
+			self integerLiteral: '3' .
+			self ioParameter: #file value: 'projectA/data.test'.
+			self ioParameter: #err value: 99
+		}.
+
+	self
+		assertExport: stmt
+		equals: 
+'close (3, file=''projectA/data.test'', err=99) 
+'.
+]
+
 { #category : 'testing - statements' }
 FASTFortran2kExporterVisitorTest >> testCommentStatement [
 
@@ -138,7 +155,7 @@ FASTFortran2kExporterVisitorTest >> testOpenStatement [
 	self
 		assertExport: stmt
 		equals: 
-'open (3, file=''projectA/data.test'', err=99)
+'open (3, file=''projectA/data.test'', err=99) 
 '.
 ]
 
@@ -188,8 +205,6 @@ end program demo
 FASTFortran2kExporterVisitorTest >> testReadStatementWellFormatted [
 	| stmt |
 
-	self skip: '#TODO: Arguments in Write and Read are not AssignmentExpression' .
-
 	stmt := self
 		readStatement: #(V)
 		ioParams: {
@@ -201,7 +216,7 @@ FASTFortran2kExporterVisitorTest >> testReadStatementWellFormatted [
 
 	self
 		assertExport: stmt
-		equals: 'read (1, rec=3, iostat=N, err=8) V
+		equals: 'read (1, rec = 3, iostat = N, err = 8) V
 '
 ]
 
