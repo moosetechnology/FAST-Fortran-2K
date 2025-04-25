@@ -9,7 +9,8 @@ Class {
 	#name : 'FASTEsopeUselessDeclarationRule',
 	#superclass : 'FASTEsopeAbstractSimplifyingRule',
 	#instVars : [
-		'uselessDeclarations'
+		'uselessDeclarations',
+		'allParameters'
 	],
 	#category : 'Famix-Esope-Transformator-Simplification',
 	#package : 'Famix-Esope-Transformator',
@@ -74,7 +75,6 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kPointerAssignmentStatement:
 FASTEsopeUselessDeclarationRule >> visitFASTFortran2kProcedure: aFASTFortranProcedure [
 
 	uselessDeclarations := Dictionary new.
-aFASTFortranProcedure name traceCr.
 	super visitFASTFortran2kProcedure: aFASTFortranProcedure.
 	self checkUselessDeclarations
 ]
@@ -83,7 +83,6 @@ aFASTFortranProcedure name traceCr.
 FASTEsopeUselessDeclarationRule >> visitFASTFortran2kProgramMain: aFASTFortranProgramMain [
 
 	uselessDeclarations := Dictionary new.
-aFASTFortranProgramMain name traceCr.
 	super visitFASTFortran2kProgramMain: aFASTFortranProgramMain.
 	self checkUselessDeclarations
 ]
@@ -126,6 +125,9 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarator: aFASTFo
 	   declarationStatement + parentStatement"
 
 	| declarationStatement |
+	(allParameters includes: aFASTFortranVariableDeclarator name)
+		ifTrue: [ ^nil ].
+
 	declarationStatement := nodeStack pop.
 
 	uselessDeclarations
@@ -137,4 +139,11 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarator: aFASTFo
 	^ aFASTFortranVariableDeclarator expression
 		  ifNotNil: [ :expression | expression accept: self ]
 		  ifNil: [ nil ]
+]
+
+{ #category : 'visiting - expressions' }
+FASTEsopeUselessDeclarationRule >> visitFASTTWithParameters: aFASTFortran2kTWithParameters [
+	"parameters are considered always used so we keep their names ghere to not add them to the useless list"
+
+	allParameters :=  aFASTFortran2kTWithParameters parameters collect: #name
 ]
