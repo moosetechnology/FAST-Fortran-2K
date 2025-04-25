@@ -4,20 +4,32 @@ I represent a fortran statement with a condition: if-block, if-logical
 ## Relations
 ======================
 
+### Parents
+| Relation | Origin | Opposite | Type | Comment |
+|---|
+| `parentLoopStatement` | `FASTTStatement` | `body` | `FASTTLoopStatement` | Optional loop of which this statement is the body|
+| `statementContainer` | `FASTTStatement` | `statements` | `FASTTStatementBlock` | Block containing this statement.|
+
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `condition` | `FASTFortran2kConditionalStatement` | `parentConditionalStatement` | `FASTFortran2kAbstractExpression` | Condition|
+| `condition` | `FASTTConditionalStatement` | `parentConditionalStatement` | `FASTTExpression` | The boolean condition tested|
 
 
+## Properties
+======================
+
+| Name | Type | Default value | Comment |
+|---|
+| `endPos` | `Number` | nil | |
+| `startPos` | `Number` | nil | |
 
 "
 Class {
 	#name : 'FASTFortran2kConditionalStatement',
 	#superclass : 'FASTFortran2kAbstractStatement',
-	#instVars : [
-		'#condition => FMOne type: #FASTFortran2kAbstractExpression opposite: #parentConditionalStatement'
-	],
+	#traits : 'FASTTConditionalStatement',
+	#classTraits : 'FASTTConditionalStatement classTrait',
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
 	#tag : 'Entities'
@@ -30,27 +42,4 @@ FASTFortran2kConditionalStatement class >> annotation [
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
 	^ self
-]
-
-{ #category : 'accessing' }
-FASTFortran2kConditionalStatement >> condition [
-	"Relation named: #condition type: #FASTFortran2kAbstractExpression opposite: #parentConditionalStatement"
-
-	<generated>
-	<FMComment: 'Condition'>
-	^ condition
-]
-
-{ #category : 'accessing' }
-FASTFortran2kConditionalStatement >> condition: anObject [
-
-	<generated>
-	condition := anObject
-]
-
-{ #category : 'navigation' }
-FASTFortran2kConditionalStatement >> conditionGroup [
-	<generated>
-	<navigation: 'Condition'>
-	^ MooseSpecializedGroup with: self condition
 ]
