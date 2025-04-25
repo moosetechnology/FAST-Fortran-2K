@@ -59,7 +59,7 @@ FASTFortran2kExporterVisitorTest >> testCloseStatement [
 	self
 		assertExport: stmt
 		equals: 
-'close (3, file=''projectA/data.test'', err=99) 
+'close (3, file=''projectA/data.test'', err=99)
 '.
 ]
 
@@ -155,7 +155,7 @@ FASTFortran2kExporterVisitorTest >> testOpenStatement [
 	self
 		assertExport: stmt
 		equals: 
-'open (3, file=''projectA/data.test'', err=99) 
+'open (3, file=''projectA/data.test'', err=99)
 '.
 ]
 
