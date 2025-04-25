@@ -1371,7 +1371,7 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kVariableDeclarator:
 	aFASTFortran2kVariableDeclarator dimensions ifNotEmpty: [ :dimensions |
 		self
 			outputExpression: [ dimensions 
-				do: [ :node | self << ':' ]
+				do: [ :node | node accept: self ]
 				separatedBy: [ self << ', ' ]	
 			]
 			inParentheses: aFASTFortran2kVariableDeclarator dimensions isNotEmpty ].

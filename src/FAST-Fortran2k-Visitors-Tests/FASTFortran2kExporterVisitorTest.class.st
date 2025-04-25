@@ -419,7 +419,6 @@ FASTFortran2kExporterVisitorTest >> testUserDefinedType [
 FASTFortran2kExporterVisitorTest >> testVariableDeclarationStatementArray1Dim [
 
 	| stmt declarator |
-	self skip: 'FIXME: FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kVariableDeclarator:'.
 
 	declarator := (self variableDeclarator: 'str')
 		dimensions: {
