@@ -1232,11 +1232,10 @@ FASTFortranDerivedTypeFactory >> makeProceduresFromDimensioningExpressions [
 			].
 			aFunction addStatement: model newEmptyStatement.
 
-			"Old way to set the return value
 			aFunction addStatement: (self
 				assignement: aFunctionName 
 				value: (componentFactory dimensioningExpressions at: i)
-			)."
+			).
 
 			aFunction addStatement: (model newFormattedCodeString
 				content: '    call check_post_condition({1} >= 0, ''{2}::{1}'', ''{1} >= 0'')
