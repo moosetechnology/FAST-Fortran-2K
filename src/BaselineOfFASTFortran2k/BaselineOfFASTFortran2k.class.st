@@ -31,7 +31,7 @@ BaselineOfFASTFortran2k >> defineGroups: spec [
 	spec
 		group: 'default' with: #( 'core' );
 		group: 'core' with: #( 'FAST-Fortran2k-Entities' 'FAST-Fortran2k-Visitors' 'Famix-Esope-Transformator' );
-		group: 'all' with: #( core 'FAST-Fortran2k-Generator' 'FAST-Fortran2k-Visitors-Tests' )
+		group: 'All' with: #( core 'FAST-Fortran2k-Generator' 'FAST-Fortran2k-Visitors-Tests' )
 ]
 
 { #category : 'baselines' }
