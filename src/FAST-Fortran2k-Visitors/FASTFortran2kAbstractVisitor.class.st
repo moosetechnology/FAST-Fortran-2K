@@ -279,7 +279,7 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kDoStatement: aFASTFortran2kDoS
 	self visitFASTFortran2kTWithLoopControl: aFASTFortran2kDoStatement.
 	self visitFASTFortran2kAbstractStatement: aFASTFortran2kDoStatement.
 
-	aFASTFortran2kDoStatement statementBlock accept: self
+	aFASTFortran2kDoStatement body accept: self
 
 ]
 
