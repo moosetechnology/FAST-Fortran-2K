@@ -421,9 +421,11 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCharacterType: aFA
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCloseStatement: aFASTFortranCloseStatement [
 
-	^self
+	^(self
 		fortran2k: FASTFortran2kCloseStatement
-		traceBack: aFASTFortranCloseStatement
+		traceBack: aFASTFortranCloseStatement)
+		ioParameters: (self visitFASTFortranList: aFASTFortranCloseStatement ioParameters);
+		yourself
 ]
 
 { #category : 'visiting' }
