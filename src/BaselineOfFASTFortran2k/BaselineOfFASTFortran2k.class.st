@@ -46,6 +46,8 @@ BaselineOfFASTFortran2k >> definePackages: spec [
 		with: [ spec requires: #( 'FAST-Fortran2k-Entities' ) ];
 		package: 'Famix-Esope-Transformator'
 		with: [ spec requires: #( 'FAST-Fortran2k-Visitors' ) ];
+		package: 'Famix-Esope-Transformator-Tests'
+		with: [ spec requires: #( 'Famix-Esope-Transformator' ) ];
 		package: 'FAST-Fortran2k-Visitors-Tests'
 		with: [ spec requires: #( 'Famix-Esope-Transformator' ) ]
 ]
