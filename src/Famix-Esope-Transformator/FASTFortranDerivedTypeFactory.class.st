@@ -104,9 +104,9 @@ FASTFortranDerivedTypeFactory >> do: condition body: statements [
 	| do |
 	do := model newDoStatement
 		loopControl: condition ;
-		statementBlock: model newStatementBlock.
+		body: model newStatementBlock.
 
-	statements do: [ :stmt | do statementBlock addStatement: stmt ].
+	statements do: [ :stmt | do body addStatement: stmt ].
 
 	^do
 

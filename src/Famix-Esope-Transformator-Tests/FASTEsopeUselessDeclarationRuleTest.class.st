@@ -27,8 +27,8 @@ FASTEsopeUselessDeclarationRuleTest >> testAssignedVariableInLoopBodyIsUseful [
 	stmt loopControl: (FASTFortran2kLoopControlExpression new
 		init: (self assignementExpression: #i value: 1) ;
 		limit: (self integerLiteral: 10)).
-	stmt statementBlock: FASTFortran2kStatementBlock new.
-	stmt statementBlock addStatement: (self assignementStatement: #x value: 5).
+	stmt body: FASTFortran2kStatementBlock new.
+	stmt body addStatement: (self assignementStatement: #x value: 5).
 
 	self subroutine: 'sub'.
 	self addStatement: (self declarationStatement: #x type: #integer).
@@ -55,8 +55,8 @@ FASTEsopeUselessDeclarationRuleTest >> testAssignedVariableInLoopInitIsUseful [
 	stmt loopControl: (FASTFortran2kLoopControlExpression new
 		init: (self assignementExpression: #i value: 1) ;
 		limit: (self integerLiteral: 10)).
-	stmt statementBlock: FASTFortran2kStatementBlock new.
-	stmt statementBlock addStatement: (self assignementStatement: #x value: 5).
+	stmt body: FASTFortran2kStatementBlock new.
+	stmt body addStatement: (self assignementStatement: #x value: 5).
 
 	self subroutine: 'sub'.
 	self addStatement: (self declarationStatement: #i type: #integer).
@@ -83,8 +83,8 @@ FASTEsopeUselessDeclarationRuleTest >> testAssignedVariableInLoopLimitIsUseful [
 	stmt loopControl: (FASTFortran2kLoopControlExpression new
 		init: (self assignementExpression: #i value: 1) ;
 		limit: (self scalarVariable: #max)).
-	stmt statementBlock: FASTFortran2kStatementBlock new.
-	stmt statementBlock addStatement: (self assignementStatement: #x value: 5).
+	stmt body: FASTFortran2kStatementBlock new.
+	stmt body addStatement: (self assignementStatement: #x value: 5).
 
 	self subroutine: 'sub'.
 	self addStatement: (self declarationStatement: #max type: #integer).
@@ -112,8 +112,8 @@ FASTEsopeUselessDeclarationRuleTest >> testAssignedVariableInLoopStepIsUseful [
 		init: (self assignementExpression: #i value: 1) ;
 		limit: (self integerLiteral: 10) ;
 		increment: (self scalarVariable: #step)).
-	stmt statementBlock: FASTFortran2kStatementBlock new.
-	stmt statementBlock addStatement: (self assignementStatement: #x value: 5).
+	stmt body: FASTFortran2kStatementBlock new.
+	stmt body addStatement: (self assignementStatement: #x value: 5).
 
 	self subroutine: 'sub'.
 	self addStatement: (self declarationStatement: #step type: #integer).

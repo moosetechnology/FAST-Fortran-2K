@@ -77,8 +77,8 @@ FASTEsopeUnassignedVariableRuleTest >> testAssignmentExpression [
 	stmt loopControl: (FASTFortran2kLoopControlExpression new
 		init: (self assignementExpression: #i value: 1) ;
 		limit: (self integerLiteral: 10)).
-	stmt statementBlock: FASTFortran2kStatementBlock new.
-	stmt statementBlock addStatement: (self assignementStatement: #x value: 5).
+	stmt body: FASTFortran2kStatementBlock new.
+	stmt body addStatement: (self assignementStatement: #x value: 5).
 
 	self subroutine: 'sub'.
 	self addStatement: stmt.

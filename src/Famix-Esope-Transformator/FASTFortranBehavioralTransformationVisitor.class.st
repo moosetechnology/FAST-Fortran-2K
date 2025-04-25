@@ -456,7 +456,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDoStatement: aDoSt
 		traceBack: aDoStatementNode)
 
 		  loopControl: (aDoStatementNode loopControl accept: self) ;
-		  statementBlock: (aDoStatementNode statementBlock accept: self) ;
+		  body: (aDoStatementNode body accept: self) ;
 		  yourself
 ]
 
