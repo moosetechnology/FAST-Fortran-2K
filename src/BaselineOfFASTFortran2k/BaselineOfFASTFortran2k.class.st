@@ -31,7 +31,7 @@ BaselineOfFASTFortran2k >> defineGroups: spec [
 	spec
 		group: 'default' with: #( 'core' );
 		group: 'core' with: #( 'FAST-Fortran2k-Entities' 'FAST-Fortran2k-Visitors' 'Famix-Esope-Transformator' );
-		group: 'all' with: #( core 'FAST-Fortran2k-Generator' 'FAST-Fortran2k-Visitors-Tests' )
+		group: 'all' with: #( core 'FAST-Fortran2k-Generator' 'FAST-Fortran2k-Visitors-Tests' 'Famix-Esope-Transformator-Tests' )
 ]
 
 { #category : 'baselines' }
@@ -46,6 +46,8 @@ BaselineOfFASTFortran2k >> definePackages: spec [
 		with: [ spec requires: #( 'FAST-Fortran2k-Entities' ) ];
 		package: 'Famix-Esope-Transformator'
 		with: [ spec requires: #( 'FAST-Fortran2k-Visitors' ) ];
+		package: 'Famix-Esope-Transformator-Tests'
+		with: [ spec requires: #( 'Famix-Esope-Transformator' ) ];
 		package: 'FAST-Fortran2k-Visitors-Tests'
 		with: [ spec requires: #( 'Famix-Esope-Transformator' ) ]
 ]
