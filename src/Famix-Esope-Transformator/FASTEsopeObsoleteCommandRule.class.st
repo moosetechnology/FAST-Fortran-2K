@@ -36,7 +36,8 @@ FASTEsopeObsoleteCommandRule >> initialize [
 
 { #category : 'accessing' }
 FASTEsopeObsoleteCommandRule >> invocationsToIgnore [
-	^#(oooeta actstr)
+
+	^#(oooeta actstr ooossg ooostp)
 ]
 
 { #category : 'accessing - private tests' }
