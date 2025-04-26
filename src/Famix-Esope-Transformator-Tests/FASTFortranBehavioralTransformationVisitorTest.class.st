@@ -174,7 +174,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementPointe
 	var := res arguments anyOne.
 	self assert: var class equals: FASTFortran2kScalarVariable.
 	self assert: var name equals: 'aVar'.
-	
+
 ]
 
 { #category : 'tests-statement' }
