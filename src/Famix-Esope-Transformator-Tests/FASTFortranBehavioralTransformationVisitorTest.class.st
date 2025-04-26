@@ -158,6 +158,26 @@ FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementPointe
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementPointerToNullify [
+	"esope_ptr = 0 -> nullify (f2k_ptr) "
+	| stmt res var |
+	stmt := self assignementStatement: #aVar value: (self integerLiteral: 0).
+	stmt variable famixVariable: (FamixF77Variable new
+		declaredType: (FamixEsopeSegment new)).
+	
+	res := stmt accept: visitor.
+	
+	self assert: res class equals: FASTFortran2kFunctionCallStatement.
+	self assert: res name equals: 'nullify'.
+	self assert: res arguments size equals: 1.
+
+	var := res arguments anyOne.
+	self assert: var class equals: FASTFortran2kScalarVariable.
+	self assert: var name equals: 'aVar'.
+	
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementToFieldAccess [
 	| stmt res fieldAccess |
 	fieldAccess := FASTFortranFieldAccess new

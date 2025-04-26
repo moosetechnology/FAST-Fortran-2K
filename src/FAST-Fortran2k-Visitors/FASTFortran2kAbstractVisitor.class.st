@@ -414,6 +414,14 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kFunctionCall: aFASTFortran2kFu
 
 ]
 
+{ #category : 'visiting' }
+FASTFortran2kAbstractVisitor >> visitFASTFortran2kFunctionCallStatement: aFASTFortran2kFunctionCallStatement [
+
+	self visitFASTTWithArguments: aFASTFortran2kFunctionCallStatement.
+	self visitFASTFortran2kAbstractStatement: aFASTFortran2kFunctionCallStatement.
+
+]
+
 { #category : 'visiting - statements' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kFunctionStatement: aFASTFortran2kFunctionStatement [
 	<generated>

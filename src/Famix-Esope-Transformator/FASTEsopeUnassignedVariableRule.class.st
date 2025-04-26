@@ -180,6 +180,16 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortran2kFormatStatement: aFASTFortr
 	nodeStack pop
 ]
 
+{ #category : 'visiting' }
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kFunctionCallStatement: aFASTFortranNode [ 
+
+	nodeStack push: aFASTFortranNode.
+
+	super visitFASTFortran2kFunctionCallStatement: aFASTFortranNode.
+
+	nodeStack pop
+]
+
 { #category : 'visiting - statements' }
 FASTEsopeUnassignedVariableRule >> visitFASTFortran2kFunctionStatement: aFASTFortranNode [
 
