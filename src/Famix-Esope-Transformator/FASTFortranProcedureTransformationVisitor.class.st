@@ -22,7 +22,7 @@ FASTFortranProcedureTransformationVisitor >> checkForParameterDeclaration: aFAST
 		]
 		ifOne: [ :assoc |
 			parametersToDeclare remove: assoc.
-			aFASTFortran2kVariableDeclarationStatement modifiers: { assoc value }
+			aFASTFortran2kVariableDeclarationStatement modifiers: (aFASTFortran2kVariableDeclarationStatement modifiers, { assoc value })
 		].
 
 	^aFASTFortran2kVariableDeclarationStatement 
