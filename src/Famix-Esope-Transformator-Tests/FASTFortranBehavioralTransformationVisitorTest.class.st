@@ -552,6 +552,32 @@ FASTFortranBehavioralTransformationVisitorTest >> testReadStatement [
 
 ]
 
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> testReplaceCallByLoadStr [
+	"replace call to rdstr to load_str"
+
+	| res stmt |
+	stmt := self callStatement: 'rdstr' arguments: #( whatever ).
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kCallStatement.
+	self assert: res name equals: 'load_str'
+]
+
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> testReplaceCallByStoreStr [
+	"replace call to wrstr to store_str"
+
+	| res stmt |
+	stmt := self callStatement: 'wrstr' arguments: #( whatever ).
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kCallStatement.
+	self assert: res name equals: 'store_str'
+]
+
 { #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testReturnStatement [
 

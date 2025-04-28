@@ -252,7 +252,9 @@ FamixEsopeToFortran2k >> specialCallTreatments [
 		specialCallTreatments := Dictionary newFrom: {
 			"#oooeta -> #commentOutStatement: .
 			#actstr -> #commentOutStatement: ."
-			#mypnt -> #prefixCallWithType:
+			#mypnt -> #prefixCallWithType: .
+			#rdstr -> #replaceCallByLoadStr: .
+			#wrstr -> #replaceCallByStoreStr:
 		} ]
 ]
 
