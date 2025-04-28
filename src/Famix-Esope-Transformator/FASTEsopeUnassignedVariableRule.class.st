@@ -1,5 +1,9 @@
 "
 Detects uses of variables that have not been assigned yet and remove the statement has it makes no sense
+
+Goes through all the statements and keep a list of all assigned variables.
+
+All statements that use a variable which is not yet in the assignedVariables ist, is declared 'empty-var'
 "
 Class {
 	#name : 'FASTEsopeUnassignedVariableRule',
@@ -401,6 +405,16 @@ FASTEsopeUnassignedVariableRule >> visitFASTTAssignment: aFASTFortranTAssignment
 	inAssignment := false.
 
 	aFASTFortranTAssignment expression accept: self
+
+]
+
+{ #category : 'visiting - traits' }
+FASTEsopeUnassignedVariableRule >> visitFASTTWithArguments: aFASTFortran2kTWithArguments [
+
+	aFASTFortran2kTWithArguments arguments do: [ :arg |
+		arg isVariableEntity
+			ifTrue: [ assignedVariables add: arg name ]
+			ifFalse: [ arg accept: self ] ]
 
 ]
 

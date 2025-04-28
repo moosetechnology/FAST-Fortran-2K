@@ -17,8 +17,6 @@ FASTEsopeUnassignedVariableRuleTest >> testAjpntCallNotToSimplify [
 
 	| body ajpntCallStatement model |
 
-	self skip: 'make this test pass'.
-
 	model := FASTFortran2kModel new.
 
 	ajpntCallStatement := (self callStatement: #ajpnt arguments: #(jord))
