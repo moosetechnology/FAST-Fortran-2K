@@ -609,7 +609,7 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kFunctionCall: aFAST
 
 	self
 		<< aFASTFortran2kFunctionCall name;
-		<< '( '.
+		<< '('.
 
 	self visitNodeListSeparatedByCommas: aFASTFortran2kFunctionCall arguments.
 	self << ')'
