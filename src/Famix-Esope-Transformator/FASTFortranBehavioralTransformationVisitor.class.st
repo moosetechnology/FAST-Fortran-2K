@@ -265,11 +265,16 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarationSt
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: aFASTEsopePointerDeclarator [ 
 	
-	| esopeDeclarator |
+	| esopeDeclarator pointedTypeName |
+
+	pointedTypeName := (aFASTEsopePointerDeclarator pointedTypeName isNotNil 
+		and: [ aFASTEsopePointerDeclarator pointedTypeName asLowercase = 'pstr' ])
+			ifTrue: [ 'str' ]
+			ifFalse: [ aFASTEsopePointerDeclarator pointedTypeName ].
 
 	esopeDeclarator := self model2k newVariableDeclarationStatement
 		declaredType: (self model2k newUserDefinedType  
-			name: aFASTEsopePointerDeclarator pointedTypeName;
+			name: pointedTypeName;
 			yourself
 		) ;
 		addDeclarator: (aFASTEsopePointerDeclarator variableDeclarator accept: self) ;
