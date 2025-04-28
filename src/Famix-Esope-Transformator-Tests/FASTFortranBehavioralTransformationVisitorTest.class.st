@@ -161,7 +161,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementPointe
 FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementPointerToNullify [
 	"esope_ptr = 0 -> nullify (f2k_ptr) "
 	| stmt res var |
-	stmt := self assignementStatement: #aVar value: (self integerLiteral: 0).
+	stmt := self assignementStatement: #aVar value: 0.
 	stmt variable famixVariable: (FamixF77Variable new
 		declaredType: (FamixEsopeSegment new)).
 	

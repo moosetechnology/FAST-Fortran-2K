@@ -352,8 +352,8 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentStatemen
 	fastFortran2kClass := self assignmentStatementClass: aFASTFortranAssignmentStatement.
 	
 	^((fastFortran2kClass = FASTFortran2kPointerAssignmentStatement)
-		and: [ aFASTFortranAssignmentStatement expression class = FASTFortranIntegerLiteral and: [ aFASTFortranAssignmentStatement expression primitiveValue = 0 ]])
-		ifTrue: [ 
+		and: [ aFASTFortranAssignmentStatement expression class = FASTFortranIntegerLiteral and: [ aFASTFortranAssignmentStatement expression primitiveValue = '0' ]])
+		ifTrue: [
 			(self
 				fortran2k: FASTFortran2kFunctionCallStatement
 				traceBack: aFASTFortranAssignmentStatement)
