@@ -65,16 +65,16 @@ FASTEsopeUnassignedVariableRuleTest >> testArrayVariableAssignment [
 { #category : 'tests' }
 FASTEsopeUnassignedVariableRuleTest >> testArrayVariableToSimplify [
 
-	| varAccess body writeStatement |
+	| varAccess body stmt |
 
 	varAccess := FASTFortran2kArrayVariable new
 		name: #x ;
 		indices: { self makeSimpleExpression: 1 }.
-	writeStatement := (self writeStatement: { varAccess })
+	stmt := (self assignementStatement: #y value: varAccess)
 		mooseModel: FASTFortran2kModel new.
 
 	self subroutine: #something.
-	self addStatement: writeStatement.
+	self addStatement: stmt.
 
 	visitor simplify: ast.
 
@@ -86,7 +86,7 @@ FASTEsopeUnassignedVariableRuleTest >> testArrayVariableToSimplify [
 	
 	self assert: body first class equals: FASTFortran2kComment.
 
-	self assert: body first content equals: '[ooo].empty-var: write (*, *) x(1)'
+	self assert: body first content equals: '[ooo].empty-var: y = x(1)'
 
 ]
 
@@ -151,6 +151,30 @@ FASTEsopeUnassignedVariableRuleTest >> testAssignmentStatementToSimplify [
 ]
 
 { #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testAssignmentToSimplify [
+
+	| body segStatement |
+	segStatement := (self assignementStatement: #y value: #x)
+		mooseModel: FASTFortran2kModel new.
+
+	self subroutine: #sub.
+	self addStatement: segStatement.
+
+	visitor simplify: ast.
+
+	self assert: visitor simplified.
+
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 1.
+
+	self assert: body first class equals: FASTFortran2kComment.
+
+	self assert: body first content equals: '[ooo].empty-var: y = x'
+
+]
+
+{ #category : 'tests' }
 FASTEsopeUnassignedVariableRuleTest >> testDerivedTypeComponentAccess [
 	"the assignment to the pointer is absurd but we are only interested in assigning something to it"
 
@@ -179,17 +203,17 @@ FASTEsopeUnassignedVariableRuleTest >> testDerivedTypeComponentAccess [
 { #category : 'tests' }
 FASTEsopeUnassignedVariableRuleTest >> testDerivedTypeComponentAccessToSimplify [
 
-	| varAccess body writeStatement |
+	| varAccess body stmt |
 
 	varAccess := FASTFortran2kDerivedTypeComponentAccess new
 		instance: (self scalarVariable: #p) ;
 		field: (self scalarVariable: #x).
 
-	writeStatement := (self writeStatement: {  varAccess })
+	stmt := (self assignementStatement: #y value: varAccess)
 		mooseModel: FASTFortran2kModel new.
 
 	self subroutine: #something.
-	self addStatement: writeStatement.
+	self addStatement: stmt.
 
 	visitor simplify: ast.
 
@@ -201,31 +225,7 @@ FASTEsopeUnassignedVariableRuleTest >> testDerivedTypeComponentAccessToSimplify 
 
 	self assert: body first class equals: FASTFortran2kComment.
 
-	self assert: body first content equals: '[ooo].empty-var: write (*, *) p % x'
-
-]
-
-{ #category : 'tests' }
-FASTEsopeUnassignedVariableRuleTest >> testEsopeCommandArgumentToSimplify [
-
-	| body segStatement |
-	segStatement := (self callStatement: #segadj arguments: #(var1 var2))
-		mooseModel: FASTFortran2kModel new.
-
-	self subroutine: #sub.
-	self addStatement: segStatement.
-
-	visitor simplify: ast.
-
-	self assert: visitor simplified.
-
-	body := ast statementBlock statements.
-
-	self assert: body size equals: 1.
-
-	self assert: body first class equals: FASTFortran2kComment.
-
-	self assert: body first content equals: '[ooo].empty-var: call segadj(var1, var2)'
+	self assert: body first content equals: '[ooo].empty-var: y = p % x'
 
 ]
 
@@ -286,7 +286,7 @@ FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementConditionToSimplify
 FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementThenToSimplify [
 
 	| body statement |
-	statement := (self writeStatement: #( booleanVar ))
+	statement := (self assignementStatement: #y value: #booleanVar)
 		mooseModel: FASTFortran2kModel new.
 
 	self function: #fctBigSmall type: #(character 20).
@@ -304,7 +304,7 @@ FASTEsopeUnassignedVariableRuleTest >> testIfLogicalStatementThenToSimplify [
 	self assert: body anyOne class equals: FASTFortran2kIfLogicalStatement.
 	self assert: body anyOne statement class equals: FASTFortran2kComment.
 
-	self assert: body anyOne statement content equals: '[ooo].empty-var: write (*, *) booleanVar'
+	self assert: body anyOne statement content equals: '[ooo].empty-var: y = booleanVar'
 ]
 
 { #category : 'tests' }
@@ -539,7 +539,7 @@ FASTEsopeUnassignedVariableRuleTest >> testWriteStatementForParameter [
 FASTEsopeUnassignedVariableRuleTest >> testWriteStatementToSimplify [
 
 	| body writeStatement |
-	writeStatement := (self writeStatement: #( y ))
+	writeStatement := (self assignementStatement: #z value: #y)
 		mooseModel: FASTFortran2kModel new.
 
 	self function: #fctBigSmall type: #(character 20).
@@ -559,6 +559,6 @@ FASTEsopeUnassignedVariableRuleTest >> testWriteStatementToSimplify [
 	self assert: body second class equals: FASTFortran2kAssignmentStatement.
 	self assert: body third class equals: FASTFortran2kComment.
 
-	self assert: body third content equals: '[ooo].empty-var: write (*, *) y'
+	self assert: body third content equals: '[ooo].empty-var: z = y'
 
 ]
