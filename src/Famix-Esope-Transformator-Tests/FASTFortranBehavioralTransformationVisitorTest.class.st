@@ -513,6 +513,24 @@ FASTFortranBehavioralTransformationVisitorTest >> testOpenStatement [
 
 ]
 
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> testPrefixCallWithType [
+	"prefix call to actstr with the name of the type of the variable it is assigned to"
+
+	| res stmt |
+	stmt := self assignementStatement: 'ptr' value: (self
+		functionCall: 'mypnt' arguments: #( whatever )).
+	stmt variable famixVariable: (FamixF77Variable new
+		declaredType: (FamixEsopeSegment new
+			name: 'seg')).
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kPointerAssignmentStatement.
+	self assert: res expression class equals: FASTFortran2kFunctionCall.
+	self assert: res expression name equals: 'seg_mypnt'
+]
+
 { #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testReadStatement [
 	| stmt res entity |
@@ -681,24 +699,6 @@ FASTFortranBehavioralTransformationVisitorTest >> testkWriteStatement [
 	self assert: res ioParameters first class equals: FASTFortran2kAsterisk.
 	self assert: res ioParameters second class equals: FASTFortran2kAsterisk.
 
-]
-
-{ #category : 'running' }
-FASTFortranBehavioralTransformationVisitorTest >> testprefixCallWithType [
-	"prefix call to actstr with the name of the type of the variable it is assigned to"
-
-	| res stmt |
-	stmt := self assignementStatement: 'ptr' value: (self
-		functionCall: 'mypnt' arguments: #( whatever )).
-	stmt variable famixVariable: (FamixF77Variable new
-		declaredType: (FamixEsopeSegment new
-			name: 'seg')).
-
-	res := stmt accept: visitor.
-
-	self assert: res class equals: FASTFortran2kPointerAssignmentStatement.
-	self assert: res expression class equals: FASTFortran2kFunctionCall.
-	self assert: res expression name equals: 'seg_mypnt'
 ]
 
 { #category : 'running' }
