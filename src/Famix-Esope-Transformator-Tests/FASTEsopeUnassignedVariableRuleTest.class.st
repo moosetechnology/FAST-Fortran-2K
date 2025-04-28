@@ -13,6 +13,35 @@ FASTEsopeUnassignedVariableRuleTest >> newVisitor [
 ]
 
 { #category : 'tests' }
+FASTEsopeUnassignedVariableRuleTest >> testAjpntCallNotToSimplify [
+
+	| body ajpntCallStatement model |
+
+	self skip: 'make this test pass'.
+
+	model := FASTFortran2kModel new.
+
+	ajpntCallStatement := (self callStatement: #ajpnt arguments: #(jord))
+		mooseModel: model.
+
+	self subroutine: #sub.
+	self addStatement: ((self declarationStatement: #jord type: #integer)
+		mooseModel: model).
+	self addStatement: ajpntCallStatement.
+
+	visitor simplify: ast.
+
+	body := ast statementBlock statements.
+
+	self assert: body size equals: 2.
+
+	self assert: body first class equals: FASTFortran2kVariableDeclarationStatement.
+
+	self assert: body second class equals: FASTFortran2kCallStatement
+
+]
+
+{ #category : 'tests' }
 FASTEsopeUnassignedVariableRuleTest >> testArrayVariableAssignment [
 
 	| varAccess body |

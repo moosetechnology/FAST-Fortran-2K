@@ -348,13 +348,28 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentExpressi
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentStatement: aFASTFortranAssignmentStatement [
 
-	^(self
-		fortran2k: (self assignmentStatementClass: aFASTFortranAssignmentStatement)
-		traceBack: aFASTFortranAssignmentStatement)
+	| fastFortran2kClass |
+	fastFortran2kClass := self assignmentStatementClass: aFASTFortranAssignmentStatement.
+	
+	^((fastFortran2kClass = FASTFortran2kPointerAssignmentStatement)
+		and: [ aFASTFortranAssignmentStatement expression class = FASTFortranIntegerLiteral and: [ aFASTFortranAssignmentStatement expression primitiveValue = 0 ]])
+		ifTrue: [ 
+			(self
+				fortran2k: FASTFortran2kFunctionCallStatement
+				traceBack: aFASTFortranAssignmentStatement)
+				name: 'nullify';
+				addArgument: (aFASTFortranAssignmentStatement variable accept: self);
+				yourself
+		]
+		ifFalse: [ 
+			(self
+				fortran2k: fastFortran2kClass
+				traceBack: aFASTFortranAssignmentStatement)
 
-		variable: (aFASTFortranAssignmentStatement variable accept: self);
-		expression: (aFASTFortranAssignmentStatement expression accept: self);
-		yourself
+				variable: (aFASTFortranAssignmentStatement variable accept: self);
+				expression: (aFASTFortranAssignmentStatement expression accept: self);
+				yourself 
+		]
 ]
 
 { #category : 'visiting' }

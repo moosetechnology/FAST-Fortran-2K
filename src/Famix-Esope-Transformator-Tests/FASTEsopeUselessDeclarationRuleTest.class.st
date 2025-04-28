@@ -13,6 +13,24 @@ FASTEsopeUselessDeclarationRuleTest >> newVisitor [
 ]
 
 { #category : 'tests' }
+FASTEsopeUselessDeclarationRuleTest >> testArgumentIsUseful [
+
+	| model |
+	model := FASTFortran2kModel new.
+	ast := self function: #fctBigSmall type: #(character 20).
+	self addStatement: (self callStatement: #aCall arguments: #(arg1 arg2)).
+	self addStatement: ((self declarationStatement: #arg1 type: #integer)
+		mooseModel: model; yourself).
+	self addStatement: ((self declarationStatement: #arg2 type: #real)
+		mooseModel: model; yourself).
+
+	visitor simplify: ast.
+
+	self assert: visitor uselessDeclarations size equals: 0
+
+]
+
+{ #category : 'tests' }
 FASTEsopeUselessDeclarationRuleTest >> testAssignedVariableInLoopBodyIsUseful [
 	"SUBROUTINE sub()
 	   INTEGER x

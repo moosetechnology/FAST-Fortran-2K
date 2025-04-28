@@ -35,7 +35,8 @@ FASTEsopeUselessDeclarationRule >> initialize [
 	super initialize.
 
 	uselessDeclarations := Dictionary new.
-	allParameters := #()
+	allParameters := #().
+	allArguments := #()
 ]
 
 { #category : 'accessing - private tests' }
@@ -129,6 +130,9 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarator: aFASTFo
 	(allParameters includes: aFASTFortranVariableDeclarator name)
 		ifTrue: [ ^nil ].
 
+	(allArguments includes: aFASTFortranVariableDeclarator name)
+		ifTrue: [ ^nil ].
+
 	declarationStatement := nodeStack pop.
 
 	uselessDeclarations
@@ -140,6 +144,17 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarator: aFASTFo
 	^ aFASTFortranVariableDeclarator expression
 		  ifNotNil: [ :expression | expression accept: self ]
 		  ifNil: [ nil ]
+]
+
+{ #category : 'visiting - expressions' }
+FASTEsopeUselessDeclarationRule >> visitFASTTWithArguments: aFASTFortran2kTWithArguments [
+	"arguments in call are considered always used so we keep their names there to not add them to the useless list"
+	
+	"We need to collect in allArguments all arguments"
+	allArguments := aFASTFortran2kTWithArguments arguments collect: #name.
+
+	"we need to remove in uselessDeclarations dictionary this argument in case we already process all the declarations"
+	aFASTFortran2kTWithArguments arguments do: [ :arg | arg accept: self ]
 ]
 
 { #category : 'visiting - expressions' }
