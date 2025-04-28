@@ -374,8 +374,8 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersPointerDeclaredNo
 	self assert: fast2k statementBlock statements size equals: 1.
 
 	fast2k := fast2k statementBlock statements first.
-	self assert: fast2k modifiers anyOne equals: 'intent(in)'.
 	self assert: fast2k declarators anyOne name equals: 'param'.
+	self assertCollection: fast2k modifiers hasSameElements: #(pointer 'intent(in)')
 
 ]
 
