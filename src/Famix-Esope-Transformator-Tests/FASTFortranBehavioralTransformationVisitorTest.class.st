@@ -513,6 +513,24 @@ FASTFortranBehavioralTransformationVisitorTest >> testOpenStatement [
 
 ]
 
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> testPrefixCallWithType [
+	"prefix call to actstr with the name of the type of the variable it is assigned to"
+
+	| res stmt |
+	stmt := self assignementStatement: 'ptr' value: (self
+		functionCall: 'mypnt' arguments: #( whatever )).
+	stmt variable famixVariable: (FamixF77Variable new
+		declaredType: (FamixEsopeSegment new
+			name: 'seg')).
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kPointerAssignmentStatement.
+	self assert: res expression class equals: FASTFortran2kFunctionCall.
+	self assert: res expression name equals: 'seg_mypnt'
+]
+
 { #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testReadStatement [
 	| stmt res entity |
@@ -532,6 +550,32 @@ FASTFortranBehavioralTransformationVisitorTest >> testReadStatement [
 	self assert: res ioParameters first class equals: FASTFortran2kAsterisk.
 	self assert: res ioParameters second class equals: FASTFortran2kAsterisk.
 
+]
+
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> testReplaceCallByLoadStr [
+	"replace call to rdstr to load_str"
+
+	| res stmt |
+	stmt := self callStatement: 'rdstr' arguments: #( whatever ).
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kCallStatement.
+	self assert: res name equals: 'load_str'
+]
+
+{ #category : 'running' }
+FASTFortranBehavioralTransformationVisitorTest >> testReplaceCallByStoreStr [
+	"replace call to wrstr to store_str"
+
+	| res stmt |
+	stmt := self callStatement: 'wrstr' arguments: #( whatever ).
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kCallStatement.
+	self assert: res name equals: 'store_str'
 ]
 
 { #category : 'tests-statement' }
@@ -681,24 +725,6 @@ FASTFortranBehavioralTransformationVisitorTest >> testkWriteStatement [
 	self assert: res ioParameters first class equals: FASTFortran2kAsterisk.
 	self assert: res ioParameters second class equals: FASTFortran2kAsterisk.
 
-]
-
-{ #category : 'running' }
-FASTFortranBehavioralTransformationVisitorTest >> testprefixCallWithType [
-	"prefix call to actstr with the name of the type of the variable it is assigned to"
-
-	| res stmt |
-	stmt := self assignementStatement: 'ptr' value: (self
-		functionCall: 'mypnt' arguments: #( whatever )).
-	stmt variable famixVariable: (FamixF77Variable new
-		declaredType: (FamixEsopeSegment new
-			name: 'seg')).
-
-	res := stmt accept: visitor.
-
-	self assert: res class equals: FASTFortran2kPointerAssignmentStatement.
-	self assert: res expression class equals: FASTFortran2kFunctionCall.
-	self assert: res expression name equals: 'seg_mypnt'
 ]
 
 { #category : 'running' }

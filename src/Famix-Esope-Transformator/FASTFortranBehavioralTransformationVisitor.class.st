@@ -129,6 +129,28 @@ FASTFortranBehavioralTransformationVisitor >> prefixCallWithType: aFASTInvocatio
 ]
 
 { #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> replaceCallByLoadStr: aFASTInvocation [
+	"call to 'rdstr' should be replaced with the 'load_str' name
+	 ex: call rdstr(lib, libunt)
+	     call load_str(lib, libunt)"
+
+	self assert: (aFASTInvocation name asLowercase = 'rdstr').
+	aFASTInvocation name: 'load_str'.
+	^aFASTInvocation accept: self
+]
+
+{ #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> replaceCallByStoreStr: aFASTInvocation [
+	"call to 'wrstr' should be replaced with the 'store_str' name
+	 ex: call wrstr(lib, libunt)
+	     call store_str(lib, libunt)"
+
+	self assert: (aFASTInvocation name asLowercase = 'wrstr').
+	aFASTInvocation name: 'store_str'.
+	^aFASTInvocation accept: self
+]
+
+{ #category : 'private - helpers' }
 FASTFortranBehavioralTransformationVisitor >> retrieveOtherArgumentNamesFromDimensioningExpressions: variable [
 
 	^variable famixVariable 
