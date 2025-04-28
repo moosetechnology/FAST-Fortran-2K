@@ -10,7 +10,8 @@ Class {
 	#superclass : 'FASTEsopeAbstractSimplifyingRule',
 	#instVars : [
 		'uselessDeclarations',
-		'allParameters'
+		'allParameters',
+		'allArguments'
 	],
 	#category : 'Famix-Esope-Transformator-Simplification',
 	#package : 'Famix-Esope-Transformator',
