@@ -682,9 +682,12 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegcop [
 		values: { name } ).
 	segcop addStatement: model newEmptyStatement.
 
-	self makeSegCall: 'par' arguments: { thisParameter } , paramFactories.
-	self makeSegCall: 'ini' arguments: { thatParameter } , paramFactories.
-	self makeSegCall: 'mov' arguments: { thisParameter . thatParameter }.
+	segcop addStatement: 
+		(self makeSegCall: 'par' arguments: { thisParameter } , paramFactories).
+	segcop addStatement: 
+		(self makeSegCall: 'ini' arguments: { thatParameter } , paramFactories).
+	segcop addStatement: 
+		(self makeSegCall: 'mov' arguments: { thisParameter . thatParameter }).
 	segcop addStatement: model newEmptyStatement.
 
 	segcop addStatement: (model newFormattedCodeString
