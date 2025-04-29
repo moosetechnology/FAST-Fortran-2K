@@ -900,7 +900,6 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegloc [
 	segloc addComment: '## should not be use for other purpose !!!'.
 	segloc addStatement: model newEmptyStatement.
 
-	segloc addStatement: (thisParameter createSegcmdInFieldDeclaration).
 	segloc addStatement: (model newUseOnlyStatement 
 		name: 'iso_fortran_env';
 		modifiers: #( intrinsic );
@@ -911,6 +910,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegloc [
 		modifiers: #( intrinsic );
 		useNoRenames: { model newUseNoRename name: 'c_loc' }
 	).
+	segloc addStatement: (thisParameter createSegcmdInFieldDeclaration).
 	segloc addStatement: model newEmptyStatement.
 
 	segloc addStatement: (self 
