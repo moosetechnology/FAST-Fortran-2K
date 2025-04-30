@@ -728,9 +728,6 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 	segini addStatement: model newEmptyStatement.
 
 	segini addStatement: thisParameter createSeginiFieldInitialization.
-	paramFactories do: [ :paramFactory |
-		segini addStatement: paramFactory createSeginiFieldInitialization.
-	].
 	segini addStatement: model newEmptyStatement.
 
 	componentFactories do: [ :compFact |
@@ -739,7 +736,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 	].
 
 	segini addStatement: (model newFormattedCodeString
-		content: 'call check_pre_condition(associated(this), ''{1}_segini'', ''associated(this)'')' ;
+		content: 'call check_post_condition(associated(this), ''{1}_segini'', ''associated(this)'')' ;
 		values: { name } ).
 
 	^segini
