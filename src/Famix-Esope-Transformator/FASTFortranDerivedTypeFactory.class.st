@@ -870,7 +870,8 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegload [
 		arguments: (seginiArguments collect: [ :arg | self scalarVariable: arg])).
 	segstore addStatement: model newEmptyStatement.
 
-	self components do: [ :comp | comp makeSegloadDo ].
+	self components do: [ :comp | segstore statementBlock statements addAll: (comp makeSegloadDo) ].
+	segstore addStatement: model newEmptyStatement.
 
 	^segstore
 ]

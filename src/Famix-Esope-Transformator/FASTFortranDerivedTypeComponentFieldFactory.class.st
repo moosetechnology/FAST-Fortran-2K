@@ -261,7 +261,10 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeSegloadDo [
 			nestedDoLoops: 1
 			of: rank
 			allLoops: nil
-			finalLoop: {self formattedCode: 'read(file_number, *) this%{1}({2})' values: { name , self temporariesAsArguments } })
+			finalLoop: {self formattedCode: 'read(file_number, *) this % {1}({2})' values: { name . self temporariesAsArguments } })
+		]
+		ifFalse: [ 
+			statements add: (self formattedCode: 'read(file_number, *) this % {1}' values: { name })
 		].
 
 	^statements		
