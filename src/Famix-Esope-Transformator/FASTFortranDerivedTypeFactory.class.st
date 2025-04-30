@@ -1097,12 +1097,20 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegprt [
 	thenStatements add: model newEmptyStatement.
 
 	self parameters do: [ :param |
-		thenStatements add: (self formattedCode: 'write(ooo_text_par, *) this%{1}' values: {param name}).
+		thenStatements add: (self formattedCode: 'write(ooo_text_par, *) this % {1}' values: {param name}).
 		thenStatements add: (self formattedCode: 'write(*, ''(a)'') ''    {1} = '' //  trim(adjustl(ooo_text_par))' values: {param name}).
 	].
-	thenStatements add: model newEmptyStatement.
 
-	self components do: [ :comp | thenStatements addAll: comp makeSegprtDo ].
+	self components do: [ :comp |
+		comp rank > 0 
+			ifTrue: [ thenStatements addAll: comp makeSegprtDo  ]
+			ifFalse: [ 
+				thenStatements add: (self formattedCode: 'write(*, ''(1x)'')' values: #()).
+				thenStatements add: (self formattedCode: 'write(ooo_text_par, *) this % {1}' values: {comp name}).
+				thenStatements add: (self formattedCode: 'write(*, ''(a)'') ''    {1} = '' //  trim(adjustl(ooo_text_par))' values: {comp name}).
+				thenStatements add: model newEmptyStatement.
+			]		
+	].
 
 	segprt addStatement: (self
 		if: (self functionCall: 'associated' arguments: { self scalarVariable: 'this' } )

@@ -354,13 +354,14 @@ FASTFortranDerivedTypeComponentFieldFactory >> nestedDoLoops: dim of: maxDim all
 
 	statements := OrderedCollection new.
 
+	allLoopsFormattedCode
+				ifNotNil: [ statements add: (self formattedCode: allLoopsFormattedCode values: { dim }) ].
+
 	(dim = maxDim)
 		ifTrue: [ statements addAll: finalLoopStatements ]
-	ifFalse: [
-		allLoopsFormattedCode
-			ifNotNil: [ statements add: (self formattedCode: allLoopsFormattedCode values: { dim }) ].
-		self nestedDoLoops: (dim+1) of: maxDim allLoops: allLoopsFormattedCode finalLoop: finalLoopStatements
-	].
+		ifFalse: [
+			self nestedDoLoops: (dim+1) of: maxDim allLoops: allLoopsFormattedCode finalLoop: finalLoopStatements
+		].
 
 	^self do: loopControl body: statements 
 
