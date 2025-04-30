@@ -1200,6 +1200,11 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 	).
 	segsup addStatement: ifAssociated.
 
+	segsup addStatement: model newEmptyStatement.
+	segsup addStatement: (model newFormattedCodeString
+		content: 'call check_post_condition(.not. associated(this), ''{1}_segsup'', ''.not. associated(this)'')' ;
+		values: { name } ).
+
 	^segsup
 ]
 
