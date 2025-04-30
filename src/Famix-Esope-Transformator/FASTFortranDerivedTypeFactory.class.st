@@ -459,13 +459,13 @@ FASTFortranDerivedTypeFactory >> makeProcedureBoxed [
         type(boxed_{1}), pointer :: that_boxed_{1}
         type({1}), pointer :: that_{1}
 
-        call check_pre_condition(.not. associated(that_segment), ''boxed_{1}_segcop'', ''.not. associated(that_segment)'')
+        call check_pre_condition(.not. associated(that_segment), ''boxed_{1}_segmov'', ''.not. associated(that_segment)'')
 
         call {1}_segcop(this_segment%this, that_{1})
         call new_boxed_{1}(that_boxed_{1}, that_{1})
 
         that_segment => that_boxed_{1}
-        call check_post_condition(associated(that_segment), ''boxed_{1}_segcop'', ''associated(that_segment)'')
+        call check_post_condition(associated(that_segment), ''boxed_{1}_segmov'', ''associated(that_segment)'')
     end subroutine boxed_{1}_segcop
 
 
@@ -620,17 +620,11 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegadj [
 	segadj initBody.
 	segadj addComment: '## Adjust the given "this" segment'.
 	segadj addComment: '## using the given parameters'.
-	
+
 	segadj addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
 
 	paramFactories ifNotEmpty: [
 		segadj statementBlock statements addAll: self makeSegadjLocalDeclarations ].
-
-	segadj addStatement: thisParameter createSeginiFieldInitialization.
-	paramFactories do: [ :paramFactory |
-		segadj addStatement: paramFactory createSeginiFieldInitialization.
-	].
-	segadj addStatement: model newEmptyStatement.
 
 	segadj addStatement: (model newFormattedCodeString
 		content: 'call check_pre_condition(associated(this), ''{1}_segadj'', ''associated(this)'')' ;
@@ -682,9 +676,12 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegcop [
 		values: { name } ).
 	segcop addStatement: model newEmptyStatement.
 
-	self makeSegCall: 'par' arguments: { thisParameter } , paramFactories.
-	self makeSegCall: 'ini' arguments: { thatParameter } , paramFactories.
-	self makeSegCall: 'mov' arguments: { thisParameter . thatParameter }.
+	segcop addStatement: 
+		(self makeSegCall: 'par' arguments: { thisParameter } , paramFactories).
+	segcop addStatement: 
+		(self makeSegCall: 'ini' arguments: { thatParameter } , paramFactories).
+	segcop addStatement: 
+		(self makeSegCall: 'mov' arguments: { thisParameter . thatParameter }).
 	segcop addStatement: model newEmptyStatement.
 
 	segcop addStatement: (model newFormattedCodeString
@@ -731,9 +728,6 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 	segini addStatement: model newEmptyStatement.
 
 	segini addStatement: thisParameter createSeginiFieldInitialization.
-	paramFactories do: [ :paramFactory |
-		segini addStatement: paramFactory createSeginiFieldInitialization.
-	].
 	segini addStatement: model newEmptyStatement.
 
 	componentFactories do: [ :compFact |
@@ -742,7 +736,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 	].
 
 	segini addStatement: (model newFormattedCodeString
-		content: 'call check_pre_condition(associated(this), ''{1}_segini'', ''associated(this)'')' ;
+		content: 'call check_post_condition(associated(this), ''{1}_segini'', ''associated(this)'')' ;
 		values: { name } ).
 
 	^segini
@@ -796,7 +790,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSeglik [
 	
 	elseStatements := OrderedCollection new: self rankMax.
 	
-	elseStatements add: (self assignement: (name , '_seglik') value: (self literal: false)).
+	elseStatements add: (self assignement: (name , '_seglik') value: (self literal: true)).
 	elseStatements addAll: (
 		paramFactories collect: [ :param |
 			self assignement: (name , '_seglik') 
@@ -873,7 +867,8 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegload [
 		arguments: (seginiArguments collect: [ :arg | self scalarVariable: arg])).
 	segstore addStatement: model newEmptyStatement.
 
-	self components do: [ :comp | comp makeSegloadDo ].
+	self components do: [ :comp | segstore statementBlock statements addAll: (comp makeSegloadDo) ].
+	segstore addStatement: model newEmptyStatement.
 
 	^segstore
 ]
@@ -1039,20 +1034,14 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegpar [
 		values: { name } ).
 	segpar addStatement: model newEmptyStatement.
 
-	self
-		if: (self functionCall: 'associated' arguments: { self scalarVariable: 'this'})
-		then: (paramFactories collect: [ :param |
-			self assignement: param name value: (self derivedTypeFieldAccessVariable: 'this' field: param name)
-		]).
-	
-	paramFactories do: [ :paramFactory | 
-		segpar addStatement: (self 
-			assignement: paramFactory name 
-			value: ( self 
-				derivedTypeFieldAccessVariable: 'this' 
-				field: paramFactory name 
-			)
-		)	
+	paramFactories ifNotEmpty: [ 
+		segpar addStatement: (
+			self
+				if: (self functionCall: 'associated' arguments: { self scalarVariable: 'this'})
+				then: (paramFactories collect: [ :param |
+					self assignement: param name value: (self derivedTypeFieldAccessVariable: 'this' field: param name)
+				])
+		)
 	].
 
 	^segpar
@@ -1100,12 +1089,20 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegprt [
 	thenStatements add: model newEmptyStatement.
 
 	self parameters do: [ :param |
-		thenStatements add: (self formattedCode: 'write(ooo_text_par, *) this%{1}' values: {param name}).
+		thenStatements add: (self formattedCode: 'write(ooo_text_par, *) this % {1}' values: {param name}).
 		thenStatements add: (self formattedCode: 'write(*, ''(a)'') ''    {1} = '' //  trim(adjustl(ooo_text_par))' values: {param name}).
 	].
-	thenStatements add: model newEmptyStatement.
 
-	self components do: [ :comp | thenStatements addAll: comp makeSegprtDo ].
+	self components do: [ :comp |
+		comp rank > 0 
+			ifTrue: [ thenStatements addAll: comp makeSegprtDo  ]
+			ifFalse: [ 
+				thenStatements add: (self formattedCode: 'write(*, ''(1x)'')' values: #()).
+				thenStatements add: (self formattedCode: 'write(ooo_text_value, *) this % {1}' values: {comp name}).
+				thenStatements add: (self formattedCode: 'write(*, ''(a)'') ''    {1} = '' //  trim(adjustl(ooo_text_value))' values: {comp name}).
+				thenStatements add: model newEmptyStatement.
+			]		
+	].
 
 	segprt addStatement: (self
 		if: (self functionCall: 'associated' arguments: { self scalarVariable: 'this' } )
@@ -1145,15 +1142,17 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegstore [
 	segstore addStatement: (self
 		formattedCode: 'call check_pre_condition(associated(this), ''{1}_seg_store'', ''associated(this)'')'
 		values: { name } ).
+	segstore addStatement: model newEmptyStatement.
 
 	paramFactories do: [ :param |
 		segstore addStatement: (self
-			formattedCode: 'write(file_number, *) this%{1}'
+			formattedCode: 'write(file_number, *) this % {1}'
 			values: { param name } ).
 	].
 	segstore addStatement: model newEmptyStatement.
 
-	componentFactories do: [ :comp | comp makeSegstoreDo ].
+	componentFactories do: [ :comp | segstore statementBlock statements addAll: (comp makeSegstoreDo) ].
+	segstore addStatement: model newEmptyStatement.
 
 	^segstore
 ]
@@ -1196,6 +1195,11 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegsup [
 			yourself
 	).
 	segsup addStatement: ifAssociated.
+
+	segsup addStatement: model newEmptyStatement.
+	segsup addStatement: (model newFormattedCodeString
+		content: 'call check_post_condition(.not. associated(this), ''{1}_segsup'', ''.not. associated(this)'')' ;
+		values: { name } ).
 
 	^segsup
 ]
@@ -1378,7 +1382,6 @@ FASTFortranDerivedTypeFactory >> makeTypeDefinition [
 
 	| segment |
 	segment := model newDerivedTypeDefinition
-		modifiers: #( public );
 		name: name.
 
 	fields do: [ :fieldFactory |

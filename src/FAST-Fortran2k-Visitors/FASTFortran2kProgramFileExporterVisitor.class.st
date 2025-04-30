@@ -42,6 +42,12 @@ FASTFortran2kProgramFileExporterVisitor >> initialize [
 	linesDescription := #().
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortran2kProgramFileExporterVisitor >> isUseToIgnore: aModuleName [
+	
+	^#( pstr_mod wrstr_mod rdstr_mod ) includes: aModuleName asLowercase
+]
+
 { #category : 'accessing - private tests' }
 FASTFortran2kProgramFileExporterVisitor >> linesDescription: aCollection [
 
@@ -1300,6 +1306,8 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseRenamedStatement
 
 { #category : 'visiting - statements' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUseStatement: aFASTFortran2kUseStatement [
+
+	(self isUseToIgnore: aFASTFortran2kUseStatement name) ifTrue: [ ^self ].
 
 	self skipLine: aFASTFortran2kUseStatement.
 

@@ -179,7 +179,12 @@ FASTFortranDerivedTypeComponentFieldFactory >> fieldDeclarator: aFastFortranVari
 { #category : 'testing' }
 FASTFortranDerivedTypeComponentFieldFactory >> isAllocatable [
 
-	^type class = FASTEsopeSegment
+	| result |
+	result := type class = FASTEsopeSegment.
+
+	^rank 
+		ifNotNil: [ result or: [ rank > 0 ] ]
+		ifNil: [ result ]
 ]
 
 { #category : 'accessing' }
@@ -233,7 +238,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeSegadjIfStatement [
 	).
 	adjusterStatements add: (self model newPointerAssignmentStatement
 		variable: (self derivedTypeFieldAccessVariable: 'this' field: name);
-		expression: (self scalarVariable: ('this%', name))).
+		expression: (self scalarVariable: ('ooo_', name))).
 
 	ifAdjuster := self
 		if: (self model newUnaryExpression 
@@ -260,7 +265,10 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeSegloadDo [
 			nestedDoLoops: 1
 			of: rank
 			allLoops: nil
-			finalLoop: {self formattedCode: 'read(file_number, *) this%{1}({2})' values: { name , self temporariesAsArguments } })
+			finalLoop: {self formattedCode: 'read(file_number, *) this % {1}({2})' values: { name . self temporariesAsArguments } })
+		]
+		ifFalse: [ 
+			statements add: (self formattedCode: 'read(file_number, *) this % {1}' values: { name })
 		].
 
 	^statements		
@@ -320,7 +328,6 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeSegstoreDo [
 	| statements |
 	statements := OrderedCollection new.
 
-
 	statements add: (self comment: ('-- this%' , name)).
 
 	(rank > 0)
@@ -328,7 +335,10 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeSegstoreDo [
 			nestedDoLoops: 1
 			of: rank
 			allLoops: nil
-			finalLoop: {self formattedCode: 'write(file_number, *) this%{1}({2})' values: { name , self temporariesAsArguments }})
+			finalLoop: {self formattedCode: 'write(file_number, *) this % {1}({2})' values: { name . self temporariesAsArguments }})
+		]
+		ifFalse: [ 
+			statements add: (self formattedCode: 'write(file_number, *) this % {1}' values: { name })
 		].
 
 	^statements		
@@ -353,13 +363,14 @@ FASTFortranDerivedTypeComponentFieldFactory >> nestedDoLoops: dim of: maxDim all
 
 	statements := OrderedCollection new.
 
+	allLoopsFormattedCode
+				ifNotNil: [ statements add: (self formattedCode: allLoopsFormattedCode values: { dim }) ].
+
 	(dim = maxDim)
 		ifTrue: [ statements addAll: finalLoopStatements ]
-	ifFalse: [
-		allLoopsFormattedCode
-			ifNotNil: [ statements add: (self formattedCode: allLoopsFormattedCode values: { dim }) ].
-		self nestedDoLoops: (dim+1) of: maxDim allLoops: allLoopsFormattedCode finalLoop: finalLoopStatements
-	].
+		ifFalse: [
+			self nestedDoLoops: (dim+1) of: maxDim allLoops: allLoopsFormattedCode finalLoop: finalLoopStatements
+		].
 
 	^self do: loopControl body: statements 
 
