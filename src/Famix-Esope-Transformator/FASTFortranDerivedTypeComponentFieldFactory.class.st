@@ -234,7 +234,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeSegadjIfStatement [
 	).
 	adjusterStatements add: (self model newPointerAssignmentStatement
 		variable: (self derivedTypeFieldAccessVariable: 'this' field: name);
-		expression: (self scalarVariable: ('this%', name))).
+		expression: (self scalarVariable: ('ooo_', name))).
 
 	ifAdjuster := self
 		if: (self model newUnaryExpression 
