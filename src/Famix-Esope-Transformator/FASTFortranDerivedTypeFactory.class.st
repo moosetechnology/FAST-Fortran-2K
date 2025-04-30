@@ -1150,15 +1150,17 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegstore [
 	segstore addStatement: (self
 		formattedCode: 'call check_pre_condition(associated(this), ''{1}_seg_store'', ''associated(this)'')'
 		values: { name } ).
+	segstore addStatement: model newEmptyStatement.
 
 	paramFactories do: [ :param |
 		segstore addStatement: (self
-			formattedCode: 'write(file_number, *) this%{1}'
+			formattedCode: 'write(file_number, *) this % {1}'
 			values: { param name } ).
 	].
 	segstore addStatement: model newEmptyStatement.
 
-	componentFactories do: [ :comp | comp makeSegstoreDo ].
+	componentFactories do: [ :comp | segstore statementBlock statements addAll: (comp makeSegstoreDo) ].
+	segstore addStatement: model newEmptyStatement.
 
 	^segstore
 ]

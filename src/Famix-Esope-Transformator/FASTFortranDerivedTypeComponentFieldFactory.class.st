@@ -321,7 +321,6 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeSegstoreDo [
 	| statements |
 	statements := OrderedCollection new.
 
-
 	statements add: (self comment: ('-- this%' , name)).
 
 	(rank > 0)
@@ -329,7 +328,10 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeSegstoreDo [
 			nestedDoLoops: 1
 			of: rank
 			allLoops: nil
-			finalLoop: {self formattedCode: 'write(file_number, *) this%{1}({2})' values: { name , self temporariesAsArguments }})
+			finalLoop: {self formattedCode: 'write(file_number, *) this % {1}({2})' values: { name . self temporariesAsArguments }})
+		]
+		ifFalse: [ 
+			statements add: (self formattedCode: 'write(file_number, *) this % {1}' values: { name })
 		].
 
 	^statements		
