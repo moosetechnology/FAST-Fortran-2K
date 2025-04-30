@@ -790,7 +790,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSeglik [
 	
 	elseStatements := OrderedCollection new: self rankMax.
 	
-	elseStatements add: (self assignement: (name , '_seglik') value: (self literal: false)).
+	elseStatements add: (self assignement: (name , '_seglik') value: (self literal: true)).
 	elseStatements addAll: (
 		paramFactories collect: [ :param |
 			self assignement: (name , '_seglik') 
