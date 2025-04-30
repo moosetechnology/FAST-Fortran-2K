@@ -1382,7 +1382,6 @@ FASTFortranDerivedTypeFactory >> makeTypeDefinition [
 
 	| segment |
 	segment := model newDerivedTypeDefinition
-		modifiers: #( public );
 		name: name.
 
 	fields do: [ :fieldFactory |
