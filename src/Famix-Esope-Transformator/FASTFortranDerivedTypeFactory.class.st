@@ -1101,8 +1101,8 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegprt [
 			ifTrue: [ thenStatements addAll: comp makeSegprtDo  ]
 			ifFalse: [ 
 				thenStatements add: (self formattedCode: 'write(*, ''(1x)'')' values: #()).
-				thenStatements add: (self formattedCode: 'write(ooo_text_par, *) this % {1}' values: {comp name}).
-				thenStatements add: (self formattedCode: 'write(*, ''(a)'') ''    {1} = '' //  trim(adjustl(ooo_text_par))' values: {comp name}).
+				thenStatements add: (self formattedCode: 'write(ooo_text_value, *) this % {1}' values: {comp name}).
+				thenStatements add: (self formattedCode: 'write(*, ''(a)'') ''    {1} = '' //  trim(adjustl(ooo_text_value))' values: {comp name}).
 				thenStatements add: model newEmptyStatement.
 			]		
 	].
