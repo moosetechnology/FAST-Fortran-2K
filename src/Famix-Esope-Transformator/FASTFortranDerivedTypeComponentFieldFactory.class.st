@@ -180,6 +180,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> fieldDeclarator: aFastFortranVari
 FASTFortranDerivedTypeComponentFieldFactory >> isAllocatable [
 
 	^type class = FASTEsopeSegment
+		or: [ rank > 0 ]
 ]
 
 { #category : 'accessing' }
