@@ -1037,20 +1037,14 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegpar [
 		values: { name } ).
 	segpar addStatement: model newEmptyStatement.
 
-	self
-		if: (self functionCall: 'associated' arguments: { self scalarVariable: 'this'})
-		then: (paramFactories collect: [ :param |
-			self assignement: param name value: (self derivedTypeFieldAccessVariable: 'this' field: param name)
-		]).
-	
-	paramFactories do: [ :paramFactory | 
-		segpar addStatement: (self 
-			assignement: paramFactory name 
-			value: ( self 
-				derivedTypeFieldAccessVariable: 'this' 
-				field: paramFactory name 
-			)
-		)	
+	paramFactories ifNotEmpty: [ 
+		segpar addStatement: (
+			self
+				if: (self functionCall: 'associated' arguments: { self scalarVariable: 'this'})
+				then: (paramFactories collect: [ :param |
+					self assignement: param name value: (self derivedTypeFieldAccessVariable: 'this' field: param name)
+				])
+		)
 	].
 
 	^segpar
