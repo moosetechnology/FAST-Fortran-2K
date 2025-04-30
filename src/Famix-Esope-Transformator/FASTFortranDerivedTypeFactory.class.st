@@ -459,13 +459,13 @@ FASTFortranDerivedTypeFactory >> makeProcedureBoxed [
         type(boxed_{1}), pointer :: that_boxed_{1}
         type({1}), pointer :: that_{1}
 
-        call check_pre_condition(.not. associated(that_segment), ''boxed_{1}_segcop'', ''.not. associated(that_segment)'')
+        call check_pre_condition(.not. associated(that_segment), ''boxed_{1}_segmov'', ''.not. associated(that_segment)'')
 
         call {1}_segcop(this_segment%this, that_{1})
         call new_boxed_{1}(that_boxed_{1}, that_{1})
 
         that_segment => that_boxed_{1}
-        call check_post_condition(associated(that_segment), ''boxed_{1}_segcop'', ''associated(that_segment)'')
+        call check_post_condition(associated(that_segment), ''boxed_{1}_segmov'', ''associated(that_segment)'')
     end subroutine boxed_{1}_segcop
 
 
