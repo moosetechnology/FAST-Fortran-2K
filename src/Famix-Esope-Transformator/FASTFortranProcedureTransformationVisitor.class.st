@@ -119,7 +119,7 @@ FASTFortranProcedureTransformationVisitor >> paramIntentFromAccesses: paramF77 [
 	| hasIn hasOut |
 
 	(self isItASpecialInvocation: #inistr with: paramF77) ifTrue: [ ^ 'intent(out)' ].
-	(self isItASpecialInvocation: #ajpnt with: paramF77) ifTrue: [ ^ 'intent(inout)' ].
+	(self isItASpecialInvocation: #ajpnt with: paramF77) ifTrue: [ ^ 'intent(inOut)' ].
 
 	hasIn := paramF77 incomingAccesses anySatisfy: [ :acc | acc isWrite not].
 	hasOut := paramF77 incomingAccesses anySatisfy: #isWrite.
