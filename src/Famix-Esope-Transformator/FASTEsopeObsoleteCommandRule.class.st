@@ -39,7 +39,7 @@ FASTEsopeObsoleteCommandRule >> invocationsToIgnore [
 
 	^#(
 		oooeta
-		ooossg
+		"ooossg" "used to register all used segment see: https://github.com/moosetechnology/FAST-Fortran-2K/issues/90"
 		ooostp
 		actstr
 		desstr

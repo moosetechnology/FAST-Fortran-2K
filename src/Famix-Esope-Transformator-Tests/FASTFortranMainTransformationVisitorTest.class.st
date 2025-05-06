@@ -87,7 +87,7 @@ end program demo
 
 	self assert: res class equals: FASTFortran2kProgramMain.
 	self assert: res name equals: 'demo'.
-	self assert: res internalProcedures size equals: 1.
+	self assert: res internalProcedures size equals: 2.
 	
 	entity := res internalProcedures first.
 	self assert: entity class equals: FASTFortran2kInternalFunction.
@@ -138,7 +138,7 @@ end program demo
 	self assert: res statementBlock statements first class equals: FASTFortran2kImplicitStatement.
 	self assert: res statementBlock statements second class equals: FASTFortran2kAssignmentStatement.
 
-	self assert: res internalProcedures size equals: 1.
+	self assert: res internalProcedures size equals: 2.
 	
 	entity := res internalProcedures first.
 	self assert: entity class equals: FASTFortran2kInternalFunction.

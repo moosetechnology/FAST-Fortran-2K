@@ -788,6 +788,13 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kInternalProcedure: 
 ]
 
 { #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kInternalSubroutine: aFASTFortran2kInternalSubroutine [
+
+	self visitFASTFortran2kSubroutine: aFASTFortran2kInternalSubroutine.
+
+]
+
+{ #category : 'visiting' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIntrinsicStatement: aFASTFortran2kIntrinsicStatement [
 
 	self indented: 'intrinsic '.
@@ -983,6 +990,13 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kProgramMain: aFASTF
 		newLine.
 	
 	self visitFASTFortranTBehaviouralEntity: aFASTFortran2kProgramNode.
+	
+	aFASTFortran2kProgramNode internalProcedures ifNotEmpty: [ 
+		self << 'contains'; newLine.
+		aFASTFortran2kProgramNode internalProcedures do: [ :internalProcedure |
+			internalProcedure accept: self
+		]
+	].
 	
 	self end: 'program' named: aFASTFortran2kProgramNode name
 ]
