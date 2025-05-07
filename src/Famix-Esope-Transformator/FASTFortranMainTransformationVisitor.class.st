@@ -24,7 +24,8 @@ FASTFortranMainTransformationVisitor >> makeProcedureOoossgSegmentRegister [
 	statementBlock	addStatement: (model2k newEmptyStatement).
 
 	(model2k allWithType: FASTFortran2kDerivedTypeDefinition)
-		do: [ :aSegment |
+		reject: [ :aDerivedTypeDefinition | aDerivedTypeDefinition name asLowercase = 'pstr' ]
+		thenDo: [ :aSegment |
 			statementBlock	addStatement: (model2k newFormattedCodeString 
 				content: 'call register_seg_loader({1}_type_name, {1}_load)';
 				values: { aSegment name })
