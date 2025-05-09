@@ -254,9 +254,9 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeSegadjIfStatement [
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> makeSegloadDo [
 
-	| statements |
+	| statements formatSpecification |
 	statements := OrderedCollection new.
-
+	formatSpecification := type ioDefaultFormatForRead.
 
 	statements add: (self comment: ('-- this%' , name)).
 
@@ -265,13 +265,13 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeSegloadDo [
 			nestedDoLoops: 1
 			of: rank
 			allLoops: nil
-			finalLoop: {self formattedCode: 'read(file_number, *) this % {1}({2})' values: { name . self temporariesAsArguments } })
+			finalLoop: {self formattedCode: 'read(file_number, {3}) this % {1}({2})' values: { name . self temporariesAsArguments . formatSpecification } })
 		]
 		ifFalse: [ 
-			statements add: (self formattedCode: 'read(file_number, *) this % {1}' values: { name })
+			statements add: (self formattedCode: 'read(file_number, {2}) this % {1}' values: { name . formatSpecification })
 		].
 
-	^statements		
+	^statements
 ]
 
 { #category : 'entity-creation' }
@@ -325,23 +325,23 @@ FASTFortranDerivedTypeComponentFieldFactory >> makeSegprtDoFinalWrite [
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeComponentFieldFactory >> makeSegstoreDo [
 
-	| statements |
+	| statements formatSpecification |
 	statements := OrderedCollection new.
+	formatSpecification := type ioDefaultFormatForWrite.
 
 	statements add: (self comment: ('-- this%' , name)).
-
 	(rank > 0)
 		ifTrue: [ statements add: (self
 			nestedDoLoops: 1
 			of: rank
 			allLoops: nil
-			finalLoop: {self formattedCode: 'write(file_number, *) this % {1}({2})' values: { name . self temporariesAsArguments }})
+			finalLoop: {self formattedCode: 'write(file_number, {3}) this % {1}({2})' values: { name . self temporariesAsArguments . formatSpecification }})
 		]
 		ifFalse: [ 
-			statements add: (self formattedCode: 'write(file_number, *) this % {1}' values: { name })
+			statements add: (self formattedCode: 'write(file_number, {2}) this % {1}' values: { name . formatSpecification })
 		].
 
-	^statements		
+	^statements
 ]
 
 { #category : 'entity-creation' }
