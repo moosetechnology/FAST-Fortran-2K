@@ -123,16 +123,13 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarationStatemen
 
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarator: aFASTFortranVariableDeclarator [
 	"need to keep the context of the declaration:
 	   declarationStatement + parentStatement"
 
 	| declarationStatement |
 	(allParameters includes: aFASTFortranVariableDeclarator name)
-		ifTrue: [ ^nil ].
-
-	(allArguments includes: aFASTFortranVariableDeclarator name)
 		ifTrue: [ ^nil ].
 
 	declarationStatement := nodeStack pop.
