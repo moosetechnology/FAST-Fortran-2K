@@ -43,6 +43,9 @@ FASTFortranDerivedTypeFactory >> components [
 FASTFortranDerivedTypeFactory >> createModule [
 
 	| module |
+
+	name asLowercase = 'pstr' ifTrue: [ ^nil ].
+
 	module := model newModule name: name , '_mod'.
 
 	module statementBlock:(
