@@ -16,7 +16,7 @@ jobs:
     secrets: inherit
 # Optional inputs: un-comment the lines below. See documentation in the next commented paragraph.
     with:
-      pharo-versions: "[ 'Moose64-12' ]"
+      pharo-versions: "[ 'Moose64-trunk' ]"
 #        create-artifact: true
 #        image-name: ""
 #        pre-upload-script: ""
