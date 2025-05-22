@@ -16,14 +16,14 @@ FASTFortranParameterExtractionVisitor >> visitFASTFortranArrayRange: aFASTFortra
 	  , (aFASTFortranArrayRange upperBound accept: self)) asSet
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - expressions' }
 FASTFortranParameterExtractionVisitor >> visitFASTFortranBinaryExpression: aFASTFortranBinaryExpression [
 
 	^ (aFASTFortranBinaryExpression leftOperand accept: self)
 	, ( aFASTFortranBinaryExpression rightOperand accept: self)
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - expressions' }
 FASTFortranParameterExtractionVisitor >> visitFASTFortranFunctionCall: aFASTFortranFunctionCall [
 
 	^#()
@@ -35,7 +35,7 @@ FASTFortranParameterExtractionVisitor >> visitFASTFortranIntegerLiteral: aFASTFo
 	^#()
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - expressions' }
 FASTFortranParameterExtractionVisitor >> visitFASTFortranScalarVariable: aFASTFortranScalarVariable [
 
 	^{ aFASTFortranScalarVariable name }
