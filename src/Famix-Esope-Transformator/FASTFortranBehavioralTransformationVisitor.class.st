@@ -808,11 +808,14 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 	"Need to deal with StatementFunction that are created as InternalProcedure in the parent
 	programUnit (which is on the top of the stack)"
 	
-	| f2kStatementBlock |
+	| f2kStatementBlock parentBehavioral |
 	
 	f2kStatementBlock := self
 		fortran2k: FASTFortran2kStatementBlock
 		traceBack: aFASTFortranStatementBlock.
+
+	parentBehavioral := stack ifNotEmpty: [ stack top ].
+	stack push: f2kStatementBlock.
 
 	aFASTFortranStatementBlock statements
 		do: [ :statement | 
@@ -821,7 +824,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 					f2kStatementOrModule class = FASTFortran2kModule 
 						ifFalse: [ 
 							statement class = FASTFortranFunctionStatement
-								ifTrue: [stack top addInternalProcedure: f2kStatementOrModule ]
+								ifTrue: [ parentBehavioral addInternalProcedure: f2kStatementOrModule ]
 								ifFalse: [ 
 									f2kStatementOrModule isCollection
 										ifTrue: [ f2kStatementBlock statements addAll: f2kStatementOrModule ]
@@ -830,6 +833,8 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 						]
 			 	]
 		].
+
+	stack pop.
 
 	^f2kStatementBlock
 ]
