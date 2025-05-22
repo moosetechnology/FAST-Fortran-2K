@@ -11,7 +11,8 @@ Class {
 	#instVars : [
 		'uselessDeclarations',
 		'allParameters',
-		'allArguments'
+		'allArguments',
+		'ioKeywordArguments'
 	],
 	#category : 'Famix-Esope-Transformator-Simplification',
 	#package : 'Famix-Esope-Transformator',
@@ -158,9 +159,9 @@ FASTEsopeUselessDeclarationRule >> visitFASTTWithArguments: aFASTFortran2kTWithA
 	aFASTFortran2kTWithArguments arguments do: [ :arg | arg accept: self ]
 ]
 
-{ #category : 'visiting - expressions' }
+{ #category : 'visiting - traits' }
 FASTEsopeUselessDeclarationRule >> visitFASTTWithParameters: aFASTFortran2kTWithParameters [
-	"parameters are considered always used so we keep their names ghere to not add them to the useless list"
+	"parameters are considered always used so we keep their names there to not add them to the useless list"
 
 	allParameters :=  aFASTFortran2kTWithParameters parameters collect: #name
 ]
