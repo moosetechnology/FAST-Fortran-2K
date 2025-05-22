@@ -22,6 +22,8 @@ Class {
 { #category : 'private' }
 FASTEsopeUselessDeclarationRule >> checkUselessDeclarations [
 
+	self removeIOKeywordArgsAndInvocationArgsFromUselessDeclarations.
+
 	uselessDeclarations do: [ :toSimplify |
 		toSimplify ifNotNil: [
 			nodeStack push: toSimplify first.
@@ -38,7 +40,18 @@ FASTEsopeUselessDeclarationRule >> initialize [
 
 	uselessDeclarations := Dictionary new.
 	allParameters := #().
-	allArguments := #()
+	allArguments := OrderedCollection new.
+	ioKeywordArguments := OrderedCollection new
+]
+
+{ #category : 'private' }
+FASTEsopeUselessDeclarationRule >> removeIOKeywordArgsAndInvocationArgsFromUselessDeclarations [
+
+	ioKeywordArguments do: [ :ioKeywordArgument | 
+		uselessDeclarations removeKey: ioKeywordArgument ifAbsent: [ "Nothing" ] ].
+	
+	allArguments do: [ :callArgument | 
+		uselessDeclarations removeKey: callArgument ifAbsent: [ "Nothing" ] ].
 ]
 
 { #category : 'accessing - private tests' }
@@ -58,11 +71,45 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kArrayVariable: aFASTFortran
 
 ]
 
+{ #category : 'visiting - statements' }
+FASTEsopeUselessDeclarationRule >> visitFASTFortran2kCloseStatement: aFASTFortran2kCloseStatement [
+	"keywordArguments (IOParameter) in I/O are considered always used so we keep their names (ioSpecifier) there to not add them to the useless list"
+	
+	"We need to collect in ioKeywordArguments all keywordArguments"
+	| ioParameters |
+
+	ioParameters := aFASTFortran2kCloseStatement ioParameters
+		select: [ :ioParameter |  
+			ioParameter class = FASTFortran2kIOParameter 
+				and: [ ioParameter expression class = FASTFortran2kScalarVariable ] 
+		].
+
+	ioKeywordArguments 
+		addAll: (ioParameters collect: [ :ioParameter | ioParameter expression name ])
+]
+
 { #category : 'visiting' }
 FASTEsopeUselessDeclarationRule >> visitFASTFortran2kDerivedTypeComponentAccess: aFASTFortran2kDerivedTypeComponentAccess [ 
 
 	self visitFASTFortran2kVariable: aFASTFortran2kDerivedTypeComponentAccess instance.
 
+]
+
+{ #category : 'visiting - statements' }
+FASTEsopeUselessDeclarationRule >> visitFASTFortran2kOpenStatement: aFASTFortran2kOpenStatement [
+	"keywordArguments (IOParameter) in I/O are considered always used so we keep their names (ioSpecifier) there to not add them to the useless list"
+	
+	"We need to collect in ioKeywordArguments all keywordArguments"
+	| ioParameters |
+
+	ioParameters := aFASTFortran2kOpenStatement ioParameters
+		select: [ :ioParameter |  
+			ioParameter class = FASTFortran2kIOParameter 
+				and: [ ioParameter expression class = FASTFortran2kScalarVariable ] 
+		].
+
+	ioKeywordArguments 
+		addAll: (ioParameters collect: [ :ioParameter | ioParameter expression name ])
 ]
 
 { #category : 'visiting' }
