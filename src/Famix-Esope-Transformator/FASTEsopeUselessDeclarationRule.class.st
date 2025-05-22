@@ -148,15 +148,12 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarator: aFASTFo
 		  ifNil: [ nil ]
 ]
 
-{ #category : 'visiting - expressions' }
+{ #category : 'visiting - traits' }
 FASTEsopeUselessDeclarationRule >> visitFASTTWithArguments: aFASTFortran2kTWithArguments [
 	"arguments in call are considered always used so we keep their names there to not add them to the useless list"
 	
 	"We need to collect in allArguments all arguments"
-	allArguments := aFASTFortran2kTWithArguments arguments collect: #name.
-
-	"we need to remove in uselessDeclarations dictionary this argument in case we already process all the declarations"
-	aFASTFortran2kTWithArguments arguments do: [ :arg | arg accept: self ]
+	allArguments addAll: (aFASTFortran2kTWithArguments arguments collect: #name)
 ]
 
 { #category : 'visiting - traits' }
