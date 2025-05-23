@@ -1,3 +1,45 @@
+"
+# Migration automatique de Esope vers Fortran-2k:
+
+- Cloner un projet à migrer, dans `/tmp/`, par exemple [bookstore](https://gitlab.inria.fr/framatome/code/bookstore). Adapter les variables `srcFolder` et `incFolder`.
+
+- Créer une image moose dépuis Pharo Launcher et lancer l'image
+
+- Charger le dépôt [FAST-Fortran-2k](https://github.com/moosetechnology/FAST-Fortran-2K) avec le script Metacello suivant dans un playground:
+
+```st
+Metacello new
+	baseline: 'FASTFortran2k';
+	repository: 'github://moosetechnology/FAST-Fortran-2K';
+	onConflictUseIncoming;
+	load
+```
+
+- Une fois le projet chargé, lancer le script suivant depuis un playground
+
+```st
+srcFolder := '/tmp/bookstore/src'.
+incFolder := '/tmp/bookstore/src'.
+
+importer := FortranProjectImporter new.
+esopeToFortran2kTranspiler := FamixEsopeToFortran2k new.
+
+famixEsopeModel := importer sourceFolder: srcFolder;  includeFolder: incFolder; import.
+esopeToFortran2kTranspiler famixModel: famixEsopeModel; run
+
+```
+
+Si vous souhaitez une compilation et éxecution avec [fpm](https://fpm.fortran-lang.org), 
+remplacez la ligne 
+```st 
+esopeToFortran2kTranspiler famixModel: famixEsopeModel; run
+```
+dans le script précedent par
+```st
+esopeToFortran2kTranspiler famixModel: famixEsopeModel; isFpm: true; run
+```
+
+"
 Class {
 	#name : 'FamixEsopeToFortran2k',
 	#superclass : 'Object',
@@ -7,7 +49,8 @@ Class {
 		'famixModel',
 		'fast2kModel',
 		'includedFiles',
-		'specialCallTreatments'
+		'specialCallTreatments',
+		'isFpm'
 	],
 	#category : 'Famix-Esope-Transformator-Main',
 	#package : 'Famix-Esope-Transformator',
@@ -97,7 +140,14 @@ FamixEsopeToFortran2k >> initialize [
 	usesNeeded := Set new.
 	fast2kModel := FASTFortran2kModel new.
 	includedFiles := Dictionary new.
+	isFpm := false
 
+]
+
+{ #category : 'accessing' }
+FamixEsopeToFortran2k >> isFpm: anObject [
+
+	isFpm := anObject
 ]
 
 { #category : 'migration-substeps' }
