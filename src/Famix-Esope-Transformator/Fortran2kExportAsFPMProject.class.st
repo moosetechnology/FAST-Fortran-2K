@@ -15,7 +15,7 @@ Fortran2kExportAsFPMProject class >> author [
 { #category : 'accessing' }
 Fortran2kExportAsFPMProject class >> baseDir [
 
-	^FileLocator temp
+	^FileSystem workingDirectory 
 ]
 
 { #category : 'accessing' }
@@ -138,7 +138,7 @@ Fortran2kExportAsFPMProject class >> prepareWorkingDirectory [
 { #category : 'accessing' }
 Fortran2kExportAsFPMProject class >> projectName [
 
-	^'f2k_bookstore'
+	^'tmpFortran2kExport'
 ]
 
 { #category : 'initialization' }
