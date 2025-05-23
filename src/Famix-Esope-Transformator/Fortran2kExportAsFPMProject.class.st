@@ -15,7 +15,7 @@ Fortran2kExportAsFPMProject class >> author [
 { #category : 'accessing' }
 Fortran2kExportAsFPMProject class >> baseDir [
 
-	^FileLocator temp
+	^FileSystem workingDirectory 
 ]
 
 { #category : 'accessing' }
@@ -115,7 +115,7 @@ Fortran2kExportAsFPMProject class >> moveGeneratedCode [
 					relativePath := aFileReference relativeTo: (self baseSourceDir / directoryName) asAbsolute.
 					destinationFile := targetDir / relativePath pathString.
 					destinationFile parent ensureCreateDirectory.
-					aFileReference copyTo: destinationFile			
+					aFileReference moveTo: destinationFile			
 				]
 			] 
 		]
@@ -138,7 +138,7 @@ Fortran2kExportAsFPMProject class >> prepareWorkingDirectory [
 { #category : 'accessing' }
 Fortran2kExportAsFPMProject class >> projectName [
 
-	^'f2k_bookstore'
+	^'tmpFortran2kExport'
 ]
 
 { #category : 'initialization' }
