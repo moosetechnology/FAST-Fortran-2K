@@ -57,6 +57,12 @@ Class {
 	#tag : 'Main'
 }
 
+{ #category : 'running' }
+FamixEsopeToFortran2k >> asFpmProject [
+
+	Fortran2kExportAsFPMProject make
+]
+
 { #category : 'migration-substeps' }
 FamixEsopeToFortran2k >> collectUsesNeeded: aFASTProgramUnit [
 
