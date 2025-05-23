@@ -39,6 +39,56 @@ end module segment_foo_mod
 
 ]
 
+{ #category : 'tests-statement' }
+FASTFortranMainTransformationVisitorTest >> testParameterStatement [
+	" demo_mod.f90
+
+	program main
+	integer param
+	parameter(param=42)
+	end
+	
+program main
+	integer, parameter :: param = 42
+end program main  
+	"
+	| res declStatement paramStatement entity |
+	self programEmpty.
+
+	declStatement := self declarationStatement: 'param' type: #integer.
+
+	paramStatement := FASTFortranParameterStatement new
+		declarators: (self variableDeclarators: #(param)) ;
+		yourself.
+	paramStatement declarators first expression: (self integerLiteral: 42).
+
+	fastMainProgram statementBlock addStatement: declStatement.
+	fastMainProgram statementBlock addStatement: paramStatement.
+
+	self assert: fastMainProgram statementBlock statements size equals: 2.
+
+	res := fastMainProgram accept: visitor.
+
+	self assert: res class equals: FASTFortran2kProgramFile.
+
+	entity := res programUnits anyOne.
+	self assert: entity class equals: FASTFortran2kProgramMain.
+
+	self assert: entity statementBlock statements size equals: 2.
+
+	self assert: entity statementBlock statements first class equals: FASTFortran2kImplicitStatement.
+
+	entity := entity statementBlock statements second.
+	self assert: entity class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: entity modifiers anyOne equals: 'parameter'.
+	self assert: entity declarators size equals: 1.
+
+	entity := entity declarators anyOne.
+	self assert: entity class equals: FASTFortran2kVariableDeclarator.
+	self assert: entity expression class equals: FASTFortran2kIntegerLiteral.
+	self assert: entity expression primitiveValue equals: 42
+]
+
 { #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramEmpty [
 	| res entity |

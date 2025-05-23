@@ -43,6 +43,9 @@ FASTFortranDerivedTypeFactory >> components [
 FASTFortranDerivedTypeFactory >> createModule [
 
 	| module |
+
+	name asLowercase = 'pstr' ifTrue: [ ^nil ].
+
 	module := model newModule name: name , '_mod'.
 
 	module statementBlock:(
@@ -717,7 +720,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 	segini initBody.
 	segini addComment: '## Initializes a new "this" segment with default values'.
 	segini addComment: '## using the given parameters'.
-	
+
 	segini addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
 	paramFactories do: [ :paramFactory |
 		segini addStatement: (paramFactory createSegcmdInFieldDeclaration)
@@ -728,6 +731,9 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegini [
 	segini addStatement: model newEmptyStatement.
 
 	segini addStatement: thisParameter createSeginiFieldInitialization.
+	paramFactories do: [ :paramFactory |
+		segini addStatement: paramFactory createSeginiFieldInitialization.
+	].
 	segini addStatement: model newEmptyStatement.
 
 	componentFactories do: [ :compFact |

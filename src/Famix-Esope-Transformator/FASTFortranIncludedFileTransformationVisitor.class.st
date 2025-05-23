@@ -27,9 +27,11 @@ FASTFortranIncludedFileTransformationVisitor >> visitFASTFortranIncludedFile: aF
 	aFASTFortranIncludedFile declarations 
 		collect: [ :declaration | declaration accept: self ]
 		thenDo: [ :f2kModule | 
-			model2k newProgramFile
-				filename: (self fortran2kfilename: aFASTFortranIncludedFile);
-				addProgramUnit: f2kModule
+			f2kModule ifNotNil: [
+				model2k newProgramFile
+					filename: (self fortran2kfilename: aFASTFortranIncludedFile);
+					addProgramUnit: f2kModule
+			]
 		].
 
 	^aFASTFortranIncludedFile statementBlock accept: self

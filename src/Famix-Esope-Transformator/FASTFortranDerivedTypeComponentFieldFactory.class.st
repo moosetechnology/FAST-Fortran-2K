@@ -413,15 +413,15 @@ FASTFortranDerivedTypeComponentFieldFactory >> temporariesForDimCheckIfExtendabl
 		assignement: 'ooo_eq_dims'
 		value: (self checkIfDimExtendable: 1) ).
 
-	(2 to: rank) do: [ :iDim |
-		statements add: (self
+	statements addAll: ((2 to: rank) collect: [ :iDim |
+		self
 			assignement: 'ooo_eq_dims'
 			value: (self model newBinaryExpression
 				leftOperand: (self scalarVariable: 'ooo_eq_dims') ;
 				operator: '.and.' ;
 				rightOperand: (self checkIfDimExtendable: iDim)
-			))
-	].
+			)
+	]).
 
 	^statements
 ]

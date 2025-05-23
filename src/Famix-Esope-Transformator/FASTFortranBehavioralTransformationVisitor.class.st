@@ -731,6 +731,30 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranOpenStatement: aFA
 ]
 
 { #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranParameterStatement: aFASTFortranParameterStatement [
+
+	"stack top coontains an f2k statementBlock"
+
+	| f2kVariableDeclarations |
+	f2kVariableDeclarations := stack top statements 
+		select: [ :statement | statement class = FASTFortran2kVariableDeclarationStatement ].
+
+	f2kVariableDeclarations do: [ :f2kVariableDeclaration | 
+		aFASTFortranParameterStatement declarators do: [ :paramDeclarator |
+			f2kVariableDeclaration declarators 
+				detect: [ :declarator | declarator name asLowercase = paramDeclarator name asLowercase ]
+				ifFound: [ :declarator | 
+					declarator parentDeclaration 
+						modifiers: (declarator parentDeclaration modifiers, #( parameter )).
+					declarator expression: (paramDeclarator expression accept: self)
+				]
+		]
+	].
+
+	^nil
+]
+
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranPrintStatement: aFASTFortranPrintStatement [
 
 	^(self
@@ -808,11 +832,14 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 	"Need to deal with StatementFunction that are created as InternalProcedure in the parent
 	programUnit (which is on the top of the stack)"
 	
-	| f2kStatementBlock |
+	| f2kStatementBlock parentBehavioral |
 	
 	f2kStatementBlock := self
 		fortran2k: FASTFortran2kStatementBlock
 		traceBack: aFASTFortranStatementBlock.
+
+	parentBehavioral := stack ifNotEmpty: [ stack top ].
+	stack push: f2kStatementBlock.
 
 	aFASTFortranStatementBlock statements
 		do: [ :statement | 
@@ -821,7 +848,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 					f2kStatementOrModule class = FASTFortran2kModule 
 						ifFalse: [ 
 							statement class = FASTFortranFunctionStatement
-								ifTrue: [stack top addInternalProcedure: f2kStatementOrModule ]
+								ifTrue: [ parentBehavioral addInternalProcedure: f2kStatementOrModule ]
 								ifFalse: [ 
 									f2kStatementOrModule isCollection
 										ifTrue: [ f2kStatementBlock statements addAll: f2kStatementOrModule ]
@@ -830,6 +857,8 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aF
 						]
 			 	]
 		].
+
+	stack pop.
 
 	^f2kStatementBlock
 ]

@@ -11,7 +11,8 @@ Class {
 	#instVars : [
 		'uselessDeclarations',
 		'allParameters',
-		'allArguments'
+		'allArguments',
+		'ioKeywordArguments'
 	],
 	#category : 'Famix-Esope-Transformator-Simplification',
 	#package : 'Famix-Esope-Transformator',
@@ -20,6 +21,8 @@ Class {
 
 { #category : 'private' }
 FASTEsopeUselessDeclarationRule >> checkUselessDeclarations [
+
+	self removeIOKeywordArgsAndInvocationArgsFromUselessDeclarations.
 
 	uselessDeclarations do: [ :toSimplify |
 		toSimplify ifNotNil: [
@@ -37,7 +40,18 @@ FASTEsopeUselessDeclarationRule >> initialize [
 
 	uselessDeclarations := Dictionary new.
 	allParameters := #().
-	allArguments := #()
+	allArguments := OrderedCollection new.
+	ioKeywordArguments := OrderedCollection new
+]
+
+{ #category : 'private' }
+FASTEsopeUselessDeclarationRule >> removeIOKeywordArgsAndInvocationArgsFromUselessDeclarations [
+
+	ioKeywordArguments do: [ :ioKeywordArgument | 
+		uselessDeclarations removeKey: ioKeywordArgument ifAbsent: [ "Nothing" ] ].
+	
+	allArguments do: [ :callArgument | 
+		uselessDeclarations removeKey: callArgument ifAbsent: [ "Nothing" ] ].
 ]
 
 { #category : 'accessing - private tests' }
@@ -57,11 +71,45 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kArrayVariable: aFASTFortran
 
 ]
 
+{ #category : 'visiting - statements' }
+FASTEsopeUselessDeclarationRule >> visitFASTFortran2kCloseStatement: aFASTFortran2kCloseStatement [
+	"keywordArguments (IOParameter) in I/O are considered always used so we keep their names (ioSpecifier) there to not add them to the useless list"
+	
+	"We need to collect in ioKeywordArguments all keywordArguments"
+	| ioParameters |
+
+	ioParameters := aFASTFortran2kCloseStatement ioParameters
+		select: [ :ioParameter |  
+			ioParameter class = FASTFortran2kIOParameter 
+				and: [ ioParameter expression class = FASTFortran2kScalarVariable ] 
+		].
+
+	ioKeywordArguments 
+		addAll: (ioParameters collect: [ :ioParameter | ioParameter expression name ])
+]
+
 { #category : 'visiting' }
 FASTEsopeUselessDeclarationRule >> visitFASTFortran2kDerivedTypeComponentAccess: aFASTFortran2kDerivedTypeComponentAccess [ 
 
 	self visitFASTFortran2kVariable: aFASTFortran2kDerivedTypeComponentAccess instance.
 
+]
+
+{ #category : 'visiting - statements' }
+FASTEsopeUselessDeclarationRule >> visitFASTFortran2kOpenStatement: aFASTFortran2kOpenStatement [
+	"keywordArguments (IOParameter) in I/O are considered always used so we keep their names (ioSpecifier) there to not add them to the useless list"
+	
+	"We need to collect in ioKeywordArguments all keywordArguments"
+	| ioParameters |
+
+	ioParameters := aFASTFortran2kOpenStatement ioParameters
+		select: [ :ioParameter |  
+			ioParameter class = FASTFortran2kIOParameter 
+				and: [ ioParameter expression class = FASTFortran2kScalarVariable ] 
+		].
+
+	ioKeywordArguments 
+		addAll: (ioParameters collect: [ :ioParameter | ioParameter expression name ])
 ]
 
 { #category : 'visiting' }
@@ -122,16 +170,13 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarationStatemen
 
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - statements' }
 FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarator: aFASTFortranVariableDeclarator [
 	"need to keep the context of the declaration:
 	   declarationStatement + parentStatement"
 
 	| declarationStatement |
 	(allParameters includes: aFASTFortranVariableDeclarator name)
-		ifTrue: [ ^nil ].
-
-	(allArguments includes: aFASTFortranVariableDeclarator name)
 		ifTrue: [ ^nil ].
 
 	declarationStatement := nodeStack pop.
@@ -147,20 +192,17 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarator: aFASTFo
 		  ifNil: [ nil ]
 ]
 
-{ #category : 'visiting - expressions' }
+{ #category : 'visiting - traits' }
 FASTEsopeUselessDeclarationRule >> visitFASTTWithArguments: aFASTFortran2kTWithArguments [
 	"arguments in call are considered always used so we keep their names there to not add them to the useless list"
 	
 	"We need to collect in allArguments all arguments"
-	allArguments := aFASTFortran2kTWithArguments arguments collect: #name.
-
-	"we need to remove in uselessDeclarations dictionary this argument in case we already process all the declarations"
-	aFASTFortran2kTWithArguments arguments do: [ :arg | arg accept: self ]
+	allArguments addAll: (aFASTFortran2kTWithArguments arguments collect: #name)
 ]
 
-{ #category : 'visiting - expressions' }
+{ #category : 'visiting - traits' }
 FASTEsopeUselessDeclarationRule >> visitFASTTWithParameters: aFASTFortran2kTWithParameters [
-	"parameters are considered always used so we keep their names ghere to not add them to the useless list"
+	"parameters are considered always used so we keep their names there to not add them to the useless list"
 
 	allParameters :=  aFASTFortran2kTWithParameters parameters collect: #name
 ]
