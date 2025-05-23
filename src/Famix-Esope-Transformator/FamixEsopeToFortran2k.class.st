@@ -249,11 +249,18 @@ FamixEsopeToFortran2k >> migrateProgramUnits [
 
 { #category : 'running' }
 FamixEsopeToFortran2k >> migrationSteps [
-	^{
+
+	| steps |
+
+	steps := {
 		'Converting famix esope model to fast2k model' -> #famixEsopeToFast2k .
 		'Resolve uses statements in program unit' -> #resolveUses .
 		'Export the migrated fast2k model' -> #exportFAST2k 
-	}
+	}.
+	
+	^isFpm
+		ifTrue: [ steps , { 'Create FPM project' -> #asFpmProject } ]
+		ifFalse: [ steps ]
 ]
 
 { #category : 'running' }
