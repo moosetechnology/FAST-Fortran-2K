@@ -115,7 +115,7 @@ Fortran2kExportAsFPMProject class >> moveGeneratedCode [
 					relativePath := aFileReference relativeTo: (self baseSourceDir / directoryName) asAbsolute.
 					destinationFile := targetDir / relativePath pathString.
 					destinationFile parent ensureCreateDirectory.
-					aFileReference copyTo: destinationFile			
+					aFileReference moveTo: destinationFile			
 				]
 			] 
 		]
