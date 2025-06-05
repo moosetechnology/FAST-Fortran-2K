@@ -160,15 +160,15 @@ FASTEsopeAbstractTransformationVisitorTest >> programWithFunctionStatement [
 						yourself.
 	
 	
-	function famix: (FamixF77StatementFunction new 
+	function famix: (famixEsopeModel newStatementFunction 
 		name: function name;
-		declaredType: (FamixF77TypeIntrinsic new name: 'real');
+		declaredType: (famixEsopeModel newTypeIntrinsic name: 'real');
 		yourself
 	).
 	
-	var famixParameter: (FamixF77Parameter new 
+	var famixParameter: (famixEsopeModel newParameter 
 		name: 'x'; 
-		declaredType: (FamixF77TypeIntrinsic new name: 'real'); 
+		declaredType: (famixEsopeModel newTypeIntrinsic name: 'real'); 
 		yourself
 	).
 				
@@ -193,9 +193,9 @@ FASTEsopeAbstractTransformationVisitorTest >> programWithFunctionStatementCalled
 		yourself.
 	
 	
-	fastFunctionStatement famix: (FamixF77StatementFunction new 
+	fastFunctionStatement famix: (famixEsopeModel newStatementFunction 
 		name: fastFunctionStatement name;
-		declaredType: (FamixF77TypeIntrinsic new name: 'real');
+		declaredType: (famixEsopeModel newTypeIntrinsic name: 'real');
 		yourself
 	).
 	
@@ -210,7 +210,7 @@ FASTEsopeAbstractTransformationVisitorTest >> programWithFunctionStatementCalled
 	fastFunctionStatement famix parentEntity: fastMainProgram famix.
 
 	fastCallStatement expression famix: (
-		FamixF77Invocation new
+		famixEsopeModel newInvocation
 			sender: fastMainProgram famix ;
 			addCandidate: fastFunctionStatement famix ;
 			yourself
@@ -395,15 +395,15 @@ FASTEsopeAbstractTransformationVisitorTest >> subroutineWithFunctionStatement [
 						expression: (self binary: '+' left: #x right: 2);
 						yourself.
 
-	function famix: (FamixF77StatementFunction new 
+	function famix: (famixEsopeModel newStatementFunction 
 		name: function name;
-		declaredType: (FamixF77TypeIntrinsic new name: 'real');
+		declaredType: (famixEsopeModel newTypeIntrinsic name: 'real');
 		yourself
 	).
 	
-	var famixParameter: (FamixF77Parameter new 
+	var famixParameter: (famixEsopeModel newParameter 
 		name: 'x'; 
-		declaredType: (FamixF77TypeIntrinsic new name: 'real'); 
+		declaredType: (famixEsopeModel newTypeIntrinsic name: 'real'); 
 		yourself
 	).
 				
@@ -429,9 +429,9 @@ FASTEsopeAbstractTransformationVisitorTest >> subroutineWithFunctionStatementCal
 		yourself.
 	
 	
-	fastFunctionStatement famix: (FamixF77StatementFunction new 
+	fastFunctionStatement famix: (famixEsopeModel newStatementFunction 
 		name: fastFunctionStatement name;
-		declaredType: (FamixF77TypeIntrinsic new name: 'real');
+		declaredType: (famixEsopeModel newTypeIntrinsic name: 'real');
 		yourself
 	).
 	
@@ -448,7 +448,7 @@ FASTEsopeAbstractTransformationVisitorTest >> subroutineWithFunctionStatementCal
 	fastFunctionStatement famix parentEntity: fastSubroutine famix.
 
 	fastCallStatement expression famix: (
-		FamixF77Invocation new
+		famixEsopeModel newInvocation
 			sender: fastSubroutine famix ;
 			addCandidate: fastFunctionStatement famix ;
 			yourself

@@ -85,8 +85,8 @@ FASTFortranProcedureTransformationVisitorTest >> testFunctionEmpty [
 FASTFortranProcedureTransformationVisitorTest >> testMissedParameterDeclaration [
 
 	| famix res fast |
-	famix := FamixF77Parameter new
-		declaredType: (FamixF77TypeIntrinsic new name: #integer).
+	famix := famixEsopeModel newParameter
+		declaredType: (famixEsopeModel newTypeIntrinsic name: #integer).
 	fast := FASTFortranScalarVariable new
 		name: 'param' ;
 		famixParameter: famix.
@@ -170,9 +170,9 @@ FASTFortranProcedureTransformationVisitorTest >> testParameterDeclaredOneMissing
 
 	| res famix fast2k fast2ksubrtn |
 	self subroutineEmpty.
-	famix := FamixF77Parameter new name: 'forgotten' ; declaredType: (FamixF77TypeIntrinsic new name: #integer).
+	famix := famixEsopeModel newParameter name: 'forgotten' ; declaredType: (famixEsopeModel newTypeIntrinsic name: #integer).
 	fastProcedures anyOne
-		addParameter: (FASTFortranScalarVariable new name: 'param' ; famixParameter: FamixF77Parameter new) ;
+		addParameter: (FASTFortranScalarVariable new name: 'param' ; famixParameter: famixEsopeModel newParameter) ;
 		addParameter: (FASTFortranScalarVariable new name: 'forgotten' ; famixParameter: famix).
 	fastProcedures anyOne statementBlock addStatement: (self declarationStatement: 'param' type: #integer).
 		
@@ -204,9 +204,9 @@ FASTFortranProcedureTransformationVisitorTest >> testParameterDeclaredOnePointer
 
 	| res famix fast2k fast2ksubrtn |
 	self subroutineEmpty.
-	famix := FamixF77Parameter new name: 'forgotten' ; declaredType: (FamixEsopeSegment new name: #seg).
+	famix := famixEsopeModel newParameter name: 'forgotten' ; declaredType: (famixEsopeModel newSegment name: #seg).
 	fastProcedures anyOne
-		addParameter: (FASTFortranScalarVariable new name: 'param' ; famixParameter: FamixF77Parameter new) ;
+		addParameter: (FASTFortranScalarVariable new name: 'param' ; famixParameter: famixEsopeModel newParameter) ;
 		addParameter: (FASTFortranScalarVariable new name: 'forgotten' ; famixParameter: famix).
 	fastProcedures anyOne statementBlock addStatement: (self declarationStatement: 'param' type: #integer).
 		
@@ -351,7 +351,7 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersPointerDeclaredNo
 
 	| res famix fast2k |
 	self functionEmpty.
-	famix := FamixF77Parameter new name: 'param' ; declaredType: (FamixEsopeSegment new name: #seg).
+	famix := famixEsopeModel newParameter name: 'param' ; declaredType: (famixEsopeModel newSegment name: #seg).
 	fastProcedures anyOne
 		addParameter: (FASTFortranScalarVariable new name: 'param' ; famixParameter: famix).
 	fastProcedures anyOne statementBlock

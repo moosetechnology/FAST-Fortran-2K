@@ -146,8 +146,8 @@ FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementLitera
 FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementPointer [
 	| stmt res |
 	stmt := self assignementStatement: #aVar value: (self scalarVariable: 'p').
-	stmt variable famixVariable: (FamixF77Variable new
-		declaredType: (FamixEsopeSegment new)).
+	stmt variable famixVariable: (famixEsopeModel newVariable
+		declaredType: (famixEsopeModel newSegment)).
 	
 	res := stmt accept: visitor.
 	
@@ -162,8 +162,8 @@ FASTFortranBehavioralTransformationVisitorTest >> testAssignementStatementPointe
 	"esope_ptr = 0 -> nullify (f2k_ptr) "
 	| stmt res var |
 	stmt := self assignementStatement: #aVar value: 0.
-	stmt variable famixVariable: (FamixF77Variable new
-		declaredType: (FamixEsopeSegment new)).
+	stmt variable famixVariable: (famixEsopeModel newVariable
+		declaredType: (FamixEsopeSegment new mooseModel: FamixEsopeModel new)).
 	
 	res := stmt accept: visitor.
 	
@@ -520,9 +520,9 @@ FASTFortranBehavioralTransformationVisitorTest >> testPrefixCallWithType [
 	| res stmt |
 	stmt := self assignementStatement: 'ptr' value: (self
 		functionCall: 'mypnt' arguments: #( whatever )).
-	stmt variable famixVariable: (FamixF77Variable new
-		declaredType: (FamixEsopeSegment new
-			name: 'seg')).
+	stmt variable famixVariable: (famixEsopeModel newVariable
+		declaredType: (famixEsopeModel newSegment name: 'seg')
+	).
 
 	res := stmt accept: visitor.
 

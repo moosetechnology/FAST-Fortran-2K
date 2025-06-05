@@ -5,7 +5,8 @@ Class {
 		'fastProgramFile',
 		'famixProgramFile',
 		'fastMainProgram',
-		'fastProcedures'
+		'fastProcedures',
+		'famixEsopeModel'
 	],
 	#category : 'Famix-Esope-Transformator-Tests-Visitors',
 	#package : 'Famix-Esope-Transformator-Tests',
@@ -19,9 +20,9 @@ FASTEsopeAbstractVisitorTest >> esopeCommandClass: esopeCommandClass pointers: a
 	variables := associations collect: [ :assoc | 
 		FASTFortranScalarVariable new 
 			name: assoc key;
-			famixParameter: (FamixF77Parameter new 
+			famixParameter: (famixEsopeModel newParameter 
             name: assoc key; 
-            declaredType: (FamixEsopeSegment new name: assoc value); 
+            declaredType: (famixEsopeModel newSegment name: assoc value); 
             yourself 
         )	
 	].
@@ -39,9 +40,9 @@ FASTEsopeAbstractVisitorTest >> functionEmpty [
 	end function fct"
 
 	| famix |
-	famix := FamixF77PUFunction new
+	famix := famixEsopeModel newPUFunction
 			name: 'fct' ; 
-			declaredType: (FamixF77TypeIntrinsic new name: 'integer') ;
+			declaredType: (famixEsopeModel newTypeIntrinsic name: 'integer') ;
 			programFile: famixProgramFile.
 
 	fastProcedures := { FASTFortranFunction new 
@@ -63,9 +64,9 @@ FASTEsopeAbstractVisitorTest >> pointerDeclaration [
 
 	| fastPointer |
 	fastPointer := (self variableDeclarator: #f)
-		famixDeclaration: (FamixEsopePointer new 
+		famixDeclaration: (famixEsopeModel newPointer 
             name: 'f'; 
-            declaredType: (FamixEsopeSegment new name: 'foo'); 
+            declaredType: (famixEsopeModel newSegment name: 'foo'); 
             yourself).
 
 	^FASTEsopePointerDeclarationStatement new
@@ -123,6 +124,15 @@ FASTEsopeAbstractVisitorTest >> segmentCommand: aCommandClass with: aCollection 
 	^segmentCommand
 ]
 
+{ #category : 'running' }
+FASTEsopeAbstractVisitorTest >> setUp [
+	super setUp.
+
+	visitor := self newVisitor.
+
+	famixEsopeModel := FamixEsopeModel new.
+]
+
 { #category : 'entity-creation' }
 FASTEsopeAbstractVisitorTest >> statementFunctionWithExternalFunctionCall [
 	"
@@ -132,22 +142,22 @@ FASTEsopeAbstractVisitorTest >> statementFunctionWithExternalFunctionCall [
 
 	| fastStmtFunction famixStmtFunction famixExternalFunction fastCallExpression |
 
-	famixExternalFunction := FamixF77PUFunction new
+	famixExternalFunction := famixEsopeModel newPUFunction
 		name: 'toto' ;
-		declaredType: (FamixF77TypeIntrinsic new name: 'real') ;
-		programFile: (FamixF77ProgramFile new filename: 'externalFile.f') ;
+		declaredType: (famixEsopeModel newTypeIntrinsic name: 'real') ;
+		programFile: (famixEsopeModel newProgramFile filename: 'externalFile.f') ;
 		yourself.
 
-	famixStmtFunction := FamixF77StatementFunction new 
+	famixStmtFunction := famixEsopeModel newStatementFunction 
 		name: 'fct';
-		declaredType: (FamixF77TypeIntrinsic new name: 'real') ;
-		parentEntity: (FamixF77PUMain new
+		declaredType: (famixEsopeModel newTypeIntrinsic name: 'real') ;
+		parentEntity: (famixEsopeModel newPUMain
 			name: 'demo' ;
 			programFile: famixProgramFile ) ;
 		yourself.
 	
 	fastCallExpression := (self functionCall: 'toto' arguments: #())
-		famix: (FamixF77Invocation new
+		famix: (famixEsopeModel newInvocation
 			sender: famixStmtFunction ;
 			candidates: { famixExternalFunction } ).
 
