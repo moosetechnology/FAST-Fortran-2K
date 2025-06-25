@@ -43,12 +43,15 @@ FASTFortranIncludedFileTransformationVisitor >> visitFASTFortranStatementBlock: 
 	 these statements will be injected in place of the #include of thie current file
 	 We set their start/end-pos to 0 because it will not be meaningfull in the context of the #include"
 
-	^aFASTFortranStatementBlock statements
+	stack push: FASTFortran2kStatementBlock new.
+
+	aFASTFortranStatementBlock statements
 		collect: [ :statement |
 			(statement accept: self)
-				startPos: 0 ;
+				"startPos: 0 ;
 				endPos: 0 ;
-				yourself
+				yourself"
 		].
 
+	^stack pop statements
 ]
