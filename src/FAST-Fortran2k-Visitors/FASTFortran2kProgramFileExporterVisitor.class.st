@@ -888,6 +888,13 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kNameListStatement: 
 ]
 
 { #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kNullEntity: aFASTFortran2kNullEntity [
+
+	"nothing to do"
+
+]
+
+{ #category : 'visiting' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kNumericalConstant: aFASTFortran2kNumericalConstant [
 
 ]

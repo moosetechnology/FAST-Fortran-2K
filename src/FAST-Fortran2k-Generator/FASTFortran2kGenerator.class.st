@@ -172,7 +172,8 @@ Class {
 		'useRename',
 		'useNoRename',
 		'tConditionalStatement',
-		'tLoopStatement'
+		'tLoopStatement',
+		'nullEntity'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -343,6 +344,10 @@ FASTFortran2kGenerator >> defineClasses2k [
 	importStatement := self 
 		newClassNamed: #ImportStatement 
 		comment: ''.
+
+	nullEntity := self 
+		newClassNamed: #NullEntity 
+		comment: 'A null pattern entity for FASTFortran2k'.
 
 	module := self 
 		newClassNamed: #Module 
@@ -663,6 +668,8 @@ FASTFortran2kGenerator >> defineHierarchy [
 	super defineHierarchy.
 
 	entity --|> tEntity.
+	
+	nullEntity --|> entity.
 
 	programUnit --|> tEntity.
 	programUnit --|> tBehaviouralEntity.
