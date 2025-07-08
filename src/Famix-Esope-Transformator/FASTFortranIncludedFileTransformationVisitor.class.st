@@ -21,6 +21,22 @@ FASTFortranIncludedFileTransformationVisitor >> visitFASTEsopeSegment: aFASTEsop
 	)
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortranIncludedFileTransformationVisitor >> visitFASTFortranCommonStatement: aFASTFortranCommonStatement [
+
+	self flag: #TODO.
+	^FASTFortran2kNullEntity new
+
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranIncludedFileTransformationVisitor >> visitFASTFortranDataStatement: aFASTFortranDataStatement [
+
+	self flag: #TODO.
+	^FASTFortran2kNullEntity new
+
+]
+
 { #category : 'visiting - programUnits' }
 FASTFortranIncludedFileTransformationVisitor >> visitFASTFortranIncludedFile: aFASTFortranIncludedFile [
 
@@ -35,6 +51,14 @@ FASTFortranIncludedFileTransformationVisitor >> visitFASTFortranIncludedFile: aF
 		].
 
 	^aFASTFortranIncludedFile statementBlock accept: self
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranIncludedFileTransformationVisitor >> visitFASTFortranParameterStatement: aFASTFortranParameterStatement [
+
+	self flag: #TODO.
+	^FASTFortran2kNullEntity new
+
 ]
 
 { #category : 'visiting - statements' }
