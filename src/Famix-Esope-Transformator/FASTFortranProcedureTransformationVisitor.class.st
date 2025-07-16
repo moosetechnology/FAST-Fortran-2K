@@ -68,9 +68,9 @@ FASTFortranProcedureTransformationVisitor >> ensureModule: famixEntity [
 ]
 
 { #category : 'helpers - segment' }
-FASTFortranProcedureTransformationVisitor >> getModule: filename ifAbsentPut: aBlock [
+FASTFortranProcedureTransformationVisitor >> getModule: modulename ifAbsentPut: aBlock [
 
-	^parentTransformator getModule: filename ifAbsentPut: aBlock
+	^parentTransformator getModule: modulename ifAbsentPut: aBlock
 ]
 
 { #category : 'helpers - parameters' }
