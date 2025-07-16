@@ -159,6 +159,48 @@ FASTFortran2kExporterVisitorTest >> testOpenStatement [
 '.
 ]
 
+{ #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testOperatorsPrecedenceNoParentheses [
+	
+	| expr |
+	expr := self binary: '+' left: #v right: 5.
+
+	self assertExport: expr equals: 'v + 5'
+]
+
+{ #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testOperatorsPrecedenceSubHasHigherPrecedence [
+	
+	| expr |
+	expr := self binary: '+' left: #i right: 5.
+	expr rightOperand: (self binary: '*' left: #j right: 5).
+
+	self assertExport: expr
+		equals: 'i + j * 5'
+]
+
+{ #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testOperatorsPrecedenceSubHasLowerPrecedence [	
+
+	| expr |
+	expr := self binary: '*' left: #i right: 5.
+	expr rightOperand: (self binary: '+' left: #j right: 5).
+
+	self assertExport: expr
+		equals: 'i * (j + 5)'
+]
+
+{ #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testOperatorsPrecedenceSubUnary [
+	
+	| expr |
+	expr := self binary: '.and.' left: #logical1 right: (self unary: '.not.' operand: #logical2).
+
+	self
+		assertExport: expr
+		equals: 'logical1 .and. .not. logical2'
+]
+
 { #category : 'testing - program-units' }
 FASTFortran2kExporterVisitorTest >> testPointerDeclarationStatement [
 	"

@@ -53,6 +53,16 @@ FASTFortran2kAbstractVisitorTest >> assignementStatement: aName value: rhs [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> binary: op left: lhs right: rhs [
+
+	^FASTFortran2kBinaryExpression new
+		operator: op ;
+		leftOperand: (self makeSimpleExpression: lhs) ;
+		rightOperand: (self makeSimpleExpression: rhs) ;
+		yourself
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kAbstractVisitorTest >> callStatement: aName arguments: aCollection [	
 	"end position is approximate, test should adjust if a real value is needed"
 
@@ -353,6 +363,15 @@ FASTFortran2kAbstractVisitorTest >> typeSize: dimension [
 	dimension isNumber ifTrue: [ ^self integerLiteral: dimension asString ].
 	dimension = '*' ifTrue: [ ^FASTFortran2kAsterisk new ].
 	^nil
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kAbstractVisitorTest >> unary: op operand: operand [
+
+	^FASTFortran2kUnaryExpression new
+		operator: op ;
+		expression: (self makeSimpleExpression: operand) ;
+		yourself
 ]
 
 { #category : 'entity creation' }
