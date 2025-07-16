@@ -16,13 +16,13 @@ FASTFortranProcedureTransformationVisitor >> checkForParameterDeclaration: aFAST
 	then remove it from the list to declare and set its intent"
 
 	parametersToDeclare
-		detect: [ :association |
-			aFASTFortran2kVariableDeclarationStatement declarators anySatisfy: [ :declarator |
-				association key name = declarator name]
+		detect: [ :param |
+			aFASTFortran2kVariableDeclarationStatement declarators
+				anySatisfy: [ :declarator | param name = declarator name]
 		]
-		ifOne: [ :assoc |
-			parametersToDeclare remove: assoc.
-			aFASTFortran2kVariableDeclarationStatement modifiers: (aFASTFortran2kVariableDeclarationStatement modifiers, { assoc value })
+		ifOne: [ :param |
+			parametersToDeclare remove: param.
+			aFASTFortran2kVariableDeclarationStatement addModifier: (param famixParameter propertyNamed: #intent)
 		].
 
 	^aFASTFortran2kVariableDeclarationStatement 
@@ -96,12 +96,11 @@ FASTFortranProcedureTransformationVisitor >> isItASpecialInvocation: anInvocatio
 ]
 
 { #category : 'helpers - parameters' }
-FASTFortranProcedureTransformationVisitor >> missedParameterDeclaration: association [
+FASTFortranProcedureTransformationVisitor >> missedParameterDeclaration: fastParam [
 	"adding a parameter declaration that was missing in the old source"
 
-	| fastParam intent |
-	fastParam := association key.
-	intent := association value.
+	| intent |
+	intent := fastParam famixParameter propertyNamed: #intent.
 
 	^model2k newVariableDeclarationStatement
 		declaredType: (fastParam famixParameter declaredType accept: self);
@@ -139,14 +138,15 @@ FASTFortranProcedureTransformationVisitor >> paramIntentFromAccesses: paramF77 [
 
 { #category : 'helpers - parameters' }
 FASTFortranProcedureTransformationVisitor >> parametersIntent: procedure2k from: parametersF77 [
-	"compute intent for procedure2k's parmeters
-	 returns a list of parameters and their intent. Will be used to check that all parameters are declared
-	 Note that the order of the 2 lists should match"
+	"compute intent for procedure2k's parmeters from uses of Fortran77 parameters
+	 returns a list of parameters (F77) and their intent.
+	 Note that the order of the 2 parameter lists should match"
 
-	^parametersToDeclare := procedure2k parameters with: parametersF77 collect: [ :param2k :paramF77 |
-		self assert: param2k name = paramF77 name.
-
-		paramF77 -> (self paramIntentFromAccesses: paramF77 famixParameter)
+	procedure2k parameters
+		with: parametersF77
+		do: [ :param2k :paramF77 |
+			self assert: param2k name = paramF77 name.
+			paramF77 famixParameter propertyNamed: #intent put: (self paramIntentFromAccesses: paramF77 famixParameter).
 	]
 ]
 
@@ -182,8 +182,11 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 	stack push: function2k.
 
 	function2k parameters: (self visitFASTFortranList: aFASTFortranFunction parameters).
-	parametersToDeclare := self parametersIntent: function2k from: aFASTFortranFunction parameters.
+	parametersToDeclare := aFASTFortranFunction parameters.
+	self parametersIntent: function2k from: parametersToDeclare.
+
 	function2k statementBlock: (aFASTFortranFunction statementBlock accept: self).
+
 	parametersToDeclare do: [ :param |
 		function2k statementBlock statements addFirst: (self missedParameterDeclaration: param)
 	].
@@ -212,9 +215,11 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFo
 	stack push: subrtn2k.
 
 	subrtn2k parameters: (self visitFASTFortranList: aFASTFortranSubroutine parameters).
-	parametersToDeclare := self parametersIntent: subrtn2k from: aFASTFortranSubroutine parameters.
+	parametersToDeclare := aFASTFortranSubroutine parameters.
+	self parametersIntent: subrtn2k from: parametersToDeclare.
 
 	subrtn2k statementBlock: (aFASTFortranSubroutine statementBlock accept: self).
+
 	self declaredMissingParameters: subrtn2k.
 
 	self handleProgramUnitSegmentDeclaration: aFASTFortranSubroutine declarations.
