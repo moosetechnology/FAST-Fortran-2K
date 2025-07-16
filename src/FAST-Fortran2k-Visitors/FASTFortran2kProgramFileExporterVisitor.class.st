@@ -66,6 +66,14 @@ FASTFortran2kProgramFileExporterVisitor >> model: anObject [
 	modelIn := anObject
 ]
 
+{ #category : 'outputting' }
+FASTFortran2kProgramFileExporterVisitor >> modernRelationalOperator: operator [
+
+	^self modernRelationalOperators 
+		at: operator
+		ifAbsent: [ operator ]
+]
+
 { #category : 'initialization' }
 FASTFortran2kProgramFileExporterVisitor >> modernRelationalOperators [
 
@@ -236,15 +244,17 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kBackspaceStatement:
 { #category : 'visiting - expressions' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kBinaryExpression: aFASTFortran2kBinaryExpression [ 
 
-	aFASTFortran2kBinaryExpression leftOperand accept: self.
-	self 
-		space ;
-		<< (self modernRelationalOperators 
-				at: aFASTFortran2kBinaryExpression operator
-				ifAbsent: [ aFASTFortran2kBinaryExpression operator ] 
-		);
-		space.
-	aFASTFortran2kBinaryExpression rightOperand accept: self.
+	self
+		outputExpression: [
+			aFASTFortran2kBinaryExpression leftOperand accept: self.
+			self
+				space ;
+				<< (self modernRelationalOperator: aFASTFortran2kBinaryExpression operator) ;
+				space.
+			aFASTFortran2kBinaryExpression rightOperand accept: self
+		]
+		withOperator: aFASTFortran2kBinaryExpression operator.
+
 ]
 
 { #category : 'visiting' }
@@ -1258,10 +1268,7 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kUnaryExpression: aF
 	self
 		outputExpression: [
 			self
-				<< (self modernRelationalOperators 
-					at: aFASTFortran2kUnaryExpression operator
-					ifAbsent: [ aFASTFortran2kUnaryExpression operator ] 
-				) ;
+				<< (self modernRelationalOperator: aFASTFortran2kUnaryExpression operator) ;
 				space.
 			aFASTFortran2kUnaryExpression expression accept: self ]
 		withOperator: aFASTFortran2kUnaryExpression operator
