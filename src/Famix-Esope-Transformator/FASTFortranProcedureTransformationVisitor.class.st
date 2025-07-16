@@ -58,7 +58,7 @@ FASTFortranProcedureTransformationVisitor >> declaredMissingParameters: subrtn2k
 
 	subrtn2k statementBlock statements addFirst: (model2k newEmptyStatement).
 	parametersToDeclare do: [ :param |
-		subrtn2k statementBlock statements addFirst: (self missedParameterDeclaration: param)
+		subrtn2k statementBlock statements addFirst: (param generateF2kDeclarationInModel: model2k)
 	].
 	subrtn2k statementBlock statements addFirst: (model2k newComment content: '[ooo] missing parameter declarations added')
 ]
@@ -93,13 +93,6 @@ FASTFortranProcedureTransformationVisitor >> isItASpecialInvocation: anInvocatio
 				ifNotEmpty:  [ :args | args first name asLowercase = famixParameter name asLowercase ] 
 			]
 		]
-]
-
-{ #category : 'helpers - parameters' }
-FASTFortranProcedureTransformationVisitor >> missedParameterDeclaration: fastParam [
-	"adding a parameter declaration that was missing in the old source"
-
-	^fastParam generateF2kDeclarationInModel: model2k
 ]
 
 { #category : 'helpers - parameters' }
@@ -180,7 +173,7 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 	function2k statementBlock: (aFASTFortranFunction statementBlock accept: self).
 
 	parametersToDeclare do: [ :param |
-		function2k statementBlock statements addFirst: (self missedParameterDeclaration: param)
+		function2k statementBlock statements addFirst: (param generateF2kDeclarationInModel: model2k)
 	].
 
 	self handleProgramUnitSegmentDeclaration: aFASTFortranFunction declarations.

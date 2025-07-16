@@ -334,7 +334,7 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersIntentMissedDecla
 		name: 'param' ;
 		famixParameter: famixParamF77.
 
-	res := visitor missedParameterDeclaration: fast.
+	res := fast generateF2kDeclarationInModel: FASTFortran2kModel new.
 
 	self assert: res class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: res declarators size equals: 1.
