@@ -169,7 +169,7 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 
 	function2k := self model2k newFunction
 		name: aFASTFortranFunction name ;
-		declaredType: (aFASTFortranFunction famix declaredType accept: self);
+		declaredType: (aFASTFortranFunction famix declaredType generateF2kInModel: model2k);
 		module: module2k ;
 		backTrace: aFASTFortranFunction programFile filename ;
 		yourself.
@@ -231,13 +231,4 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranVariableDeclaration
 
 	^self checkForParameterDeclaration: (super
 		visitFASTFortranVariableDeclarationStatement: aFASTFortranVariableDeclarationStatement)
-]
-
-{ #category : 'visiting' }
-FASTFortranProcedureTransformationVisitor >> visitFamixTWithAccesses: aFamixEsopeSegment [ 
-	"this is called from #missedParameterDeclaration:, when a pointer parameter was not declared
-	 we must create a declaredType for this parameter"
-
-	^model2k newUserDefinedType
-		name: aFamixEsopeSegment name
 ]
