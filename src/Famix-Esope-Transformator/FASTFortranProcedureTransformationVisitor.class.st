@@ -99,14 +99,11 @@ FASTFortranProcedureTransformationVisitor >> isItASpecialInvocation: anInvocatio
 FASTFortranProcedureTransformationVisitor >> missedParameterDeclaration: fastParam [
 	"adding a parameter declaration that was missing in the old source"
 
-	| intent |
-	intent := fastParam famixParameter propertyNamed: #intent.
-
 	^model2k newVariableDeclarationStatement
 		declaredType: (fastParam famixParameter declaredType accept: self);
 		declarators: { model2k newVariableDeclarator
 			name: fastParam name } ;
-		modifiers: { intent }
+		modifiers: { fastParam famixParameter propertyNamed: #intent }
 
 ]
 
