@@ -82,25 +82,6 @@ FASTFortranProcedureTransformationVisitorTest >> testFunctionEmpty [
 ]
 
 { #category : 'tests' }
-FASTFortranProcedureTransformationVisitorTest >> testMissedParameterDeclaration [
-
-	| famixParamF77 res fast |
-	famixParamF77 := famixEsopeModel newParameter
-		declaredType: (famixEsopeModel newTypeIntrinsic name: #integer) ;
-		propertyNamed: #intent put: 'intent(inOut)' ;
-		yourself.
-	fast := FASTFortranScalarVariable new
-		name: 'param' ;
-		famixParameter: famixParamF77.
-
-	res := visitor missedParameterDeclaration: fast.
-
-	self assert: res class equals: FASTFortran2kVariableDeclarationStatement.
-	self assert: res declarators size equals: 1.
-	self assertCollection: res modifiers equals: { 'intent(inOut)' }
-]
-
-{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testMultipleProcedures [
 	"--------someFile_mod.f90----------------
 module someFile_mod
@@ -339,6 +320,25 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromReadAnd
 		}.
 
 	self assert: (famixParamF77 propertyNamed: #intent) equals: 'intent(inOut)'
+]
+
+{ #category : 'tests' }
+FASTFortranProcedureTransformationVisitorTest >> testParametersIntentMissedDeclaration [
+
+	| famixParamF77 res fast |
+	famixParamF77 := famixEsopeModel newParameter
+		declaredType: (famixEsopeModel newTypeIntrinsic name: #integer) ;
+		propertyNamed: #intent put: 'intent(inOut)' ;
+		yourself.
+	fast := FASTFortranScalarVariable new
+		name: 'param' ;
+		famixParameter: famixParamF77.
+
+	res := visitor missedParameterDeclaration: fast.
+
+	self assert: res class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: res declarators size equals: 1.
+	self assertCollection: res modifiers equals: { 'intent(inOut)' }
 ]
 
 { #category : 'tests' }
