@@ -7,3 +7,13 @@ FASTFortran2kVariableDeclarationStatement >> addModifier: aString [
 		ifNil: [ { aString } ]
 		ifNotNil: [ modifiers , { aString } ]
 ]
+
+{ #category : '*Famix-Esope-Transformator' }
+FASTFortran2kVariableDeclarationStatement >> detectMatchingEntityIn: namedEntities [
+
+	^namedEntities
+		detect: [ :entity |
+			self declarators anySatisfy: [ :declarator | entity name = declarator name]
+		]
+		ifNone: [ nil ]
+]
