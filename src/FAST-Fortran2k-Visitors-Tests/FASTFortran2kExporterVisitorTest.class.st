@@ -142,6 +142,21 @@ FASTFortran2kExporterVisitorTest >> testIntegerType [
 		equals: 'integer'
 ]
 
+{ #category : 'testing - statements' }
+FASTFortran2kExporterVisitorTest >> testLogicalIfStatementWithWrite [
+	| stmt |
+	stmt := FASTFortran2kIfLogicalStatement new
+		condition: (self scalarVariable: 'bool') ;
+		statement: (self writeStatement: #( 'message' )) ;
+		yourself.
+
+	self
+		assertExport: stmt
+		equals: 
+'if (bool) write (*, *) ''message''
+'
+]
+
 { #category : 'testing - type-definitions' }
 FASTFortran2kExporterVisitorTest >> testOpenStatement [
 	| stmt |
