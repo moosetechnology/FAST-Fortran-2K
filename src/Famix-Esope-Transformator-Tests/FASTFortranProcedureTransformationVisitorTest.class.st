@@ -414,7 +414,7 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithCommandSegadj 
 
 ]
 
-{ #category : 'tests-statement' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatement [
 	"
 	module someFile_mod
@@ -453,7 +453,7 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatem
 	self assert: entity name equals: 'fct'.
 ]
 
-{ #category : 'tests-statement' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatementCalled [
 	"module someFile_mod
 		implicit none
