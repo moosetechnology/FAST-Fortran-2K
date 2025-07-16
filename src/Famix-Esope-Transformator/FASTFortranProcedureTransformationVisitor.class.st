@@ -74,32 +74,14 @@ FASTFortranProcedureTransformationVisitor >> getModule: filename ifAbsentPut: aB
 ]
 
 { #category : 'helpers - parameters' }
-FASTFortranProcedureTransformationVisitor >> isItASpecialInvocation: anInvocationName with: famixParameter [
-	| aString |
-
-	aString  := anInvocationName asLowercase.
-
-	(#( inistr ajpnt ) includes: aString) ifFalse: [ ^false ].
-	famixParameter parentBehaviouralEntity ifNil: [ ^false ].
-
-	^(famixParameter parentBehaviouralEntity outgoingInvocations collect: #fast) 
-		anySatisfy: [ :fastInvoc |
-			fastInvoc name asLowercase = aString 
-			and: [ fastInvoc arguments 
-				ifNotEmpty:  [ :args | args first name asLowercase = famixParameter name asLowercase ] 
-			]
-		]
-]
-
-{ #category : 'helpers - parameters' }
 FASTFortranProcedureTransformationVisitor >> paramIntentFromAccesses: paramF77 [
 	"computing intent from access
 	  - take into account function/subroutine invocations where the parameter is used"
 
 	| hasIn hasOut |
 
-	(self isItASpecialInvocation: #inistr with: paramF77) ifTrue: [ ^ 'intent(out)' ].
-	(self isItASpecialInvocation: #ajpnt with: paramF77) ifTrue: [ ^ 'intent(inOut)' ].
+	(paramF77 isArgumentOfInvocation: #inistr) ifTrue: [ ^ 'intent(out)' ].
+	(paramF77 isArgumentOfInvocation: #ajpnt) ifTrue: [ ^ 'intent(inOut)' ].
 
 	hasIn := paramF77 incomingAccesses anySatisfy: [ :acc | acc isWrite not].
 	hasOut := paramF77 incomingAccesses anySatisfy: #isWrite.
