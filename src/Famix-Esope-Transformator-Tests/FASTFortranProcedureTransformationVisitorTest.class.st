@@ -82,24 +82,6 @@ FASTFortranProcedureTransformationVisitorTest >> testFunctionEmpty [
 ]
 
 { #category : 'tests' }
-FASTFortranProcedureTransformationVisitorTest >> testMissedParameterDeclaration [
-
-	| famix res fast |
-	famix := famixEsopeModel newParameter
-		declaredType: (famixEsopeModel newTypeIntrinsic name: #integer).
-	fast := FASTFortranScalarVariable new
-		name: 'param' ;
-		famixParameter: famix.
-
-	res := visitor
-		missedParameterDeclaration: ( fast -> 'intent(inOut)' ).
-
-	self assert: res class equals: FASTFortran2kVariableDeclarationStatement.
-	self assert: res declarators size equals: 1.
-	self assertCollection: res modifiers equals: { 'intent(inOut)' }
-]
-
-{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testMultipleProcedures [
 	"--------someFile_mod.f90----------------
 module someFile_mod
@@ -259,101 +241,120 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersDeclaredNonMissin
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromAllRead [
 
-	| famix res procedure2k |
-	famix := FamixF77Parameter new.
-	FamixF77Access new variable: famix.
-	FamixF77Access new variable: famix ; isWrite: false.
+	| famixParamF77 procedure2k |
+	famixParamF77 := FamixF77Parameter new.
+	FamixF77Access new variable: famixParamF77.
+	FamixF77Access new variable: famixParamF77 ; isWrite: false.
 
 	procedure2k := FASTFortran2kSubroutine new parameters: { 
 		FASTFortran2kScalarVariable new name: 'param'
 	}.
 
-	res := visitor
+	visitor
 		parametersIntent: procedure2k
 		from: {
-			FASTFortranScalarVariable new name: 'param' ; famixParameter: famix
+			FASTFortranScalarVariable new name: 'param' ; famixParameter: famixParamF77
 		}.
 
-	self assert: res size equals: 1.
-	self assert: res anyOne key class equals: FASTFortranScalarVariable.
-	self assert: res first value equals: 'intent(in)'
+	self assert: (famixParamF77 propertyNamed: #intent) equals: 'intent(in)'
 ]
 
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromAllWrite [
 
-	| famix res procedure2k |
-	famix := FamixF77Parameter new.
-	FamixF77Access new variable: famix ; isWrite: true.
-	FamixF77Access new variable: famix ; isWrite: true.
+	| famixParamF77 procedure2k |
+	famixParamF77 := FamixF77Parameter new.
+	FamixF77Access new variable: famixParamF77 ; isWrite: true.
+	FamixF77Access new variable: famixParamF77 ; isWrite: true.
 
 	procedure2k := FASTFortran2kSubroutine new parameters: { 
 		FASTFortran2kScalarVariable new name: 'param'
 	}.
 
-	res := visitor
+	visitor
 		parametersIntent: procedure2k
 		from: {
-			FASTFortranScalarVariable new name: 'param' ; famixParameter: famix
+			FASTFortranScalarVariable new name: 'param' ; famixParameter: famixParamF77
 		}.
 
-	self assert: res size equals: 1.
-	self assert: res anyOne key class equals: FASTFortranScalarVariable.
-	self assert: res first value equals: 'intent(out)'
+	self assert: (famixParamF77 propertyNamed: #intent) equals: 'intent(out)'
 ]
 
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromNoAccesses [
 
-	| famix res procedure2k |
-	famix := FamixF77Parameter new.
+	| famixParamF77 procedure2k |
+	famixParamF77 := FamixF77Parameter new.
 
 	procedure2k := FASTFortran2kSubroutine new parameters: { 
 		FASTFortran2kScalarVariable new name: 'param'
 	}.
 
-	res := visitor
+	visitor
 		parametersIntent: procedure2k
 		from: {
-			FASTFortranScalarVariable new name: 'param' ; famixParameter: famix
+			FASTFortranScalarVariable new name: 'param' ; famixParameter: famixParamF77
 		}.
 
-	self assert: res size equals: 1.
-	self assert: res anyOne key class equals: FASTFortranScalarVariable.
-	self assert: res first value equals: 'intent(in)'
+	self assert: (famixParamF77 propertyNamed: #intent) equals: 'intent(in)'
 ]
 
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromReadAndWrite [
 
-	| famix res procedure2k |
-	famix := FamixF77Parameter new.
-	FamixF77Access new variable: famix ; isWrite: false.
-	FamixF77Access new variable: famix ; isWrite: true.
+	| famixParamF77 procedure2k |
+	famixParamF77 := FamixF77Parameter new.
+	FamixF77Access new variable: famixParamF77 ; isWrite: false.
+	FamixF77Access new variable: famixParamF77 ; isWrite: true.
 
 	procedure2k := FASTFortran2kSubroutine new parameters: { 
 		FASTFortran2kScalarVariable new name: 'param'
 	}.
 
-	res := visitor
+	visitor
 		parametersIntent: procedure2k
 		from: {
-			FASTFortranScalarVariable new name: 'param' ; famixParameter: famix
+			FASTFortranScalarVariable new
+				name: 'param' ;
+				famixParameter: famixParamF77
 		}.
 
-	self assert: res size equals: 1.
-	self assert: res anyOne key class equals: FASTFortranScalarVariable.
-	self assert: res first value equals: 'intent(inOut)'
+	self assert: (famixParamF77 propertyNamed: #intent) equals: 'intent(inOut)'
+]
+
+{ #category : 'tests' }
+FASTFortranProcedureTransformationVisitorTest >> testParametersIntentMissedDeclaration [
+
+	| famixParamF77 res fast |
+	famixParamF77 := famixEsopeModel newParameter
+		declaredType: (famixEsopeModel newTypeIntrinsic name: #integer) ;
+		propertyNamed: #intent put: 'intent(inOut)' ;
+		yourself.
+	fast := FASTFortranScalarVariable new
+		name: 'param' ;
+		famixParameter: famixParamF77.
+
+	res := fast generateF2kDeclarationInModel: FASTFortran2kModel new.
+
+	self assert: res class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: res declarators size equals: 1.
+	self assertCollection: res modifiers equals: { 'intent(inOut)' }
 ]
 
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testParametersPointerDeclaredNonMissing [
 
-	| res famix fast2k |
+	| res famixParamF77 fast2k |
 	self functionEmpty.
-	famix := famixEsopeModel newParameter name: 'param' ; declaredType: (famixEsopeModel newSegment name: #seg).
+	famixParamF77 := famixEsopeModel newParameter
+		name: 'param' ; 
+		declaredType: (famixEsopeModel newSegment name: #seg) ;
+		propertyNamed: #intent put: 'intent(in)' ;
+		yourself.
 	fastProcedures anyOne
-		addParameter: (FASTFortranScalarVariable new name: 'param' ; famixParameter: famix).
+		addParameter: (FASTFortranScalarVariable new 
+			name: 'param' ; 
+			famixParameter: famixParamF77).
 	fastProcedures anyOne statementBlock
 		addStatement: (FASTEsopePointerDeclarationStatement new
 			addPointerDeclarator: (
@@ -361,7 +362,7 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersPointerDeclaredNo
 					pointedTypeName: 'seg' ;
 					variableDeclarator: (FASTFortranVariableDeclarator new
 						name: 'param' ;
-						famixDeclaration: famix)
+						famixDeclaration: famixParamF77)
 			) ;
 			yourself
 		).
@@ -413,7 +414,7 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithCommandSegadj 
 
 ]
 
-{ #category : 'tests-statement' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatement [
 	"
 	module someFile_mod
@@ -452,7 +453,7 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatem
 	self assert: entity name equals: 'fct'.
 ]
 
-{ #category : 'tests-statement' }
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testProcedureWithFunctionStatementCalled [
 	"module someFile_mod
 		implicit none

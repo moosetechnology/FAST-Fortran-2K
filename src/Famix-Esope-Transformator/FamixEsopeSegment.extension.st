@@ -1,6 +1,13 @@
 Extension { #name : 'FamixEsopeSegment' }
 
 { #category : '*Famix-Esope-Transformator' }
+FamixEsopeSegment >> generateF2kInModel: anObject [
+
+	^FASTFortran2kUserDefinedType new
+		name: self name
+]
+
+{ #category : '*Famix-Esope-Transformator' }
 FamixEsopeSegment >> migratedModuleName [
 
 	^self name, '_mod'

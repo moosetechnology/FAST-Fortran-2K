@@ -578,7 +578,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement:
 	| fct |
 	fct := self model2k newInternalFunction
 		name: aFunctionStatementNode name;
-		declaredType: (aFunctionStatementNode famix declaredType accept: self)
+		declaredType: (aFunctionStatementNode famix declaredType generateF2kInModel: model2k)
 		yourself.
 
 	fct	 parameters: (aFunctionStatementNode parameters collect: [:parameter | 
@@ -592,7 +592,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranFunctionStatement:
 	aFunctionStatementNode parameters do: [:parameter |
 		fct statementBlock addStatement: (
 			self model2k newVariableDeclarationStatement
-				declaredType: (parameter famixParameter declaredType accept: self);
+				declaredType: (parameter famixParameter declaredType generateF2kInModel: model2k);
 				declarators: { self model2k newVariableDeclarator 
 					name:  parameter name;
 					yourself 
@@ -932,19 +932,4 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranWriteStatement: aF
 		ioParameters: (self visitFASTFortranList: aFASTFortranWriteStatement ioParameters);
 		arguments: (self visitFASTFortranList: aFASTFortranWriteStatement arguments);
 		yourself
-]
-
-{ #category : 'visiting' }
-FASTFortranBehavioralTransformationVisitor >> visitFamixF77Type: aFamixF77Type [
-	| aTypeClass |
-	aTypeClass := {
-		#real -> FASTFortran2kRealType.
-		#integer -> FASTFortran2kIntegerType.
-		#character -> FASTFortran2kCharacterType.
-		#logical -> FASTFortran2kLogicalType.
-	} asDictionary at: aFamixF77Type name.
-
-	^aTypeClass new
-		mooseModel: self model2k;
-		yourself.
 ]
