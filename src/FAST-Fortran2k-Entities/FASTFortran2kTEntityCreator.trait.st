@@ -637,6 +637,13 @@ FASTFortran2kTEntityCreator >> newNameListStatement [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newNilStatement [
+
+	<generated>
+	^ self add: FASTFortran2kNilStatement new
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newNullEntity [
 
 	<generated>

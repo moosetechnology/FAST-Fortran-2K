@@ -173,7 +173,8 @@ Class {
 		'useNoRename',
 		'tConditionalStatement',
 		'tLoopStatement',
-		'nullEntity'
+		'nullEntity',
+		'nilStatement'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -601,6 +602,8 @@ FASTFortran2kGenerator >> defineFASTClasses [
 
 	entity  := self newClassNamed: #Entity.
 
+	nilStatement := self newClassNamed: #NilStatement comment: 'Null object pattern for statements'.
+
 	programFile := self
 		               newClassNamed: #ProgramFile
 		               comment:
@@ -868,6 +871,8 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	functionCallStatement --|> #TStatement.
 
 	importStatement --|> abstractStatement.
+	
+	nilStatement --|> abstractStatement.
 	
 	interface --|> tNamedEntity. "name is optional"
 	interface --|> abstractStatement.
