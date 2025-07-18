@@ -35,8 +35,10 @@ end module segment_foo_mod
 	entity := res programUnits anyOne.
 	self assert: entity class equals: FASTFortran2kProgramMain.
 	self assert: entity name equals: 'demo'.
-	self assert: entity statementBlock statements size equals: 1.    "IMPLICIT NONE statement"
 
+	self assert: entity statementBlock statements size equals: 2.
+	self assert: entity statementBlock statements first class equals: FASTFortran2kImplicitStatement.
+	self assert: entity statementBlock statements second class equals: FASTFortran2kNullEntityStatement.
 ]
 
 { #category : 'tests-statement' }

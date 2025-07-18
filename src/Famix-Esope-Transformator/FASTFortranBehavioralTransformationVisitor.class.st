@@ -319,7 +319,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSe
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
 	"this is treated by FASTFortranSegmentTransformationVisitor"
-	^nil
+	^FASTFortran2kNullEntityStatement new
 ]
 
 { #category : 'visiting - esope' }
