@@ -38,3 +38,8 @@ FASTFortran2kNullEntityStatement class >> annotation [
 	<generated>
 	^ self
 ]
+
+{ #category : 'as yet unclassified' }
+FASTFortran2kNullEntityStatement >> detectMatchingEntityIn: aCollection [ 
+	^nil
+]
