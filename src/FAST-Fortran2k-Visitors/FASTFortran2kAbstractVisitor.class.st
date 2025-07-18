@@ -650,6 +650,12 @@ FASTFortran2kAbstractVisitor >> visitFASTFortran2kNameListStatement: aFASTFortra
 ]
 
 { #category : 'visiting - expressions' }
+FASTFortran2kAbstractVisitor >> visitFASTFortran2kNullEntity: aFASTFortran2kNullEntity [
+	"null object pattern
+	 do not do anything"
+]
+
+{ #category : 'visiting - expressions' }
 FASTFortran2kAbstractVisitor >> visitFASTFortran2kNumericalConstant: aFASTFortran2kNumericalConstant [
 	<generated>
 	self visitFASTTNumericalLiteral: aFASTFortran2kNumericalConstant.
