@@ -295,7 +295,7 @@ FASTFortranBehavioralTransformationVisitorTest >> testExternalDeclaration [
 
 	res := stmt accept: visitor.
 
-	self assert: res isNil.
+	self assert: res class equals: FASTFortran2kNullEntityStatement.
 
 	self assert: visitor externalDeclared size equals: 1.
 	self assert: visitor externalDeclared anyOne equals: 'anExternal'
@@ -646,14 +646,14 @@ FASTFortranBehavioralTransformationVisitorTest >> testUnaryExpression [
 FASTFortranBehavioralTransformationVisitorTest >> testVariableDeclarationForExternal [
 	| stmt res |
 
+	visitor externalDeclared: { 'var' }.
 	stmt := FASTFortranVariableDeclarationStatement new
 		declarators: { self variableDeclarator: 'var' } ;
 		declaredType: FASTFortranIntegerType new.
-	visitor externalDeclared: { 'var' }.
 
 	res := stmt accept: visitor.
 
-	self assert: res isNil.
+	self assert: res class equals: FASTFortran2kNullEntityStatement.
 
 ]
 
