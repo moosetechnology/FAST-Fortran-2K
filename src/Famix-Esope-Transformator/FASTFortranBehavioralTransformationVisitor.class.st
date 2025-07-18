@@ -829,33 +829,33 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranScalarVariable: aS
 
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aFASTFortranStatementBlock [
-	"Need to deal with StatementFunction that are created as InternalProcedure in the parent
-	programUnit (which is on the top of the stack)"
+	"F77 statements may translate to several things:
+	- F77FunctionStatement -> F2kInternalFunction (a program unit)
+	- F77 PointerDeclaration -> a collection of F2kVariableDeclaration
+	- otherwise if should be a statement
+	This impacts how the the parentEntity is set"
 	
 	| f2kStatementBlock parentBehavioral |
 	
 	f2kStatementBlock := self
 		fortran2k: FASTFortran2kStatementBlock
-		traceBack: aFASTFortranStatementBlock.
+		sourceAnchor: aFASTFortranStatementBlock.
 
 	parentBehavioral := stack ifNotEmpty: [ stack top ].
 	stack push: f2kStatementBlock.
 
 	aFASTFortranStatementBlock statements
-		do: [ :statement | 
-			(statement accept: self)
-				ifNotNil: [ :f2kStatementOrModule | 
-					f2kStatementOrModule class = FASTFortran2kModule 
-						ifFalse: [ 
-							statement class = FASTFortranFunctionStatement
-								ifTrue: [ parentBehavioral addInternalProcedure: f2kStatementOrModule ]
-								ifFalse: [ 
-									f2kStatementOrModule isCollection
-										ifTrue: [ f2kStatementBlock statements addAll: f2kStatementOrModule ]
-										ifFalse: [  f2kStatementBlock addStatement: f2kStatementOrModule ]
-								]
-						]
-			 	]
+		do: [ :statement || f2kEntity |
+			f2kEntity := statement accept: self.
+			f2kEntity isCollection
+				ifTrue: [ "f2kEntity is a collection of VariableDeclarations"
+					f2kStatementBlock statements addAll: f2kEntity ]
+				ifFalse: [
+					f2kEntity isBehaviouralEntity
+						ifTrue: [ f2kEntity setOwner: parentBehavioral ]
+						ifFalse: [ "f2kEntity is a statement"
+							f2kStatementBlock addStatement: f2kEntity ]
+			]
 		].
 
 	stack pop.
