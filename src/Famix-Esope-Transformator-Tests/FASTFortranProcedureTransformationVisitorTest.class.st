@@ -566,7 +566,8 @@ FASTFortranProcedureTransformationVisitorTest >> testProcedureWithSegment [
 	res := res procedures anyOne.
 	self assert: res class equals: FASTFortran2kFunction.
 	self assert: res name equals: 'fct'.
-	self assert: res statementBlock statements size equals: 0
+	self assert: res statementBlock statements size equals: 1.
+	self assert: res statementBlock statements anyOne class equals: FASTFortran2kNullEntityStatement.
 ]
 
 { #category : 'tests' }

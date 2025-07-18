@@ -319,7 +319,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSe
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
 	"this is treated by FASTFortranSegmentTransformationVisitor"
-	^nil
+	^FASTFortran2kNullEntityStatement new
 ]
 
 { #category : 'visiting - esope' }
@@ -383,7 +383,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentStatemen
 		ifTrue: [
 			(self
 				fortran2k: FASTFortran2kFunctionCallStatement
-				traceBack: aFASTFortranAssignmentStatement)
+				sourceAnchor: aFASTFortranAssignmentStatement)
 				name: 'nullify';
 				addArgument: (aFASTFortranAssignmentStatement variable accept: self);
 				yourself
@@ -391,7 +391,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentStatemen
 		ifFalse: [ 
 			(self
 				fortran2k: fastFortran2kClass
-				traceBack: aFASTFortranAssignmentStatement)
+				sourceAnchor: aFASTFortranAssignmentStatement)
 
 				variable: (aFASTFortranAssignmentStatement variable accept: self);
 				expression: (aFASTFortranAssignmentStatement expression accept: self);
@@ -434,7 +434,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCallStatement: aFA
 
 	callStatement := self
 		fortran2k: FASTFortran2kCallStatement
-		traceBack: aFASTFortranCallStatement.
+		sourceAnchor: aFASTFortranCallStatement.
 
 	callStatement
 		name: aFASTFortranCallStatement name;
@@ -465,7 +465,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranCloseStatement: aF
 
 	^(self
 		fortran2k: FASTFortran2kCloseStatement
-		traceBack: aFASTFortranCloseStatement)
+		sourceAnchor: aFASTFortranCloseStatement)
 		ioParameters: (self visitFASTFortranList: aFASTFortranCloseStatement ioParameters);
 		yourself
 ]
@@ -475,7 +475,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranComment: aCommentN
 
 	^(self
 		fortran2k: FASTFortran2kComment
-		traceBack: aCommentNode)
+		sourceAnchor: aCommentNode)
 
 		content: aCommentNode content;
 		yourself
@@ -486,7 +486,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranContinueStatement:
 
 	^(self
 		fortran2k: FASTFortran2kContinueStatement
-		traceBack: aFASTFortranContinueStatement)
+		sourceAnchor: aFASTFortranContinueStatement)
 
 		label: aFASTFortranContinueStatement label;
 		yourself
@@ -497,7 +497,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDoStatement: aDoSt
 
 	^(self
 		fortran2k: FASTFortran2kDoStatement
-		traceBack: aDoStatementNode)
+		sourceAnchor: aDoStatementNode)
 
 		  loopControl: (aDoStatementNode loopControl accept: self) ;
 		  body: (aDoStatementNode body accept: self) ;
@@ -509,7 +509,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranExitStatement: aFA
 
 	^self
 		fortran2k: FASTFortran2kExitStatement
-		traceBack: aFASTFortranExitStatement 
+		sourceAnchor: aFASTFortranExitStatement 
 ]
 
 { #category : 'visiting - statements' }
@@ -616,7 +616,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranGoToStatement: aFA
 
 	^(self
 		fortran2k: FASTFortran2kGoToStatement
-		traceBack: aFASTFortranGoToStatement)
+		sourceAnchor: aFASTFortranGoToStatement)
 
 		labelReferences: (self visitFASTFortranList: aFASTFortranGoToStatement labelReferences);
 		yourself
@@ -637,7 +637,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIfBlockStatement: 
 
 	ifBlockStatement := self
 		fortran2k: FASTFortran2kIfBlockStatement
-		traceBack: aFASTFortranIfBlockStatement.
+		sourceAnchor: aFASTFortranIfBlockStatement.
 
 	ifBlockStatement condition: (aFASTFortranIfBlockStatement condition accept: self).
 
@@ -659,7 +659,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIfLogicalStatement
 
 	^(self
 		fortran2k: FASTFortran2kIfLogicalStatement
-		traceBack: aFASTFortranIfLogicalStatement)
+		sourceAnchor: aFASTFortranIfLogicalStatement)
 
 		condition: (aFASTFortranIfLogicalStatement condition accept: self);
 		statement: (aFASTFortranIfLogicalStatement statement accept: self);
@@ -669,7 +669,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIfLogicalStatement
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranImplicitStatement: aFASTFortranImplicitStatement [
 
-	^nil
+	^FASTFortran2kNullEntityStatement new
 ]
 
 { #category : 'visiting - expressions' }
@@ -724,7 +724,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranOpenStatement: aFA
 
 	^(self
 		fortran2k: FASTFortran2kOpenStatement
-		traceBack: aFASTFortranOpenStatement)
+		sourceAnchor: aFASTFortranOpenStatement)
 
 		ioParameters: (self visitFASTFortranList: aFASTFortranOpenStatement ioParameters);
 		yourself
@@ -751,7 +751,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranParameterStatement
 		]
 	].
 
-	^nil
+	^FASTFortran2kNullEntityStatement new
 ]
 
 { #category : 'visiting - statements' }
@@ -759,7 +759,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranPrintStatement: aF
 
 	^(self
 		fortran2k: FASTFortran2kPrintStatement
-		traceBack: aFASTFortranPrintStatement)
+		sourceAnchor: aFASTFortranPrintStatement)
 
 		  format: (aFASTFortranPrintStatement format accept: self);
 		  arguments: (self visitFASTFortranList: aFASTFortranPrintStatement arguments);
@@ -771,7 +771,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranReadStatement: aFA
 
 	^(self
 		fortran2k: FASTFortran2kReadStatement
-		traceBack: aFASTFortranReadStatement)
+		sourceAnchor: aFASTFortranReadStatement)
 
 		ioParameters: (self visitFASTFortranList: aFASTFortranReadStatement ioParameters);
 		arguments:
@@ -800,7 +800,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranReturnStatement: a
 
 	returnStatement := self
 		fortran2k: FASTFortran2kReturnStatement
-		traceBack: aFASTFortranReturnStatement.
+		sourceAnchor: aFASTFortranReturnStatement.
 	aFASTFortranReturnStatement expression 
 		ifNotNil: [:expression | 	
 			returnStatement expression: (expression accept: self) 
@@ -829,33 +829,33 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranScalarVariable: aS
 
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStatementBlock: aFASTFortranStatementBlock [
-	"Need to deal with StatementFunction that are created as InternalProcedure in the parent
-	programUnit (which is on the top of the stack)"
+	"F77 statements may translate to several things:
+	- F77FunctionStatement -> F2kInternalFunction (a program unit)
+	- F77 PointerDeclaration -> a collection of F2kVariableDeclaration
+	- otherwise if should be a statement
+	This impacts how the the parentEntity is set"
 	
 	| f2kStatementBlock parentBehavioral |
 	
 	f2kStatementBlock := self
 		fortran2k: FASTFortran2kStatementBlock
-		traceBack: aFASTFortranStatementBlock.
+		sourceAnchor: aFASTFortranStatementBlock.
 
 	parentBehavioral := stack ifNotEmpty: [ stack top ].
 	stack push: f2kStatementBlock.
 
 	aFASTFortranStatementBlock statements
-		do: [ :statement | 
-			(statement accept: self)
-				ifNotNil: [ :f2kStatementOrModule | 
-					f2kStatementOrModule class = FASTFortran2kModule 
-						ifFalse: [ 
-							statement class = FASTFortranFunctionStatement
-								ifTrue: [ parentBehavioral addInternalProcedure: f2kStatementOrModule ]
-								ifFalse: [ 
-									f2kStatementOrModule isCollection
-										ifTrue: [ f2kStatementBlock statements addAll: f2kStatementOrModule ]
-										ifFalse: [  f2kStatementBlock addStatement: f2kStatementOrModule ]
-								]
-						]
-			 	]
+		do: [ :statement || f2kEntity |
+			f2kEntity := statement accept: self.
+			f2kEntity isCollection
+				ifTrue: [ "f2kEntity is a collection of VariableDeclarations"
+					f2kStatementBlock statements addAll: f2kEntity ]
+				ifFalse: [
+					f2kEntity isBehaviouralEntity
+						ifTrue: [ f2kEntity setOwner: parentBehavioral ]
+						ifFalse: [ "f2kEntity is a statement"
+							f2kStatementBlock addStatement: f2kEntity ]
+			]
 		].
 
 	stack pop.
@@ -868,7 +868,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranStopStatement: aFA
 
 	^(self
 		fortran2k: FASTFortran2kStopStatement
-		traceBack: aFASTFortranStopStatement)
+		sourceAnchor: aFASTFortranStopStatement)
 
 		displayArgument: (aFASTFortranStopStatement displayArgument);
 		yourself
@@ -894,7 +894,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclaratio
 
 	^(self
 		fortran2k: FASTFortran2kVariableDeclarationStatement
-		traceBack: aFASTFortranVariableDeclarationStatement)
+		sourceAnchor: aFASTFortranVariableDeclarationStatement)
 
 		declaredType: (aFASTFortranVariableDeclarationStatement declaredType accept: self);
 		declarators: declarators ;
@@ -927,7 +927,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranWriteStatement: aF
 
 	^(self
 		fortran2k: FASTFortran2kWriteStatement
-		traceBack: aFASTFortranWriteStatement)
+		sourceAnchor: aFASTFortranWriteStatement)
 
 		ioParameters: (self visitFASTFortranList: aFASTFortranWriteStatement ioParameters);
 		arguments: (self visitFASTFortranList: aFASTFortranWriteStatement arguments);

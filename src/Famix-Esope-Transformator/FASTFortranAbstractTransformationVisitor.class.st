@@ -23,7 +23,7 @@ FASTFortranAbstractTransformationVisitor >> filename: aString [
 ]
 
 { #category : 'instance creation' }
-FASTFortranAbstractTransformationVisitor >> fortran2k: fastFortran2kClass traceBack: fortranEntity [
+FASTFortranAbstractTransformationVisitor >> fortran2k: fastFortran2kClass sourceAnchor: fortranEntity [
 
 	| fortran2kEntity |
 	fortran2kEntity := fastFortran2kClass new

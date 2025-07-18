@@ -60,3 +60,9 @@ FASTFortran2kModule >> proceduresGroup [
 	<navigation: 'Procedures'>
 	^ MooseSpecializedGroup withAll: self procedures asSet
 ]
+
+{ #category : 'initialization' }
+FASTFortran2kModule >> setOwner: aCollection [ 
+	"nothing to do
+	 Note: this is called from FASTFortranBehavioralTransformationVisitor >> #visitFASTFortranStatementBlock: "
+]

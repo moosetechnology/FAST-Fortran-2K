@@ -644,6 +644,13 @@ FASTFortran2kTEntityCreator >> newNullEntity [
 ]
 
 { #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newNullEntityStatement [
+
+	<generated>
+	^ self add: FASTFortran2kNullEntityStatement new
+]
+
+{ #category : 'entity creation' }
 FASTFortran2kTEntityCreator >> newNumericalConstant [
 
 	<generated>

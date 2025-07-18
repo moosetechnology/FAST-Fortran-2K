@@ -899,9 +899,8 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kNameListStatement: 
 
 { #category : 'visiting' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kNullEntity: aFASTFortran2kNullEntity [
-
-	"nothing to do"
-
+	"null object pattern
+	 do not do anything"
 ]
 
 { #category : 'visiting' }

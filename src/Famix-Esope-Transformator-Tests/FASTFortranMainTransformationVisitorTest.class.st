@@ -35,14 +35,15 @@ end module segment_foo_mod
 	entity := res programUnits anyOne.
 	self assert: entity class equals: FASTFortran2kProgramMain.
 	self assert: entity name equals: 'demo'.
-	self assert: entity statementBlock statements size equals: 1.    "IMPLICIT NONE statement"
 
+	self assert: entity statementBlock statements size equals: 2.
+	self assert: entity statementBlock statements first class equals: FASTFortran2kImplicitStatement.
+	self assert: entity statementBlock statements second class equals: FASTFortran2kNullEntityStatement.
 ]
 
 { #category : 'tests-statement' }
 FASTFortranMainTransformationVisitorTest >> testParameterStatement [
-	" demo_mod.f90
-
+	"-- demo_mod.f90 --
 	program main
 	integer param
 	parameter(param=42)
@@ -74,9 +75,10 @@ end program main
 	entity := res programUnits anyOne.
 	self assert: entity class equals: FASTFortran2kProgramMain.
 
-	self assert: entity statementBlock statements size equals: 2.
+	self assert: entity statementBlock statements size equals: 3.
 
 	self assert: entity statementBlock statements first class equals: FASTFortran2kImplicitStatement.
+	self assert: entity statementBlock statements third class equals: FASTFortran2kNullEntityStatement.
 
 	entity := entity statementBlock statements second.
 	self assert: entity class equals: FASTFortran2kVariableDeclarationStatement.
@@ -86,7 +88,8 @@ end program main
 	entity := entity declarators anyOne.
 	self assert: entity class equals: FASTFortran2kVariableDeclarator.
 	self assert: entity expression class equals: FASTFortran2kIntegerLiteral.
-	self assert: entity expression primitiveValue equals: 42
+	self assert: entity expression primitiveValue equals: 42.
+
 ]
 
 { #category : 'tests' }
@@ -333,7 +336,7 @@ C	--------end someFile.f90----------------
 
 { #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramWithImplicitStatement [
-	| res entity |
+	| res |
 
 	self programEmpty.
 
@@ -343,10 +346,10 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithImplicitStatement [
 	
 	res := res programUnits anyOne.
 	self assert: res class equals: FASTFortran2kProgramMain.
-	self assert: res statementBlock statements size equals: 1.
-	
-	entity := res statementBlock statements first.
-	self assert: entity class equals: FASTFortran2kImplicitStatement.
+	self assert: res statementBlock statements size equals: 2.
+
+	self assert: res statementBlock statements first class equals: FASTFortran2kImplicitStatement.
+	self assert: res statementBlock statements second class equals: FASTFortran2kNullEntityStatement
 	
 ]
 
