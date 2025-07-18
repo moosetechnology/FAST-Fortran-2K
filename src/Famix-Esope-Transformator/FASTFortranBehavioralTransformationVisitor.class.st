@@ -508,6 +508,25 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranContinueStatement:
 ]
 
 { #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDataGroup: aFASTFortranDataGroup [
+
+	aFASTFortranDataGroup variables with: aFASTFortranDataGroup dataConstants do: [ :var :const |
+		(self findVariableDeclaration: var name in: stack top statements)
+			ifNotNil: [ :declarator | declarator expression: (const accept: self) ]
+	].
+
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDataStatement: aFASTFortranDataStatement [
+
+	aFASTFortranDataStatement variableGroups do: [ :group |
+		group accept: self ].
+
+	^FASTFortran2kNullEntityStatement new
+]
+
+{ #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDoStatement: aDoStatementNode [
 
 	^(self
