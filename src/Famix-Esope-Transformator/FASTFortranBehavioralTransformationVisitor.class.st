@@ -669,7 +669,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIfLogicalStatement
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranImplicitStatement: aFASTFortranImplicitStatement [
 
-	^nil
+	^FASTFortran2kNullEntityStatement new
 ]
 
 { #category : 'visiting - expressions' }

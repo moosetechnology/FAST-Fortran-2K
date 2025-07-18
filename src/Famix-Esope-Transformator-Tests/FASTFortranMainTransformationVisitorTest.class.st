@@ -335,7 +335,7 @@ C	--------end someFile.f90----------------
 
 { #category : 'tests' }
 FASTFortranMainTransformationVisitorTest >> testProgramWithImplicitStatement [
-	| res entity |
+	| res |
 
 	self programEmpty.
 
@@ -345,10 +345,10 @@ FASTFortranMainTransformationVisitorTest >> testProgramWithImplicitStatement [
 	
 	res := res programUnits anyOne.
 	self assert: res class equals: FASTFortran2kProgramMain.
-	self assert: res statementBlock statements size equals: 1.
-	
-	entity := res statementBlock statements first.
-	self assert: entity class equals: FASTFortran2kImplicitStatement.
+	self assert: res statementBlock statements size equals: 2.
+
+	self assert: res statementBlock statements first class equals: FASTFortran2kImplicitStatement.
+	self assert: res statementBlock statements second class equals: FASTFortran2kNullEntityStatement
 	
 ]
 
