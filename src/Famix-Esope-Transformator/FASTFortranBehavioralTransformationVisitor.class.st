@@ -53,6 +53,21 @@ FASTFortranBehavioralTransformationVisitor >> externalDeclared: acollection [
 	externalDeclared := acollection 
 ]
 
+{ #category : 'private - helpers' }
+FASTFortranBehavioralTransformationVisitor >> findVariableDeclaration: aName in: statements [
+
+	statements do: [ :stmt | 
+		(stmt class = FASTFortran2kVariableDeclarationStatement)
+			ifTrue: [
+				stmt declarators 
+					detect: [ :declarator | declarator name sameAs: aName ]
+					ifFound: [ :declarator | ^declarator ]
+			]
+	].
+
+	^nil
+]
+
 { #category : 'accessing' }
 FASTFortranBehavioralTransformationVisitor >> handleProgramUnitSegmentDeclaration: declarations [
 	
@@ -735,19 +750,11 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranParameterStatement
 
 	"stack top coontains an f2k statementBlock"
 
-	| f2kVariableDeclarations |
-	f2kVariableDeclarations := stack top statements 
-		select: [ :statement | statement class = FASTFortran2kVariableDeclarationStatement ].
-
-	f2kVariableDeclarations do: [ :f2kVariableDeclaration | 
-		aFASTFortranParameterStatement declarators do: [ :paramDeclarator |
-			f2kVariableDeclaration declarators 
-				detect: [ :declarator | declarator name asLowercase = paramDeclarator name asLowercase ]
-				ifFound: [ :declarator | 
-					declarator parentDeclaration 
-						modifiers: (declarator parentDeclaration modifiers, #( parameter )).
-					declarator expression: (paramDeclarator expression accept: self)
-				]
+	aFASTFortranParameterStatement declarators do: [ :paramDeclarator |
+		(self findVariableDeclaration: paramDeclarator name in: stack top statements)
+			ifNotNil: [ :declarator | 
+				declarator parentDeclaration  addModifier: #parameter.
+				declarator expression: (paramDeclarator expression accept: self)
 		]
 	].
 
@@ -817,6 +824,19 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranReturnStatement: a
 		].
 	
 	^returnStatement
+]
+
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranSaveStatement: aFASTFortranSaveStatement [
+
+	"stack top coontains an f2k statementBlock"
+
+	aFASTFortranSaveStatement declarators do: [ :saveDeclarator |
+		(self findVariableDeclaration: saveDeclarator name in: stack top statements)
+			ifNotNil: [ :declarator | declarator parentDeclaration addModifier: #save ]
+	].
+
+	^FASTFortran2kNullEntityStatement new
 ]
 
 { #category : 'visiting - expressions' }

@@ -43,16 +43,13 @@ end module segment_foo_mod
 
 { #category : 'tests-statement' }
 FASTFortranMainTransformationVisitorTest >> testParameterStatement [
-	"-- demo_mod.f90 --
-	program main
+	"program main
 	integer param
 	parameter(param=42)
 	end
 	
-program main
-	integer, parameter :: param = 42
-end program main  
-	"
+--> integer, parameter :: param = 42"
+
 	| res declStatement paramStatement entity |
 	self programEmpty.
 
@@ -78,10 +75,10 @@ end program main
 	self assert: entity statementBlock statements size equals: 3.
 
 	self assert: entity statementBlock statements first class equals: FASTFortran2kImplicitStatement.
+	self assert: entity statementBlock statements second class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: entity statementBlock statements third class equals: FASTFortran2kNullEntityStatement.
 
 	entity := entity statementBlock statements second.
-	self assert: entity class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: entity modifiers anyOne equals: 'parameter'.
 	self assert: entity declarators size equals: 1.
 
@@ -417,6 +414,47 @@ end program demo
 	stmt := entity statementBlock statements second.
 	self assert: stmt class equals: FASTFortran2kCallStatement.
 	
+]
+
+{ #category : 'tests-statement' }
+FASTFortranMainTransformationVisitorTest >> testSaveStatement [
+	"
+	program main
+	integer var
+	save var
+	end
+	
+--> integer, save :: var
+	"
+	| res declStatement saveStatement entity |
+	self programEmpty.
+
+	declStatement := self declarationStatement: 'var' type: #integer.
+
+	saveStatement := FASTFortranSaveStatement new
+		declarators: (self variableDeclarators: #(var)) ;
+		yourself.
+
+	fastMainProgram statementBlock addStatement: declStatement.
+	fastMainProgram statementBlock addStatement: saveStatement.
+
+	self assert: fastMainProgram statementBlock statements size equals: 2.
+
+	res := fastMainProgram accept: visitor.
+
+	self assert: res class equals: FASTFortran2kProgramFile.
+
+	entity := res programUnits anyOne.
+	self assert: entity class equals: FASTFortran2kProgramMain.
+
+	self assert: entity statementBlock statements size equals: 3.
+
+	self assert: entity statementBlock statements first class equals: FASTFortran2kImplicitStatement.
+	self assert: entity statementBlock statements second class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: entity statementBlock statements third class equals: FASTFortran2kNullEntityStatement.
+
+	entity := entity statementBlock statements second.
+	self assert: entity modifiers anyOne equals: 'save'
 ]
 
 { #category : 'running' }
