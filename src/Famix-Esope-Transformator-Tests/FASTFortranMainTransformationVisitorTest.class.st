@@ -43,16 +43,13 @@ end module segment_foo_mod
 
 { #category : 'tests-statement' }
 FASTFortranMainTransformationVisitorTest >> testParameterStatement [
-	"-- demo_mod.f90 --
-	program main
+	"program main
 	integer param
 	parameter(param=42)
 	end
 	
-program main
-	integer, parameter :: param = 42
-end program main  
-	"
+--> integer, parameter :: param = 42"
+
 	| res declStatement paramStatement entity |
 	self programEmpty.
 
@@ -78,10 +75,10 @@ end program main
 	self assert: entity statementBlock statements size equals: 3.
 
 	self assert: entity statementBlock statements first class equals: FASTFortran2kImplicitStatement.
+	self assert: entity statementBlock statements second class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: entity statementBlock statements third class equals: FASTFortran2kNullEntityStatement.
 
 	entity := entity statementBlock statements second.
-	self assert: entity class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: entity modifiers anyOne equals: 'parameter'.
 	self assert: entity declarators size equals: 1.
 
