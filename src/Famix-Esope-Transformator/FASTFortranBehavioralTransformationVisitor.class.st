@@ -532,7 +532,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranExternalStatement:
 
 	externalDeclared add: aFASTFortranExternalStatement name.
 
-	^nil
+	^FASTFortran2kNullEntityStatement new
 ]
 
 { #category : 'visiting - expressions' }
