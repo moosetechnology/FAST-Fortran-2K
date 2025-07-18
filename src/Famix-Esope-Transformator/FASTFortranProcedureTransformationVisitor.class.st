@@ -15,6 +15,8 @@ FASTFortranProcedureTransformationVisitor >> checkForParameterDeclaration: aFAST
 	"if aFASTFortran2kVariableDeclarationStatement match the name of a parametersToDeclare
 	then remove it from the list to declare and set its intent"
 
+	aFASTFortran2kVariableDeclarationStatement ifNil: [ ^nil ].
+
 	(aFASTFortran2kVariableDeclarationStatement detectMatchingEntityIn: parametersToDeclare)
 		ifNotNil: [ :param |
 			parametersToDeclare remove: param.

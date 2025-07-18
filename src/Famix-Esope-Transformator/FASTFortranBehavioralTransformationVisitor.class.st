@@ -532,7 +532,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranExternalStatement:
 
 	externalDeclared add: aFASTFortranExternalStatement name.
 
-	^nil
+	^FASTFortran2kNullEntityStatement new
 ]
 
 { #category : 'visiting - expressions' }
@@ -910,7 +910,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranVariableDeclaratio
 	declarators := (self visitFASTFortranList: aFASTFortranVariableDeclarationStatement declarators)
 		reject: #isNil.
 
-	declarators ifEmpty: [ ^nil ].
+	declarators ifEmpty: [ ^FASTFortran2kNullEntityStatement new ].
 
 	^(self
 		fortran2k: FASTFortran2kVariableDeclarationStatement
