@@ -819,6 +819,29 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranReturnStatement: a
 	^returnStatement
 ]
 
+{ #category : 'visiting - statements' }
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranSaveStatement: aFASTFortranSaveStatement [
+
+	"stack top coontains an f2k statementBlock"
+
+	| f2kVariableDeclarations |
+	f2kVariableDeclarations := stack top statements 
+		select: [ :statement | statement class = FASTFortran2kVariableDeclarationStatement ].
+
+	f2kVariableDeclarations do: [ :f2kVariableDeclaration | 
+		aFASTFortranSaveStatement declarators do: [ :paramDeclarator |
+			f2kVariableDeclaration declarators 
+				detect: [ :declarator | declarator name asLowercase = paramDeclarator name asLowercase ]
+				ifFound: [ :declarator | 
+					declarator parentDeclaration 
+						modifiers: (declarator parentDeclaration modifiers, #( save ))
+				]
+		]
+	].
+
+	^FASTFortran2kNullEntityStatement new
+]
+
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranScalarVariable: aScalarVariableNode [
 
