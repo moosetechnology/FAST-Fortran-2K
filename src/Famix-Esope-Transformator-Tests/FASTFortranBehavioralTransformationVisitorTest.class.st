@@ -658,6 +658,24 @@ FASTFortranBehavioralTransformationVisitorTest >> testVariableDeclarationForExte
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testVariableDeclarationForExternalInStatementBlock [
+	| stmt res |
+
+	visitor externalDeclared: { 'var' }.
+	stmt := FASTFortranVariableDeclarationStatement new
+				declarators: { self variableDeclarator: 'var' } ;
+				declaredType: FASTFortranIntegerType new.
+	stmt := FASTFortranStatementBlock new
+		statements: { stmt }.
+
+	res := stmt accept: visitor.
+
+	self assert: res statements size equals: 1.
+	self assert: res statements anyOne class equals: FASTFortran2kNullEntityStatement 
+
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testVariableDeclarationsSomeExternal [
 	| stmt res |
 
