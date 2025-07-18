@@ -751,7 +751,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranParameterStatement
 		]
 	].
 
-	^nil
+	^FASTFortran2kNullEntityStatement new
 ]
 
 { #category : 'visiting - statements' }

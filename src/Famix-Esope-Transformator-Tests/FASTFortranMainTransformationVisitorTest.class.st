@@ -43,8 +43,7 @@ end module segment_foo_mod
 
 { #category : 'tests-statement' }
 FASTFortranMainTransformationVisitorTest >> testParameterStatement [
-	" demo_mod.f90
-
+	"-- demo_mod.f90 --
 	program main
 	integer param
 	parameter(param=42)
@@ -76,9 +75,10 @@ end program main
 	entity := res programUnits anyOne.
 	self assert: entity class equals: FASTFortran2kProgramMain.
 
-	self assert: entity statementBlock statements size equals: 2.
+	self assert: entity statementBlock statements size equals: 3.
 
 	self assert: entity statementBlock statements first class equals: FASTFortran2kImplicitStatement.
+	self assert: entity statementBlock statements third class equals: FASTFortran2kNullEntityStatement.
 
 	entity := entity statementBlock statements second.
 	self assert: entity class equals: FASTFortran2kVariableDeclarationStatement.
@@ -88,7 +88,8 @@ end program main
 	entity := entity declarators anyOne.
 	self assert: entity class equals: FASTFortran2kVariableDeclarator.
 	self assert: entity expression class equals: FASTFortran2kIntegerLiteral.
-	self assert: entity expression primitiveValue equals: 42
+	self assert: entity expression primitiveValue equals: 42.
+
 ]
 
 { #category : 'tests' }
