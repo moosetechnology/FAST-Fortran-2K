@@ -243,6 +243,44 @@ FASTFortranBehavioralTransformationVisitorTest >> testContinueStatement [
 ]
 
 { #category : 'tests-statement' }
+FASTFortranBehavioralTransformationVisitorTest >> testDataStatement [
+	"DATA x, y /1,2/"
+	| stmt dataGrp res decl |
+
+	dataGrp := FASTFortranDataGroup new.
+	dataGrp addVariable: (FASTFortranVariable new name: #x).
+	dataGrp addVariable: (FASTFortranVariable new name: #y).
+	dataGrp addDataConstant: (FASTFortranIntegerLiteral new primitiveValue: '1').
+	dataGrp addDataConstant: (FASTFortranIntegerLiteral new primitiveValue: '2').
+
+	stmt := FASTFortranStatementBlock new
+		statements: {
+			self declarationStatement: 'x' type: #integer .
+			self declarationStatement: 'y' type: #integer .
+			FASTFortranDataStatement new variableGroups: {  dataGrp }
+		}.
+
+	res := stmt accept: visitor.
+
+	self assert: res class equals: FASTFortran2kStatementBlock.
+
+	self assert: res statements size equals: 3.
+
+	self assert: res statements first class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: res statements second class equals: FASTFortran2kVariableDeclarationStatement.
+	self assert: res statements third class equals: FASTFortran2kNullEntityStatement.
+
+	decl := res statements first.
+	self assert: decl declarators anyOne name equals: 'x'.
+	self assert: decl declarators anyOne expression primitiveValue equals: '1'.
+
+	decl := res statements second.
+	self assert: decl declarators anyOne name equals: 'y'.
+	self assert: decl declarators anyOne expression primitiveValue equals: '2'.
+
+]
+
+{ #category : 'tests-statement' }
 FASTFortranBehavioralTransformationVisitorTest >> testDoStatement [
 	| stmt res loopControl |
 
