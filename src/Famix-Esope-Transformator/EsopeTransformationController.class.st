@@ -122,6 +122,44 @@ EsopeTransformationController >> isFpm: anObject [
 	isFpm := anObject
 ]
 
+{ #category : 'running' }
+EsopeTransformationController >> migrationSteps [
+
+	^{
+		EsopeTransfoStepPrepareProgFiles .
+		EsopeTransfoStepMigrateIncludedFiles .
+		EsopeTransfoStepMigrateProgramUnits .
+		EsopeTransfoStepResolveUses .
+		EsopeTransfoStepExportFast2k .
+		isFpm ifTrue: [ EsopeTransfoStepAsFpmProject ] ifFalse: [ EsopeTransfoStepNoop ]
+	}
+]
+
+{ #category : 'running' }
+EsopeTransformationController >> run [
+	"The following commented statement is already initialized in initialize method"
+	"usesNeeded := Set new." 
+
+	UIManager default displayProgress: ''
+		from: 1 to: self migrationSteps size
+		during: [:bar |
+			self migrationSteps withIndexDo: [ :step :i |
+				bar label: step description.
+				bar current: i.
+
+				self runStep: step
+			] 
+		]
+]
+
+{ #category : 'running' }
+EsopeTransformationController >> runStep: aStepClass [
+
+	aStepClass new
+		controller: self ;
+		run
+]
+
 { #category : 'accessing' }
 EsopeTransformationController >> specialCallTreatments [
 
