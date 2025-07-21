@@ -1,6 +1,6 @@
 "
 One of the main migration step from Esope to FASTFortran2k: migrating all Program Units
-(each porgram unit goes in its own module)
+(each program unit goes in its own module)
 - gets the FAST model
 - simplification of Fortran77 AST (remove obsolete instruction `FASTEsopeObsoleteCommandRule`)
 - perform transformation (`FASTFortranMainTransformationVisitor` or `FASTFortranProcedureTransformationVisitor`)
