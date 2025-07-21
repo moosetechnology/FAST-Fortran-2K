@@ -241,18 +241,13 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersDeclaredNonMissin
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromAllRead [
 
-	| famixParamF77 procedure2k |
+	| famixParamF77 |
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new variable: famixParamF77.
 	FamixF77Access new variable: famixParamF77 ; isWrite: false.
 
-	procedure2k := FASTFortran2kSubroutine new parameters: { 
-		FASTFortran2kScalarVariable new name: 'param'
-	}.
-
 	visitor
-		parametersIntent: procedure2k
-		from: {
+		parametersIntent: {
 			FASTFortranScalarVariable new name: 'param' ; famixParameter: famixParamF77
 		}.
 
@@ -262,19 +257,16 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromAllRead
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromAllWrite [
 
-	| famixParamF77 procedure2k |
+	| famixParamF77 |
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new variable: famixParamF77 ; isWrite: true.
 	FamixF77Access new variable: famixParamF77 ; isWrite: true.
 
-	procedure2k := FASTFortran2kSubroutine new parameters: { 
-		FASTFortran2kScalarVariable new name: 'param'
-	}.
-
 	visitor
-		parametersIntent: procedure2k
-		from: {
-			FASTFortranScalarVariable new name: 'param' ; famixParameter: famixParamF77
+		parametersIntent: {
+			FASTFortranScalarVariable new
+				name: 'param' ;
+				famixParameter: famixParamF77
 		}.
 
 	self assert: (famixParamF77 propertyNamed: #intent) equals: 'intent(out)'
@@ -283,17 +275,14 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromAllWrit
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromNoAccesses [
 
-	| famixParamF77 procedure2k |
+	| famixParamF77 |
 	famixParamF77 := FamixF77Parameter new.
 
-	procedure2k := FASTFortran2kSubroutine new parameters: { 
-		FASTFortran2kScalarVariable new name: 'param'
-	}.
-
 	visitor
-		parametersIntent: procedure2k
-		from: {
-			FASTFortranScalarVariable new name: 'param' ; famixParameter: famixParamF77
+		parametersIntent: {
+			FASTFortranScalarVariable new
+				name: 'param' ;
+				famixParameter: famixParamF77
 		}.
 
 	self assert: (famixParamF77 propertyNamed: #intent) equals: 'intent(in)'
@@ -302,18 +291,13 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromNoAcces
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromReadAndWrite [
 
-	| famixParamF77 procedure2k |
+	| famixParamF77 |
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new variable: famixParamF77 ; isWrite: false.
 	FamixF77Access new variable: famixParamF77 ; isWrite: true.
 
-	procedure2k := FASTFortran2kSubroutine new parameters: { 
-		FASTFortran2kScalarVariable new name: 'param'
-	}.
-
 	visitor
-		parametersIntent: procedure2k
-		from: {
+		parametersIntent: {
 			FASTFortranScalarVariable new
 				name: 'param' ;
 				famixParameter: famixParamF77
