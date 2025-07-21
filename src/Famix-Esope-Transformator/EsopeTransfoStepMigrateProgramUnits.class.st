@@ -1,3 +1,12 @@
+"
+Second actual migration from Esope to FASTFortran2k: migrating all Program Units
+(each porgram unit goes in its own module)
+- gets the FAST model
+- simplification of Fortran77 AST (remove obsolete instruction `FASTEsopeObsoleteCommandRule`)
+- perform transformation (`FASTFortranMainTransformationVisitor` or `FASTFortranProcedureTransformationVisitor`)
+- apply other simplification rules on the generated code (`FASTEsopeSimplifier`)
+- collect all modules needed (`use` statements) to satisfy dependencies
+"
 Class {
 	#name : 'EsopeTransfoStepMigrateProgramUnits',
 	#superclass : 'EsopeTransfoAbstractStep',
@@ -35,36 +44,20 @@ EsopeTransfoStepMigrateProgramUnits >> migrateProgramUnitAST: aFASTProgramUnit [
 ]
 
 { #category : 'running' }
-EsopeTransfoStepMigrateProgramUnits >> migrateProgramUnitFAST2k: aFASTProgramUnit [
-
-	| fastFortran2kProgramUnit |
-
-	FASTEsopeObsoleteCommandRule simplify: aFASTProgramUnit.
-
-	fastFortran2kProgramUnit := self migrateProgramUnitAST: aFASTProgramUnit.
-
-	self simplifyFASTProgramUnit: fastFortran2kProgramUnit.
-
-	self collectUsesNeeded: aFASTProgramUnit.
-
-]
-
-{ #category : 'running' }
 EsopeTransfoStepMigrateProgramUnits >> run [ 
 
+	| fastFortran2kProgramUnit |
 	(self famixModel allWithType: FamixF77ProgramFile)
 		do: [ :famixProgFile |
 			famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
 				famixProgUnit class = FamixF77IncludedFile ifFalse: [
+
 					fastProgramUnit := self fastModelFor: famixProgUnit.
-					self migrateProgramUnitFAST2k: fastProgramUnit
+					FASTEsopeObsoleteCommandRule simplify: fastProgramUnit.
+					fastFortran2kProgramUnit := self migrateProgramUnitAST: fastProgramUnit.
+					FASTEsopeSimplifier simplify: fastFortran2kProgramUnit.
+					self collectUsesNeeded: fastProgramUnit
 				]
 			]
 		]
-]
-
-{ #category : 'running' }
-EsopeTransfoStepMigrateProgramUnits >> simplifyFASTProgramUnit: aFAST2kProgramUnit [
-
-	FASTEsopeSimplifier on: aFAST2kProgramUnit
 ]
