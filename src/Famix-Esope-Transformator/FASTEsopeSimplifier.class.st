@@ -13,14 +13,14 @@ Class {
 }
 
 { #category : 'instance creation' }
-FASTEsopeSimplifier class >> on: aFASTEntity [
+FASTEsopeSimplifier class >> simplify: aFASTEntity [
 
 	^self new
-		on: aFASTEntity
+		simplify: aFASTEntity
 ]
 
 { #category : 'instance creation' }
-FASTEsopeSimplifier >> on: aFASTEntity [
+FASTEsopeSimplifier >> simplify: aFASTEntity [
 
 	| nbComments tmp |
 

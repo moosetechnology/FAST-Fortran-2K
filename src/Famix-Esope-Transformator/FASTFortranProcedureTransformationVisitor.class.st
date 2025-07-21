@@ -48,17 +48,19 @@ FASTFortranProcedureTransformationVisitor >> createModule: famixEntity [
 ]
 
 { #category : 'helpers - parameters' }
-FASTFortranProcedureTransformationVisitor >> declaredMissingParameters: subrtn2k [
+FASTFortranProcedureTransformationVisitor >> declareMissingParameters: subrtn2k [
 	"adding all missing parameterDeclarations + some comments to explain a bit
-	 note that because we use #addFirst:, statement must be added in reverse order"
+	 Because we use #addFirst:, the order of all the statement is inverted"
 
 	parametersToDeclare ifEmpty: [ ^self ].
 
 	subrtn2k statementBlock statements addFirst: (model2k newEmptyStatement).
-	parametersToDeclare do: [ :param |
-		subrtn2k statementBlock statements addFirst: (param generateF2kDeclarationInModel: model2k)
+
+	parametersToDeclare reversed do: [ :param |
+		subrtn2k statementBlock statements
+			addFirst: (param generateF2kDeclarationInModel: model2k)
 	].
-	subrtn2k statementBlock statements addFirst: (model2k newComment content: '[ooo] missing parameter declarations added')
+
 ]
 
 { #category : 'helpers - segment' }
@@ -96,18 +98,14 @@ FASTFortranProcedureTransformationVisitor >> paramIntentFromAccesses: paramF77 [
 ]
 
 { #category : 'helpers - parameters' }
-FASTFortranProcedureTransformationVisitor >> parametersIntent: procedure2k from: parametersF77 [
-	"compute intent for procedure2k's parmeters from uses of Fortran77 parameters
-	 Sets the intent of the F77  parameters.
-	 Note that the order of the 2 parameter lists should match"
+FASTFortranProcedureTransformationVisitor >> parametersIntent: parametersFAST77 [
+	"compute intent for a list of FASTF77Parameters
+	 Sets the intent of the F77 parameters"
 
-	procedure2k parameters
-		with: parametersF77
-		do: [ :param2k :paramF77 |
-			self assert: param2k name = paramF77 name.
-			paramF77 famixParameter
-				propertyNamed: #intent
-				put: (self paramIntentFromAccesses: paramF77 famixParameter).
+	parametersFAST77 do: [ :paramFast77 |
+		paramFast77 famixParameter
+			propertyNamed: #intent
+			put: (self paramIntentFromAccesses: paramFast77 famixParameter).
 	]
 ]
 
@@ -139,18 +137,15 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 		yourself.
 	aFASTFortranFunction transformed2k: function2k.
 
-
 	stack push: function2k.
 
-	function2k parameters: (self visitFASTFortranList: aFASTFortranFunction parameters).
 	parametersToDeclare := aFASTFortranFunction parameters.
-	self parametersIntent: function2k from: parametersToDeclare.
+	function2k parameters: (self visitFASTFortranList: parametersToDeclare).
+	self parametersIntent: parametersToDeclare.
 
 	function2k statementBlock: (aFASTFortranFunction statementBlock accept: self).
 
-	parametersToDeclare do: [ :param |
-		function2k statementBlock statements addFirst: (param generateF2kDeclarationInModel: model2k)
-	].
+	self declareMissingParameters: function2k.
 
 	self handleProgramUnitSegmentDeclaration: aFASTFortranFunction declarations.
 
@@ -175,13 +170,13 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFo
 
 	stack push: subrtn2k.
 
-	subrtn2k parameters: (self visitFASTFortranList: aFASTFortranSubroutine parameters).
 	parametersToDeclare := aFASTFortranSubroutine parameters.
-	self parametersIntent: subrtn2k from: parametersToDeclare.
+	subrtn2k parameters: (self visitFASTFortranList: parametersToDeclare).
+	self parametersIntent: parametersToDeclare.
 
 	subrtn2k statementBlock: (aFASTFortranSubroutine statementBlock accept: self).
 
-	self declaredMissingParameters: subrtn2k.
+	self declareMissingParameters: subrtn2k.
 
 	self handleProgramUnitSegmentDeclaration: aFASTFortranSubroutine declarations.
 

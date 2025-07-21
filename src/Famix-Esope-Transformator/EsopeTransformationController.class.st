@@ -22,21 +22,21 @@ srcFolder := '/tmp/bookstore/src'.
 incFolder := '/tmp/bookstore/src'.
 
 importer := FortranProjectImporter new.
-esopeToFortran2kTranspiler := FamixEsopeToFortran2k new.
+transformationController := EsopeTransformationController new.
 
 famixEsopeModel := importer sourceFolder: srcFolder;  includeFolder: incFolder; import.
-esopeToFortran2kTranspiler famixModel: famixEsopeModel; run
+transformationController famixModel: famixEsopeModel; run
 
 ```
 
 Si vous souhaitez une compilation et éxecution avec [fpm](https://fpm.fortran-lang.org), 
 remplacez la ligne 
 ```st 
-esopeToFortran2kTranspiler famixModel: famixEsopeModel; run
+transformationController famixModel: famixEsopeModel; run
 ```
 dans le script précedent par
 ```st
-esopeToFortran2kTranspiler famixModel: famixEsopeModel; isFpm: true; run
+transformationController famixModel: famixEsopeModel; isFpm: true; run
 ```
 
 "
@@ -73,19 +73,6 @@ EsopeTransformationController >> famixModel: anObject [
 EsopeTransformationController >> fast2kModel [
 
 	^ fast2kModel
-]
-
-{ #category : 'helper' }
-EsopeTransformationController >> fastModelFor: famixProgUnit in: famixProgFile [
-
-	| fastProgramUnit |
-	famixProgUnit bindFASTModel.
-	fastProgramUnit := famixProgUnit fast.
-
-	fastProgramUnit 
-		ifNotNil: [ fastProgramUnit programFile: famixProgFile fast ].
-
-	^fastProgramUnit 
 ]
 
 { #category : 'accessing' }

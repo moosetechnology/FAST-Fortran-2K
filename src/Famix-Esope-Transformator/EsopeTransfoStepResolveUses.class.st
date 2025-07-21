@@ -1,3 +1,7 @@
+"
+Resolving use statement needed from migration steps
+For each user/used pair, add to user the module of used
+"
 Class {
 	#name : 'EsopeTransfoStepResolveUses',
 	#superclass : 'EsopeTransfoAbstractStep',

@@ -1,3 +1,8 @@
+"
+An abstract class for all the steps in the transformation Esope to Fortran2k
+Keeps a pointer on the main `controller` (`EsopeTransformationController`) and offers access methods for various instance variables in this controller.
+There is a `description` on class side to display the progress on a progress bar
+"
 Class {
 	#name : 'EsopeTransfoAbstractStep',
 	#superclass : 'Object',
@@ -37,14 +42,14 @@ EsopeTransfoAbstractStep >> famixModel [
 ]
 
 { #category : 'private' }
-EsopeTransfoAbstractStep >> fastModelFor: famixProgUnit in: famixProgFile [
+EsopeTransfoAbstractStep >> fastModelFor: famixProgUnit [
 
 	| fastProgramUnit |
 	famixProgUnit bindFASTModel.
 	fastProgramUnit := famixProgUnit fast.
 
 	fastProgramUnit 
-		ifNotNil: [ fastProgramUnit programFile: famixProgFile fast ].
+		ifNotNil: [ fastProgramUnit programFile: famixProgUnit programFile fast ].
 
 	^fastProgramUnit 
 ]
