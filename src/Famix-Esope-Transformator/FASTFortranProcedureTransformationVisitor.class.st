@@ -137,18 +137,15 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFort
 		yourself.
 	aFASTFortranFunction transformed2k: function2k.
 
-
 	stack push: function2k.
 
-	function2k parameters: (self visitFASTFortranList: aFASTFortranFunction parameters).
 	parametersToDeclare := aFASTFortranFunction parameters.
+	function2k parameters: (self visitFASTFortranList: parametersToDeclare).
 	self parametersIntent: parametersToDeclare.
 
 	function2k statementBlock: (aFASTFortranFunction statementBlock accept: self).
 
-	parametersToDeclare do: [ :param |
-		function2k statementBlock statements addFirst: (param generateF2kDeclarationInModel: model2k)
-	].
+	self declareMissingParameters: function2k.
 
 	self handleProgramUnitSegmentDeclaration: aFASTFortranFunction declarations.
 
@@ -173,13 +170,13 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFo
 
 	stack push: subrtn2k.
 
-	subrtn2k parameters: (self visitFASTFortranList: aFASTFortranSubroutine parameters).
 	parametersToDeclare := aFASTFortranSubroutine parameters.
+	subrtn2k parameters: (self visitFASTFortranList: parametersToDeclare).
 	self parametersIntent: parametersToDeclare.
 
 	subrtn2k statementBlock: (aFASTFortranSubroutine statementBlock accept: self).
 
-	self declaredMissingParameters: subrtn2k.
+	self declareMissingParameters: subrtn2k.
 
 	self handleProgramUnitSegmentDeclaration: aFASTFortranSubroutine declarations.
 
