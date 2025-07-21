@@ -152,30 +152,35 @@ FASTFortranProcedureTransformationVisitorTest >> testParameterDeclaredOneMissing
 
 	| res famix fast2k fast2ksubrtn |
 	self subroutineEmpty.
-	famix := famixEsopeModel newParameter name: 'forgotten' ; declaredType: (famixEsopeModel newTypeIntrinsic name: #integer).
+	famix := famixEsopeModel newParameter
+		name: 'forgotten' ;
+		declaredType: (famixEsopeModel newTypeIntrinsic name: #integer).
+
 	fastProcedures anyOne
-		addParameter: (FASTFortranScalarVariable new name: 'param' ; famixParameter: famixEsopeModel newParameter) ;
-		addParameter: (FASTFortranScalarVariable new name: 'forgotten' ; famixParameter: famix).
-	fastProcedures anyOne statementBlock addStatement: (self declarationStatement: 'param' type: #integer).
+		addParameter: (FASTFortranScalarVariable new
+			name: 'param' ;
+			famixParameter: famixEsopeModel newParameter) ;
+		addParameter: (FASTFortranScalarVariable new
+			name: 'forgotten' ;
+			famixParameter: famix).
+	fastProcedures anyOne statementBlock
+		addStatement: (self declarationStatement: 'param' type: #integer).
 		
 	res := fastProcedures anyOne accept: visitor.
 
 	self assert: visitor parametersToDeclare size equals: 1.
 
 	fast2ksubrtn := res programUnits anyOne procedures anyOne.
-	self assert: fast2ksubrtn statementBlock statements size equals: 4.
+	self assert: fast2ksubrtn statementBlock statements size equals: 3.
 
 	fast2k := fast2ksubrtn statementBlock statements first.
-	self assert: fast2k class equals: FASTFortran2kComment.
-
-	fast2k := fast2ksubrtn statementBlock statements second.
 	self assert: fast2k modifiers anyOne equals: 'intent(in)'.
 	self assert: fast2k declarators anyOne name equals: 'forgotten'.
 
-	fast2k := fast2ksubrtn statementBlock statements third.
+	fast2k := fast2ksubrtn statementBlock statements second.
 	self assert: fast2k class equals: FASTFortran2kEmptyStatement.
 
-	fast2k := fast2ksubrtn statementBlock statements fourth.
+	fast2k := fast2ksubrtn statementBlock statements third.
 	self assert: fast2k modifiers anyOne equals: 'intent(in)'.
 	self assert: fast2k declarators anyOne name equals: 'param'
 
@@ -197,19 +202,16 @@ FASTFortranProcedureTransformationVisitorTest >> testParameterDeclaredOnePointer
 	self assert: visitor parametersToDeclare size equals: 1.
 
 	fast2ksubrtn := res programUnits anyOne procedures anyOne.
-	self assert: fast2ksubrtn statementBlock statements size equals: 4.
+	self assert: fast2ksubrtn statementBlock statements size equals: 3.
 
 	fast2k := fast2ksubrtn statementBlock statements first.
-	self assert: fast2k class equals: FASTFortran2kComment.
-
-	fast2k := fast2ksubrtn statementBlock statements second.
 	self assert: fast2k modifiers anyOne equals: 'intent(in)'.
 	self assert: fast2k declarators anyOne name equals: 'forgotten'.
 
-	fast2k := fast2ksubrtn statementBlock statements third.
+	fast2k := fast2ksubrtn statementBlock statements second.
 	self assert: fast2k class equals: FASTFortran2kEmptyStatement.
 
-	fast2k := fast2ksubrtn statementBlock statements fourth.
+	fast2k := fast2ksubrtn statementBlock statements third.
 	self assert: fast2k modifiers anyOne equals: 'intent(in)'.
 	self assert: fast2k declarators anyOne name equals: 'param'
 
