@@ -66,13 +66,7 @@ FASTFortranProcedureTransformationVisitor >> ensureModule: famixEntity [
 
 	| moduleName |
 	moduleName := famixEntity  migratedModuleName.
-	^self getModule: moduleName ifAbsentPut: [ self createModule: famixEntity ]
-]
-
-{ #category : 'helpers - segment' }
-FASTFortranProcedureTransformationVisitor >> getModule: modulename ifAbsentPut: aBlock [
-
-	^parentTransformator getModule: modulename ifAbsentPut: aBlock
+	^parentTransformator getModule: moduleName ifAbsentPut: [ self createModule: famixEntity ]
 ]
 
 { #category : 'helpers - parameters' }
@@ -104,14 +98,16 @@ FASTFortranProcedureTransformationVisitor >> paramIntentFromAccesses: paramF77 [
 { #category : 'helpers - parameters' }
 FASTFortranProcedureTransformationVisitor >> parametersIntent: procedure2k from: parametersF77 [
 	"compute intent for procedure2k's parmeters from uses of Fortran77 parameters
-	 returns a list of parameters (F77) and their intent.
+	 Sets the intent of the F77  parameters.
 	 Note that the order of the 2 parameter lists should match"
 
 	procedure2k parameters
 		with: parametersF77
 		do: [ :param2k :paramF77 |
 			self assert: param2k name = paramF77 name.
-			paramF77 famixParameter propertyNamed: #intent put: (self paramIntentFromAccesses: paramF77 famixParameter).
+			paramF77 famixParameter
+				propertyNamed: #intent
+				put: (self paramIntentFromAccesses: paramF77 famixParameter).
 	]
 ]
 

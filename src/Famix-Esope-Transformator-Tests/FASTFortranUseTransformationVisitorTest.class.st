@@ -206,5 +206,5 @@ FASTFortranUseTransformationVisitorTest >> usesNeeded [
 { #category : 'running' }
 FASTFortranUseTransformationVisitorTest >> visitorClass [ 
 
-	^FamixEsopeToFortran2k
+	^EsopeTransformationController
 ]
