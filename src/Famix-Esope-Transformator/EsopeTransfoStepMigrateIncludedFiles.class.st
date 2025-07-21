@@ -1,3 +1,10 @@
+"
+First actual migration from Esope to FASTFortran2k: migrating included files
+- get the FAST model
+- perform transformation (`FASTFortranIncludedFileTransformationVisitor`)
+- get the statements to put in place of the inclusion (typically: variable declarations)
+- register all used type and called procedures (`FASTFortranUseTransformationVisitor`) to generate `use` statements later
+"
 Class {
 	#name : 'EsopeTransfoStepMigrateIncludedFiles',
 	#superclass : 'EsopeTransfoAbstractStep',
@@ -14,6 +21,7 @@ EsopeTransfoStepMigrateIncludedFiles class >> description [
 
 { #category : 'running' }
 EsopeTransfoStepMigrateIncludedFiles >> migrateIncludedFileFAST2k: aFASTIncludedFile [
+	"transformationVisitorClass should be FASTFortranIncludedFileTransformationVisitor"
 
 	| visitor includedStatements |
 
@@ -22,7 +30,9 @@ EsopeTransfoStepMigrateIncludedFiles >> migrateIncludedFileFAST2k: aFASTIncluded
 
 	includedStatements := aFASTIncludedFile accept: visitor.
 
-	self includedFiles at: aFASTIncludedFile programFile filename put: includedStatements.
+	self includedFiles
+		at: aFASTIncludedFile programFile filename
+		put: includedStatements.
 
 	visitor := FASTFortranUseTransformationVisitor new
 		parentTransformator: self;

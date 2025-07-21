@@ -1,3 +1,7 @@
+"
+Last step of transformation Esope to FASTfortran2k, export the models in Fortran-2008
+Done by `FASTFortran2kExporter`
+"
 Class {
 	#name : 'EsopeTransfoStepExportFast2k',
 	#superclass : 'EsopeTransfoAbstractStep',

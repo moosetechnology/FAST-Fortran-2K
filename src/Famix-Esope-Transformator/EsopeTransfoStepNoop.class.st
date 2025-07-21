@@ -1,3 +1,6 @@
+"
+A transformation step that does nothing (usefull for optional steps when they are not required)
+"
 Class {
 	#name : 'EsopeTransfoStepNoop',
 	#superclass : 'EsopeTransfoAbstractStep',

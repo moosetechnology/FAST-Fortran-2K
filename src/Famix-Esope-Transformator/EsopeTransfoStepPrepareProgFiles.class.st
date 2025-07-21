@@ -1,3 +1,6 @@
+"
+Initial step in transformation from Espe to FAST2k where a `FASTFortranProgramFile` is associated to each `FamixF77ProgramFile`
+"
 Class {
 	#name : 'EsopeTransfoStepPrepareProgFiles',
 	#superclass : 'EsopeTransfoAbstractStep',
