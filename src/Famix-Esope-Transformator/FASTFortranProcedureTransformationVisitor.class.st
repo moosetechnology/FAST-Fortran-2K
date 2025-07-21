@@ -66,13 +66,7 @@ FASTFortranProcedureTransformationVisitor >> ensureModule: famixEntity [
 
 	| moduleName |
 	moduleName := famixEntity  migratedModuleName.
-	^self getModule: moduleName ifAbsentPut: [ self createModule: famixEntity ]
-]
-
-{ #category : 'helpers - segment' }
-FASTFortranProcedureTransformationVisitor >> getModule: modulename ifAbsentPut: aBlock [
-
-	^parentTransformator getModule: modulename ifAbsentPut: aBlock
+	^parentTransformator getModule: moduleName ifAbsentPut: [ self createModule: famixEntity ]
 ]
 
 { #category : 'helpers - parameters' }
