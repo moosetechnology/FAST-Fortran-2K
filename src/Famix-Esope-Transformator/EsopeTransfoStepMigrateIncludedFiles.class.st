@@ -36,9 +36,7 @@ EsopeTransfoStepMigrateIncludedFiles >> run [
 
 	(self famixModel allWithType: FamixF77IncludedFile)
 		do: [ :famixIncludedFile || fastPUIncludedFile |
-			fastPUIncludedFile := self
-				fastModelFor: famixIncludedFile
-				in: famixIncludedFile programFile.
+			fastPUIncludedFile := self fastModelFor: famixIncludedFile.
 			self migrateIncludedFileFAST2k: fastPUIncludedFile
 	]
 ]

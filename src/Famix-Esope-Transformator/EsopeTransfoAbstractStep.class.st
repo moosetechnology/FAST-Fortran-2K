@@ -37,14 +37,14 @@ EsopeTransfoAbstractStep >> famixModel [
 ]
 
 { #category : 'private' }
-EsopeTransfoAbstractStep >> fastModelFor: famixProgUnit in: famixProgFile [
+EsopeTransfoAbstractStep >> fastModelFor: famixProgUnit [
 
 	| fastProgramUnit |
 	famixProgUnit bindFASTModel.
 	fastProgramUnit := famixProgUnit fast.
 
 	fastProgramUnit 
-		ifNotNil: [ fastProgramUnit programFile: famixProgFile fast ].
+		ifNotNil: [ fastProgramUnit programFile: famixProgUnit programFile fast ].
 
 	^fastProgramUnit 
 ]

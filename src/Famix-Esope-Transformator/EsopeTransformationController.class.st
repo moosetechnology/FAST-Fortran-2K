@@ -75,19 +75,6 @@ EsopeTransformationController >> fast2kModel [
 	^ fast2kModel
 ]
 
-{ #category : 'helper' }
-EsopeTransformationController >> fastModelFor: famixProgUnit in: famixProgFile [
-
-	| fastProgramUnit |
-	famixProgUnit bindFASTModel.
-	fastProgramUnit := famixProgUnit fast.
-
-	fastProgramUnit 
-		ifNotNil: [ fastProgramUnit programFile: famixProgFile fast ].
-
-	^fastProgramUnit 
-]
-
 { #category : 'accessing' }
 EsopeTransformationController >> getModule: filename ifAbsentPut: aBlock [
 

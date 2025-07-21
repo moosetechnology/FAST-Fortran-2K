@@ -53,12 +53,10 @@ EsopeTransfoStepMigrateProgramUnits >> migrateProgramUnitFAST2k: aFASTProgramUni
 EsopeTransfoStepMigrateProgramUnits >> run [ 
 
 	(self famixModel allWithType: FamixF77ProgramFile)
-		do: [ :famixProgFile || fastProgramUnit |
+		do: [ :famixProgFile |
 			famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
 				famixProgUnit class = FamixF77IncludedFile ifFalse: [
-					fastProgramUnit := self
-						fastModelFor: famixProgUnit
-						in: famixProgUnit programFile.
+					fastProgramUnit := self fastModelFor: famixProgUnit.
 					self migrateProgramUnitFAST2k: fastProgramUnit
 				]
 			]
