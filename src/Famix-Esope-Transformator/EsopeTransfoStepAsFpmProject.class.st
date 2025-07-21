@@ -1,3 +1,8 @@
+"
+A transformation step to organise the exported code for handling with `fpm`
+- organise the file hierarchy
+- generate the configuration file for `fpm`
+"
 Class {
 	#name : 'EsopeTransfoStepAsFpmProject',
 	#superclass : 'EsopeTransfoAbstractStep',
@@ -96,18 +101,6 @@ EsopeTransfoStepAsFpmProject >> getTargetDirFrom: aFileReference [
 EsopeTransfoStepAsFpmProject >> gitUrl [
 
 	^'https://gitlab.inria.fr/framatome/code/f2klib.git'
-]
-
-{ #category : 'searching' }
-EsopeTransfoStepAsFpmProject >> make [
-
-	self baseSourceDir exists ifFalse: [ ^self ].
-
-	self prepareWorkingDirectory.
-	
-	self createFpmToml.
-
-	self moveGeneratedCode
 ]
 
 { #category : 'searching' }
