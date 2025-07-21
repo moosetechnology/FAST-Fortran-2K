@@ -1,5 +1,5 @@
 "
-First actual migration from Esope to FASTFortran2k: migrating included files
+One of the main migration step from Esope to FASTFortran2k: migrating included files
 - get the FAST model
 - perform transformation (`FASTFortranIncludedFileTransformationVisitor`)
 - get the statements to put in place of the inclusion (typically: variable declarations)
