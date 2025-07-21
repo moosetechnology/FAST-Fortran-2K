@@ -48,17 +48,19 @@ FASTFortranProcedureTransformationVisitor >> createModule: famixEntity [
 ]
 
 { #category : 'helpers - parameters' }
-FASTFortranProcedureTransformationVisitor >> declaredMissingParameters: subrtn2k [
+FASTFortranProcedureTransformationVisitor >> declareMissingParameters: subrtn2k [
 	"adding all missing parameterDeclarations + some comments to explain a bit
-	 note that because we use #addFirst:, statement must be added in reverse order"
+	 Because we use #addFirst:, the order of all the statement is inverted"
 
 	parametersToDeclare ifEmpty: [ ^self ].
 
 	subrtn2k statementBlock statements addFirst: (model2k newEmptyStatement).
-	parametersToDeclare do: [ :param |
-		subrtn2k statementBlock statements addFirst: (param generateF2kDeclarationInModel: model2k)
+
+	parametersToDeclare reversed do: [ :param |
+		subrtn2k statementBlock statements
+			addFirst: (param generateF2kDeclarationInModel: model2k)
 	].
-	subrtn2k statementBlock statements addFirst: (model2k newComment content: '[ooo] missing parameter declarations added')
+
 ]
 
 { #category : 'helpers - segment' }
