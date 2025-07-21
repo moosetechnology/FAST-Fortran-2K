@@ -28,7 +28,7 @@ FASTEsopeAbstractTransformationVisitorTest >> functionWithSegment [
 FASTEsopeAbstractTransformationVisitorTest >> newVisitor [
 
 	| transformator |
-	transformator := FamixEsopeToFortran2k new.
+	transformator := EsopeTransformationController new.
 
 	^super newVisitor
 		parentTransformator: transformator ;
