@@ -334,7 +334,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegini: aFASTEsopeSe
 { #category : 'visiting - esope' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
 	"this is treated by FASTFortranSegmentTransformationVisitor"
-	^FASTFortran2kNullEntityStatement new
+	^self model2k newNullEntityStatement
 ]
 
 { #category : 'visiting - esope' }
@@ -394,7 +394,8 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAssignmentStatemen
 	fastFortran2kClass := self assignmentStatementClass: aFASTFortranAssignmentStatement.
 	
 	^((fastFortran2kClass = FASTFortran2kPointerAssignmentStatement)
-		and: [ aFASTFortranAssignmentStatement expression class = FASTFortranIntegerLiteral and: [ aFASTFortranAssignmentStatement expression primitiveValue = '0' ]])
+		and: [ aFASTFortranAssignmentStatement expression class = FASTFortranIntegerLiteral
+			and: [ aFASTFortranAssignmentStatement expression primitiveValue = '0' ]])
 		ifTrue: [
 			(self
 				fortran2k: FASTFortran2kFunctionCallStatement
@@ -423,11 +424,10 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranAsterisk: aFASTFor
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranBinaryExpression: aBinaryExpresionNode [
 
-	^ FASTFortran2kBinaryExpression new
+	^self model2k newBinaryExpression
 		  operator: aBinaryExpresionNode operator;
 		  leftOperand: (aBinaryExpresionNode leftOperand accept: self);
 		  rightOperand: (aBinaryExpresionNode rightOperand accept: self);
-		  mooseModel: self model2k;
 		  yourself
 ]
 
@@ -507,13 +507,15 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranContinueStatement:
 		yourself
 ]
 
-{ #category : 'visiting - statements' }
+{ #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDataGroup: aFASTFortranDataGroup [
 
-	aFASTFortranDataGroup variables with: aFASTFortranDataGroup dataConstants do: [ :var :const |
-		(self findVariableDeclaration: var name in: stack top statements)
-			ifNotNil: [ :declarator | declarator expression: (const accept: self) ]
-	].
+	aFASTFortranDataGroup variables
+		with: aFASTFortranDataGroup dataConstants
+		do: [ :var :const |
+			(self findVariableDeclaration: var name in: stack top statements)
+				ifNotNil: [ :declarator | declarator expression: (const accept: self) ]
+		]
 
 ]
 
@@ -523,7 +525,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranDataStatement: aFA
 	aFASTFortranDataStatement variableGroups do: [ :group |
 		group accept: self ].
 
-	^FASTFortran2kNullEntityStatement new
+	^self model2k newNullEntityStatement
 ]
 
 { #category : 'visiting - statements' }
@@ -551,7 +553,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranExternalStatement:
 
 	externalDeclared add: aFASTFortranExternalStatement name.
 
-	^FASTFortran2kNullEntityStatement new
+	^self model2k newNullEntityStatement
 ]
 
 { #category : 'visiting - expressions' }
@@ -703,7 +705,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIfLogicalStatement
 { #category : 'visiting - statements' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranImplicitStatement: aFASTFortranImplicitStatement [
 
-	^FASTFortran2kNullEntityStatement new
+	^self model2k newNullEntityStatement
 ]
 
 { #category : 'visiting - expressions' }
@@ -777,7 +779,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranParameterStatement
 		]
 	].
 
-	^FASTFortran2kNullEntityStatement new
+	^self model2k newNullEntityStatement
 ]
 
 { #category : 'visiting - statements' }
@@ -808,9 +810,8 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranReadStatement: aFA
 { #category : 'visiting - expressions' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealLiteral: aRealLiteralNode [
 
-	^ FASTFortran2kRealLiteral new
+	^self model2k newRealLiteral
 		  primitiveValue: aRealLiteralNode primitiveValue;
-		  mooseModel: self model2k;
 		  yourself
 ]
 
@@ -855,7 +856,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranSaveStatement: aFA
 			ifNotNil: [ :declarator | declarator parentDeclaration addModifier: #save ]
 	].
 
-	^FASTFortran2kNullEntityStatement new
+	^self model2k newNullEntityStatement
 ]
 
 { #category : 'visiting - expressions' }

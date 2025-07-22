@@ -73,6 +73,12 @@ FASTEsopeAbstractSimplifyingRule >> toggleSimplifiedOn [
 	simplified := true
 ]
 
+{ #category : 'visiting' }
+FASTEsopeAbstractSimplifyingRule >> visitFASTFortran2kEmptyStatement: aFASTFortran2kEmptyStatement [ 
+
+	"nothing to do"
+]
+
 { #category : 'visiting - statements' }
 FASTEsopeAbstractSimplifyingRule >> visitFASTFortran2kIfLogicalStatement: aFASTFortranIfLogicalStatement [
 

@@ -726,7 +726,20 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIfBlockStatement: a
 { #category : 'visiting - statements' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIfLogicalStatement: aFASTFortran2kIfLogicalStatement [
 
-	self visitFASTFortranIfLogicalStatement: aFASTFortran2kIfLogicalStatement
+	| oldIndentLevel |
+	self 
+		indented: 'if' ;
+		space ;
+		outputExpression: [ aFASTFortran2kIfLogicalStatement condition accept: self ] 
+		inParentheses: true ;
+		space.
+
+	oldIndentLevel := self indentLevel.
+	indentLevel := -3.
+
+	aFASTFortran2kIfLogicalStatement statement accept: self.
+
+	indentLevel := oldIndentLevel
 ]
 
 { #category : 'visiting' }
@@ -1431,7 +1444,12 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kVolatileStatement: 
 { #category : 'visiting - statements' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kWriteStatement: aFASTFortran2kWriteStatement [
 
-	self visitFASTFortranWriteStatement: aFASTFortran2kWriteStatement
+	self 
+		indented: 'write' ;
+		visitFASTFortranTWithIOParameters: aFASTFortran2kWriteStatement ;
+		space ;
+		visitFASTFortranTWithArguments: aFASTFortran2kWriteStatement ;
+		newLine
 ]
 
 { #category : 'visiting - statements' }
