@@ -71,14 +71,6 @@ FASTFortran2kAbstractExpression class >> annotation [
 	^ self
 ]
 
-{ #category : '*FAST-Fortran2k-Visitors' }
-FASTFortran2kAbstractExpression >> accept: aVisitor [
-	<generated>
-
-	^ aVisitor visitFASTFortran2kAbstractExpression: self.
-
-]
-
 { #category : 'accessing' }
 FASTFortran2kAbstractExpression >> assignementExpressionOwner [
 	"Relation named: #assignementExpressionOwner type: #FASTFortran2kFunctionStatement opposite: #expression"
