@@ -49,7 +49,7 @@ EsopeTransfoStepAsFpmProject >> createFpmToml [
 				self author .
 				self email .
 				self gitUrl }
-			)
+			) withUnixLineEndings
 		]
 ]
 
