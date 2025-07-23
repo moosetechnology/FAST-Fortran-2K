@@ -26,7 +26,7 @@ FASTFortranProcedureTransformationVisitor >> checkForParameterDeclaration: aFAST
 	^aFASTFortran2kVariableDeclarationStatement 
 ]
 
-{ #category : 'helpers - segment' }
+{ #category : 'helpers' }
 FASTFortranProcedureTransformationVisitor >> createModule: famixEntity [
 
 	| module |
@@ -63,7 +63,7 @@ FASTFortranProcedureTransformationVisitor >> declareMissingParameters: subrtn2k 
 
 ]
 
-{ #category : 'helpers - segment' }
+{ #category : 'helpers' }
 FASTFortranProcedureTransformationVisitor >> ensureModule: famixEntity [
 
 	| moduleName |
