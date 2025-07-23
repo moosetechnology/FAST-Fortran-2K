@@ -71,6 +71,23 @@ FASTFortranProcedureTransformationVisitor >> ensureModule: famixEntity [
 	^parentTransformator getModule: moduleName ifAbsentPut: [ self createModule: famixEntity ]
 ]
 
+{ #category : 'helpers' }
+FASTFortranProcedureTransformationVisitor >> makeProcedure: aFASTFortran2kProcedureClass fromF77: aFASTFortran77Procedure [
+	"In FASTFortran2k, procedures (subroutines and functions) are created whithin their own module"
+
+	| fortran2kProcedure |
+
+	fortran2kProcedure := aFASTFortran2kProcedureClass new
+		mooseModel: self model2k ;
+		name: aFASTFortran77Procedure name ;
+		module: (self ensureModule: aFASTFortran77Procedure famix) ;
+		backTrace: aFASTFortran77Procedure programFile filename ;
+		yourself.
+	aFASTFortran77Procedure transformed2k: fortran2kProcedure.
+
+	^fortran2kProcedure 
+]
+
 { #category : 'helpers - parameters' }
 FASTFortranProcedureTransformationVisitor >> paramIntentFromAccesses: paramF77 [
 	"computing intent from access
@@ -125,64 +142,49 @@ FASTFortranProcedureTransformationVisitor >> visitFASTEsopePointerDeclarator: aF
 { #category : 'visiting - programUnits' }
 FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFortranFunction [
 
-	| function2k module2k |
+	| fortran2kFunction |
 
-	module2k := self ensureModule: aFASTFortranFunction famix.
+	fortran2kFunction := self visitFASTFortranProcedure: aFASTFortranFunction toType: FASTFortran2kFunction.
+	fortran2kFunction declaredType: (aFASTFortranFunction famix declaredType generateF2kInModel: model2k).
 
-	function2k := self model2k newFunction
-		name: aFASTFortranFunction name ;
-		declaredType: (aFASTFortranFunction famix declaredType generateF2kInModel: model2k);
-		module: module2k ;
-		backTrace: aFASTFortranFunction programFile filename ;
-		yourself.
-	aFASTFortranFunction transformed2k: function2k.
+	^fortran2kFunction	module programFile
+]
 
-	stack push: function2k.
+{ #category : 'visiting - programUnits' }
+FASTFortranProcedureTransformationVisitor >> visitFASTFortranProcedure: aFASTFortran77Procedure toType: aFASTFortran2kProcedureClass [
+	"need to
+	 - create a Fortran2k procedure
+	 - compute intents of the parameters
+	 - migrate parameters and statements
+	 - handle parameters that were not explicitly declared
+	 - extra step that I don't understand"
 
-	parametersToDeclare := aFASTFortranFunction parameters.
-	function2k parameters: (self visitFASTFortranList: parametersToDeclare).
+	| fortran2kProcedure |
+
+	fortran2kProcedure := self makeProcedure: aFASTFortran2kProcedureClass fromF77: aFASTFortran77Procedure.
+
+	stack push: fortran2kProcedure.
+
+	parametersToDeclare := aFASTFortran77Procedure parameters.
 	self parametersIntent: parametersToDeclare.
 
-	function2k statementBlock: (aFASTFortranFunction statementBlock accept: self).
+	fortran2kProcedure parameters: (self visitFASTFortranList: parametersToDeclare).
+	fortran2kProcedure statementBlock: (aFASTFortran77Procedure statementBlock accept: self).
 
-	self declareMissingParameters: function2k.
+	self declareMissingParameters: fortran2kProcedure.
 
-	self handleProgramUnitSegmentDeclaration: aFASTFortranFunction declarations.
+	self handleProgramUnitSegmentDeclaration: aFASTFortran77Procedure declarations.
 
 	stack pop.
 
-	^module2k programFile
+	^fortran2kProcedure
 ]
 
 { #category : 'visiting - programUnits' }
 FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFortranSubroutine [
 
-	| subrtn2k module2k |
-
-	module2k := self ensureModule: aFASTFortranSubroutine famix. 
-
-	subrtn2k := self model2k newSubroutine
-		name: aFASTFortranSubroutine name ;
-		module: module2k ;
-		backTrace: aFASTFortranSubroutine programFile filename ;
-		yourself.
-	aFASTFortranSubroutine transformed2k: subrtn2k.
-
-	stack push: subrtn2k.
-
-	parametersToDeclare := aFASTFortranSubroutine parameters.
-	subrtn2k parameters: (self visitFASTFortranList: parametersToDeclare).
-	self parametersIntent: parametersToDeclare.
-
-	subrtn2k statementBlock: (aFASTFortranSubroutine statementBlock accept: self).
-
-	self declareMissingParameters: subrtn2k.
-
-	self handleProgramUnitSegmentDeclaration: aFASTFortranSubroutine declarations.
-
-	stack pop.
-
-	^module2k programFile
+	^(self visitFASTFortranProcedure: aFASTFortranSubroutine toType: FASTFortran2kSubroutine)
+		module programFile
 ]
 
 { #category : 'visiting - statements' }

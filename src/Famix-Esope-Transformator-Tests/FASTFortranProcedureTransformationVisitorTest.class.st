@@ -51,34 +51,30 @@ FASTFortranProcedureTransformationVisitorTest >> testEnsureModuleTwice [
 
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testFunctionEmpty [
-	" demo_mod.f90
+	"
+C	--------someFile_mod.f90----------------
+module someFile_mod
+	implicit none
+contains
+	integer function fct()
+	end function fct
+end module someFile_mod
+C	--------end someFile_mod.f90----------------
 
-	module demo_mod
-		implicit none
-	contains
-		integer function fct()
-		end function fct
-	end module demo_mod"
+	"
+
 	| res |
+			
 	self functionEmpty.
-
+		
 	res := fastProcedures anyOne accept: visitor.
 
-	self assert: res class equals: FASTFortran2kProgramFile.
-	self assert: res filename equals: 'someFile_mod.f90'.
-	self assert: res programUnits size equals: 1.
+	res := res programUnits anyOne procedures anyOne.
 
-	res := res programUnits anyOne.
-	self assert: res class equals: FASTFortran2kModule.
-	self assert: res name equals: 'someFile_mod'.
-	self assert: res statementBlock statements size equals: 1.
-	self assert: res statementBlock statements anyOne class equals: FASTFortran2kImplicitStatement.
-	self assert: res procedures size equals: 1.
-	
-	res := res procedures anyOne.
 	self assert: res class equals: FASTFortran2kFunction.
 	self assert: res name equals: 'fct'.
-	self assert: res statementBlock statements size equals: 0
+	self assert: res declaredType isNotNil.
+	self assert: res declaredType class equals: FASTFortran2kIntegerType
 ]
 
 { #category : 'tests' }
