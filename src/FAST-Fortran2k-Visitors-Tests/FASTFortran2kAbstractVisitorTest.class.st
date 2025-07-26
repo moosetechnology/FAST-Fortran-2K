@@ -314,7 +314,7 @@ FASTFortran2kAbstractVisitorTest >> segmentBoxedBookDefinition [
 				  (FASTFortran2kVariableDeclarationStatement new
 						addDeclarator: (FASTFortran2kVariableDeclarator new name: 'this');
 					   declaredType: (FASTFortran2kUserDefinedType new name: 'book');
-						modifiers: #( pointer private ) ;
+						modifiers: { FASTFortran2kPointerModifier new . FASTFortran2kPrivateModifier new} ;
 						yourself
 					)
 			};

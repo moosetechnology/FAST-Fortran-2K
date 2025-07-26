@@ -71,7 +71,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> asVariableDeclaration [
 
 	(rank > 0)
 		ifTrue: [
-			modifiers := #( pointer ).
+			modifiers := { FASTFortran2kPointerModifier new } .
 			1 to: rank do: [ :i | declarator addDimension: self model newArrayRange ].
 
 			initValue := ( self model newFunctionCall
@@ -152,7 +152,7 @@ FASTFortranDerivedTypeComponentFieldFactory >> createSegmentFieldDeclaration [
 	| stmt |
 	stmt := self asVariableDeclaration.
 	^stmt
-		modifiers: ( stmt modifiers , #( public ) ) ;
+		modifiers: ( stmt modifiers , { FASTFortran2kPublicModifier new } ) ;
 		yourself.
 ]
 

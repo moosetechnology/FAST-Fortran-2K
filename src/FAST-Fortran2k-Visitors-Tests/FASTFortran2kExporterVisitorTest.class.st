@@ -229,7 +229,7 @@ end program demo
 	stmt := FASTFortran2kVariableDeclarationStatement new
 		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
 		declarators: { FASTFortran2kVariableDeclarator new name: 'p' } ;
-		modifiers: #( pointer ) ;
+		modifiers: { FASTFortran2kPointerModifier new } ;
 		yourself.
 
 	self
@@ -355,7 +355,7 @@ FASTFortran2kExporterVisitorTest >> testUseStatementIntrinsicSimple [
 
 	stmt := FASTFortran2kUseStatement new 
 		name: 'module_name'; 
-		modifiers: #( intrinsic );
+		modifiers: { FASTFortran2kIntrinsicModifier new } ;
 		yourself.
 
 	self
@@ -536,7 +536,7 @@ FASTFortran2kExporterVisitorTest >> testVariableDeclarationStatementPointer [
 	stmt := FASTFortran2kVariableDeclarationStatement new
 		declaredType: (FASTFortran2kUserDefinedType new name: 'point_t') ;
 		declarators: { (FASTFortran2kVariableDeclarator new name: 'p1') } ;
-		modifiers: #( pointer ) ;
+		modifiers: { FASTFortran2kPointerModifier new } ;
 		yourself.
 
 	self
@@ -556,7 +556,7 @@ FASTFortran2kExporterVisitorTest >> testVariableDeclarationStatementPointerTwoVa
 			(FASTFortran2kVariableDeclarator new name: 'p1')
 			.
 			(FASTFortran2kVariableDeclarator new name: 'p2') } ;
-		modifiers: #( pointer ) ;
+		modifiers: { FASTFortran2kPointerModifier new } ;
 		yourself.
 
 	self

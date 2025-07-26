@@ -170,14 +170,14 @@ FASTFortranProcedureTransformationVisitorTest >> testParameterDeclaredOneMissing
 	self assert: fast2ksubrtn statementBlock statements size equals: 3.
 
 	fast2k := fast2ksubrtn statementBlock statements first.
-	self assert: fast2k modifiers anyOne equals: 'intent(in)'.
+	self assert: fast2k modifiers anyOne class equals: FASTFortran2kParameterIntent.
 	self assert: fast2k declarators anyOne name equals: 'forgotten'.
 
 	fast2k := fast2ksubrtn statementBlock statements second.
 	self assert: fast2k class equals: FASTFortran2kEmptyStatement.
 
 	fast2k := fast2ksubrtn statementBlock statements third.
-	self assert: fast2k modifiers anyOne equals: 'intent(in)'.
+	self assert: fast2k modifiers anyOne class equals: FASTFortran2kParameterIntent.
 	self assert: fast2k declarators anyOne name equals: 'param'
 
 ]
@@ -201,14 +201,14 @@ FASTFortranProcedureTransformationVisitorTest >> testParameterDeclaredOnePointer
 	self assert: fast2ksubrtn statementBlock statements size equals: 3.
 
 	fast2k := fast2ksubrtn statementBlock statements first.
-	self assert: fast2k modifiers anyOne equals: 'intent(in)'.
+	self assert: fast2k modifiers anyOne class equals: FASTFortran2kParameterIntent.
 	self assert: fast2k declarators anyOne name equals: 'forgotten'.
 
 	fast2k := fast2ksubrtn statementBlock statements second.
 	self assert: fast2k class equals: FASTFortran2kEmptyStatement.
 
 	fast2k := fast2ksubrtn statementBlock statements third.
-	self assert: fast2k modifiers anyOne equals: 'intent(in)'.
+	self assert: fast2k modifiers anyOne class equals: FASTFortran2kParameterIntent.
 	self assert: fast2k declarators anyOne name equals: 'param'
 
 ]
@@ -231,7 +231,7 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersDeclaredNonMissin
 	self assert: fast2k statementBlock statements size equals: 1.
 
 	fast2k := fast2k statementBlock statements first.
-	self assert: fast2k modifiers anyOne equals: 'intent(in)'.
+	self assert: fast2k modifiers anyOne class equals: FASTFortran2kParameterIntent.
 	self assert: fast2k declarators anyOne name equals: 'param'.
 
 ]
@@ -239,69 +239,63 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersDeclaredNonMissin
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromAllRead [
 
-	| famixParamF77 |
+	| famixParamF77 intent |
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new variable: famixParamF77.
 	FamixF77Access new variable: famixParamF77 ; isWrite: false.
 
-	visitor
-		parametersIntent: {
-			FASTFortranScalarVariable new name: 'param' ; famixParameter: famixParamF77
-		}.
+	intent := visitor parameterIntent: famixParamF77.
 
-	self assert: (famixParamF77 propertyNamed: #intent) equals: 'intent(in)'
+	self assert: intent class equals: FASTFortran2kParameterIntent.
+	self assert: intent isIn.
+	self deny: intent isOut.
+
 ]
 
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromAllWrite [
 
-	| famixParamF77 |
+	| famixParamF77 intent |
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new variable: famixParamF77 ; isWrite: true.
 	FamixF77Access new variable: famixParamF77 ; isWrite: true.
 
-	visitor
-		parametersIntent: {
-			FASTFortranScalarVariable new
-				name: 'param' ;
-				famixParameter: famixParamF77
-		}.
+	intent := visitor parameterIntent: famixParamF77.
 
-	self assert: (famixParamF77 propertyNamed: #intent) equals: 'intent(out)'
+	self assert: intent class equals: FASTFortran2kParameterIntent.
+	self deny: intent isIn.
+	self assert: intent isOut.
+
 ]
 
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromNoAccesses [
 
-	| famixParamF77 |
+	| famixParamF77 intent |
 	famixParamF77 := FamixF77Parameter new.
 
-	visitor
-		parametersIntent: {
-			FASTFortranScalarVariable new
-				name: 'param' ;
-				famixParameter: famixParamF77
-		}.
+	intent := visitor parameterIntent: famixParamF77.
 
-	self assert: (famixParamF77 propertyNamed: #intent) equals: 'intent(in)'
+	self assert: intent class equals: FASTFortran2kParameterIntent.
+	self assert: intent isIn.
+	self deny: intent isOut.
+
 ]
 
 { #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromReadAndWrite [
 
-	| famixParamF77 |
+	| famixParamF77 intent |
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new variable: famixParamF77 ; isWrite: false.
 	FamixF77Access new variable: famixParamF77 ; isWrite: true.
 
-	visitor
-		parametersIntent: {
-			FASTFortranScalarVariable new
-				name: 'param' ;
-				famixParameter: famixParamF77
-		}.
+	intent := visitor parameterIntent: famixParamF77.
 
-	self assert: (famixParamF77 propertyNamed: #intent) equals: 'intent(inOut)'
+	self assert: intent class equals: FASTFortran2kParameterIntent.
+	self assert: intent isIn.
+	self assert: intent isOut.
+
 ]
 
 { #category : 'tests' }
@@ -356,9 +350,15 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersPointerDeclaredNo
 	fast2k := res programUnits anyOne procedures anyOne.
 	self assert: fast2k statementBlock statements size equals: 1.
 
-	fast2k := fast2k statementBlock statements first.
+	fast2k := fast2k statementBlock statements anyOne.
 	self assert: fast2k declarators anyOne name equals: 'param'.
-	self assertCollection: fast2k modifiers hasSameElements: #(pointer 'intent(in)')
+
+	self assert: (fast2k modifiers anySatisfy: [ :mod |
+		(mod class = FASTFortran2kParameterIntent) and: [
+		mod isIn and: [ mod isOut not ] ]
+	]).
+
+	self assert: (fast2k modifiers anySatisfy: [ :mod | mod class = FASTFortran2kPointerModifier ])
 
 ]
 

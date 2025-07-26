@@ -18,7 +18,7 @@ FASTFortranDerivedTypeParameterFieldFactory >> createSegcmdFieldDeclaration [
 FASTFortranDerivedTypeParameterFieldFactory >> createSegcmdInFieldDeclaration [
 
 	^self createSegcmdFieldDeclaration 
-		modifiers: #( 'intent(in)' ) ;
+		modifiers: { FASTFortran2kParameterIntent new isIn: true } ;
 		yourself
 ]
 
@@ -26,7 +26,7 @@ FASTFortranDerivedTypeParameterFieldFactory >> createSegcmdInFieldDeclaration [
 FASTFortranDerivedTypeParameterFieldFactory >> createSegcmdInoutFieldDeclaration [
 
 	^self createSegcmdFieldDeclaration
-		modifiers: #( 'intent(inout)' ) ;
+		modifiers: { FASTFortran2kParameterIntent new isIn: true ; isOut: true } ;
 		yourself
 ]
 
@@ -34,7 +34,7 @@ FASTFortranDerivedTypeParameterFieldFactory >> createSegcmdInoutFieldDeclaration
 FASTFortranDerivedTypeParameterFieldFactory >> createSegcmdOutFieldDeclaration [
 
 	^self createSegcmdFieldDeclaration 
-		modifiers: #( 'intent(out)' ) ;
+		modifiers: { FASTFortran2kParameterIntent new isOut: true } ;
 		yourself
 ]
 
@@ -64,7 +64,7 @@ FASTFortranDerivedTypeParameterFieldFactory >> createSegmentFieldDeclaration [
 	declaredType := self model newIntegerType.
 
 	^self model newVariableDeclarationStatement
-		modifiers: #( private) ;
+		modifiers: {  FASTFortran2kPrivateModifier new } ;
 		addDeclarator: (self model newVariableDeclarator 
 			name: name ;
 			expression: declaredType initialValue 

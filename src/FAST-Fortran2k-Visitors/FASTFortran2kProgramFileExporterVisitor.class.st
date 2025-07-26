@@ -818,6 +818,18 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kInternalSubroutine:
 ]
 
 { #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIntrinsicDeclaration: aFASTFortran2kIntrinsicDeclaration [
+
+	self << 'intrinsic'
+]
+
+{ #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIntrinsicModifier: aFASTFortran2kIntrinsicModifier [
+
+	self << 'intrinsic'
+]
+
+{ #category : 'visiting' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIntrinsicStatement: aFASTFortran2kIntrinsicStatement [
 
 	self indented: 'intrinsic '.
@@ -864,7 +876,7 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kModifiers: modifier
 	modifiers ifNotEmpty: [  
 			self << ', '.
 			modifiers 
-				do: [ :modifier | self << modifier ]
+				do: [ :mod | mod accept: self ]
 				separatedBy: [ self << ', ' ]
 	 	].
 ]
@@ -938,6 +950,19 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kPTVariable: aFASTFo
 ]
 
 { #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kParameterIntent: aFASTFortran2kParameterIntent [
+
+	self << (aFASTFortran2kParameterIntent isOut
+		ifFalse: [ 'intent(in)' ]
+		ifTrue: [
+			aFASTFortran2kParameterIntent isIn
+				ifTrue: [ 'intent(inOut)' ]
+				ifFalse: [ 'intent(out)' ]
+		])
+
+]
+
+{ #category : 'visiting' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kParameterStatement: aFASTFortran2kParameterStatement [
 
 	self visitFASTFortranParameterStatement: aFASTFortran2kParameterStatement 
@@ -960,6 +985,12 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kPointerAssignmentSt
 	self newLine
 		
 	
+]
+
+{ #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kPointerModifier: aFASTFortran2kPointerModifier [
+
+	self << 'pointer'
 ]
 
 { #category : 'visiting' }
@@ -987,6 +1018,12 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kPrintStatement: aFA
 	
 	self visitNodeListSeparatedByCommas: aFASTFortran2kPrintStatement arguments.
 	self newLine
+]
+
+{ #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kPrivateModifier: aFASTFortran2kPrivateModifier [
+
+	self << 'private'
 ]
 
 { #category : 'visiting' }
@@ -1033,6 +1070,12 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kProgramMain: aFASTF
 { #category : 'visiting' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kProgramUnit: aFASTFortran2kProgramUnit [
 
+]
+
+{ #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kPublicModifier: aFASTFortran2kPublicModifier [
+
+	self << 'public'
 ]
 
 { #category : 'visiting' }

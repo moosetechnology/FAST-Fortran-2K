@@ -116,7 +116,8 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegcmdInParameterDeclaration
 
 	self assert: fast2k class equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType.
-	self assertCollection: fast2k modifiers hasSameElements: #( 'intent(in)' ).
+	self assert: fast2k modifiers size equals: 1.
+	self assert: fast2k modifiers anyOne class equals: FASTFortran2kParameterIntent.
 	self assert: fast2k declarators anyOne name equals: 'x'.
 ]
 
@@ -134,7 +135,11 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegcmdInoutThisFieldDeclarat
 	fast2k := factory createSegcmdInoutFieldDeclaration.
 
 	self assert: fast2k class equals: FASTFortran2kVariableDeclarationStatement.
-	self assertCollection: fast2k modifiers hasSameElements: #( pointer 'intent(inout)' ).
+	self assert: fast2k modifiers size equals: 2.
+	self assert: (fast2k modifiers anySatisfy: [ :mod | mod class = FASTFortran2kPointerModifier ]).
+	self assert: (fast2k modifiers anySatisfy: [ :mod |
+		(mod class = FASTFortran2kParameterIntent)
+		and: [ mod isIn ] ]).
 
 	self assert: fast2k declarators size equals: 1.
 	self assert: fast2k declarators anyOne name equals: 'this'.
@@ -235,7 +240,7 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegmentComponentDeclaration 
 	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType.
 
 	self assert: fast2k modifiers size equals: 1.
-	self assert: fast2k modifiers anyOne equals: 'public'.
+	self assert: fast2k modifiers anyOne class equals: FASTFortran2kPublicModifier.
 
 	self assert: fast2k declarators size equals: 1.
 	self assert: fast2k declarators anyOne name equals: 'x'.
@@ -261,8 +266,8 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegmentComponentDeclarationW
 	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType.
 	
 	self assert: fast2k modifiers size equals: 2.
-	self assert: fast2k modifiers first equals: 'pointer'.
-	self assert: fast2k modifiers second equals: 'public'.
+	self assert: (fast2k modifiers anySatisfy: [ :mod | mod class = FASTFortran2kPointerModifier ]).
+	self assert: (fast2k modifiers anySatisfy: [ :mod | mod class = FASTFortran2kPublicModifier ]).
 
 	self assert: fast2k declarators size equals: 1.
 	self assert: fast2k declarators anyOne name equals: 'x'.
@@ -283,7 +288,7 @@ FASTFortranDerivedTypeFieldFactoryTest >> testCreateSegmentParameterDeclaration 
 	self assert: fast2k declarators anyOne name equals: 'x'.
 
 	self assert: fast2k modifiers size equals: 1.
-	self assert: fast2k modifiers anyOne equals: 'private'.
+	self assert: fast2k modifiers anyOne class equals: FASTFortran2kPrivateModifier.
 
 	self assert: fast2k declaredType class equals: FASTFortran2kIntegerType
 ]

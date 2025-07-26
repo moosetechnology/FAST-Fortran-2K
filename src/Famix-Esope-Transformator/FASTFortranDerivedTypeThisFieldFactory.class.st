@@ -18,7 +18,7 @@ FASTFortranDerivedTypeThisFieldFactory >> createSegcmdFieldDeclaration [
 FASTFortranDerivedTypeThisFieldFactory >> createSegcmdInFieldDeclaration [
 
 	^self createSegcmdFieldDeclaration
-		modifiers: #( pointer 'intent(in)' ) ;
+		modifiers: { FASTFortran2kPointerModifier new . FASTFortran2kParameterIntent new isIn: true } ;
 		yourself
 ]
 
@@ -26,7 +26,7 @@ FASTFortranDerivedTypeThisFieldFactory >> createSegcmdInFieldDeclaration [
 FASTFortranDerivedTypeThisFieldFactory >> createSegcmdInoutFieldDeclaration [
 
 	^self createSegcmdFieldDeclaration
-		modifiers: #( pointer 'intent(inout)' ) ;
+		modifiers: { FASTFortran2kPointerModifier new . FASTFortran2kParameterIntent new isIn: true ; isOut: true } ;
 		yourself
 ]
 
