@@ -293,7 +293,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopePointerDeclarator: a
 			yourself
 		) ;
 		addDeclarator: (aFASTEsopePointerDeclarator variableDeclarator accept: self) ;
-		modifiers: #( pointer ) ;
+		modifiers: { FASTFortran2kPointerModifier new } ;
 		yourself.
 
 	^esopeDeclarator

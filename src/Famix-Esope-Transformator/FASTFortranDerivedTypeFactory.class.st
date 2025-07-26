@@ -903,12 +903,12 @@ FASTFortranDerivedTypeFactory >> makeProcedureSegloc [
 
 	segloc addStatement: (model newUseOnlyStatement 
 		name: 'iso_fortran_env';
-		modifiers: #( intrinsic );
+		modifiers: { FASTFortran2kIntrinsicModifier new } ;
 		useNoRenames: { model newUseNoRename name: 'int64' }
 	).
 	segloc addStatement: (model newUseOnlyStatement 
 		name: 'iso_c_binding';
-		modifiers: #( intrinsic );
+		modifiers: { FASTFortran2kIntrinsicModifier new } ;
 		useNoRenames: { model newUseNoRename name: 'c_loc' }
 	).
 	segloc addStatement: (thisParameter createSegcmdInFieldDeclaration).
