@@ -89,41 +89,23 @@ FASTFortranProcedureTransformationVisitor >> makeProcedure: aFASTFortran2kProced
 ]
 
 { #category : 'helpers - parameters' }
-FASTFortranProcedureTransformationVisitor >> paramIntentFromAccesses: paramF77 [
+FASTFortranProcedureTransformationVisitor >> parameterIntent: paramF77 [
 	"computing intent from access
 	  - take into account function/subroutine invocations where the parameter is used"
 
-	| hasIn hasOut |
+	| intent |
 
-	(paramF77 isArgumentOfInvocation: #inistr) ifTrue: [ ^ 'intent(out)' ].
-	(paramF77 isArgumentOfInvocation: #ajpnt) ifTrue: [ ^ 'intent(inOut)' ].
+	intent := FASTFortran2kParameterIntent new.
 
-	hasIn := paramF77 incomingAccesses anySatisfy: [ :acc | acc isWrite not].
-	hasOut := paramF77 incomingAccesses anySatisfy: #isWrite.
+	(paramF77 isArgumentOfInvocation: #inistr) ifTrue: [ ^ intent isOut: true ; yourself ].
+	(paramF77 isArgumentOfInvocation: #ajpnt) ifTrue: [ ^ intent isIn: true ; isOut: true ; yourself ].
 
-	^hasIn
-		ifTrue: [
-			hasOut
-				ifTrue: [ 'intent(inOut)' ]
-				ifFalse: [ 'intent(in)' ]
-		]
-		ifFalse: [
-			hasOut
-				ifTrue: [ 'intent(out)' ]
-				ifFalse: [ 'intent(in)' ]
-		]
-]
+	paramF77 incomingAccesses ifEmpty:  [ ^ intent isIn: true ; yourself ].
 
-{ #category : 'helpers - parameters' }
-FASTFortranProcedureTransformationVisitor >> parametersIntent: parametersFAST77 [
-	"compute intent for a list of FASTF77Parameters
-	 Sets the intent of the F77 parameters"
+	intent isIn: (paramF77 incomingAccesses anySatisfy: [ :acc | acc isWrite not]).
+	intent isOut: (paramF77 incomingAccesses anySatisfy: #isWrite).
 
-	parametersFAST77 do: [ :paramFast77 |
-		paramFast77 famixParameter
-			propertyNamed: #intent
-			put: (self paramIntentFromAccesses: paramFast77 famixParameter).
-	]
+	^intent
 ]
 
 { #category : 'accessing - private tests' }
@@ -141,50 +123,65 @@ FASTFortranProcedureTransformationVisitor >> visitFASTEsopePointerDeclarator: aF
 
 { #category : 'visiting - programUnits' }
 FASTFortranProcedureTransformationVisitor >> visitFASTFortranFunction: aFASTFortranFunction [
+	"create a Fortran2k subroutine, migrate the code, return the programFile"
 
-	| fortran2kFunction |
+	stack push: (self makeProcedure: FASTFortran2kFunction fromF77: aFASTFortranFunction).
 
-	fortran2kFunction := self visitFASTFortranProcedure: aFASTFortranFunction toType: FASTFortran2kFunction.
-	fortran2kFunction declaredType: (aFASTFortranFunction famix declaredType generateF2kInModel: model2k).
+	self visitFASTFortranProcedure: aFASTFortranFunction.
+	stack top declaredType: (aFASTFortranFunction famix declaredType generateF2kInModel: model2k).
 
-	^fortran2kFunction	module programFile
+	^stack pop module programFile
+
 ]
 
 { #category : 'visiting - programUnits' }
-FASTFortranProcedureTransformationVisitor >> visitFASTFortranProcedure: aFASTFortran77Procedure toType: aFASTFortran2kProcedureClass [
-	"need to
-	 - create a Fortran2k procedure
-	 - compute intents of the parameters
-	 - migrate parameters and statements
-	 - handle parameters that were not explicitly declared
-	 - extra step that I don't understand"
+FASTFortranProcedureTransformationVisitor >> visitFASTFortranProcedure: aFASTFortran77Procedure [
+	"- migrate parameters
+	 - migrate procedure's body
+	 - add declarations for parameters that were not explicitly declared
+	 - don't know what the last step does"
 
 	| fortran2kProcedure |
+	
+	fortran2kProcedure := stack top.
 
-	fortran2kProcedure := self makeProcedure: aFASTFortran2kProcedureClass fromF77: aFASTFortran77Procedure.
+	self visitFASTFortranTWithParameters: aFASTFortran77Procedure.
 
-	stack push: fortran2kProcedure.
-
-	parametersToDeclare := aFASTFortran77Procedure parameters.
-	self parametersIntent: parametersToDeclare.
-
-	fortran2kProcedure parameters: (self visitFASTFortranList: parametersToDeclare).
 	fortran2kProcedure statementBlock: (aFASTFortran77Procedure statementBlock accept: self).
 
 	self declareMissingParameters: fortran2kProcedure.
 
 	self handleProgramUnitSegmentDeclaration: aFASTFortran77Procedure declarations.
 
-	stack pop.
-
 	^fortran2kProcedure
 ]
 
 { #category : 'visiting - programUnits' }
 FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFortranSubroutine [
+	"create a Fortran2k subroutine, migrate the code, return the programFile"
 
-	^(self visitFASTFortranProcedure: aFASTFortranSubroutine toType: FASTFortran2kSubroutine)
-		module programFile
+	stack push: (self makeProcedure: FASTFortran2kSubroutine fromF77: aFASTFortranSubroutine).
+
+	self visitFASTFortranProcedure: aFASTFortranSubroutine.
+	
+	^stack pop module programFile
+]
+
+{ #category : 'visiting - programUnits' }
+FASTFortranProcedureTransformationVisitor >> visitFASTFortranTWithParameters: aFASTFortran77Procedure [
+	"compute 'intent' for each parameter then migrate all of them
+	Note: need to keep all paramters in instance variable #parametersToDeclare to know, after statements
+	 migration, which parameters were not explicitly declared"
+
+	parametersToDeclare := aFASTFortran77Procedure parameters.
+
+	parametersToDeclare do: [ :paramFast77 |
+		paramFast77 famixParameter
+			propertyNamed: #intent
+			put: (self parameterIntent: paramFast77 famixParameter).
+	].
+
+	self stack top parameters: (self visitFASTFortranList: parametersToDeclare).
 ]
 
 { #category : 'visiting - statements' }
