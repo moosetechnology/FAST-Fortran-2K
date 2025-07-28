@@ -299,6 +299,30 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromReadAnd
 ]
 
 { #category : 'tests' }
+FASTFortranProcedureTransformationVisitorTest >> testParametersIntentInSpecialInvocation [
+
+	| famixParamF77 intent callStatement |
+	famixParamF77 := FamixF77Parameter new name: 'param'.
+	callStatement := FASTFortranCallStatement new
+		name: 'ajpnt' ;
+		famix: (FamixF77Invocation new).
+	callStatement addArgument: (FASTFortranScalarVariable new
+		name: 'param' ;
+		famixParameter: famixParamF77).
+
+	FamixF77PUSubroutine new
+		addParameter: famixParamF77 ;
+		addOutgoingInvocation: callStatement famix.
+
+	intent := visitor parameterIntent: famixParamF77.
+
+	self assert: intent class equals: FASTFortran2kParameterIntent.
+	self deny: intent isIn.
+	self assert: intent isOut.
+
+]
+
+{ #category : 'tests' }
 FASTFortranProcedureTransformationVisitorTest >> testParametersIntentMissedDeclaration [
 
 	| famixParamF77 res fast |
