@@ -17,9 +17,12 @@ Class {
 { #category : 'running' }
 Fortran2kAbstractInvocationArgumentRule >> argument: fastArgument matchesParameter: aFamixF77Parameter [
 
+	"Note: famix entity is not always stored correctly (ie. in #famixParameter) apparently"
+
 	fastArgument isVariableEntity ifFalse: [ ^false ].
 	fastArgument isFieldAccess ifTrue: [ ^false ].
-	^fastArgument famixParameter = aFamixF77Parameter
+	(fastArgument famixParameter = aFamixF77Parameter) ifTrue: [ ^true ].
+	^fastArgument famixVariable = aFamixF77Parameter
 ]
 
 { #category : 'running' }
