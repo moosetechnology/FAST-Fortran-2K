@@ -93,7 +93,7 @@ FASTFortranProcedureTransformationVisitor >> parameterIntent: paramF77 [
 	"computing intent for a parameter.
 	 There are various possible rules that may apply"
 
-	Fortran2kIntentAbstractRule checkAllRulesOn: paramF77.
+	Fortran2kIntentAbstractRule checkAllRulesFor: paramF77.
 
 	^paramF77 propertyNamed: #intent
 ]

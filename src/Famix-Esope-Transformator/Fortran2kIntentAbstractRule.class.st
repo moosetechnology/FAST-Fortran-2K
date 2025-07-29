@@ -20,7 +20,7 @@ Fortran2kIntentAbstractRule class >> check: aFamixF77Parameter [
 ]
 
 { #category : 'testing' }
-Fortran2kIntentAbstractRule class >> checkAllRulesOn: aFamixF77Parameter [
+Fortran2kIntentAbstractRule class >> checkAllRulesFor: aFamixF77Parameter [
 
 	self withAllSubclassesDo: [ :rule |
 		rule isAbstract ifFalse: [ rule check: aFamixF77Parameter ]
