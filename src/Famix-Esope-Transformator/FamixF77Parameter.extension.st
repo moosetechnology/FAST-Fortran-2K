@@ -7,9 +7,9 @@ FamixF77Parameter >> isArgumentOfInvocation: aName [
 
 	^(self parentBehaviouralEntity outgoingInvocations collect: #fast) 
 		anySatisfy: [ :fastInvoc |
-			(fastInvoc name asLowercase = aName asLowercase)
+			(fastInvoc name sameAs: aName)
 				and: [ fastInvoc arguments notEmpty 
-				and: [ fastInvoc arguments first name sameAs: self name asLowercase ] 
+				and: [ fastInvoc arguments first name sameAs: self name ] 
 			]
 		]
 ]

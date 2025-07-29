@@ -277,7 +277,7 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromNoAcces
 	intent := visitor parameterIntent: famixParamF77.
 
 	self assert: intent class equals: FASTFortran2kParameterIntent.
-	self assert: intent isIn.
+	self deny: intent isIn.
 	self deny: intent isOut.
 
 ]
@@ -289,6 +289,30 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersIntentFromReadAnd
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new variable: famixParamF77 ; isWrite: false.
 	FamixF77Access new variable: famixParamF77 ; isWrite: true.
+
+	intent := visitor parameterIntent: famixParamF77.
+
+	self assert: intent class equals: FASTFortran2kParameterIntent.
+	self assert: intent isIn.
+	self assert: intent isOut.
+
+]
+
+{ #category : 'tests' }
+FASTFortranProcedureTransformationVisitorTest >> testParametersIntentInSpecialInvocation [
+
+	| famixParamF77 intent callStatement |
+	famixParamF77 := FamixF77Parameter new name: 'param'.
+	callStatement := FASTFortranCallStatement new
+		name: 'ajpnt' ;
+		famix: (FamixF77Invocation new).
+	callStatement addArgument: (FASTFortranScalarVariable new
+		name: 'param' ;
+		famixParameter: famixParamF77).
+
+	FamixF77PUSubroutine new
+		addParameter: famixParamF77 ;
+		addOutgoingInvocation: callStatement famix.
 
 	intent := visitor parameterIntent: famixParamF77.
 
@@ -325,7 +349,7 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersPointerDeclaredNo
 	famixParamF77 := famixEsopeModel newParameter
 		name: 'param' ; 
 		declaredType: (famixEsopeModel newSegment name: #seg) ;
-		propertyNamed: #intent put: 'intent(in)' ;
+		propertyNamed: #intent put: (FASTFortran2kParameterIntent new isIn: true) ;
 		yourself.
 	fastProcedures anyOne
 		addParameter: (FASTFortranScalarVariable new 

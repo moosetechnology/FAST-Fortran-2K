@@ -158,6 +158,70 @@ FASTFortran2kExporterVisitorTest >> testLogicalIfStatementWithWrite [
 ]
 
 { #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testModifierIntrinsic [
+
+	self
+		assertExport: FASTFortran2kIntrinsicModifier new
+		equals: 'intrinsic'.
+]
+
+{ #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testModifierParameterIntentDefault [
+
+	self
+		assertExport: (FASTFortran2kParameterIntent new)
+		equals: 'intent(in)'.
+]
+
+{ #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testModifierParameterIntentIn [
+
+	self
+		assertExport: (FASTFortran2kParameterIntent new isIn: true)
+		equals: 'intent(in)'.
+]
+
+{ #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testModifierParameterIntentInOut [
+
+	self
+		assertExport: (FASTFortran2kParameterIntent new isIn: true ; isOut: true)
+		equals: 'intent(inOut)'.
+]
+
+{ #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testModifierParameterIntentOut [
+
+	self
+		assertExport: (FASTFortran2kParameterIntent new isOut: true)
+		equals: 'intent(out)'.
+]
+
+{ #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testModifierPointer [
+
+	self
+		assertExport: FASTFortran2kPointerModifier new
+		equals: 'pointer'.
+]
+
+{ #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testModifierPrivate [
+
+	self
+		assertExport: FASTFortran2kPrivateModifier new
+		equals: 'private'.
+]
+
+{ #category : 'testing - type-definitions' }
+FASTFortran2kExporterVisitorTest >> testModifierPublic [
+
+	self
+		assertExport: FASTFortran2kPublicModifier new
+		equals: 'public'.
+]
+
+{ #category : 'testing - type-definitions' }
 FASTFortran2kExporterVisitorTest >> testOpenStatement [
 	| stmt |
 	stmt := FASTFortran2kOpenStatement new
