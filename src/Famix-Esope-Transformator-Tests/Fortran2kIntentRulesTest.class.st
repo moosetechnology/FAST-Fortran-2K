@@ -245,11 +245,13 @@ Fortran2kIntentRulesTest >> testParametersIntentNotAllrules [
 
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationInoutRule [
+	"Note: famixParamF77 needs to be the first argument of the invocation"
 
 	| intent |
 
 	self buildModel.
 	famixInvocation fast name: 'ajpnt'.
+	famixInvocation fast arguments remove: (famixInvocation fast arguments first).
 
 	self computeIntent: famixParamF77.
 
@@ -264,12 +266,14 @@ Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationInoutRule [
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationNotOverriding [
 	"An intent value already set is not overriden by the Fortran2kSpecialInvocationArgumentRule
-	 (only meaningfull for Fortran2kSpecialInvocationOutArgumentRule)"
+	 (only meaningfull for Fortran2kSpecialInvocationOutArgumentRule)
+	Note: famixParamF77 needs to be the first argument of the invocation"
 
 	| intent |
 
 	self buildModel.
 	famixInvocation fast name: 'inistr'.
+	famixInvocation fast arguments remove: (famixInvocation fast arguments first).
 	famixParamF77 propertyNamed: #intent put: (FASTFortran2kParameterIntent new isIn: true).
 
 	self computeIntent: famixParamF77.
@@ -284,11 +288,13 @@ Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationNotOverriding [
 
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationOutRule [
+	"Note: famixParamF77 needs to be the first argument of the invocation"
 
 	|  intent |
 
 	self buildModel.
 	famixInvocation fast name: 'inistr'.
+	famixInvocation fast arguments remove: (famixInvocation fast arguments first).
 
 	self computeIntent: famixParamF77.
 
@@ -306,6 +312,25 @@ Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationRuleNot [
 	|  intent |
 
 	self buildModel.
+	self computeIntent: famixParamF77.
+
+	intent := famixParamF77 propertyNamed: #intent.
+ 
+	self deny: intent isNil.
+	self deny: intent isIn.
+	self deny: intent isOut.
+
+]
+
+{ #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationSecondArgument [
+	"Special invocation are only valid if famixParamF77 is the 1st argument of the invocation"
+
+	| intent |
+
+	self buildModel.
+	famixInvocation fast name: 'ajpnt'.
+
 	self computeIntent: famixParamF77.
 
 	intent := famixParamF77 propertyNamed: #intent.

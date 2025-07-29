@@ -17,7 +17,8 @@ Fortran2kSpecialInvocationArgumentRule >> fastInvocationsWithArgument: aFamixF77
 
 	^(super fastInvocationsWithArgument: aFamixF77Parameter)
 		select: [ :fastInvoc |
-			self class invocationsOfInterest anySatisfy: [ :specialName |
-				specialName sameAs: fastInvoc name ]
+			(self class invocationsOfInterest anySatisfy: [ :specialName |
+				specialName sameAs: fastInvoc name ])
+			and: [ (self argumentIndex: aFamixF77Parameter in: fastInvoc) = 1 ]
 		]
 ]

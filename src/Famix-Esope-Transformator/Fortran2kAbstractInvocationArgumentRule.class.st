@@ -23,6 +23,17 @@ Fortran2kAbstractInvocationArgumentRule >> argument: fastArgument matchesParamet
 ]
 
 { #category : 'running' }
+Fortran2kAbstractInvocationArgumentRule >> argumentIndex: aFamixF77Parameter in: fastInvoc [
+
+	fastInvoc arguments withIndexDo: [ :fastArgument :index |
+		(self argument: fastArgument matchesParameter: aFamixF77Parameter)
+			ifTrue: [ ^index ]
+	].
+
+	Error signal: 'did not find argument index'
+]
+
+{ #category : 'running' }
 Fortran2kAbstractInvocationArgumentRule >> check: aFamixF77Parameter [
 
 	(self fastInvocationsWithArgument: aFamixF77Parameter) 

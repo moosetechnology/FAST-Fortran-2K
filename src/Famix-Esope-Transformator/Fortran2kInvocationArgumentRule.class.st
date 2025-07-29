@@ -7,17 +7,6 @@ Class {
 }
 
 { #category : 'running' }
-Fortran2kInvocationArgumentRule >> argumentIndex: aFamixF77Parameter in: fastInvoc [
-
-	fastInvoc arguments withIndexDo: [ :fastArgument :index |
-		(self argument: fastArgument matchesParameter: aFamixF77Parameter)
-			ifTrue: [ ^index ]
-	].
-
-	Error signal: 'did not find argument index'
-]
-
-{ #category : 'running' }
 Fortran2kInvocationArgumentRule >> famixProcedureFor: fastInvoc [
 	"there should be only one FamixF77Procedure in the invocation"
 
