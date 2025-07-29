@@ -1,3 +1,9 @@
+"
+Guess the intent of a parameter from its accesses
+- If the first access is in writing -> intent(out)
+- If there is a read access -> intent(in)
+- If there is a write access -> intent(out) or intent(inOut)
+"
 Class {
 	#name : 'Fortran2kAccessRule',
 	#superclass : 'Fortran2kIntentAbstractRule',
@@ -5,6 +11,29 @@ Class {
 	#package : 'Famix-Esope-Transformator',
 	#tag : 'Visitors'
 }
+
+{ #category : 'running' }
+Fortran2kAccessRule >> check: aFamixF77Parameter [
+
+	| intent previousValue |
+
+	intent := self getIntent: aFamixF77Parameter.
+
+	(self firstAccess: aFamixF77Parameter)
+		ifNotNil: [ :firstAccess |
+			firstAccess isWrite
+				ifTrue: [
+					intent isIn: false ; isOut: true.
+					^self
+				]
+		].
+
+	previousValue := aFamixF77Parameter incomingAccesses anySatisfy: [ :acc | acc isWrite not].
+	intent isIn: (intent isIn or: [ previousValue ]).
+	previousValue := aFamixF77Parameter incomingAccesses anySatisfy: #isWrite.
+	intent isOut: (intent isOut or: [ previousValue ]).
+
+]
 
 { #category : 'accessing' }
 Fortran2kAccessRule >> firstAccess: aFamixF77Variable [
@@ -23,22 +52,4 @@ Fortran2kAccessRule >> firstAccess: aFamixF77Variable [
 			ifTrue: [ min ] ifFalse: [ each ]
 		].
 
-]
-
-{ #category : 'instance creation' }
-Fortran2kAccessRule >> on: aFamixF77Parameter [
-
-	| intent |
-	intent := super on: aFamixF77Parameter.
-
-	(self firstAccess: aFamixF77Parameter)
-		ifNotNil: [ :firstAccess |
-			firstAccess isWrite
-				ifTrue: [ ^intent isIn: false ; isOut: true ; yourself ]
-		].
-
-	intent isIn: (aFamixF77Parameter incomingAccesses anySatisfy: [ :acc | acc isWrite not]).
-	intent isOut: (aFamixF77Parameter incomingAccesses anySatisfy: #isWrite).
-
-	^intent
 ]

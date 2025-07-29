@@ -37,6 +37,12 @@ FASTFortran2kParameterIntent >> isIn: anObject [
 ]
 
 { #category : 'accessing' }
+FASTFortran2kParameterIntent >> isInOut [
+
+	^isIn and: [ isOut ]
+]
+
+{ #category : 'accessing' }
 FASTFortran2kParameterIntent >> isOut [
 
 	^ isOut

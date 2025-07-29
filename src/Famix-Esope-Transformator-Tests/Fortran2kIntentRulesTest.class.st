@@ -1,21 +1,64 @@
 Class {
 	#name : 'Fortran2kIntentRulesTest',
 	#superclass : 'TestCase',
+	#instVars : [
+		'famixParamF77',
+		'famixInvocation',
+		'secondaryFamixRtn'
+	],
 	#category : 'Famix-Esope-Transformator-Tests-Visitors',
 	#package : 'Famix-Esope-Transformator-Tests',
 	#tag : 'Visitors'
 }
 
 { #category : 'running' }
+Fortran2kIntentRulesTest >> buildModel [
+
+	"model: primaryFamixRtn with one parameter passed as 2nd parameter to secondaryFamixRtn"
+
+	| primaryFamixRtn secondaryFamixParameter callStatement |
+
+	primaryFamixRtn := FamixF77PUSubroutine new.
+	secondaryFamixRtn := FamixF77PUSubroutine new.
+
+	famixParamF77 := FamixF77Parameter new name: 'param'.
+	primaryFamixRtn addParameter: famixParamF77.
+
+	secondaryFamixParameter := FamixF77Parameter new
+		name: 'secondaryParam1'.
+	secondaryFamixParameter propertyNamed: #intent put: (FASTFortran2kParameterIntent new).
+	secondaryFamixRtn addParameter: secondaryFamixParameter.
+
+	secondaryFamixParameter := FamixF77Parameter new
+		name: 'secondaryParam2'.
+	secondaryFamixParameter propertyNamed: #intent put: (FASTFortran2kParameterIntent new).
+	secondaryFamixRtn addParameter: secondaryFamixParameter.
+
+	famixInvocation := FamixF77Invocation new.
+	famixInvocation candidates: { secondaryFamixRtn }.
+	primaryFamixRtn addOutgoingInvocation: famixInvocation.
+
+	callStatement := FASTFortranCallStatement new
+		name: 'secondaryRoutine'.
+	callStatement addArgument: (FASTFortranIntegerLiteral new).
+	callStatement addArgument: (FASTFortranScalarVariable new
+		name: 'param' ;
+		famixParameter: famixParamF77).
+	callStatement famix: famixInvocation 
+
+]
+
+{ #category : 'running' }
 Fortran2kIntentRulesTest >> computeIntent: famixParamF77 [
 
-	Fortran2kIntentAbstractRule checkAllRulesOn: famixParamF77 
+	Fortran2kIntentAbstractRule checkAllRulesFor: famixParamF77 
 ]
 
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentFirstIsWrite [
 
-	| famixParamF77 intent |
+	| intent |
+
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new
 		variable: famixParamF77 ;
@@ -37,9 +80,29 @@ Fortran2kIntentRulesTest >> testParametersIntentFirstIsWrite [
 ]
 
 { #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentFromAccessNotOverriding [
+	"An intent value already set is not overriden by the Fortran2kAccessRule"
+
+	| intent |
+
+	famixParamF77 := FamixF77Parameter new.
+	famixParamF77 propertyNamed: #intent put: (FASTFortran2kParameterIntent new isOut: true).
+
+	self computeIntent: famixParamF77.
+
+	intent := famixParamF77 propertyNamed: #intent.
+ 
+	self deny: intent isNil.
+	self deny: intent isIn.
+	self assert: intent isOut.
+
+]
+
+{ #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentFromAllRead [
 
-	| famixParamF77 intent |
+	| intent |
+
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new variable: famixParamF77.
 	FamixF77Access new variable: famixParamF77 ; isWrite: false.
@@ -57,7 +120,8 @@ Fortran2kIntentRulesTest >> testParametersIntentFromAllRead [
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentFromAllWrite [
 
-	| famixParamF77 intent |
+	| intent |
+
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new variable: famixParamF77 ; isWrite: true.
 	FamixF77Access new variable: famixParamF77 ; isWrite: true.
@@ -75,7 +139,7 @@ Fortran2kIntentRulesTest >> testParametersIntentFromAllWrite [
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentFromNoAccesses [
 
-	| famixParamF77 intent |
+	| intent |
 	famixParamF77 := FamixF77Parameter new.
 
 	self computeIntent: famixParamF77.
@@ -91,7 +155,8 @@ Fortran2kIntentRulesTest >> testParametersIntentFromNoAccesses [
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentFromReadAndWrite [
 
-	| famixParamF77 intent |
+	| intent |
+
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new variable: famixParamF77 ; isWrite: false.
 	FamixF77Access new variable: famixParamF77 ; isWrite: true.
@@ -107,20 +172,109 @@ Fortran2kIntentRulesTest >> testParametersIntentFromReadAndWrite [
 ]
 
 { #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentFromSecondary [
+	"1st parameter of secondaryFamixRtn is OUT, 2nd parameter is IN,
+	 famixParamF77 should be IN"
+
+	| intent |
+
+	self buildModel.
+	(secondaryFamixRtn parameters first propertyNamed: #intent) isOut: true.
+	(secondaryFamixRtn parameters second propertyNamed: #intent) isIn: true.
+
+	self computeIntent: famixParamF77.
+
+	intent := famixParamF77 propertyNamed: #intent.
+ 
+	self deny: intent isNil.
+	self assert: intent isIn.
+	self deny: intent isOut.
+
+]
+
+{ #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentFromSecondaryAndOther [
+	"Intent from Secondary (OUT) combined with some other rule (IN)"
+
+	| intent |
+
+	self buildModel.
+	(secondaryFamixRtn parameters second propertyNamed: #intent) isOut: true.
+	famixParamF77 propertyNamed: #intent put: (FASTFortran2kParameterIntent new isIn: true).
+
+	self computeIntent: famixParamF77.
+
+	intent := famixParamF77 propertyNamed: #intent.
+ 
+	self deny: intent isNil.
+	self assert: intent isIn.
+	self assert: intent isOut.
+
+]
+
+{ #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentNonParameterArgument [
+	"Checking that argument which are variables but not parameters do not raise error"
+
+	self buildModel.
+	famixInvocation fast arguments: { FASTFortranFieldAccess new }.
+
+ 	self shouldnt: [self computeIntent: famixParamF77]  raise: Error.
+
+]
+
+{ #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentNotAllrules [
+	"if intent becomes inOut after a rule, subsequent rules are not tested
+	 Emptying parameters of secondaryFamixRtn raises an error in Fortran2kInvocationArgumentRule"
+
+	| intent |
+
+	self buildModel.
+	secondaryFamixRtn parameters: #().
+
+	self should: [self computeIntent: famixParamF77]  raise: SubscriptOutOfBounds.
+
+	intent := famixParamF77 propertyNamed: #intent.
+	intent isIn: true.
+	intent isOut: true.
+
+ 	self shouldnt: [self computeIntent: famixParamF77]  raise: SubscriptOutOfBounds.
+
+]
+
+{ #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationInoutRule [
+	"Note: famixParamF77 needs to be the first argument of the invocation"
 
-	| famixParamF77 intent callStatement |
-	famixParamF77 := FamixF77Parameter new name: 'param'.
-	callStatement := FASTFortranCallStatement new
-		name: 'ajpnt' ;
-		famix: (FamixF77Invocation new).
-	callStatement addArgument: (FASTFortranScalarVariable new
-		name: 'param' ;
-		famixParameter: famixParamF77).
+	| intent |
 
-	FamixF77PUSubroutine new
-		addParameter: famixParamF77 ;
-		addOutgoingInvocation: callStatement famix.
+	self buildModel.
+	famixInvocation fast name: 'ajpnt'.
+	famixInvocation fast arguments remove: (famixInvocation fast arguments first).
+
+	self computeIntent: famixParamF77.
+
+	intent := famixParamF77 propertyNamed: #intent.
+ 
+	self deny: intent isNil.
+	self assert: intent isIn.
+	self assert: intent isOut.
+
+]
+
+{ #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationNotOverriding [
+	"An intent value already set is not overriden by the Fortran2kSpecialInvocationArgumentRule
+	 (only meaningfull for Fortran2kSpecialInvocationOutArgumentRule)
+	Note: famixParamF77 needs to be the first argument of the invocation"
+
+	| intent |
+
+	self buildModel.
+	famixInvocation fast name: 'inistr'.
+	famixInvocation fast arguments remove: (famixInvocation fast arguments first).
+	famixParamF77 propertyNamed: #intent put: (FASTFortran2kParameterIntent new isIn: true).
 
 	self computeIntent: famixParamF77.
 
@@ -134,19 +288,13 @@ Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationInoutRule [
 
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationOutRule [
+	"Note: famixParamF77 needs to be the first argument of the invocation"
 
-	| famixParamF77 intent callStatement |
-	famixParamF77 := FamixF77Parameter new name: 'param'.
-	callStatement := FASTFortranCallStatement new
-		name: 'inistr' ;
-		famix: (FamixF77Invocation new).
-	callStatement addArgument: (FASTFortranScalarVariable new
-		name: 'param' ;
-		famixParameter: famixParamF77).
+	|  intent |
 
-	FamixF77PUSubroutine new
-		addParameter: famixParamF77 ;
-		addOutgoingInvocation: callStatement famix.
+	self buildModel.
+	famixInvocation fast name: 'inistr'.
+	famixInvocation fast arguments remove: (famixInvocation fast arguments first).
 
 	self computeIntent: famixParamF77.
 
@@ -161,18 +309,27 @@ Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationOutRule [
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationRuleNot [
 
-	| famixParamF77 intent callStatement |
-	famixParamF77 := FamixF77Parameter new name: 'param'.
-	callStatement := FASTFortranCallStatement new
-		name: 'fct' ;
-		famix: (FamixF77Invocation new).
-	callStatement addArgument: (FASTFortranScalarVariable new
-		name: 'param' ;
-		famixParameter: famixParamF77).
+	|  intent |
 
-	FamixF77PUSubroutine new
-		addParameter: famixParamF77 ;
-		addOutgoingInvocation: callStatement famix.
+	self buildModel.
+	self computeIntent: famixParamF77.
+
+	intent := famixParamF77 propertyNamed: #intent.
+ 
+	self deny: intent isNil.
+	self deny: intent isIn.
+	self deny: intent isOut.
+
+]
+
+{ #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationSecondArgument [
+	"Special invocation are only valid if famixParamF77 is the 1st argument of the invocation"
+
+	| intent |
+
+	self buildModel.
+	famixInvocation fast name: 'ajpnt'.
 
 	self computeIntent: famixParamF77.
 

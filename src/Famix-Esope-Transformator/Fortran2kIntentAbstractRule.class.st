@@ -13,28 +13,39 @@ Class {
 }
 
 { #category : 'testing' }
-Fortran2kIntentAbstractRule class >> checkAllRulesOn: aFamixF77Parameter [
-
-	self withAllSubclassesDo: [ :rule |
-		rule isAbstract ifFalse: [ rule on: aFamixF77Parameter ]
-	]
-]
-
-{ #category : 'testing' }
-Fortran2kIntentAbstractRule class >> isAbstract [
-
-	^self = Fortran2kIntentAbstractRule
-]
-
-{ #category : 'testing' }
-Fortran2kIntentAbstractRule class >> on: aFamixF77Parameter [
+Fortran2kIntentAbstractRule class >> check: aFamixF77Parameter [
 
 	^self new
-		on: aFamixF77Parameter 
+		check: aFamixF77Parameter 
 ]
 
-{ #category : 'instance creation' }
-Fortran2kIntentAbstractRule >> on: aFamixF77Parameter [
+{ #category : 'testing' }
+Fortran2kIntentAbstractRule class >> checkAllRulesFor: aFamixF77Parameter [
+	"check all rules in the right order, ie. the easiest one first
+	 No need to go further if we are already at inOut"
 
-	^aFamixF77Parameter propertyNamed: #intent ifAbsentPut: [ FASTFortran2kParameterIntent new ]
+	{ Fortran2kAccessRule .
+	  Fortran2kSpecialInvocationInoutArgumentRule .
+	  Fortran2kSpecialInvocationOutArgumentRule .
+	  Fortran2kInvocationArgumentRule }
+		do: [ :rule |
+			rule check: aFamixF77Parameter.
+			(aFamixF77Parameter propertyNamed: #intent) isInOut
+				ifTrue: [ ^self ]
+		]
+]
+
+{ #category : 'running' }
+Fortran2kIntentAbstractRule >> check: aFamixF77Parameter [
+
+	aFamixF77Parameter propertyNamed: #intent ifAbsentPut: [ FASTFortran2kParameterIntent new ]
+]
+
+{ #category : 'accessing' }
+Fortran2kIntentAbstractRule >> getIntent: aFamixF77Parameter [
+
+	^aFamixF77Parameter
+		propertyNamed: #intent
+		ifAbsentPut: [ FASTFortran2kParameterIntent new ].
+
 ]

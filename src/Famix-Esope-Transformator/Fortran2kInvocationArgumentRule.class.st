@@ -1,60 +1,60 @@
-"
-Abstract class for all rules that try to guess the intent of a parameter that appear as argument of an invocation
-
-It must define methods:
-- `invocation: aFASTFortran77Invocation hasArgument: aFamixF77Parameter`: check whether the parameter appears as argument of the given invocation.
-- `invocationOfInterest: aFASTFortran77Invocation`: check whether the invocation is of interest for the rule.
-- `intent: aParameterIntentModifier fromInvocation: fastInvoc`: Assuming the previous ones or true, updates the intent of the parameter accordingly
-"
 Class {
 	#name : 'Fortran2kInvocationArgumentRule',
-	#superclass : 'Fortran2kIntentAbstractRule',
+	#superclass : 'Fortran2kAbstractInvocationArgumentRule',
 	#category : 'Famix-Esope-Transformator-Visitors',
 	#package : 'Famix-Esope-Transformator',
 	#tag : 'Visitors'
 }
 
-{ #category : 'testing' }
-Fortran2kInvocationArgumentRule class >> isAbstract [
+{ #category : 'running' }
+Fortran2kInvocationArgumentRule >> famixProcedureFor: fastInvoc [
+	"there should be only one FamixF77Procedure in the invocation"
 
-	^self = Fortran2kInvocationArgumentRule
+	^fastInvoc famix candidates
+		ifEmpty: [ nil ]
+		ifNotEmpty: [ :candidates |
+			candidates anyOne isStub
+				ifTrue: [ nil ]
+				ifFalse: [ candidates anyOne ]
+		]
 ]
 
-{ #category : 'instance creation' }
-Fortran2kInvocationArgumentRule >> intent: aParameterIntentModifier fromInvocation: fastInvoc [
+{ #category : 'running' }
+Fortran2kInvocationArgumentRule >> getSecondaryIntent: secondaryFamixParameter in: secondaryFamixProcedure [
+	"gets intent of secondaryFamixParameter.
+	 If it is already set we get it, otherwise, need to get FAST of secondaryFamixProcedure"
 
-	self subclassResponsibility 
+	(secondaryFamixParameter propertyNamed: #intent)
+		ifNotNil: [ :secondaryIntent | ^secondaryIntent ].
+
+	secondaryFamixProcedure bindFASTModel.
+
+	Fortran2kIntentAbstractRule checkAllRulesFor: secondaryFamixParameter
 ]
 
-{ #category : 'instance creation' }
-Fortran2kInvocationArgumentRule >> invocation: fastInvoc hasArgument: aFamixF77Parameter [
+{ #category : 'running' }
+Fortran2kInvocationArgumentRule >> intentFor: aFamixF77Parameter fromInvocation: fastInvoc [
+	"gets the famix procedure invoked and discover what is the intent of the argument corresponding to aParameterIntentModifier"
 
-	^fastInvoc arguments anySatisfy: [ :fastF77Argument |
-		fastF77Argument famixParameter = aFamixF77Parameter ]
+	(self famixProcedureFor: fastInvoc)
+		ifNotNil: [ :famixProcedure |
+			self
+				setIntent: aFamixF77Parameter
+				fromParameter: (self argumentIndex: aFamixF77Parameter in: fastInvoc)
+				inProcedure: famixProcedure
+		]
 ]
 
-{ #category : 'instance creation' }
-Fortran2kInvocationArgumentRule >> invocationOfInterest: fastInvoc [
+{ #category : 'running' }
+Fortran2kInvocationArgumentRule >> setIntent: primaryFamixParameter fromParameter: anInteger inProcedure: secondaryFamixProcedure [
 
-	self subclassResponsibility 
-]
+	| secondaryFamixParameter primaryIntent secondaryIntent |
 
-{ #category : 'instance creation' }
-Fortran2kInvocationArgumentRule >> on: aFamixF77Parameter [
-	"note: returns #intent for compatibility with super-class"
+	secondaryFamixParameter := secondaryFamixProcedure parameters at: anInteger.
 
-	| intent |
-	intent := super on: aFamixF77Parameter.
+	secondaryIntent := self getSecondaryIntent: secondaryFamixParameter in: secondaryFamixProcedure.
 
-	aFamixF77Parameter parentBehaviouralEntity ifNil: [ ^self ].
-
-	aFamixF77Parameter parentBehaviouralEntity outgoingInvocations 
-		do: [ :famixInvoc || fastInvoc |
-			fastInvoc := famixInvoc fast.
-			( (self invocationOfInterest: fastInvoc) and:
-			[ self invocation: fastInvoc hasArgument: aFamixF77Parameter ] )
-			ifTrue: [ ^self intent: intent fromInvocation: fastInvoc ]
-		].
-
-	^intent 
+	primaryIntent := self getIntent: primaryFamixParameter.
+	primaryIntent isIn: (primaryIntent isIn or: [secondaryIntent isIn]).
+	primaryIntent isOut: (primaryIntent isOut or: [secondaryIntent isOut]).
 ]
