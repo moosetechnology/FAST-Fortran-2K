@@ -211,6 +211,27 @@ Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationInoutRule [
 ]
 
 { #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationNotOverriding [
+	"An intent value already set is not overriden by the Fortran2kSpecialInvocationArgumentRule
+	 (only meaningfull for Fortran2kSpecialInvocationOutArgumentRule)"
+
+	| intent |
+
+	self buildModel.
+	famixInvocation fast name: 'inistr'.
+	famixParamF77 propertyNamed: #intent put: (FASTFortran2kParameterIntent new isIn: true).
+
+	self computeIntent: famixParamF77.
+
+	intent := famixParamF77 propertyNamed: #intent.
+ 
+	self deny: intent isNil.
+	self assert: intent isIn.
+	self assert: intent isOut.
+
+]
+
+{ #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationOutRule [
 
 	|  intent |
