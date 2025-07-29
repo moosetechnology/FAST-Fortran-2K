@@ -21,20 +21,23 @@ Fortran2kInvocationArgumentRule class >> isAbstract [
 ]
 
 { #category : 'instance creation' }
+Fortran2kInvocationArgumentRule >> fastInvocationsWithArgument: aFamixF77Parameter [
+
+	| invocations |
+	invocations := aFamixF77Parameter parentBehaviouralEntity
+		ifNil: [ #() ]
+		ifNotNil: [ :famixBehavioural | famixBehavioural outgoingInvocations ].
+
+	^invocations
+		collect: #fast
+		thenSelect: [ :fastInvoc |
+			fastInvoc arguments anySatisfy: [ :fastArgument |
+				fastArgument famixParameter = aFamixF77Parameter ]
+		]
+]
+
+{ #category : 'instance creation' }
 Fortran2kInvocationArgumentRule >> intent: aParameterIntentModifier fromInvocation: fastInvoc [
-
-	self subclassResponsibility 
-]
-
-{ #category : 'instance creation' }
-Fortran2kInvocationArgumentRule >> invocation: fastInvoc hasArgument: aFamixF77Parameter [
-
-	^fastInvoc arguments anySatisfy: [ :fastF77Argument |
-		fastF77Argument famixParameter = aFamixF77Parameter ]
-]
-
-{ #category : 'instance creation' }
-Fortran2kInvocationArgumentRule >> invocationOfInterest: fastInvoc [
 
 	self subclassResponsibility 
 ]
@@ -46,15 +49,8 @@ Fortran2kInvocationArgumentRule >> on: aFamixF77Parameter [
 	| intent |
 	intent := super on: aFamixF77Parameter.
 
-	aFamixF77Parameter parentBehaviouralEntity ifNil: [ ^self ].
-
-	aFamixF77Parameter parentBehaviouralEntity outgoingInvocations 
-		do: [ :famixInvoc || fastInvoc |
-			fastInvoc := famixInvoc fast.
-			( (self invocationOfInterest: fastInvoc) and:
-			[ self invocation: fastInvoc hasArgument: aFamixF77Parameter ] )
-			ifTrue: [ ^self intent: intent fromInvocation: fastInvoc ]
-		].
+	(self fastInvocationsWithArgument: aFamixF77Parameter) 
+		do: [ :fastInvoc | ^self intent: intent fromInvocation: fastInvoc ].
 
 	^intent 
 ]

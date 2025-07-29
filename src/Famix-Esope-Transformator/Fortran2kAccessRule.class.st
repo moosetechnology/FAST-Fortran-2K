@@ -1,3 +1,9 @@
+"
+Guess the intent of a parameter from its accesses
+- If the first access is in writing -> intent(out)
+- If there is a read access -> intent(in)
+- If there is a write access -> intent(out) or intent(inOut)
+"
 Class {
 	#name : 'Fortran2kAccessRule',
 	#superclass : 'Fortran2kIntentAbstractRule',

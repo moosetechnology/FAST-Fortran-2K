@@ -9,7 +9,7 @@ Class {
 { #category : 'as yet unclassified' }
 Fortran2kSpecialInvocationArgumentRule class >> invocationsOfInterest [
 
-	^#()
+	self subclassResponsibility 
 ]
 
 { #category : 'testing' }
@@ -19,8 +19,11 @@ Fortran2kSpecialInvocationArgumentRule class >> isAbstract [
 ]
 
 { #category : 'instance creation' }
-Fortran2kSpecialInvocationArgumentRule >> invocationOfInterest: fastInvoc [
+Fortran2kSpecialInvocationArgumentRule >> fastInvocationsWithArgument: aFamixF77Parameter [
 
-	^self class invocationsOfInterest anySatisfy: [ :assoc |
-		assoc sameAs: fastInvoc name ]
+	^(super fastInvocationsWithArgument: aFamixF77Parameter)
+		select: [ :fastInvoc |
+			self class invocationsOfInterest anySatisfy: [ :specialName |
+				specialName sameAs: fastInvoc name ]
+		]
 ]
