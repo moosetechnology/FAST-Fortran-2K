@@ -213,6 +213,26 @@ Fortran2kIntentRulesTest >> testParametersIntentFromSecondaryAndOther [
 ]
 
 { #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentFromSecondaryIntrinsic [
+	"When the secondaryFamixRtn is intrinsic or stub, it has no parameter
+	 The rule does not apply then"
+
+	| intent |
+
+	self buildModel.
+	secondaryFamixRtn parameters: #().
+
+	self computeIntent: famixParamF77.
+
+	intent := famixParamF77 propertyNamed: #intent.
+ 
+	self deny: intent isNil.
+	self deny: intent isIn.
+	self deny: intent isOut.
+
+]
+
+{ #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentNonParameterArgument [
 	"Checking that argument which are variables but not parameters do not raise error"
 
@@ -226,20 +246,21 @@ Fortran2kIntentRulesTest >> testParametersIntentNonParameterArgument [
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentNotAllrules [
 	"if intent becomes inOut after a rule, subsequent rules are not tested
-	 Emptying parameters of secondaryFamixRtn raises an error in Fortran2kInvocationArgumentRule"
+	 Breaking the binding between famixInvocation and the FASTFortranCallStatement
+	  raises an error in Fortran2kAbstractInvocationArgumentRule"
 
 	| intent |
 
 	self buildModel.
-	secondaryFamixRtn parameters: #().
+	famixInvocation fast: nil.
 
-	self should: [self computeIntent: famixParamF77]  raise: SubscriptOutOfBounds.
+	self should: [self computeIntent: famixParamF77]  raise: MessageNotUnderstood.
 
 	intent := famixParamF77 propertyNamed: #intent.
 	intent isIn: true.
 	intent isOut: true.
 
- 	self shouldnt: [self computeIntent: famixParamF77]  raise: SubscriptOutOfBounds.
+ 	self shouldnt: [self computeIntent: famixParamF77]  raise: MessageNotUnderstood.
 
 ]
 
