@@ -6,9 +6,9 @@ Class {
 		'famixInvocation',
 		'secondaryFamixRtn'
 	],
-	#category : 'Famix-Esope-Transformator-Tests-Visitors',
+	#category : 'Famix-Esope-Transformator-Tests-ParameterIntent',
 	#package : 'Famix-Esope-Transformator-Tests',
-	#tag : 'Visitors'
+	#tag : 'ParameterIntent'
 }
 
 { #category : 'running' }

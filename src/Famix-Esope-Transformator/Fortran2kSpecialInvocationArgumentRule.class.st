@@ -1,9 +1,9 @@
 Class {
 	#name : 'Fortran2kSpecialInvocationArgumentRule',
 	#superclass : 'Fortran2kAbstractInvocationArgumentRule',
-	#category : 'Famix-Esope-Transformator-Visitors',
+	#category : 'Famix-Esope-Transformator-ParameterIntent',
 	#package : 'Famix-Esope-Transformator',
-	#tag : 'Visitors'
+	#tag : 'ParameterIntent'
 }
 
 { #category : 'as yet unclassified' }

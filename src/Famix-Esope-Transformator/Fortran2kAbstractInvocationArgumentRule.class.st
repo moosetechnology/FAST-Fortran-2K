@@ -9,9 +9,9 @@ It must define methods:
 Class {
 	#name : 'Fortran2kAbstractInvocationArgumentRule',
 	#superclass : 'Fortran2kIntentAbstractRule',
-	#category : 'Famix-Esope-Transformator-Visitors',
+	#category : 'Famix-Esope-Transformator-ParameterIntent',
 	#package : 'Famix-Esope-Transformator',
-	#tag : 'Visitors'
+	#tag : 'ParameterIntent'
 }
 
 { #category : 'running' }

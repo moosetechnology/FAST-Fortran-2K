@@ -1,9 +1,9 @@
 Class {
 	#name : 'Fortran2kInvocationArgumentRule',
 	#superclass : 'Fortran2kAbstractInvocationArgumentRule',
-	#category : 'Famix-Esope-Transformator-Visitors',
+	#category : 'Famix-Esope-Transformator-ParameterIntent',
 	#package : 'Famix-Esope-Transformator',
-	#tag : 'Visitors'
+	#tag : 'ParameterIntent'
 }
 
 { #category : 'running' }
