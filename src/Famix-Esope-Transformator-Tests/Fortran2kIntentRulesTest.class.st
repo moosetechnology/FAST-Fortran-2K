@@ -193,6 +193,26 @@ Fortran2kIntentRulesTest >> testParametersIntentFromSecondary [
 ]
 
 { #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentNotAllrules [
+	"if intent becomes inOut after a rule, subsequent rules are not tested
+	 Emptying parameters of secondaryFamixRtn raises an error in Fortran2kInvocationArgumentRule"
+
+	| intent |
+
+	self buildModel.
+	secondaryFamixRtn parameters: #().
+
+	self should: [self computeIntent: famixParamF77]  raise: SubscriptOutOfBounds.
+
+	intent := famixParamF77 propertyNamed: #intent.
+	intent isIn: true.
+	intent isOut: true.
+
+ 	self shouldnt: [self computeIntent: famixParamF77]  raise: SubscriptOutOfBounds.
+
+]
+
+{ #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationInoutRule [
 
 	| intent |
