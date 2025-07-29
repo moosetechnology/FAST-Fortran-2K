@@ -46,7 +46,7 @@ Fortran2kAbstractInvocationArgumentRule >> fastInvocationsWithArgument: aFamixF7
 ]
 
 { #category : 'running' }
-Fortran2kAbstractInvocationArgumentRule >> intentFor: aParameterIntentModifier fromInvocation: fastInvoc [
+Fortran2kAbstractInvocationArgumentRule >> intentFor: aFamixF77Parameter fromInvocation: fastInvoc [
 
 	self subclassResponsibility 
 ]
