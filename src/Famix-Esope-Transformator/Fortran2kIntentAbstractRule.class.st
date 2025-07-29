@@ -21,16 +21,18 @@ Fortran2kIntentAbstractRule class >> check: aFamixF77Parameter [
 
 { #category : 'testing' }
 Fortran2kIntentAbstractRule class >> checkAllRulesFor: aFamixF77Parameter [
+	"check all rules in the right order, ie. the easiest one first
+	 No need to go further if we are already at inOut"
 
-	self withAllSubclassesDo: [ :rule |
-		rule isAbstract ifFalse: [ rule check: aFamixF77Parameter ]
-	]
-]
-
-{ #category : 'testing' }
-Fortran2kIntentAbstractRule class >> isAbstract [
-
-	^self = Fortran2kIntentAbstractRule
+	{ Fortran2kAccessRule .
+	  Fortran2kSpecialInvocationInoutArgumentRule .
+	  Fortran2kSpecialInvocationOutArgumentRule .
+	  Fortran2kInvocationArgumentRule }
+		do: [ :rule |
+			rule check: aFamixF77Parameter.
+			(aFamixF77Parameter propertyNamed: #intent) isInOut
+				ifTrue: [ ^self ]
+		]
 ]
 
 { #category : 'running' }

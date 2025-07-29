@@ -12,12 +12,6 @@ Fortran2kSpecialInvocationArgumentRule class >> invocationsOfInterest [
 	self subclassResponsibility 
 ]
 
-{ #category : 'testing' }
-Fortran2kSpecialInvocationArgumentRule class >> isAbstract [
-
-	^self = Fortran2kSpecialInvocationArgumentRule
-]
-
 { #category : 'instance creation' }
 Fortran2kSpecialInvocationArgumentRule >> fastInvocationsWithArgument: aFamixF77Parameter [
 

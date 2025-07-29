@@ -14,12 +14,6 @@ Class {
 	#tag : 'Visitors'
 }
 
-{ #category : 'testing' }
-Fortran2kAbstractInvocationArgumentRule class >> isAbstract [
-
-	^self = Fortran2kAbstractInvocationArgumentRule
-]
-
 { #category : 'running' }
 Fortran2kAbstractInvocationArgumentRule >> check: aFamixF77Parameter [
 
