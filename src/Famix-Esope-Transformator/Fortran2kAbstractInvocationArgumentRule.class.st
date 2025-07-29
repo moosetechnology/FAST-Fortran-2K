@@ -40,7 +40,8 @@ Fortran2kAbstractInvocationArgumentRule >> fastInvocationsWithArgument: aFamixF7
 		collect: #fast
 		thenSelect: [ :fastInvoc |
 			fastInvoc arguments anySatisfy: [ :fastArgument |
-				fastArgument famixParameter = aFamixF77Parameter ]
+				fastArgument isVariableEntity and: [fastArgument famixParameter = aFamixF77Parameter ]
+			]
 		]
 ]
 
