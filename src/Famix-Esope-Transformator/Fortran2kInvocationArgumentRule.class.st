@@ -7,40 +7,41 @@ It must define methods:
 - `intent: aParameterIntentModifier fromInvocation: fastInvoc`: Assuming the previous ones or true, updates the intent of the parameter accordingly
 "
 Class {
-	#name : 'EsopeTransfoInvocationArgumentRule',
-	#superclass : 'EsopeTransfoIntentAbstractRule',
+	#name : 'Fortran2kInvocationArgumentRule',
+	#superclass : 'Fortran2kIntentAbstractRule',
 	#category : 'Famix-Esope-Transformator-Visitors',
 	#package : 'Famix-Esope-Transformator',
 	#tag : 'Visitors'
 }
 
 { #category : 'testing' }
-EsopeTransfoInvocationArgumentRule class >> isAbstract [
+Fortran2kInvocationArgumentRule class >> isAbstract [
 
-	^self = EsopeTransfoInvocationArgumentRule
+	^self = Fortran2kInvocationArgumentRule
 ]
 
 { #category : 'instance creation' }
-EsopeTransfoInvocationArgumentRule >> intent: aParameterIntentModifier fromInvocation: fastInvoc [
+Fortran2kInvocationArgumentRule >> intent: aParameterIntentModifier fromInvocation: fastInvoc [
 
 	self subclassResponsibility 
 ]
 
 { #category : 'instance creation' }
-EsopeTransfoInvocationArgumentRule >> invocation: fastInvoc hasArgument: aFamixF77Parameter [
+Fortran2kInvocationArgumentRule >> invocation: fastInvoc hasArgument: aFamixF77Parameter [
 
 	^fastInvoc arguments anySatisfy: [ :fastF77Argument |
 		fastF77Argument famixParameter = aFamixF77Parameter ]
 ]
 
 { #category : 'instance creation' }
-EsopeTransfoInvocationArgumentRule >> invocationOfInterest: fastInvoc [
+Fortran2kInvocationArgumentRule >> invocationOfInterest: fastInvoc [
 
 	self subclassResponsibility 
 ]
 
 { #category : 'instance creation' }
-EsopeTransfoInvocationArgumentRule >> on: aFamixF77Parameter [
+Fortran2kInvocationArgumentRule >> on: aFamixF77Parameter [
+	"note: returns #intent for compatibility with super-class"
 
 	| intent |
 	intent := super on: aFamixF77Parameter.
@@ -53,5 +54,7 @@ EsopeTransfoInvocationArgumentRule >> on: aFamixF77Parameter [
 			( (self invocationOfInterest: fastInvoc) and:
 			[ self invocation: fastInvoc hasArgument: aFamixF77Parameter ] )
 			ifTrue: [ ^self intent: intent fromInvocation: fastInvoc ]
-		]
+		].
+
+	^intent 
 ]

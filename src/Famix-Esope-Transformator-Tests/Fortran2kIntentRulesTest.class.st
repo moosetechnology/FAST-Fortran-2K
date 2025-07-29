@@ -1,5 +1,5 @@
 Class {
-	#name : 'FASTEsopeTransfoIntentRulesTest',
+	#name : 'Fortran2kIntentRulesTest',
 	#superclass : 'TestCase',
 	#category : 'Famix-Esope-Transformator-Tests-Visitors',
 	#package : 'Famix-Esope-Transformator-Tests',
@@ -7,20 +7,13 @@ Class {
 }
 
 { #category : 'running' }
-FASTEsopeTransfoIntentRulesTest >> computeIntent: famixParamF77 [
+Fortran2kIntentRulesTest >> computeIntent: famixParamF77 [
 
-	EsopeTransfoIntentAbstractRule checkAllRulesOn: famixParamF77 
-]
-
-{ #category : 'running' }
-FASTEsopeTransfoIntentRulesTest >> rule: parameterIntentRule on: famixParamF77 [
-
-	^parameterIntentRule new
-		on: famixParamF77 
+	Fortran2kIntentAbstractRule checkAllRulesOn: famixParamF77 
 ]
 
 { #category : 'tests' }
-FASTEsopeTransfoIntentRulesTest >> testParametersIntentSpecialInvocationInoutRule [
+Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationInoutRule [
 
 	| famixParamF77 intent callStatement |
 	famixParamF77 := FamixF77Parameter new name: 'param'.
@@ -46,7 +39,7 @@ FASTEsopeTransfoIntentRulesTest >> testParametersIntentSpecialInvocationInoutRul
 ]
 
 { #category : 'tests' }
-FASTEsopeTransfoIntentRulesTest >> testParametersIntentSpecialInvocationOutRule [
+Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationOutRule [
 
 	| famixParamF77 intent callStatement |
 	famixParamF77 := FamixF77Parameter new name: 'param'.
@@ -72,7 +65,7 @@ FASTEsopeTransfoIntentRulesTest >> testParametersIntentSpecialInvocationOutRule 
 ]
 
 { #category : 'tests' }
-FASTEsopeTransfoIntentRulesTest >> testParametersIntentSpecialInvocationRuleNot [
+Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationRuleNot [
 
 	| famixParamF77 intent callStatement |
 	famixParamF77 := FamixF77Parameter new name: 'param'.

@@ -5,7 +5,7 @@ It has one method `#on:` that runs the rule on a FamixF77Parameter and sets its 
 (`famixF77Parameter propertyNamed: #intent`)
 "
 Class {
-	#name : 'EsopeTransfoIntentAbstractRule',
+	#name : 'Fortran2kIntentAbstractRule',
 	#superclass : 'Object',
 	#category : 'Famix-Esope-Transformator-Visitors',
 	#package : 'Famix-Esope-Transformator',
@@ -13,7 +13,7 @@ Class {
 }
 
 { #category : 'testing' }
-EsopeTransfoIntentAbstractRule class >> checkAllRulesOn: aFamixF77Parameter [
+Fortran2kIntentAbstractRule class >> checkAllRulesOn: aFamixF77Parameter [
 
 	self withAllSubclassesDo: [ :rule |
 		rule isAbstract ifFalse: [ rule on: aFamixF77Parameter ]
@@ -21,20 +21,20 @@ EsopeTransfoIntentAbstractRule class >> checkAllRulesOn: aFamixF77Parameter [
 ]
 
 { #category : 'testing' }
-EsopeTransfoIntentAbstractRule class >> isAbstract [
+Fortran2kIntentAbstractRule class >> isAbstract [
 
-	^self = EsopeTransfoIntentAbstractRule
+	^self = Fortran2kIntentAbstractRule
 ]
 
 { #category : 'testing' }
-EsopeTransfoIntentAbstractRule class >> on: aFamixF77Parameter [
+Fortran2kIntentAbstractRule class >> on: aFamixF77Parameter [
 
 	^self new
 		on: aFamixF77Parameter 
 ]
 
 { #category : 'instance creation' }
-EsopeTransfoIntentAbstractRule >> on: aFamixF77Parameter [
+Fortran2kIntentAbstractRule >> on: aFamixF77Parameter [
 
 	^aFamixF77Parameter propertyNamed: #intent ifAbsentPut: [ FASTFortran2kParameterIntent new ]
 ]
