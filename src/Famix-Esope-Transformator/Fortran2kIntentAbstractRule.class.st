@@ -27,7 +27,7 @@ Fortran2kIntentAbstractRule class >> checkAllRulesFor: aFamixF77Parameter [
 	{ Fortran2kAccessRule .
 	  Fortran2kSpecialInvocationInoutArgumentRule .
 	  Fortran2kSpecialInvocationOutArgumentRule .
-	  Fortran2kInvocationArgumentRule }
+	  "Fortran2kInvocationArgumentRule" }
 		do: [ :rule |
 			rule check: aFamixF77Parameter.
 			(aFamixF77Parameter propertyNamed: #intent) isInOut
