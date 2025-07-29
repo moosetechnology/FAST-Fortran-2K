@@ -244,6 +244,30 @@ Fortran2kIntentRulesTest >> testParametersIntentNotAllrules [
 ]
 
 { #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationDifferentBinding [
+	"Carrefour does not always bind FamixF77Parameter-s to FAST property #famixParameter
+	 - remove 1st argument of invocation otherwise the rule does not apply
+	 - change the (now) 1st argument binding"
+
+	| intent |
+
+	self buildModel.
+	famixInvocation fast name: 'ajpnt'.
+	famixInvocation fast arguments remove: (famixInvocation fast arguments first).
+	famixInvocation fast arguments anyOne famixParameter: nil.
+	famixInvocation fast arguments anyOne famixVariable: famixParamF77.
+
+	self computeIntent: famixParamF77.
+
+	intent := famixParamF77 propertyNamed: #intent.
+ 
+	self deny: intent isNil.
+	self assert: intent isIn.
+	self assert: intent isOut.
+
+]
+
+{ #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationInoutRule [
 	"Note: famixParamF77 needs to be the first argument of the invocation"
 
