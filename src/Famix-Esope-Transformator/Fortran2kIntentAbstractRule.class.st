@@ -36,7 +36,7 @@ Fortran2kIntentAbstractRule class >> isAbstract [
 { #category : 'running' }
 Fortran2kIntentAbstractRule >> check: aFamixF77Parameter [
 
-	^aFamixF77Parameter propertyNamed: #intent ifAbsentPut: [ FASTFortran2kParameterIntent new ]
+	aFamixF77Parameter propertyNamed: #intent ifAbsentPut: [ FASTFortran2kParameterIntent new ]
 ]
 
 { #category : 'accessing' }

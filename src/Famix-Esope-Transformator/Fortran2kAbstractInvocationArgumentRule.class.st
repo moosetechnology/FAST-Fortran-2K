@@ -23,7 +23,7 @@ Fortran2kAbstractInvocationArgumentRule class >> isAbstract [
 { #category : 'running' }
 Fortran2kAbstractInvocationArgumentRule >> check: aFamixF77Parameter [
 
-	^(self fastInvocationsWithArgument: aFamixF77Parameter) 
+	(self fastInvocationsWithArgument: aFamixF77Parameter) 
 		do: [ :fastInvoc | ^self intentFor: aFamixF77Parameter fromInvocation: fastInvoc ].
 
 ]
