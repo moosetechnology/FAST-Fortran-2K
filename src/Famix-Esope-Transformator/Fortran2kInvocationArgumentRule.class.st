@@ -57,11 +57,6 @@ Fortran2kInvocationArgumentRule >> intentFor: aFamixF77Parameter fromInvocation:
 ]
 
 { #category : 'running' }
-Fortran2kInvocationArgumentRule >> setIntent: aFamixF77Parameter fromParameter: anInteger [
-
-]
-
-{ #category : 'running' }
 Fortran2kInvocationArgumentRule >> setIntent: primaryFamixParameter fromParameter: anInteger inProcedure: secondaryFamixProcedure [
 
 	| secondaryFamixParameter primaryIntent secondaryIntent |
