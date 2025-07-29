@@ -15,6 +15,14 @@ Class {
 }
 
 { #category : 'running' }
+Fortran2kAbstractInvocationArgumentRule >> argument: fastArgument matchesParameter: aFamixF77Parameter [
+
+	fastArgument isVariableEntity ifFalse: [ ^false ].
+	fastArgument isFieldAccess ifTrue: [ ^false ].
+	^fastArgument famixParameter = aFamixF77Parameter
+]
+
+{ #category : 'running' }
 Fortran2kAbstractInvocationArgumentRule >> check: aFamixF77Parameter [
 
 	(self fastInvocationsWithArgument: aFamixF77Parameter) 
@@ -34,7 +42,7 @@ Fortran2kAbstractInvocationArgumentRule >> fastInvocationsWithArgument: aFamixF7
 		collect: #fast
 		thenSelect: [ :fastInvoc |
 			fastInvoc arguments anySatisfy: [ :fastArgument |
-				fastArgument isVariableEntity and: [fastArgument famixParameter = aFamixF77Parameter ]
+				self argument: fastArgument matchesParameter: aFamixF77Parameter
 			]
 		]
 ]

@@ -10,7 +10,7 @@ Class {
 Fortran2kInvocationArgumentRule >> argumentIndex: aFamixF77Parameter in: fastInvoc [
 
 	fastInvoc arguments withIndexDo: [ :fastArgument :index |
-		(fastArgument isVariableEntity and: [fastArgument famixParameter = aFamixF77Parameter])
+		(self argument: fastArgument matchesParameter: aFamixF77Parameter)
 			ifTrue: [ ^index ]
 	].
 

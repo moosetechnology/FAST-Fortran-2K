@@ -213,6 +213,17 @@ Fortran2kIntentRulesTest >> testParametersIntentFromSecondaryAndOther [
 ]
 
 { #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentNonParameterArgument [
+	"Checking that argument which are variables but not parameters do not raise error"
+
+	self buildModel.
+	famixInvocation fast arguments: { FASTFortranFieldAccess new }.
+
+ 	self shouldnt: [self computeIntent: famixParamF77]  raise: Error.
+
+]
+
+{ #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentNotAllrules [
 	"if intent becomes inOut after a rule, subsequent rules are not tested
 	 Emptying parameters of secondaryFamixRtn raises an error in Fortran2kInvocationArgumentRule"
