@@ -1,21 +1,53 @@
 Class {
 	#name : 'Fortran2kIntentRulesTest',
 	#superclass : 'TestCase',
+	#instVars : [
+		'famixParamF77',
+		'famixInvocation'
+	],
 	#category : 'Famix-Esope-Transformator-Tests-Visitors',
 	#package : 'Famix-Esope-Transformator-Tests',
 	#tag : 'Visitors'
 }
 
 { #category : 'running' }
+Fortran2kIntentRulesTest >> buildModel [
+
+	| primaryFamixRtn secondaryFamixRtn callStatement |
+	primaryFamixRtn := FamixF77PUSubroutine new.
+	secondaryFamixRtn := FamixF77PUSubroutine new.
+
+	famixParamF77 := FamixF77Parameter new name: 'param'.
+	primaryFamixRtn addParameter: famixParamF77.
+
+	secondaryFamixRtn addParameter: (FamixF77Parameter new name: 'secondaryParam1').
+	secondaryFamixRtn addParameter: (FamixF77Parameter new name: 'secondaryParam2').
+
+	famixInvocation := FamixF77Invocation new.
+	famixInvocation candidates: { secondaryFamixRtn }.
+	primaryFamixRtn addOutgoingInvocation: famixInvocation.
+
+	callStatement := FASTFortranCallStatement new
+		name: 'secondaryRoutine'.
+	callStatement addArgument: (FASTFortranIntegerLiteral new).
+	callStatement addArgument: (FASTFortranScalarVariable new
+		name: 'param' ;
+		famixParameter: famixParamF77).
+	callStatement famix: famixInvocation 
+
+]
+
+{ #category : 'running' }
 Fortran2kIntentRulesTest >> computeIntent: famixParamF77 [
 
-	Fortran2kIntentAbstractRule checkAllRulesOn: famixParamF77 
+	Fortran2kIntentAbstractRule checkAllRulesFor: famixParamF77 
 ]
 
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentFirstIsWrite [
 
-	| famixParamF77 intent |
+	| intent |
+
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new
 		variable: famixParamF77 ;
@@ -39,7 +71,8 @@ Fortran2kIntentRulesTest >> testParametersIntentFirstIsWrite [
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentFromAllRead [
 
-	| famixParamF77 intent |
+	| intent |
+
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new variable: famixParamF77.
 	FamixF77Access new variable: famixParamF77 ; isWrite: false.
@@ -57,7 +90,8 @@ Fortran2kIntentRulesTest >> testParametersIntentFromAllRead [
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentFromAllWrite [
 
-	| famixParamF77 intent |
+	| intent |
+
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new variable: famixParamF77 ; isWrite: true.
 	FamixF77Access new variable: famixParamF77 ; isWrite: true.
@@ -75,7 +109,7 @@ Fortran2kIntentRulesTest >> testParametersIntentFromAllWrite [
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentFromNoAccesses [
 
-	| famixParamF77 intent |
+	| intent |
 	famixParamF77 := FamixF77Parameter new.
 
 	self computeIntent: famixParamF77.
@@ -91,7 +125,8 @@ Fortran2kIntentRulesTest >> testParametersIntentFromNoAccesses [
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentFromReadAndWrite [
 
-	| famixParamF77 intent |
+	| intent |
+
 	famixParamF77 := FamixF77Parameter new.
 	FamixF77Access new variable: famixParamF77 ; isWrite: false.
 	FamixF77Access new variable: famixParamF77 ; isWrite: true.
@@ -109,18 +144,10 @@ Fortran2kIntentRulesTest >> testParametersIntentFromReadAndWrite [
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationInoutRule [
 
-	| famixParamF77 intent callStatement |
-	famixParamF77 := FamixF77Parameter new name: 'param'.
-	callStatement := FASTFortranCallStatement new
-		name: 'ajpnt' ;
-		famix: (FamixF77Invocation new).
-	callStatement addArgument: (FASTFortranScalarVariable new
-		name: 'param' ;
-		famixParameter: famixParamF77).
+	| intent |
 
-	FamixF77PUSubroutine new
-		addParameter: famixParamF77 ;
-		addOutgoingInvocation: callStatement famix.
+	self buildModel.
+	famixInvocation fast name: 'ajpnt'.
 
 	self computeIntent: famixParamF77.
 
@@ -135,18 +162,10 @@ Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationInoutRule [
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationOutRule [
 
-	| famixParamF77 intent callStatement |
-	famixParamF77 := FamixF77Parameter new name: 'param'.
-	callStatement := FASTFortranCallStatement new
-		name: 'inistr' ;
-		famix: (FamixF77Invocation new).
-	callStatement addArgument: (FASTFortranScalarVariable new
-		name: 'param' ;
-		famixParameter: famixParamF77).
+	|  intent |
 
-	FamixF77PUSubroutine new
-		addParameter: famixParamF77 ;
-		addOutgoingInvocation: callStatement famix.
+	self buildModel.
+	famixInvocation fast name: 'inistr'.
 
 	self computeIntent: famixParamF77.
 
@@ -161,19 +180,9 @@ Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationOutRule [
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationRuleNot [
 
-	| famixParamF77 intent callStatement |
-	famixParamF77 := FamixF77Parameter new name: 'param'.
-	callStatement := FASTFortranCallStatement new
-		name: 'fct' ;
-		famix: (FamixF77Invocation new).
-	callStatement addArgument: (FASTFortranScalarVariable new
-		name: 'param' ;
-		famixParameter: famixParamF77).
+	|  intent |
 
-	FamixF77PUSubroutine new
-		addParameter: famixParamF77 ;
-		addOutgoingInvocation: callStatement famix.
-
+	self buildModel.
 	self computeIntent: famixParamF77.
 
 	intent := famixParamF77 propertyNamed: #intent.
