@@ -3,7 +3,8 @@ Class {
 	#superclass : 'TestCase',
 	#instVars : [
 		'famixParamF77',
-		'famixInvocation'
+		'famixInvocation',
+		'secondaryFamixRtn'
 	],
 	#category : 'Famix-Esope-Transformator-Tests-Visitors',
 	#package : 'Famix-Esope-Transformator-Tests',
@@ -13,15 +14,22 @@ Class {
 { #category : 'running' }
 Fortran2kIntentRulesTest >> buildModel [
 
-	| primaryFamixRtn secondaryFamixRtn callStatement |
+	| primaryFamixRtn secondaryFamixParameter callStatement |
 	primaryFamixRtn := FamixF77PUSubroutine new.
 	secondaryFamixRtn := FamixF77PUSubroutine new.
 
 	famixParamF77 := FamixF77Parameter new name: 'param'.
 	primaryFamixRtn addParameter: famixParamF77.
 
-	secondaryFamixRtn addParameter: (FamixF77Parameter new name: 'secondaryParam1').
-	secondaryFamixRtn addParameter: (FamixF77Parameter new name: 'secondaryParam2').
+	secondaryFamixParameter := FamixF77Parameter new
+		name: 'secondaryParam1'.
+	secondaryFamixParameter propertyNamed: #intent put: (FASTFortran2kParameterIntent new).
+	secondaryFamixRtn addParameter: secondaryFamixParameter.
+
+	secondaryFamixParameter := FamixF77Parameter new
+		name: 'secondaryParam2'.
+	secondaryFamixParameter propertyNamed: #intent put: (FASTFortran2kParameterIntent new).
+	secondaryFamixRtn addParameter: secondaryFamixParameter.
 
 	famixInvocation := FamixF77Invocation new.
 	famixInvocation candidates: { secondaryFamixRtn }.
@@ -138,6 +146,27 @@ Fortran2kIntentRulesTest >> testParametersIntentFromReadAndWrite [
 	self deny: intent isNil.
 	self assert: intent isIn.
 	self assert: intent isOut.
+
+]
+
+{ #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentFromSecondary [
+	"1st parameter of secondaryFamixRtn is OUT, 2nd parameter is IN,
+	 famixParamF77 should be IN"
+
+	| intent |
+
+	self buildModel.
+	(secondaryFamixRtn parameters first propertyNamed: #intent) isOut: true.
+	(secondaryFamixRtn parameters second propertyNamed: #intent) isIn: true.
+
+	self computeIntent: famixParamF77.
+
+	intent := famixParamF77 propertyNamed: #intent.
+ 
+	self deny: intent isNil.
+	self assert: intent isIn.
+	self deny: intent isOut.
 
 ]
 
