@@ -80,6 +80,25 @@ Fortran2kIntentRulesTest >> testParametersIntentFirstIsWrite [
 ]
 
 { #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentFromAccessNotOverriding [
+	"An intent value already set is not overriden by the Fortran2kAccessRule"
+
+	| intent |
+
+	famixParamF77 := FamixF77Parameter new.
+	famixParamF77 propertyNamed: #intent put: (FASTFortran2kParameterIntent new isOut: true).
+
+	self computeIntent: famixParamF77.
+
+	intent := famixParamF77 propertyNamed: #intent.
+ 
+	self deny: intent isNil.
+	self deny: intent isIn.
+	self assert: intent isOut.
+
+]
+
+{ #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentFromAllRead [
 
 	| intent |

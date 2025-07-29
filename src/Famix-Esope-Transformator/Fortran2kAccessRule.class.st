@@ -15,7 +15,7 @@ Class {
 { #category : 'running' }
 Fortran2kAccessRule >> check: aFamixF77Parameter [
 
-	| intent |
+	| intent previousValue |
 
 	intent := self getIntent: aFamixF77Parameter.
 
@@ -28,8 +28,10 @@ Fortran2kAccessRule >> check: aFamixF77Parameter [
 				]
 		].
 
-	intent isIn: (aFamixF77Parameter incomingAccesses anySatisfy: [ :acc | acc isWrite not]).
-	intent isOut: (aFamixF77Parameter incomingAccesses anySatisfy: #isWrite).
+	previousValue := aFamixF77Parameter incomingAccesses anySatisfy: [ :acc | acc isWrite not].
+	intent isIn: (intent isIn or: [ previousValue ]).
+	previousValue := aFamixF77Parameter incomingAccesses anySatisfy: #isWrite.
+	intent isOut: (intent isOut or: [ previousValue ]).
 
 ]
 
