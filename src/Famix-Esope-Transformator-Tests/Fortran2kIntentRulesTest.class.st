@@ -14,7 +14,10 @@ Class {
 { #category : 'running' }
 Fortran2kIntentRulesTest >> buildModel [
 
+	"model: primaryFamixRtn with one parameter passed as 2nd parameter to secondaryFamixRtn"
+
 	| primaryFamixRtn secondaryFamixParameter callStatement |
+
 	primaryFamixRtn := FamixF77PUSubroutine new.
 	secondaryFamixRtn := FamixF77PUSubroutine new.
 
