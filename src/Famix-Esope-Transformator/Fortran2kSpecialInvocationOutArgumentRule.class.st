@@ -13,7 +13,8 @@ Fortran2kSpecialInvocationOutArgumentRule class >> invocationsOfInterest [
 ]
 
 { #category : 'instance creation' }
-Fortran2kSpecialInvocationOutArgumentRule >> intent: aParameterIntentModifier fromInvocation: fastInvoc [
+Fortran2kSpecialInvocationOutArgumentRule >> intentFor: aFamixF77Parameter fromInvocation: fastInvoc [
 
-	aParameterIntentModifier isOut: true
+	(self getIntent: aFamixF77Parameter)
+		isOut: true.
 ]

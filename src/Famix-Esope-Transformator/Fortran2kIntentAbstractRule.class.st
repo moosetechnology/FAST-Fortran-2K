@@ -13,10 +13,17 @@ Class {
 }
 
 { #category : 'testing' }
+Fortran2kIntentAbstractRule class >> check: aFamixF77Parameter [
+
+	^self new
+		check: aFamixF77Parameter 
+]
+
+{ #category : 'testing' }
 Fortran2kIntentAbstractRule class >> checkAllRulesOn: aFamixF77Parameter [
 
 	self withAllSubclassesDo: [ :rule |
-		rule isAbstract ifFalse: [ rule on: aFamixF77Parameter ]
+		rule isAbstract ifFalse: [ rule check: aFamixF77Parameter ]
 	]
 ]
 
@@ -26,15 +33,17 @@ Fortran2kIntentAbstractRule class >> isAbstract [
 	^self = Fortran2kIntentAbstractRule
 ]
 
-{ #category : 'testing' }
-Fortran2kIntentAbstractRule class >> on: aFamixF77Parameter [
-
-	^self new
-		on: aFamixF77Parameter 
-]
-
-{ #category : 'instance creation' }
-Fortran2kIntentAbstractRule >> on: aFamixF77Parameter [
+{ #category : 'running' }
+Fortran2kIntentAbstractRule >> check: aFamixF77Parameter [
 
 	^aFamixF77Parameter propertyNamed: #intent ifAbsentPut: [ FASTFortran2kParameterIntent new ]
+]
+
+{ #category : 'accessing' }
+Fortran2kIntentAbstractRule >> getIntent: aFamixF77Parameter [
+
+	^aFamixF77Parameter
+		propertyNamed: #intent
+		ifAbsentPut: [ FASTFortran2kParameterIntent new ].
+
 ]

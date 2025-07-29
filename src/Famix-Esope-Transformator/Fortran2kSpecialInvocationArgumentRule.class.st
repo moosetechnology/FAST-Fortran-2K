@@ -1,6 +1,6 @@
 Class {
 	#name : 'Fortran2kSpecialInvocationArgumentRule',
-	#superclass : 'Fortran2kInvocationArgumentRule',
+	#superclass : 'Fortran2kAbstractInvocationArgumentRule',
 	#category : 'Famix-Esope-Transformator-Visitors',
 	#package : 'Famix-Esope-Transformator',
 	#tag : 'Visitors'

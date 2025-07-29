@@ -12,6 +12,27 @@ Class {
 	#tag : 'Visitors'
 }
 
+{ #category : 'running' }
+Fortran2kAccessRule >> check: aFamixF77Parameter [
+
+	| intent |
+
+	intent := self getIntent: aFamixF77Parameter.
+
+	(self firstAccess: aFamixF77Parameter)
+		ifNotNil: [ :firstAccess |
+			firstAccess isWrite
+				ifTrue: [
+					intent isIn: false ; isOut: true.
+					^self
+				]
+		].
+
+	intent isIn: (aFamixF77Parameter incomingAccesses anySatisfy: [ :acc | acc isWrite not]).
+	intent isOut: (aFamixF77Parameter incomingAccesses anySatisfy: #isWrite).
+
+]
+
 { #category : 'accessing' }
 Fortran2kAccessRule >> firstAccess: aFamixF77Variable [
 	"finds first access to aFamixF77Variable based on sourceAnchors
@@ -29,22 +50,4 @@ Fortran2kAccessRule >> firstAccess: aFamixF77Variable [
 			ifTrue: [ min ] ifFalse: [ each ]
 		].
 
-]
-
-{ #category : 'instance creation' }
-Fortran2kAccessRule >> on: aFamixF77Parameter [
-
-	| intent |
-	intent := super on: aFamixF77Parameter.
-
-	(self firstAccess: aFamixF77Parameter)
-		ifNotNil: [ :firstAccess |
-			firstAccess isWrite
-				ifTrue: [ ^intent isIn: false ; isOut: true ; yourself ]
-		].
-
-	intent isIn: (aFamixF77Parameter incomingAccesses anySatisfy: [ :acc | acc isWrite not]).
-	intent isOut: (aFamixF77Parameter incomingAccesses anySatisfy: #isWrite).
-
-	^intent
 ]
