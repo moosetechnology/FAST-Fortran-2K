@@ -90,22 +90,12 @@ FASTFortranProcedureTransformationVisitor >> makeProcedure: aFASTFortran2kProced
 
 { #category : 'helpers - parameters' }
 FASTFortranProcedureTransformationVisitor >> parameterIntent: paramF77 [
-	"computing intent from access
-	  - take into account function/subroutine invocations where the parameter is used"
+	"computing intent for a parameter.
+	 There are various possible rules that may apply"
 
-	| intent |
+	Fortran2kIntentAbstractRule checkAllRulesOn: paramF77.
 
-	intent := FASTFortran2kParameterIntent new.
-
-	(paramF77 isArgumentOfInvocation: #inistr) ifTrue: [ ^ intent isOut: true ; yourself ].
-	(paramF77 isArgumentOfInvocation: #ajpnt) ifTrue: [ ^ intent isIn: true ; isOut: true ; yourself ].
-
-	paramF77 incomingAccesses ifEmpty:  [ ^ intent isIn: true ; yourself ].
-
-	intent isIn: (paramF77 incomingAccesses anySatisfy: [ :acc | acc isWrite not]).
-	intent isOut: (paramF77 incomingAccesses anySatisfy: #isWrite).
-
-	^intent
+	^paramF77 propertyNamed: #intent
 ]
 
 { #category : 'accessing - private tests' }
@@ -178,7 +168,7 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranTWithParameters: aF
 	parametersToDeclare do: [ :paramFast77 |
 		paramFast77 famixParameter
 			propertyNamed: #intent
-			put: (self parameterIntent: paramFast77 famixParameter).
+			ifAbsentPut: [self parameterIntent: paramFast77 famixParameter].
 	].
 
 	self stack top parameters: (self visitFASTFortranList: parametersToDeclare).
