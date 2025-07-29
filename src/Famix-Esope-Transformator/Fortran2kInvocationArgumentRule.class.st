@@ -24,12 +24,14 @@ Fortran2kInvocationArgumentRule >> getSecondaryIntent: secondaryFamixParameter i
 	"gets intent of secondaryFamixParameter.
 	 If it is already set we get it, otherwise, need to get FAST of secondaryFamixProcedure"
 
-	(secondaryFamixParameter propertyNamed: #intent)
+	(secondaryFamixParameter propertyNamed: #intent ifAbsent: [ nil ])
 		ifNotNil: [ :secondaryIntent | ^secondaryIntent ].
 
 	secondaryFamixProcedure bindFASTModel.
 
-	Fortran2kIntentAbstractRule checkAllRulesFor: secondaryFamixParameter
+	Fortran2kIntentAbstractRule checkAllRulesFor: secondaryFamixParameter.
+
+	^self getIntent: secondaryFamixParameter
 ]
 
 { #category : 'running' }
