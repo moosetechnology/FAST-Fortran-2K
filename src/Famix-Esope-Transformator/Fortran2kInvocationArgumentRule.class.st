@@ -1,9 +1,9 @@
 Class {
 	#name : 'Fortran2kInvocationArgumentRule',
 	#superclass : 'Fortran2kAbstractInvocationArgumentRule',
-	#category : 'Famix-Esope-Transformator-Visitors',
+	#category : 'Famix-Esope-Transformator-ParameterIntent',
 	#package : 'Famix-Esope-Transformator',
-	#tag : 'Visitors'
+	#tag : 'ParameterIntent'
 }
 
 { #category : 'running' }
@@ -24,12 +24,14 @@ Fortran2kInvocationArgumentRule >> getSecondaryIntent: secondaryFamixParameter i
 	"gets intent of secondaryFamixParameter.
 	 If it is already set we get it, otherwise, need to get FAST of secondaryFamixProcedure"
 
-	(secondaryFamixParameter propertyNamed: #intent)
+	(secondaryFamixParameter propertyNamed: #intent ifAbsent: [ nil ])
 		ifNotNil: [ :secondaryIntent | ^secondaryIntent ].
 
 	secondaryFamixProcedure bindFASTModel.
 
-	Fortran2kIntentAbstractRule checkAllRulesFor: secondaryFamixParameter
+	Fortran2kIntentAbstractRule checkAllRulesFor: secondaryFamixParameter.
+
+	^self getIntent: secondaryFamixParameter
 ]
 
 { #category : 'running' }
@@ -47,8 +49,12 @@ Fortran2kInvocationArgumentRule >> intentFor: aFamixF77Parameter fromInvocation:
 
 { #category : 'running' }
 Fortran2kInvocationArgumentRule >> setIntent: primaryFamixParameter fromParameter: anInteger inProcedure: secondaryFamixProcedure [
+	"The secondaryFamixProcedure might sometimes have no parameters (when it is intrinsic for example)
+	 so we need to check for that"
 
 	| secondaryFamixParameter primaryIntent secondaryIntent |
+
+	(secondaryFamixProcedure parameters size < anInteger) ifTrue: [ ^self ].
 
 	secondaryFamixParameter := secondaryFamixProcedure parameters at: anInteger.
 

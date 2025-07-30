@@ -7,9 +7,9 @@ It has one method `#on:` that runs the rule on a FamixF77Parameter and sets its 
 Class {
 	#name : 'Fortran2kIntentAbstractRule',
 	#superclass : 'Object',
-	#category : 'Famix-Esope-Transformator-Visitors',
+	#category : 'Famix-Esope-Transformator-ParameterIntent',
 	#package : 'Famix-Esope-Transformator',
-	#tag : 'Visitors'
+	#tag : 'ParameterIntent'
 }
 
 { #category : 'testing' }
@@ -27,7 +27,7 @@ Fortran2kIntentAbstractRule class >> checkAllRulesFor: aFamixF77Parameter [
 	{ Fortran2kAccessRule .
 	  Fortran2kSpecialInvocationInoutArgumentRule .
 	  Fortran2kSpecialInvocationOutArgumentRule .
-	  Fortran2kInvocationArgumentRule }
+	  "Fortran2kInvocationArgumentRule" }
 		do: [ :rule |
 			rule check: aFamixF77Parameter.
 			(aFamixF77Parameter propertyNamed: #intent) isInOut

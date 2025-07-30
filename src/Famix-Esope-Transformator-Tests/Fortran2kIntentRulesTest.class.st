@@ -6,9 +6,9 @@ Class {
 		'famixInvocation',
 		'secondaryFamixRtn'
 	],
-	#category : 'Famix-Esope-Transformator-Tests-Visitors',
+	#category : 'Famix-Esope-Transformator-Tests-ParameterIntent',
 	#package : 'Famix-Esope-Transformator-Tests',
-	#tag : 'Visitors'
+	#tag : 'ParameterIntent'
 }
 
 { #category : 'running' }
@@ -177,6 +177,7 @@ Fortran2kIntentRulesTest >> testParametersIntentFromSecondary [
 	 famixParamF77 should be IN"
 
 	| intent |
+self skip: 'Until Fortran2kInvocationArgumentRule is reactivated in Fortran2kIntentAbstractRule class>>checkAllRulesFor'.
 
 	self buildModel.
 	(secondaryFamixRtn parameters first propertyNamed: #intent) isOut: true.
@@ -197,6 +198,7 @@ Fortran2kIntentRulesTest >> testParametersIntentFromSecondaryAndOther [
 	"Intent from Secondary (OUT) combined with some other rule (IN)"
 
 	| intent |
+self skip: 'Until Fortran2kInvocationArgumentRule is reactivated in Fortran2kIntentAbstractRule class>>checkAllRulesFor'.
 
 	self buildModel.
 	(secondaryFamixRtn parameters second propertyNamed: #intent) isOut: true.
@@ -209,6 +211,26 @@ Fortran2kIntentRulesTest >> testParametersIntentFromSecondaryAndOther [
 	self deny: intent isNil.
 	self assert: intent isIn.
 	self assert: intent isOut.
+
+]
+
+{ #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentFromSecondaryIntrinsic [
+	"When the secondaryFamixRtn is intrinsic or stub, it has no parameter
+	 The rule does not apply then"
+
+	| intent |
+
+	self buildModel.
+	secondaryFamixRtn parameters: #().
+
+	self computeIntent: famixParamF77.
+
+	intent := famixParamF77 propertyNamed: #intent.
+ 
+	self deny: intent isNil.
+	self deny: intent isIn.
+	self deny: intent isOut.
 
 ]
 
@@ -226,20 +248,45 @@ Fortran2kIntentRulesTest >> testParametersIntentNonParameterArgument [
 { #category : 'tests' }
 Fortran2kIntentRulesTest >> testParametersIntentNotAllrules [
 	"if intent becomes inOut after a rule, subsequent rules are not tested
-	 Emptying parameters of secondaryFamixRtn raises an error in Fortran2kInvocationArgumentRule"
+	 Breaking the binding between famixInvocation and the FASTFortranCallStatement
+	  raises an error in Fortran2kAbstractInvocationArgumentRule"
 
 	| intent |
 
 	self buildModel.
-	secondaryFamixRtn parameters: #().
+	famixInvocation fast: nil.
 
-	self should: [self computeIntent: famixParamF77]  raise: SubscriptOutOfBounds.
+	self should: [self computeIntent: famixParamF77]  raise: MessageNotUnderstood.
 
 	intent := famixParamF77 propertyNamed: #intent.
 	intent isIn: true.
 	intent isOut: true.
 
- 	self shouldnt: [self computeIntent: famixParamF77]  raise: SubscriptOutOfBounds.
+ 	self shouldnt: [self computeIntent: famixParamF77]  raise: MessageNotUnderstood.
+
+]
+
+{ #category : 'tests' }
+Fortran2kIntentRulesTest >> testParametersIntentSpecialInvocationDifferentBinding [
+	"Carrefour does not always bind FamixF77Parameter-s to FAST property #famixParameter
+	 - remove 1st argument of invocation otherwise the rule does not apply
+	 - change the (now) 1st argument binding"
+
+	| intent |
+
+	self buildModel.
+	famixInvocation fast name: 'ajpnt'.
+	famixInvocation fast arguments remove: (famixInvocation fast arguments first).
+	famixInvocation fast arguments anyOne famixParameter: nil.
+	famixInvocation fast arguments anyOne famixVariable: famixParamF77.
+
+	self computeIntent: famixParamF77.
+
+	intent := famixParamF77 propertyNamed: #intent.
+ 
+	self deny: intent isNil.
+	self assert: intent isIn.
+	self assert: intent isOut.
 
 ]
 

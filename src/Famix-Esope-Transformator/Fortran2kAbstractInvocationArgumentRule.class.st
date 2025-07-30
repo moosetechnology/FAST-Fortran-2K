@@ -9,17 +9,20 @@ It must define methods:
 Class {
 	#name : 'Fortran2kAbstractInvocationArgumentRule',
 	#superclass : 'Fortran2kIntentAbstractRule',
-	#category : 'Famix-Esope-Transformator-Visitors',
+	#category : 'Famix-Esope-Transformator-ParameterIntent',
 	#package : 'Famix-Esope-Transformator',
-	#tag : 'Visitors'
+	#tag : 'ParameterIntent'
 }
 
 { #category : 'running' }
 Fortran2kAbstractInvocationArgumentRule >> argument: fastArgument matchesParameter: aFamixF77Parameter [
 
+	"Note: famix entity is not always stored correctly (ie. in #famixParameter) apparently"
+
 	fastArgument isVariableEntity ifFalse: [ ^false ].
 	fastArgument isFieldAccess ifTrue: [ ^false ].
-	^fastArgument famixParameter = aFamixF77Parameter
+	(fastArgument famixParameter = aFamixF77Parameter) ifTrue: [ ^true ].
+	^fastArgument famixVariable = aFamixF77Parameter
 ]
 
 { #category : 'running' }

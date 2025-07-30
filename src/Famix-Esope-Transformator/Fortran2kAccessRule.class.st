@@ -7,9 +7,9 @@ Guess the intent of a parameter from its accesses
 Class {
 	#name : 'Fortran2kAccessRule',
 	#superclass : 'Fortran2kIntentAbstractRule',
-	#category : 'Famix-Esope-Transformator-Visitors',
+	#category : 'Famix-Esope-Transformator-ParameterIntent',
 	#package : 'Famix-Esope-Transformator',
-	#tag : 'Visitors'
+	#tag : 'ParameterIntent'
 }
 
 { #category : 'running' }
