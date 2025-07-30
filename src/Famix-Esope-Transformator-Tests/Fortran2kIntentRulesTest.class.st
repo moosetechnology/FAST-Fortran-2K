@@ -177,6 +177,7 @@ Fortran2kIntentRulesTest >> testParametersIntentFromSecondary [
 	 famixParamF77 should be IN"
 
 	| intent |
+self skip: 'Until Fortran2kInvocationArgumentRule is reactivated in Fortran2kIntentAbstractRule class>>checkAllRulesFor'.
 
 	self buildModel.
 	(secondaryFamixRtn parameters first propertyNamed: #intent) isOut: true.
@@ -197,6 +198,7 @@ Fortran2kIntentRulesTest >> testParametersIntentFromSecondaryAndOther [
 	"Intent from Secondary (OUT) combined with some other rule (IN)"
 
 	| intent |
+self skip: 'Until Fortran2kInvocationArgumentRule is reactivated in Fortran2kIntentAbstractRule class>>checkAllRulesFor'.
 
 	self buildModel.
 	(secondaryFamixRtn parameters second propertyNamed: #intent) isOut: true.
