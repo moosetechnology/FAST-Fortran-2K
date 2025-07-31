@@ -5,9 +5,9 @@ Class {
 		'isIn',
 		'isOut'
 	],
-	#category : 'Famix-Esope-Transformator-Main',
+	#category : 'Famix-Esope-Transformator-ExtraModel',
 	#package : 'Famix-Esope-Transformator',
-	#tag : 'Main'
+	#tag : 'ExtraModel'
 }
 
 { #category : 'visiting' }
