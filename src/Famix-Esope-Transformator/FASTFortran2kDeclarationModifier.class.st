@@ -6,7 +6,7 @@ these are not real FAST entities, they are not part of the meta-model
 Class {
 	#name : 'FASTFortran2kDeclarationModifier',
 	#superclass : 'Object',
-	#category : 'Famix-Esope-Transformator-Main',
+	#category : 'Famix-Esope-Transformator-ExtraModel',
 	#package : 'Famix-Esope-Transformator',
-	#tag : 'Main'
+	#tag : 'ExtraModel'
 }

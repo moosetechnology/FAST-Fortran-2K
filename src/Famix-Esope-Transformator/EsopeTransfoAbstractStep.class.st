@@ -42,7 +42,7 @@ EsopeTransfoAbstractStep >> famixModel [
 ]
 
 { #category : 'private' }
-EsopeTransfoAbstractStep >> fastModelFor: famixProgUnit [
+EsopeTransfoAbstractStep >> fastProgramUnitFor: famixProgUnit [
 
 	| fastProgramUnit |
 	famixProgUnit bindFASTModel.

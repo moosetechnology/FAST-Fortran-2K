@@ -1,9 +1,9 @@
 Class {
 	#name : 'FASTFortranParameterExtractionVisitor',
 	#superclass : 'FASTFortranVisitor',
-	#category : 'Famix-Esope-Transformator-Segment',
+	#category : 'Famix-Esope-Transformator-Visitors',
 	#package : 'Famix-Esope-Transformator',
-	#tag : 'Segment'
+	#tag : 'Visitors'
 }
 
 { #category : 'visiting' }
