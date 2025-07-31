@@ -52,11 +52,12 @@ EsopeTransfoStepMigrateProgramUnits >> run [
 			famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
 				famixProgUnit class = FamixF77IncludedFile ifFalse: [
 
-					fastProgramUnit := self fastModelFor: famixProgUnit.
+					fastProgramUnit := self fastProgramUnitFor: famixProgUnit.
 					FASTEsopeObsoleteCommandRule simplify: fastProgramUnit.
 					fastFortran2kProgramUnit := self migrateProgramUnitAST: fastProgramUnit.
 					FASTEsopeSimplifier simplify: fastFortran2kProgramUnit.
-					self collectUsesNeeded: fastProgramUnit
+					self collectUsesNeeded: fastProgramUnit.
+					CRFEsopeBindingCleaner cleanModel: fastProgramUnit mooseModel.
 				]
 			]
 		]
