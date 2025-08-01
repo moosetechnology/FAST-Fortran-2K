@@ -774,7 +774,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranParameterStatement
 	aFASTFortranParameterStatement declarators do: [ :paramDeclarator |
 		(self findVariableDeclaration: paramDeclarator name in: stack top statements)
 			ifNotNil: [ :declarator | 
-				declarator parentDeclaration  addModifier: #parameter.
+				declarator parentDeclaration addModifier: FASTFortran2kParameterModifier new.
 				declarator expression: (paramDeclarator expression accept: self)
 		]
 	].
@@ -853,7 +853,7 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranSaveStatement: aFA
 
 	aFASTFortranSaveStatement declarators do: [ :saveDeclarator |
 		(self findVariableDeclaration: saveDeclarator name in: stack top statements)
-			ifNotNil: [ :declarator | declarator parentDeclaration addModifier: #save ]
+			ifNotNil: [ :declarator | declarator parentDeclaration addModifier: FASTFortran2kSaveModifier new ]
 	].
 
 	^self model2k newNullEntityStatement
