@@ -862,13 +862,6 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kMapStatement: aFAST
 
 ]
 
-{ #category : 'visiting' }
-FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kModifier: aFASTFortran2kModifier [ 
-
-	self
-		<< aFASTFortran2kModifier token
-]
-
 { #category : 'visiting - statements' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kModifiers: modifiers [
 	"modifier are simple bytestring"
