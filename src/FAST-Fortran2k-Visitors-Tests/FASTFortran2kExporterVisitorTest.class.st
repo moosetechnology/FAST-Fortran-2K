@@ -157,7 +157,7 @@ FASTFortran2kExporterVisitorTest >> testLogicalIfStatementWithWrite [
 '
 ]
 
-{ #category : 'testing - type-definitions' }
+{ #category : 'testing - modifiers' }
 FASTFortran2kExporterVisitorTest >> testModifierIntrinsic [
 
 	self
@@ -165,7 +165,7 @@ FASTFortran2kExporterVisitorTest >> testModifierIntrinsic [
 		equals: 'intrinsic'.
 ]
 
-{ #category : 'testing - type-definitions' }
+{ #category : 'testing - modifiers' }
 FASTFortran2kExporterVisitorTest >> testModifierParameterIntentDefault [
 
 	self
@@ -173,7 +173,7 @@ FASTFortran2kExporterVisitorTest >> testModifierParameterIntentDefault [
 		equals: 'intent(in)'.
 ]
 
-{ #category : 'testing - type-definitions' }
+{ #category : 'testing - modifiers' }
 FASTFortran2kExporterVisitorTest >> testModifierParameterIntentIn [
 
 	self
@@ -181,7 +181,7 @@ FASTFortran2kExporterVisitorTest >> testModifierParameterIntentIn [
 		equals: 'intent(in)'.
 ]
 
-{ #category : 'testing - type-definitions' }
+{ #category : 'testing - modifiers' }
 FASTFortran2kExporterVisitorTest >> testModifierParameterIntentInOut [
 
 	self
@@ -189,7 +189,7 @@ FASTFortran2kExporterVisitorTest >> testModifierParameterIntentInOut [
 		equals: 'intent(inOut)'.
 ]
 
-{ #category : 'testing - type-definitions' }
+{ #category : 'testing - modifiers' }
 FASTFortran2kExporterVisitorTest >> testModifierParameterIntentOut [
 
 	self
@@ -197,7 +197,7 @@ FASTFortran2kExporterVisitorTest >> testModifierParameterIntentOut [
 		equals: 'intent(out)'.
 ]
 
-{ #category : 'testing - type-definitions' }
+{ #category : 'testing - modifiers' }
 FASTFortran2kExporterVisitorTest >> testModifierPointer [
 
 	self
@@ -205,7 +205,7 @@ FASTFortran2kExporterVisitorTest >> testModifierPointer [
 		equals: 'pointer'.
 ]
 
-{ #category : 'testing - type-definitions' }
+{ #category : 'testing - modifiers' }
 FASTFortran2kExporterVisitorTest >> testModifierPrivate [
 
 	self
@@ -213,7 +213,7 @@ FASTFortran2kExporterVisitorTest >> testModifierPrivate [
 		equals: 'private'.
 ]
 
-{ #category : 'testing - type-definitions' }
+{ #category : 'testing - modifiers' }
 FASTFortran2kExporterVisitorTest >> testModifierPublic [
 
 	self
