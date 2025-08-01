@@ -956,6 +956,12 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kParameterIntent: aF
 ]
 
 { #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kParameterModifier: aFASTFortran2kModifier [
+
+	self << 'parameter'
+]
+
+{ #category : 'visiting' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kParameterStatement: aFASTFortran2kParameterStatement [
 
 	self visitFASTFortranParameterStatement: aFASTFortran2kParameterStatement 
@@ -1115,6 +1121,12 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kRewindStatement: aF
 	self visitFASTFortran2kAbstractIOStatement: aFASTFortran2kRewindStatement.
 	self newLine
 
+]
+
+{ #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kSaveModifier: aFASTFortran2kModifier [
+
+	self << 'save'
 ]
 
 { #category : 'visiting' }

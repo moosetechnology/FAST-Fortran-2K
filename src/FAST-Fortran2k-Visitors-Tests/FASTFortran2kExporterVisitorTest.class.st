@@ -166,6 +166,14 @@ FASTFortran2kExporterVisitorTest >> testModifierIntrinsic [
 ]
 
 { #category : 'testing - modifiers' }
+FASTFortran2kExporterVisitorTest >> testModifierParameter [
+
+	self
+		assertExport: FASTFortran2kParameterModifier new
+		equals: 'parameter'.
+]
+
+{ #category : 'testing - modifiers' }
 FASTFortran2kExporterVisitorTest >> testModifierParameterIntentDefault [
 
 	self
@@ -219,6 +227,14 @@ FASTFortran2kExporterVisitorTest >> testModifierPublic [
 	self
 		assertExport: FASTFortran2kPublicModifier new
 		equals: 'public'.
+]
+
+{ #category : 'testing - modifiers' }
+FASTFortran2kExporterVisitorTest >> testModifierSave [
+
+	self
+		assertExport: FASTFortran2kSaveModifier new
+		equals: 'save'.
 ]
 
 { #category : 'testing - type-definitions' }
