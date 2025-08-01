@@ -862,13 +862,6 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kMapStatement: aFAST
 
 ]
 
-{ #category : 'visiting' }
-FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kModifier: aFASTFortran2kModifier [ 
-
-	self
-		<< aFASTFortran2kModifier token
-]
-
 { #category : 'visiting - statements' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kModifiers: modifiers [
 	"modifier are simple bytestring"
@@ -960,6 +953,12 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kParameterIntent: aF
 				ifFalse: [ 'intent(out)' ]
 		])
 
+]
+
+{ #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kParameterModifier: aFASTFortran2kModifier [
+
+	self << 'parameter'
 ]
 
 { #category : 'visiting' }
@@ -1122,6 +1121,12 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kRewindStatement: aF
 	self visitFASTFortran2kAbstractIOStatement: aFASTFortran2kRewindStatement.
 	self newLine
 
+]
+
+{ #category : 'visiting' }
+FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kSaveModifier: aFASTFortran2kModifier [
+
+	self << 'save'
 ]
 
 { #category : 'visiting' }
