@@ -1,3 +1,8 @@
+"
+Intent modifier for program units' parameter. Can be in, out, or inOut
+Not to be confused with the ParameterModifier which is used to decalre named constant
+
+"
 Class {
 	#name : 'FASTFortran2kParameterIntent',
 	#superclass : 'FASTFortran2kDeclarationModifier',

@@ -79,7 +79,7 @@ FASTFortranMainTransformationVisitorTest >> testParameterStatement [
 	self assert: entity statementBlock statements third class equals: FASTFortran2kNullEntityStatement.
 
 	entity := entity statementBlock statements second.
-	self assert: entity modifiers anyOne equals: 'parameter'.
+	self assert: entity modifiers anyOne class equals: FASTFortran2kParameterModifier.
 	self assert: entity declarators size equals: 1.
 
 	entity := entity declarators anyOne.
@@ -454,7 +454,8 @@ FASTFortranMainTransformationVisitorTest >> testSaveStatement [
 	self assert: entity statementBlock statements third class equals: FASTFortran2kNullEntityStatement.
 
 	entity := entity statementBlock statements second.
-	self assert: entity modifiers anyOne equals: 'save'
+	self assert: entity modifiers size equals: 1.
+	self assert: entity modifiers anyOne class equals: FASTFortran2kSaveModifier
 ]
 
 { #category : 'running' }
