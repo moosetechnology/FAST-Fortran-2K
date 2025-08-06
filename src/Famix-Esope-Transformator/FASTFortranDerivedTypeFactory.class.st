@@ -378,12 +378,12 @@ FASTFortranDerivedTypeFactory >> makeProcedureAssignPointerToPointer [
         ! >> instead of "this => that" good usage
         type({1}), pointer, intent(out) :: this
         type({1}), pointer, intent(in) :: that
-        
+
         if ( ignore_do_trace ) then
             call ignore_{1}(this, ''this'', ''{1}_assign_pointer_to_pointer'')
             call ignore_{1}(that, ''that'', ''{1}_assign_pointer_to_pointer'')
         end if
-        
+
         call check_post_condition(.false. , ''{1}_assign_pointer_to_pointer'', ''should not be called'')
     end subroutine {1}_assign_pointer_to_pointer
 ';
@@ -396,7 +396,6 @@ FASTFortranDerivedTypeFactory >> makeProcedureBoxed [
 	^model newFormattedCodeString
 		  content: '
     ! ## boxed aspects
-
 
     subroutine boxed_{1}_seg_type(this_segment, type_name)
         class(boxed_{1}), intent(in) :: this_segment
@@ -445,7 +444,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureBoxed [
         call {1}_seg_load(this_{1}, file_number)
 
         call new_boxed_{1}(this_boxed_{1}, this_{1})
-        
+
         this_segment => this_boxed_{1}
         call check_post_condition(associated(this_segment), ''{1}_load'', ''associated(this_segment)'')
     end subroutine {1}_load
@@ -516,9 +515,9 @@ FASTFortranDerivedTypeFactory >> makeProcedureBoxed [
             ''segment_type_name == segment_type_name_expected'')
 
         call new_boxed_{1}(that_boxed_{1}, that_{1})
-        
+
         that_segment => that_boxed_{1}
-        
+
         call ajpnt(this, that_segment, segment_type_name, wanted_position, position)
     end subroutine {1}_ajpnt
 
@@ -527,7 +526,7 @@ FASTFortranDerivedTypeFactory >> makeProcedureBoxed [
         type({1}), pointer :: that_{1}
         type(str), pointer, intent(in) :: this
         integer, intent(in) :: position
-        
+
         call {1}_getpnt(this, that_{1}, position)
     end function {1}_mypnt
 
@@ -586,10 +585,10 @@ FASTFortranDerivedTypeFactory >> makeProcedureIgnore [
         character(len=*), intent(in) :: routine
 
         integer(int64) :: variable_loc
-                
+
         if ( ignore_do_trace ) then
             call ignore_type(''{1}'', variable_name, routine)
-            
+
             if ( ignore_get_false(0) ) then
                 variable_loc = transfer(c_loc(variable), variable_loc)
                 write(*,*) ''ignore: variable_loc ='', variable_loc

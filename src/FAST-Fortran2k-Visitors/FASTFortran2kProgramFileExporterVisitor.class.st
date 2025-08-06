@@ -588,7 +588,6 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kFormattedCodeString
 
 	self 
 		skipLine: aFASTFortran2kFormattedCodeString ;
-		indented: '' ; 
 		<< (aFASTFortran2kFormattedCodeString content format:
 		 aFASTFortran2kFormattedCodeString values);
 		newLine
@@ -1149,7 +1148,6 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kSourceCodeString: a
 
 	self 
 		skipLine: aFASTFortran2kSourceCodeString ;
-		indented: '' ; 
 		<< aFASTFortran2kSourceCodeString content ;
 		newLine 
 ]
