@@ -233,15 +233,15 @@ FASTFortranDerivedTypeFactory >> if: condition then: thenStatements else: elseSt
 { #category : 'entity-creation' }
 FASTFortranDerivedTypeFactory >> literal: anObject [
 
-	(anObject = true) ifTrue: [ ^model newBooleanLiteral primitiveValue: '.true.' ].
-	(anObject = false) ifTrue: [ ^model newBooleanLiteral primitiveValue: '.false.' ].
-
 	(anObject isCharacter) ifTrue: [ ^model newCharacterLiteral primitiveValue: anObject asString ].
 	(anObject isString) ifTrue: [ ^model newCharacterLiteral primitiveValue: anObject ].
 
 	(anObject isInteger) ifTrue: [ ^model newIntegerLiteral primitiveValue: anObject asString ].
 
 	(anObject isFloat) ifTrue: [ ^model newRealLiteral primitiveValue: anObject asString ].
+
+	(anObject = true) ifTrue: [ ^model newBooleanLiteral primitiveValue: '.true.' ].
+	(anObject = false) ifTrue: [ ^model newBooleanLiteral primitiveValue: '.false.' ].
 
 	Error signal: 'Unknown literal: ' , anObject asString
 ]
