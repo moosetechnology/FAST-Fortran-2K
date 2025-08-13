@@ -22,7 +22,9 @@ BaselineOfFASTFortran2k >> defineDependencies: spec [
 	spec
 		baseline: 'CarrefourEsope'
 		with: [ spec
-				repository: 'github://moosetechnology/Carrefour-Esope:main' ]
+				repository: 'github://moosetechnology/Carrefour-Esope:main' ] ;
+		baseline: 'Clap'
+		with: [ spec repository: 'github://pharo-contributions/clap-st' ]
 ]
 
 { #category : 'baselines' }
@@ -45,7 +47,7 @@ BaselineOfFASTFortran2k >> definePackages: spec [
 		package: 'FAST-Fortran2k-Visitors'
 		with: [ spec requires: #( 'FAST-Fortran2k-Entities' ) ];
 		package: 'Famix-Esope-Transformator'
-		with: [ spec requires: #( 'FAST-Fortran2k-Visitors' ) ];
+		with: [ spec requires: #( 'FAST-Fortran2k-Visitors' 'Clap' ) ];
 		package: 'Famix-Esope-Transformator-Tests'
 		with: [ spec requires: #( 'Famix-Esope-Transformator' ) ];
 		package: 'FAST-Fortran2k-Visitors-Tests'
