@@ -19,10 +19,10 @@ FASTFortran2kProgramUnit >> addUse: usedName [
     self statementBlock statements
         detect: [ :statement | 
             statement class = FASTFortran2kUseStatement
-                and: [ statement name asLowercase = usedName asLowercase ] ]
+                and: [ statement name sameAs: usedName ] ]
         ifNone: [ 
             self statementBlock statements
-                addFirst: (self mooseModel newUseStatement name: usedName) 
+                addFirst: (self mooseModel newUseStatement name: usedName)
         ]
 ]
 

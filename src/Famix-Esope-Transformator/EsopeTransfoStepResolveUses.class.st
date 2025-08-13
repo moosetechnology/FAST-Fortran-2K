@@ -27,8 +27,12 @@ EsopeTransfoStepResolveUses >> run [
 		fmxUser := association key.
 		fmxNeeded := association value.
 
-		fmxUser fast transformed2k useSource
-			addUse: (fmxNeeded migratedModuleName)
+		fmxNeeded migratedModuleName trim 
+			ifEmpty: [ "intrinsic routine: 'FamixEsopeResolver class >> intrinsicRoutines' " ]
+			ifNotEmpty: [ 
+				fmxUser fast transformed2k useSource
+					addUse: (fmxNeeded migratedModuleName)
+			]
 	]
 ]
 
