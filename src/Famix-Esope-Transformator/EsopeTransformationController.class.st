@@ -60,18 +60,16 @@ Class {
 { #category : 'import-export' }
 EsopeTransformationController class >> sourceFolder: aSourcePathString includeFolder: anIncludePathString [
 
-	| famixEsopeModel transpiler |
+	| famixEsopeModel |
 	famixEsopeModel := FamixEsopeImporter new 
 		sourceFolder: aSourcePathString ;
 		includeFolder: anIncludePathString ;
 		import.
 
-	transpiler := self new.
-	transpiler
+	self new
 		famixModel: famixEsopeModel ; 
 		isFpm: true ;
-		run.
-	transpiler halt.
+		run
 ]
 
 { #category : 'accessing' }
