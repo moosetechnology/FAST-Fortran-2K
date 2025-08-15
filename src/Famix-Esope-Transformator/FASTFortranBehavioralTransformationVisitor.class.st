@@ -728,7 +728,15 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerLiteral: an
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranIntegerType: aFASTFortranIntegerType [
 
-	^ self model2k newIntegerType
+	| fastF2kIntegerType |
+
+	fastF2kIntegerType := self model2k newIntegerType.
+
+	aFASTFortranIntegerType size ifNotNil: [ :size |
+		fastF2kIntegerType kind: (size accept: self)
+	].
+
+	^fastF2kIntegerType
 ]
 
 { #category : 'visiting' }
@@ -742,7 +750,15 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLabelReference: aF
 { #category : 'visiting' }
 FASTFortranBehavioralTransformationVisitor >> visitFASTFortranLogicalType: aFASTFortranLogicalType [
 
-	^ self model2k newLogicalType
+	| fastF2kLogicalType |
+
+	fastF2kLogicalType := self model2k newLogicalType.
+
+	aFASTFortranLogicalType size ifNotNil: [ :size |
+		fastF2kLogicalType kind: (size accept: self)
+	].
+
+	^fastF2kLogicalType
 ]
 
 { #category : 'visiting - expressions' }
@@ -816,9 +832,17 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealLiteral: aReal
 ]
 
 { #category : 'visiting' }
-FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealType: aRealTypeNode [
+FASTFortranBehavioralTransformationVisitor >> visitFASTFortranRealType: aFASTFortranRealType [
 
-	^ self model2k newRealType
+	| fastF2kRealType |
+
+	fastF2kRealType := self model2k newRealType.
+
+	aFASTFortranRealType size ifNotNil: [ :size |
+		fastF2kRealType kind: (size accept: self)
+	].
+
+	^fastF2kRealType
 ]
 
 { #category : 'visiting - statements' }
