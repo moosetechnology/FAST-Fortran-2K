@@ -12,7 +12,8 @@ Class {
 		'uselessDeclarations',
 		'allParameters',
 		'allArguments',
-		'ioKeywordArguments'
+		'ioKeywordArguments',
+		'inInvocationCall'
 	],
 	#category : 'Famix-Esope-Transformator-Simplification',
 	#package : 'Famix-Esope-Transformator',
@@ -22,7 +23,8 @@ Class {
 { #category : 'private' }
 FASTEsopeUselessDeclarationRule >> checkUselessDeclarations [
 
-	self removeIOKeywordArgsAndInvocationArgsFromUselessDeclarations.
+	self removeIOKeywordArgumentsFromUselessDeclarations.
+	self removeInvocationArgumentsFromUselessDeclarations.
 
 	uselessDeclarations do: [ :toSimplify |
 		toSimplify ifNotNil: [
@@ -41,17 +43,22 @@ FASTEsopeUselessDeclarationRule >> initialize [
 	uselessDeclarations := Dictionary new.
 	allParameters := #().
 	allArguments := OrderedCollection new.
-	ioKeywordArguments := OrderedCollection new
+	ioKeywordArguments := OrderedCollection new.
+	inInvocationCall := false
 ]
 
 { #category : 'private' }
-FASTEsopeUselessDeclarationRule >> removeIOKeywordArgsAndInvocationArgsFromUselessDeclarations [
+FASTEsopeUselessDeclarationRule >> removeIOKeywordArgumentsFromUselessDeclarations [
 
 	ioKeywordArguments do: [ :ioKeywordArgument | 
-		uselessDeclarations removeKey: ioKeywordArgument ifAbsent: [ "Nothing" ] ].
-	
+		uselessDeclarations removeKey: ioKeywordArgument ifAbsent: [ "Nothing" ] ]
+]
+
+{ #category : 'private' }
+FASTEsopeUselessDeclarationRule >> removeInvocationArgumentsFromUselessDeclarations [
+
 	allArguments do: [ :callArgument | 
-		uselessDeclarations removeKey: callArgument ifAbsent: [ "Nothing" ] ].
+		uselessDeclarations removeKey: callArgument ifAbsent: [ "Nothing" ] ]
 ]
 
 { #category : 'accessing - private tests' }
@@ -156,6 +163,8 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kTWithDeclarators: aFASTFort
 { #category : 'visiting - expressions' }
 FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariable: aFASTFortranVariable [
 
+	inInvocationCall ifTrue: [ allArguments add: aFASTFortranVariable name ].
+
 	uselessDeclarations removeKey: aFASTFortranVariable name ifAbsent: [ "nothing" ]
 ]
 
@@ -196,8 +205,11 @@ FASTEsopeUselessDeclarationRule >> visitFASTFortran2kVariableDeclarator: aFASTFo
 FASTEsopeUselessDeclarationRule >> visitFASTTWithArguments: aFASTFortran2kTWithArguments [
 	"arguments in call are considered always used so we keep their names there to not add them to the useless list"
 	
-	"We need to collect in allArguments all arguments"
-	allArguments addAll: (aFASTFortran2kTWithArguments arguments collect: #name)
+	"We need to collect all arguments in the allArguments variable.
+	We should put a flag (inInvocationCall to true) to let subsequent visitors know that we are in an invocation"
+	inInvocationCall := true.
+	super visitFASTTWithArguments: aFASTFortran2kTWithArguments.
+	inInvocationCall := false.
 ]
 
 { #category : 'visiting - traits' }

@@ -17,8 +17,10 @@ FASTEsopeUselessDeclarationRuleTest >> testArgumentIsUseful [
 
 	| model |
 	model := FASTFortran2kModel new.
-	ast := self function: #fctBigSmall type: #(character 20).
-	self addStatement: (self callStatement: #aCall arguments: #(arg1 arg2)).
+	ast := ((self function: #fctBigSmall type: #(character 20))
+		mooseModel: model; yourself).
+	self addStatement: ((self callStatement: #aCall arguments: #(arg1 arg2))
+		mooseModel: model; yourself).
 	self addStatement: ((self declarationStatement: #arg1 type: #integer)
 		mooseModel: model; yourself).
 	self addStatement: ((self declarationStatement: #arg2 type: #real)

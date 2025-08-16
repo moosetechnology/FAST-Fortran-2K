@@ -348,6 +348,15 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortran2kScalarVariable: aFASTFortra
 
 ]
 
+{ #category : 'visiting - traits' }
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kTWithDeclarators: aFASTFortran2kTWithDeclarators [
+	"We will check to see if the declarators are initialized during declaration"
+
+	aFASTFortran2kTWithDeclarators declarators do: [ :declarator |
+		declarator accept: self
+	]
+]
+
 { #category : 'visiting - expressions' }
 FASTEsopeUnassignedVariableRule >> visitFASTFortran2kVariable: aFASTFortranVariable [
 	"If we are in an assignment then register that this variable is assigned.
@@ -384,6 +393,15 @@ FASTEsopeUnassignedVariableRule >> visitFASTFortran2kVariableDeclarationStatemen
 	super visitFASTFortran2kVariableDeclarationStatement: aFASTFortranNode.
 
 	nodeStack pop
+]
+
+{ #category : 'visiting - statements' }
+FASTEsopeUnassignedVariableRule >> visitFASTFortran2kVariableDeclarator: aFASTFortran2kVariableDeclarator [
+	"If a declarator is initialized, then it has an expression. Therefore, it has been assigned"
+
+	aFASTFortran2kVariableDeclarator expression ifNotNil: [ 
+		assignedVariables add: aFASTFortran2kVariableDeclarator name
+	]
 ]
 
 { #category : 'visiting - statements' }
