@@ -791,7 +791,8 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIntegerLiteral: aFA
 { #category : 'visiting' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kIntegerType: aFASTFortran2kIntegerType [
 
-	^ self visitFASTFortranIntegerType: aFASTFortran2kIntegerType
+	self << 'integer'.
+	self visitFASTFortranTypeKind: aFASTFortran2kIntegerType kind
 ]
 
 { #category : 'visiting' }
@@ -846,7 +847,9 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kLabelReference: aFA
 { #category : 'visiting' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kLogicalType: aFASTFortran2kLogicalType [
 
-	self visitFASTFortranLogicalType: aFASTFortran2kLogicalType.
+	
+	self << 'logical'.
+	self visitFASTFortranTypeKind: aFASTFortran2kLogicalType kind
 
 ]
 
@@ -1104,7 +1107,8 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kRealLiteral: aFASTF
 { #category : 'visiting' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTFortran2kRealType: aFASTFortran2kRealType [
 
-	^ self visitFASTFortranRealType: aFASTFortran2kRealType
+	self << 'real'.
+	self visitFASTFortranTypeKind: aFASTFortran2kRealType kind 
 ]
 
 { #category : 'visiting - statements' }
