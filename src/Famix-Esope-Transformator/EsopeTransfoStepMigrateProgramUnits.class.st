@@ -45,14 +45,14 @@ EsopeTransfoStepMigrateProgramUnits >> migrateProgramUnitAST: aFASTProgramUnit [
 
 { #category : 'running' }
 EsopeTransfoStepMigrateProgramUnits >> run [ 
-
 	| fastFortran2kProgramUnit |
+
 	(self famixModel allWithType: FamixF77ProgramFile)
 		do: [ :famixProgFile |
 			famixProgFile programUnits do: [ :famixProgUnit || fastProgramUnit |
 				famixProgUnit class = FamixF77IncludedFile ifFalse: [
-
 					fastProgramUnit := self fastProgramUnitFor: famixProgUnit.
+					self declareUndeclaredVariablesIn: fastProgramUnit.
 					FASTEsopeObsoleteCommandRule simplify: fastProgramUnit.
 					fastFortran2kProgramUnit := self migrateProgramUnitAST: fastProgramUnit.
 					FASTEsopeSimplifier simplify: fastFortran2kProgramUnit.
