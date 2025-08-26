@@ -1254,6 +1254,8 @@ FASTFortranDerivedTypeFactory >> makeProceduresFromDimensioningExpressions [
     end if
 ' ;
 				values: { aFunctionName . name . (paramFactories at: i) name}
+				" see https://github.com/moosetechnology/FAST-Fortran-2K/issues/141
+				(paramFactories at: i) name must be the other param not the current one"
 			).
 
 			dimensioningExpressionsProcedures add: aFunction
