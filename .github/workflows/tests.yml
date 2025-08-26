@@ -17,8 +17,8 @@ jobs:
 # Optional inputs: un-comment the lines below. See documentation in the next commented paragraph.
     with:
       pharo-versions: "[ 'Moose64-trunk' ]"
-#        create-artifact: true
-#        image-name: ""
+        create-artifact: true
+        image-name: "Framatome"
 #        pre-upload-script: ""
 #        run-coverage: true # Don't forget to modify your .smalltalk.ston file!
 
