@@ -16,8 +16,8 @@ jobs:
     secrets: inherit
 # Optional inputs: un-comment the lines below. See documentation in the next commented paragraph.
     with:
-      pharo-versions: "[ 'Moose64-trunk' ]"
-      create-artifact: true
+      pharo-versions: "[ 'Moose64-13' ]"
+      create-artifact: ${{ github.event.pull_request.merged == true }} #Create artifact only when a pull request merges 
       image-name: "Framatome"
 #        pre-upload-script: ""
 #        run-coverage: true # Don't forget to modify your .smalltalk.ston file!
