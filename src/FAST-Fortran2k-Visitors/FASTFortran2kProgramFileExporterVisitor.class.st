@@ -45,7 +45,7 @@ FASTFortran2kProgramFileExporterVisitor >> initialize [
 { #category : 'visiting - statements' }
 FASTFortran2kProgramFileExporterVisitor >> isUseToIgnore: aModuleName [
 	
-	^#( pstr_mod wrstr_mod rdstr_mod ) includes: aModuleName asLowercase
+	^#( pstr_m wrstr_m rdstr_m ) includes: aModuleName asLowercase
 ]
 
 { #category : 'accessing - private tests' }
