@@ -24,7 +24,7 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentToDerivedTypeInMo
 	res := stmt accept: visitor.
 
 	self assert: res class equals: FASTFortran2kModule.
-	self assert: res name equals: 'foo_mod'.
+	self assert: res name equals: 'foo_m'.
 	
 	f2ksegment := res statementBlock statements detect: [ :e | e class = FASTFortran2kDerivedTypeDefinition ].
 	
@@ -58,7 +58,7 @@ FASTFortranSegmentTransformationVisitorTest >> testEsopeSegmentWithArrayFieldToD
 	res := stmt accept: visitor.
 
 	self assert: res class equals: FASTFortran2kModule.
-	self assert: res name equals: 'foo_mod'.
+	self assert: res name equals: 'foo_m'.
 
 	f2ksegment := res statementBlock statements detect: [ :e | e class = FASTFortran2kDerivedTypeDefinition ].
 
@@ -113,7 +113,7 @@ end module foo_mod
 	res := res anyOne.
 
 	self assert: res class equals: FASTFortran2kModule.
-	self assert: res name equals: 'foo_mod'.
+	self assert: res name equals: 'foo_m'.
 	
 	f2ksegment := res statementBlock statements detect: [ :e | e class = FASTFortran2kDerivedTypeDefinition ].
 	
@@ -155,7 +155,7 @@ end module bar_mod
 	self assert: modules size equals: 2.
 	
 	res := modules
-		detect: [:mod | mod name = 'foo_mod']
+		detect: [:mod | mod name = 'foo_m']
 		ifNone: [ self fail ] .
 
 	f2ksegment := res statementBlock statements detect: [ :e | e class = FASTFortran2kDerivedTypeDefinition ].
@@ -164,7 +164,7 @@ end module bar_mod
 	self assert: f2ksegment statements size equals: 0.
 
 	res := modules
-		detect: [:mod | mod name = 'bar_mod']
+		detect: [:mod | mod name = 'bar_m']
 		ifNone: [ self fail ] .
 
 	f2ksegment := res statementBlock statements detect: [ :e | e class = FASTFortran2kDerivedTypeDefinition ].
@@ -207,7 +207,7 @@ end module foo_mod
 	res := res anyOne.
 
 	self assert: res class equals: FASTFortran2kModule.
-	self assert: res name equals: 'foo_mod'.
+	self assert: res name equals: 'foo_m'.
 	
 	f2ksegment := res statementBlock statements detect: [ :e | e class = FASTFortran2kDerivedTypeDefinition ].
 	

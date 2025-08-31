@@ -40,7 +40,7 @@ FASTFortranProcedureTransformationVisitor >> createModule: famixEntity [
 	
 	
 	self model2k newProgramFile
-		filename: (famixEntity programFile filename copyUpToSubstring: '.') ,  '_mod.f90' ;
+		filename: (famixEntity programFile filename copyUpToSubstring: '.') ,  '_m.f90' ;
 		programUnits: {  module }.
 
 	^module

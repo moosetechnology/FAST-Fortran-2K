@@ -46,7 +46,7 @@ FASTFortranDerivedTypeFactory >> createModule [
 
 	name asLowercase = 'pstr' ifTrue: [ ^nil ].
 
-	module := model newModule name: name , '_mod'.
+	module := model newModule name: name , '_m'.
 
 	module statementBlock:(
 		model newStatementBlock statements: {
@@ -1362,10 +1362,10 @@ FASTFortranDerivedTypeFactory >> makeSegadjLocalDeclarations [
 FASTFortranDerivedTypeFactory >> makeSegmentModuleProlog [
 
 	^model newSourceCodeString content: '
-  use ignore_mod
-  use contract_mod
-  use segment_mod
-  use str_mod
+  use ignore_m
+  use contract_m
+  use segment_m
+  use str_m
 
   implicit none
   private

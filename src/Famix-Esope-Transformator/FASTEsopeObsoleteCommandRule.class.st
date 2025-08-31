@@ -113,6 +113,12 @@ FASTEsopeObsoleteCommandRule >> visitFASTFortranIfLogicalStatement: aFASTFortran
 	nodeStack pop
 ]
 
+{ #category : 'visiting' }
+FASTEsopeObsoleteCommandRule >> visitFASTFortranImplicitRange: aFASTFortranImplicitRange [
+
+	"nothing to do"
+]
+
 { #category : 'visiting - statements' }
 FASTEsopeObsoleteCommandRule >> visitFASTFortranStatementBlock: aFASTFortranStatementBlock [
 

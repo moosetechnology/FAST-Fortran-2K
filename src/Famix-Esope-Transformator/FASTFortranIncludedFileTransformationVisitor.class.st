@@ -10,7 +10,7 @@ Class {
 FASTFortranIncludedFileTransformationVisitor >> fortran2kfilename: aFASTFortranIncludedFile [
 
 	^(aFASTFortranIncludedFile famix programFile filename 
-		copyUpToSubString: '.') , '_mod.f90'
+		copyUpToSubString: '.') , '_m.f90'
 ]
 
 { #category : 'visiting - esope' }

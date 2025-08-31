@@ -10,7 +10,7 @@ FamixEsopeSegment >> generateF2kInModel: anObject [
 { #category : '*Famix-Esope-Transformator' }
 FamixEsopeSegment >> migratedModuleName [
 
-	^self name, '_mod'
+	^self name, '_m'
 ]
 
 { #category : '*Famix-Esope-Transformator' }

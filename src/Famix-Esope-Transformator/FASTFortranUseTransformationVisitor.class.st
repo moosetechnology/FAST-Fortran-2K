@@ -136,6 +136,12 @@ FASTFortranUseTransformationVisitor >> visitFASTFortranFunctionCall: aFASTFortra
 	super visitFASTFortranFunctionCall: aFASTFortranFunctionCall
 ]
 
+{ #category : 'visiting' }
+FASTFortranUseTransformationVisitor >> visitFASTFortranImplicitRange: aFASTFortranImplicitRange [
+
+	"nothing to do"
+]
+
 { #category : 'visiting - statements' }
 FASTFortranUseTransformationVisitor >> visitFASTFortranVariableDeclarator: aFASTFortranVariableDeclarator [
 ]
