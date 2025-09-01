@@ -17,6 +17,5 @@ jobs:
     uses: moosetechnology/.github/.github/workflows/test-and-release.yml@main
     with:
       pharo-versions: "[ 'Moose64-13' ]"
-      create-artifact: true
       image-name: "EsopeToF2k"
       pre-upload-script: clap-script-launcher-generator.st
