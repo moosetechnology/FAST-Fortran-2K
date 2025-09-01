@@ -1,0 +1,22 @@
+name: Test and update release
+
+on:
+  push:
+    branches:
+      - master
+      - release
+  schedule:
+    - cron:  '0 0 1 * *'      # at 00:00 on day of month 1
+  workflow_dispatch:
+  release:
+    types: [created, edited]
+
+jobs:
+  run-tests-and-update-release:
+    name: Run tests and update release
+    uses: moosetechnology/.github/.github/workflows/test-and-release.yml@main
+    with:
+      pharo-versions: "[ 'Moose64-13' ]"
+      create-artifact: true
+      image-name: "EsopeToF2k"
+      pre-upload-script: clap-script-launcher-generator.st

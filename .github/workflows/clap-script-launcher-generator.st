@@ -1,7 +1,6 @@
 scriptName := 'esopeToF2k'.
 
 scriptContent := '#!/usr/bin/env bash
-
 # shell script for clap script command launcher
 
 set -euo pipefail
@@ -36,12 +35,17 @@ main "$@"
 
 exit 0
 ' format: { 
-	('${HOME}/' , (Smalltalk vm fileName asFileReference relativeToPath: FileLocator home) pathString).
+	('${HOME}/' , (Smalltalk vm fileName asFileReference relativeToPath: FileLocator home) pathString) .
 	('${HOME}/' , (SmalltalkImage current imagePath asFileReference relativeToPath: FileLocator home) pathString) .
 	('${HOME}/' , (FileSystem workingDirectory relativeToPath: FileLocator home) pathString) .
 	scriptName 
 }.
 
+"write the script in the root folder of the image"
 scriptName asFileReference 
-    writeStreamDo: [ :str | str truncate ;  << scriptContent withUnixLineEndings ] 
-    ifPresent: [ "nothing" ]
+    writeStreamDo: [ :str | 
+		str 
+			truncate ;  
+			<< scriptContent withUnixLineEndings 
+	] 
+    ifPresent: [ "script already exists: do nothing" ]
