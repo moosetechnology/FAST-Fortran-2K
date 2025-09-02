@@ -44,20 +44,28 @@ FASTFortranDerivedTypeFactory >> createModule [
 
 	| module |
 
-	name asLowercase = 'pstr' ifTrue: [ ^nil ].
+	"avoid migration of pstr, it's an special segment handled elsewhere"
+	(name sameAs: 'pstr') ifTrue: [ ^nil ].
 
 	module := model newModule name: name , '_m'.
 
-	module statementBlock:(
+	module statementBlock: (
 		model newStatementBlock statements: {
-			self makeSegmentModuleProlog.
-			self makeTypeDefinition .
+			self makeSegmentModuleProlog .
+			self makeDerivedTypeDefinition .
 			self makeSegmentTypeName .
 
-			self makeBoxedTypeDefinition .
+			self makeGenericInterfaces .
+		   self makeGenericSeginiInterface .
+			self makeGenericSegadjInterface .
+			self makeGenericSegparInterface .
+
 			self makeInterfaces
 		}
 	).
+
+	module statementBlock 
+		statements addAll: self makeDimensioningExpressionInterfaces.
 
 	module procedures addAll: (self makeProceduresFromDimensioningExpressions).
 	
@@ -277,93 +285,333 @@ FASTFortranDerivedTypeFactory >> makeContainsStatement [
 ]
 
 { #category : 'helpers-codeString' }
+FASTFortranDerivedTypeFactory >> makeDerivedTypeDefinition [
+
+	| derivedType |
+	derivedType := model newDerivedTypeDefinition
+		name: name ;
+		superType: 'segment';
+		yourself.
+
+	fields do: [ :fieldFactory |
+		fieldFactory createSegmentFieldDeclaration
+			ifNotNil: [ :declStatement | derivedType addStatement: declStatement ]
+		].
+	
+	derivedType addStatement: ( model newFormattedCodeString
+		content: '  contains
+    final :: {1}_finalize
+    procedure :: segsup => polymorphic_{1}_segsup
+    procedure :: segcop => polymorphic_{1}_segcop
+    procedure :: segmov => polymorphic_{1}_segmov
+    procedure :: segprt => polymorphic_{1}_segprt
+    procedure :: seg_store => polymorphic_{1}_seg_store
+    procedure :: seg_type => polymorphic_{1}_seg_type';
+		values: { name }
+	).
+
+	^derivedType
+
+]
+
+{ #category : 'api' }
+FASTFortranDerivedTypeFactory >> makeDimensioningExpressionInterfaces [
+	| paramFactories componentFactories dimensioningExpressionInterfaces |
+
+	paramFactories := self parameters.
+	componentFactories := self components.
+	dimensioningExpressionInterfaces := OrderedCollection new.
+
+	paramFactories ifNotEmpty: [ 
+		dimensioningExpressionInterfaces add: (self 
+			comment: '! begin: the fields dimensions from the parameters')
+	 ].
+
+	componentFactories do: [ :componentFactory |
+		1 to: componentFactory rank do: [ :i | | aFunction aFunctionName |
+			aFunctionName := componentFactory name, '_dim', i asString. 
+			aFunction := model newFunction
+				name: aFunctionName;
+				declaredType: (model newIntegerType);
+				yourself.
+
+			paramFactories do: [ :param |
+				aFunction addParameter: (self scalarVariable: param name)
+			].
+
+			aFunction initBody.
+
+			paramFactories do: [ :paramFactory |
+				aFunction addStatement: (paramFactory createSegcmdInFieldDeclaration)
+			].
+
+			dimensioningExpressionInterfaces add: aFunction
+		]
+	].
+
+	paramFactories ifNotEmpty: [ 
+		dimensioningExpressionInterfaces add: (self 
+			comment: '! end: the fields dimensions from the parameters')
+	 ].
+
+	^dimensioningExpressionInterfaces
+]
+
+{ #category : 'api' }
+FASTFortranDerivedTypeFactory >> makeGenericInterfaces [
+
+	^model newFormattedCodeString
+		content: '  interface assignment(=)
+    module subroutine book_assign_pointer_to_pointer(this, that)
+      ! >> Just to detect at compile-time "this = that" bad usage,
+      ! >> instead of "this => that" good usage
+      type(book), pointer, intent(out) :: this
+      type(book), pointer, intent(in) :: that
+    end subroutine book_assign_pointer_to_pointer
+  end interface
+
+  interface seg_type
+    module subroutine book_seg_type(this, type_name)
+      ! ## Return the name of the segment type
+      type(book), pointer, intent(in) :: this
+      character(len=segment_type_len), intent(out) :: type_name
+    end subroutine book_seg_type
+  end interface seg_type
+
+  interface segcop
+    module subroutine book_segcop(this, that)
+      ! ## Copy "this" segment to a new "that" segment
+      type(book), pointer, intent(in) :: this
+      type(book), pointer, intent(inout) :: that
+    end subroutine book_segcop
+  end interface segcop
+
+  interface segmov
+    module subroutine book_segmov(this, that)
+      ! ## Copy data from "this" segment to an existing "that" segment
+      ! ## "that" must have same dimensions than "this"
+      type(book), pointer, intent(in) :: this
+      type(book), pointer, intent(inout) :: that
+    end subroutine book_segmov
+  end interface segmov
+
+  interface segsup
+    module subroutine book_segsup(this)
+      ! ## Deletes ("supprimer" in French) the given "this" segment
+      type(book), pointer, intent(inout) :: this
+    end subroutine book_segsup
+  end interface segsup
+
+  interface seglik
+    pure logical module function book_seglik(this, that)
+      ! ## Does "that" segment has same dimensions than "this" segment
+      ! ## regarding the parameters?
+      type(book), pointer, intent(in) :: this
+      type(book), pointer, intent(in) :: that
+    end function book_seglik
+  end interface seglik
+
+  interface segprt
+    module subroutine book_segprt(this)
+      ! ## Print the given "this" segment
+      type(book), pointer, intent(in) :: this
+    end subroutine book_segprt
+  end interface segprt
+
+  interface segloc
+    integer(kind=int64) module function book_segloc(this)
+      ! ## Return a location of the "this" pointer
+      ! ## just to trace pointers during debug,
+      ! ## should not be use for other purpose !!!
+      use :: iso_fortran_env, only: int64
+      type(book), pointer, intent(in) :: this
+    end function book_segloc
+  end interface segloc
+
+  ! ## ''book'' interactions with file
+
+  interface seg_store
+    module subroutine book_seg_store(this, file_number)
+      ! ## Put the given "this" segment on the file referenced by "file_number"
+      type(book), pointer, intent(in) :: this
+      integer, intent(in) :: file_number
+    end subroutine book_seg_store
+  end interface seg_store
+
+  interface seg_load
+    module subroutine book_seg_load(this, file_number)
+      ! ## Get the given "this" segment on the file referenced by "file_number"
+      type(book), pointer, intent(inout) :: this
+      integer, intent(in) :: file_number
+    end subroutine book_seg_load
+  end interface seg_load
+
+  ! ## ''book'' interactions with ''str"
+
+  interface ajpnt
+    module subroutine book_ajpnt(this, that_book, segment_type_name, wanted_position, position)
+      type(str), pointer, intent(inout) :: this
+      type(book), pointer, intent(in) :: that_book
+      character(len=*), intent(in) :: segment_type_name
+      integer, intent(in) :: wanted_position
+      integer, intent(inout) :: position
+    end subroutine book_ajpnt
+  end interface ajpnt
+
+  interface getpnt
+    module subroutine book_getpnt(this, that_book, position)
+      type(str), pointer, intent(in) :: this
+      type(book), pointer, intent(inout) :: that_book
+      integer, intent(in) :: position
+    end subroutine book_getpnt
+  end interface getpnt';
+		values: { name }
+]
+
+{ #category : 'api' }
+FASTFortranDerivedTypeFactory >> makeGenericSegadjInterface [
+
+	| paramFactories componentFactories segadj thisParameter |
+
+	paramFactories := self parameters.
+	componentFactories := self components.
+
+	segadj := model newSubroutine
+		name: name , '_segadj'.
+
+	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'this' ;
+		derivedTypeFactory: self).
+
+	segadj addParameter: (self scalarVariable: 'this').
+	paramFactories do: [ :param |
+		segadj addParameter: (self scalarVariable: param name)
+	].
+
+	segadj initBody.
+	segadj addComment: '## Adjust the given "this" segment'.
+	segadj addComment: '## using the given parameters'.
+
+	segadj addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
+
+	paramFactories ifNotEmpty: [
+		segadj statementBlock statements addAll: self makeSegadjLocalDeclarations ].
+
+	^segadj
+]
+
+{ #category : 'api' }
+FASTFortranDerivedTypeFactory >> makeGenericSeginiInterface [
+
+	| paramFactories componentFactories segini thisParameter |
+
+	paramFactories := self parameters.
+	componentFactories := self components.
+
+	segini := model newSubroutine
+		name: name , '_segini'.
+
+	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'this' ;
+		derivedTypeFactory: self).
+
+	segini addParameter: (self scalarVariable: 'this').
+	paramFactories do: [ :param |
+		segini addParameter: (self scalarVariable: param name)
+	].
+
+	segini initBody.
+	segini addComment: '## Initializes a new "this" segment with default values'.
+	segini addComment: '## using the given parameters'.
+
+	segini addStatement: (thisParameter createSegcmdInoutFieldDeclaration).
+	paramFactories do: [ :paramFactory |
+		segini addStatement: (paramFactory createSegcmdInFieldDeclaration)
+	].
+
+	^segini
+]
+
+{ #category : 'api' }
+FASTFortranDerivedTypeFactory >> makeGenericSegparInterface [
+
+	| paramFactories componentFactories segpar thisParameter |
+
+	paramFactories := self parameters.
+	componentFactories := self components.
+
+	segpar := model newSubroutine
+		name: name , '_segpar'.
+
+	thisParameter := (FASTFortranDerivedTypeThisFieldFactory new
+		name: 'this' ;
+		derivedTypeFactory: self).
+
+	segpar addParameter: (self scalarVariable: 'this').
+	paramFactories do: [ :param |
+		segpar addParameter: (self scalarVariable: param name)
+	].
+
+	^segpar
+
+]
+
+{ #category : 'helpers-codeString' }
 FASTFortranDerivedTypeFactory >> makeInterfaces [
 
 	^model newFormattedCodeString
-		content: '
-    public assignment (=)
-    interface assignment (=)
-        module procedure {1}_assign_pointer_to_pointer
-    end interface
+		content: '  interface
+    module subroutine {1}_finalize(this)
+      ! ## Deallocate of the internal ressources of the given "this" segment
+      type({1}), intent(inout) :: this
+    end subroutine {1}_finalize
 
-    public seg_type
-    interface seg_type
-        module procedure {1}_seg_type
-        module procedure boxed_{1}_seg_type
-    end interface
+    module subroutine polymorphic_{1}_seg_type(this_segment, type_name)
+      class({1}), target, intent(in) :: this_segment
+      character(len=segment_type_len), intent(out) :: type_name
+    end subroutine polymorphic_{1}_seg_type
 
-    public segini
-    interface segini
-        module procedure {1}_segini
-    end interface
+    module subroutine polymorphic_{1}_segsup(this_segment)
+      class({1}), target, intent(inout) :: this_segment
+    end subroutine polymorphic_{1}_segsup
 
-    public segcop
-    interface segcop
-        module procedure {1}_segcop
-        module procedure boxed_{1}_segcop
-    end interface
+    module subroutine polymorphic_{1}_segprt(this_segment)
+      class({1}), target, intent(in) :: this_segment
+    end subroutine polymorphic_{1}_segprt
 
-    public segmov
-    interface segmov
-        module procedure {1}_segmov
-        module procedure boxed_{1}_segmov
-    end interface
+    module subroutine polymorphic_{1}_seg_store(this_segment, file_number)
+      class({1}), target, intent(in) :: this_segment
+      integer, intent(in) :: file_number
+    end subroutine polymorphic_{1}_seg_store
 
-    public segadj
-    interface segadj
-        module procedure {1}_segadj
-    end interface
+    module subroutine polymorphic_{1}_segcop(this_segment, that_segment)
+      class({1}), target, intent(in) :: this_segment
+      class(segment), pointer, intent(inout) :: that_segment
+    end subroutine polymorphic_{1}_segcop
 
-    public segsup
-    interface segsup
-        module procedure {1}_segsup
-        module procedure boxed_{1}_segsup
-    end interface
+    module subroutine polymorphic_{1}_segmov(this_segment, that_segment)
+      class({1}), target, intent(in) :: this_segment
+      class(segment), pointer, intent(inout) :: that_segment
+    end subroutine polymorphic_{1}_segmov
 
-    public segprt
-    interface segprt
-        module procedure {1}_segprt
-        module procedure boxed_{1}_segprt
-    end interface
+    module subroutine {1}_load(this_segment, file_number)
+      class(segment), pointer, intent(inout) :: this_segment
+      integer, intent(in) :: file_number
+    end subroutine {1}_load
 
-    public seg_store
-    interface seg_store
-        module procedure {1}_seg_store
-        module procedure boxed_{1}_seg_store
-    end interface
+    module function {1}_mypnt(this, position) result(that_{1})
+      type(str), pointer, intent(in) :: this
+      integer, intent(in) :: position
+      type({1}), pointer :: that_{1}
+    end function {1}_mypnt
 
-    public seg_load
-    interface seg_load
-        module procedure {1}_seg_load
-    end interface
+    module subroutine ignore_{1}(variable, variable_name, routine)
+      type({1}), pointer, intent(in) :: variable
+      character(len=*), intent(in) :: variable_name
+      character(len=*), intent(in) :: routine
+    end subroutine ignore_{1}
 
-    public segpar
-    interface segpar
-        module procedure {1}_segpar
-    end interface
-
-    public seglik
-    interface seglik
-        module procedure {1}_seglik
-    end interface
-
-    public segloc
-    interface segloc
-        module procedure {1}_segloc
-    end interface
-
-    public ajpnt
-    interface  ajpnt
-        module procedure {1}_ajpnt
-    end interface
-
-    public getpnt
-    interface  getpnt
-        module procedure {1}_getpnt
-    end interface
-
-    public {1}_mypnt
-    public {1}_load
+  end interface
 ' ;
 		values: { name }
 ]
@@ -1358,46 +1606,82 @@ FASTFortranDerivedTypeFactory >> makeSegadjLocalDeclarations [
 	^statements
 ]
 
+{ #category : 'api' }
+FASTFortranDerivedTypeFactory >> makeSeginiSegAdjSegParInterface [
+
+	"
+  interface segini
+    module subroutine book_segini(this, bsize)
+      ! ## Initializes a new ""this"" segment with default values
+      ! ## using the given parameters
+      type(book), pointer, intent(inout) :: this
+      integer, intent(in) :: bsize
+    end subroutine book_segini
+  end interface segini
+
+  interface segadj
+    module subroutine book_segadj(this, bsize)
+      ! ## Adjust the given ""this"" segment
+      ! ## using the given parameters
+      type(book), pointer, intent(inout) :: this
+      integer, intent(in) :: bsize
+    end subroutine book_segadj
+  end interface segadj
+
+  interface segpar
+    module subroutine book_segpar(this, bsize)
+      ! ## Return the parameters of the given ""this"" segment
+      type(book), pointer, intent(in) :: this
+      integer, intent(out) :: bsize
+    end subroutine book_segpar
+  end interface segpar	
+	
+	"
+]
+
 { #category : 'helpers-codeString' }
 FASTFortranDerivedTypeFactory >> makeSegmentModuleProlog [
 
-	^model newSourceCodeString content: '
-  use ignore_m
+	^model newFormattedCodeString 
+		content: '  use ignore_m
   use contract_m
   use segment_m
   use str_m
 
   implicit none
   private
-'
+
+  public :: {1}, &
+      assignment(=), &
+      seg_type, &
+      segini, &
+      segcop, &
+      segmov, &
+      segadj, &
+      segsup, &
+      segpar, &
+      seglik, &
+      segprt, &
+      segloc, &
+      seg_store, &
+      seg_load, &
+      ajpnt, &
+      getpnt, &
+      {1}_mypnt, &
+      {1}_load, &
+      {1}_type_name
+	';
+		values: { name }
 ]
 
 { #category : 'helpers-codeString' }
 FASTFortranDerivedTypeFactory >> makeSegmentTypeName [
 
-	^model newFormattedCodeString
-		  content: '
-
-    public {1}_type_name
+	^model newFormattedCodeString 
+		content: '
     character(len=segment_type_len), parameter :: {1}_type_name = ''{1}''
 ';
-		  values: { name }
-]
-
-{ #category : 'helpers-codeString' }
-FASTFortranDerivedTypeFactory >> makeTypeDefinition [
-
-	| segment |
-	segment := model newDerivedTypeDefinition
-		name: name.
-
-	fields do: [ :fieldFactory |
-		fieldFactory createSegmentFieldDeclaration
-			ifNotNil: [ :declStatement | segment addStatement: declStatement ]
-		].
-
-	^segment
-
+		values: { name }
 ]
 
 { #category : 'accessing' }

@@ -6,7 +6,7 @@ Class {
 	#tag : 'Visitors'
 }
 
-{ #category : 'visiting' }
+{ #category : 'visiting - esope' }
 FASTFortranSegmentTransformationVisitor >> visitFASTEsopeSegment: aFASTEsopeSegmentNode [
 
 	| derivedType2k |
