@@ -13,8 +13,8 @@ I am the super class of all Fortran expressions
 | `expressionStatementOwner` | `FASTTExpression` | `expression` | `FASTTExpressionStatement` | The expression statement that own me (if it's the case|
 | `ioSpecifier` | `FASTTExpression` | `expression` | `FASTFortran2kIOParameter` | name of the parameter (keyword argument)|
 | `kindOwner` | `FASTFortran2kAbstractExpression` | `kind` | `FASTFortran2kType` | |
-| `parentArrayDimensionDeclarator` | `FASTFortran2kAbstractExpression` | `lowerBound` | `FASTFortran2kArrayRange` | Parent array dimension declarator|
 | `parentArrayDimensionDeclarator` | `FASTFortran2kAbstractExpression` | `upperBound` | `FASTFortran2kArrayRange` | Parent array dimension declarator|
+| `parentArrayDimensionDeclarator` | `FASTFortran2kAbstractExpression` | `lowerBound` | `FASTFortran2kArrayRange` | Parent array dimension declarator|
 | `parentArrayExpression` | `FASTFortran2kAbstractExpression` | `indices` | `FASTFortran2kArrayVariable` | an ArrayVariable expression of which I am an indice|
 | `parentConditionalStatement` | `FASTTExpression` | `condition` | `FASTTConditionalStatement` | Optional condition statement where this expression is used|
 | `parentDataStatement` | `FASTFortran2kAbstractExpression` | `dataConstants` | `FASTFortran2kDataGroup` | |

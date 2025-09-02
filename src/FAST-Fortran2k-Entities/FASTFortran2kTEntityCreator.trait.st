@@ -560,10 +560,17 @@ FASTFortran2kTEntityCreator >> newInterface [
 ]
 
 { #category : 'entity creation' }
-FASTFortran2kTEntityCreator >> newInterfaceProcedure [
+FASTFortran2kTEntityCreator >> newInterfaceModuleFunction [
 
 	<generated>
-	^ self add: FASTFortran2kInterfaceProcedure new
+	^ self add: FASTFortran2kInterfaceModuleFunction new
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newInterfaceModuleSubroutine [
+
+	<generated>
+	^ self add: FASTFortran2kInterfaceModuleSubroutine new
 ]
 
 { #category : 'entity creation' }
@@ -620,6 +627,13 @@ FASTFortran2kTEntityCreator >> newModule [
 
 	<generated>
 	^ self add: FASTFortran2kModule new
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newModuleProcedure [
+
+	<generated>
+	^ self add: FASTFortran2kModuleProcedure new
 ]
 
 { #category : 'entity creation' }
@@ -823,6 +837,13 @@ FASTFortran2kTEntityCreator >> newStopStatement [
 
 	<generated>
 	^ self add: FASTFortran2kStopStatement new
+]
+
+{ #category : 'entity creation' }
+FASTFortran2kTEntityCreator >> newSubmodule [
+
+	<generated>
+	^ self add: FASTFortran2kSubmodule new
 ]
 
 { #category : 'entity creation' }
