@@ -18,4 +18,4 @@ jobs:
     with:
       pharo-versions: "[ 'Moose64-13' ]"
       image-name: "EsopeToF2k"
-      pre-upload-script: './clap-script-launcher-generator.st'
+#      pre-upload-script: './clap-script-launcher-generator.st'
