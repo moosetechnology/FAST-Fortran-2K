@@ -174,7 +174,11 @@ Class {
 		'tConditionalStatement',
 		'tLoopStatement',
 		'nullEntity',
-		'nullEntityStatement'
+		'nullEntityStatement',
+		'interfaceModuleFunction',
+		'interfaceModuleSubroutine',
+		'submodule',
+		'moduleProcedure'
 	],
 	#classInstVars : [
 		'typeBoundProcedure'
@@ -323,12 +327,24 @@ FASTFortran2kGenerator >> defineClasses2k [
 		comment: 'I represent an interface'.
 
 	interfaceProcedure := self
-		newClassNamed: #InterfaceProcedure
+		newAbstractClassNamed: #InterfaceProcedure
 		comment: 'I represent an interface procedure declaration'.
+
+	interfaceModuleFunction := self
+		newClassNamed: #InterfaceModuleFunction
+		comment: 'I represent an interface module function declaration'.
+
+	interfaceModuleSubroutine := self
+		newClassNamed: #InterfaceModuleSubroutine
+		comment: 'I represent an interface module subroutine declaration'.
 
 	interfaceModuleProcedureSummary := self
 		newClassNamed: #IModuleProcedureSummary
 		comment: ''.
+
+	moduleProcedure := self
+		newClassNamed: #ModuleProcedure
+		comment: 'I represent a module procedure'. 
 
 	internalProcedure := self
 		newAbstractClassNamed: #InternalProcedure
@@ -353,6 +369,10 @@ FASTFortran2kGenerator >> defineClasses2k [
 	module := self 
 		newClassNamed: #Module 
 		comment: 'I represent a module'.
+	
+	submodule := self
+		newClassNamed: #Submodule 
+		comment: 'I represent a submodule'. 
 
 	nameEntity := self
 		newClassNamed: #NameEntity
@@ -870,10 +890,20 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 
 	importStatement --|> abstractStatement.
 
-	interface --|> tNamedEntity. "name is optional"
-	interface --|> abstractStatement.
+	interface --|> tNamedEntity. "name is optional, mandatory only for generic interface"
+	interface --|> abstractStatement. "scopable entity ?"
 	
 	interfaceProcedure --|> tNamedEntity.
+	interfaceProcedure --|> tWithDeclarations.
+	interfaceProcedure --|> tWithParameters.
+	
+	
+	moduleProcedure --|> tBehaviouralEntity.
+	moduleProcedure --|> tNamedEntity.
+
+	interfaceModuleFunction --|> interfaceProcedure.
+	interfaceModuleSubroutine --|> interfaceProcedure.
+	
 	interfaceModuleProcedureSummary --|> interfaceProcedure.
 	
 	internalProcedure --|> tEntity.
@@ -886,6 +916,7 @@ FASTFortran2kGenerator >> defineHierarchy2k [
 	internalSubroutine --|> internalProcedure.
 	
 	module --|> programUnit.
+	submodule --|> programUnit.
 
 	nullEntity --|> entity.
 	nullEntityStatement --|> nullEntity.
@@ -976,6 +1007,9 @@ FASTFortran2kGenerator >> defineProperties2k [
 	(interface property: #isAbstractInterface type: #Boolean)
 		comment: 'Im abstract ?'.
 
+	(submodule property: #superModule type: #String)
+		comment: 'name of the module that Im implement'.
+
 	(sourceCodeString property: #content type: #String)
 		comment: 'The source code string to export'.
 
@@ -1044,7 +1078,10 @@ FASTFortran2kGenerator >> defineRelations [
 	<>-* (tIOParameter property: #parentIOStatement).
 
 	tWithVariableGroup <>-* tVariableGroup.
-	
+
+	submodule <>-* abstractStatement.
+	submodule <>-* moduleProcedure.
+
 	((tWithDeclarators property: #declarators) comment: 'variables declared')
 	<>-* (variableDeclarator property: #parentDeclaration).
 

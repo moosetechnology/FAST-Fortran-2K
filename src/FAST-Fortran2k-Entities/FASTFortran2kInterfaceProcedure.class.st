@@ -10,6 +10,12 @@ I represent an interface procedure declaration
 | `interface` | `FASTFortran2kInterfaceProcedure` | `interfaceProcedures` | `FASTFortran2kInterface` | |
 | `invokedIn` | `FASTTNamedEntity` | `invoked` | `FASTTInvocation` | Optional invocation where this name is used|
 
+### Children
+| Relation | Origin | Opposite | Type | Comment |
+|---|
+| `declarations` | `FASTFortran2kTWithDeclarations` | `fortranDeclarationOwner` | `FASTFortran2kTDeclaration` | The elements I declare|
+| `parameters` | `FASTTWithParameters` | `parameterOwner` | `FASTTVariableEntity` | My parameters|
+
 
 ## Properties
 ======================
@@ -24,8 +30,8 @@ I represent an interface procedure declaration
 Class {
 	#name : 'FASTFortran2kInterfaceProcedure',
 	#superclass : 'FASTFortran2kEntity',
-	#traits : 'FASTTNamedEntity',
-	#classTraits : 'FASTTNamedEntity classTrait',
+	#traits : 'FASTFortran2kTWithDeclarations + FASTTNamedEntity + FASTTWithParameters',
+	#classTraits : 'FASTFortran2kTWithDeclarations classTrait + FASTTNamedEntity classTrait + FASTTWithParameters classTrait',
 	#instVars : [
 		'#interface => FMOne type: #FASTFortran2kInterface opposite: #interfaceProcedures'
 	],
@@ -40,7 +46,15 @@ FASTFortran2kInterfaceProcedure class >> annotation [
 	<FMClass: #InterfaceProcedure super: #FASTFortran2kEntity>
 	<package: #'FAST-Fortran2k-Entities'>
 	<generated>
+	<abstract>
 	^ self
+]
+
+{ #category : 'testing' }
+FASTFortran2kInterfaceProcedure class >> isAbstract [
+
+	<generated>
+	^ self == FASTFortran2kInterfaceProcedure
 ]
 
 { #category : 'accessing' }

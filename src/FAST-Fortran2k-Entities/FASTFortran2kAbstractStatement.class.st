@@ -10,6 +10,7 @@ I am the super class of all Fortran statements
 | `parentIfStatement` | `FASTFortran2kAbstractStatement` | `statement` | `FASTFortran2kIfLogicalStatement` | Parent if statement|
 | `parentLoopStatement` | `FASTTStatement` | `body` | `FASTTLoopStatement` | Optional loop of which this statement is the body|
 | `statementContainer` | `FASTTStatement` | `statements` | `FASTTStatementBlock` | Block containing this statement.|
+| `submodule` | `FASTFortran2kAbstractStatement` | `abstractStatements` | `FASTFortran2kSubmodule` | |
 
 
 ## Properties
@@ -29,7 +30,8 @@ Class {
 	#classTraits : 'FASTTStatement classTrait',
 	#instVars : [
 		'#label => FMProperty',
-		'#parentIfStatement => FMOne type: #FASTFortran2kIfLogicalStatement opposite: #statement'
+		'#parentIfStatement => FMOne type: #FASTFortran2kIfLogicalStatement opposite: #statement',
+		'#submodule => FMOne type: #FASTFortran2kSubmodule opposite: #abstractStatements'
 	],
 	#category : 'FAST-Fortran2k-Entities-Entities',
 	#package : 'FAST-Fortran2k-Entities',
@@ -83,4 +85,27 @@ FASTFortran2kAbstractStatement >> parentIfStatementGroup [
 	<generated>
 	<navigation: 'ParentIfStatement'>
 	^ MooseSpecializedGroup with: self parentIfStatement
+]
+
+{ #category : 'accessing' }
+FASTFortran2kAbstractStatement >> submodule [
+	"Relation named: #submodule type: #FASTFortran2kSubmodule opposite: #abstractStatements"
+
+	<generated>
+	<container>
+	^ submodule
+]
+
+{ #category : 'accessing' }
+FASTFortran2kAbstractStatement >> submodule: anObject [
+
+	<generated>
+	submodule := anObject
+]
+
+{ #category : 'navigation' }
+FASTFortran2kAbstractStatement >> submoduleGroup [
+	<generated>
+	<navigation: 'Submodule'>
+	^ MooseSpecializedGroup with: self submodule
 ]
