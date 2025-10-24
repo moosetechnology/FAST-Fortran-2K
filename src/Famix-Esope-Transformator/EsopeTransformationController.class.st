@@ -58,6 +58,12 @@ Class {
 }
 
 { #category : 'import-export' }
+EsopeTransformationController class >> sourceFolder: aSourcePathString [
+
+	self sourceFolder: aSourcePathString includeFolder: aSourcePathString
+]
+
+{ #category : 'import-export' }
 EsopeTransformationController class >> sourceFolder: aSourcePathString includeFolder: anIncludePathString [
 
 	| famixEsopeModel |

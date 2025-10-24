@@ -47,12 +47,21 @@ FASTFortranUseTransformationVisitor >> visitFASTEsopeIncludeStatement: aFASTEsop
 
 	| programUnit |
 	programUnit := aFASTEsopeIncludeStatement famixInclude includedBy.
-	
-	aFASTEsopeIncludeStatement famixInclude included types
-		ifNotNil: [ :types |
-			types do: [ :type |
+
+	(aFASTEsopeIncludeStatement famixInclude filename sameAs: 'PSTR.inc')
+		ifTrue: [
+			((aFASTEsopeIncludeStatement famixInclude mooseModel allWithType: FamixEsopeSegment)
+				detect: [ :segment | segment name sameAs: 'PSTR' ]
+				ifNone: [ nil ])
+			ifNotNil: [ :type |
 				self useNeeded:  (programUnit -> type)
 			]
+		]
+		ifFalse: [ 
+			aFASTEsopeIncludeStatement famixInclude included types
+				ifNotNil: [ :types |
+					types do: [ :type | self useNeeded:  (programUnit -> type) ]
+				]
 		]
 	
 ]

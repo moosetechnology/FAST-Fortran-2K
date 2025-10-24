@@ -237,8 +237,13 @@ FASTFortranBehavioralTransformationVisitor >> visitFASTEsopeIncludeStatement: aF
 	 empty lines can work for it."
 
 	| includedStatements return startCommentContent |
-	includedStatements := (self includedStatements:
-		aFASTEsopeIncludeStatement famixInclude included programFile filename).
+	
+	includedStatements := (aFASTEsopeIncludeStatement filename sameAs: 'PSTR.inc')
+		ifTrue: [ #() ]
+		ifFalse: [ (self includedStatements:
+		aFASTEsopeIncludeStatement famixInclude included programFile filename)
+	].
+
 	return := OrderedCollection new: includedStatements size + 2.
 
 	startCommentContent := '[ooo] ' ,
