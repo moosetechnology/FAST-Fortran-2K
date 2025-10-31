@@ -73,7 +73,7 @@ EsopeTransformationController class >> sourceFolder: aSourcePathString includeFo
 		import.
 
 	self new
-		famixModel: famixEsopeModel ; 
+		famixModel: famixEsopeModel ;
 		isFpm: true ;
 		run
 ]
@@ -139,7 +139,7 @@ EsopeTransformationController >> migrationSteps [
 		EsopeTransfoStepMigrateProgramUnits .
 		EsopeTransfoStepResolveUses .
 		EsopeTransfoStepExportFast2k .
-		isFpm ifTrue: [ EsopeTransfoStepAsFpmProject ] ifFalse: [ EsopeTransfoStepNoop ]
+		isFpm ifTrue: [ EsopeTransfoStepAsFpmProject ] ifFalse: [ EsopeTransfoStepExport ]
 	}
 ]
 

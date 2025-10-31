@@ -157,7 +157,7 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranSubroutine: aFASTFo
 	^stack pop module programFile
 ]
 
-{ #category : 'visiting - programUnits' }
+{ #category : 'visiting - traits' }
 FASTFortranProcedureTransformationVisitor >> visitFASTFortranTWithParameters: aFASTFortran77Procedure [
 	"compute 'intent' for each parameter then migrate all of them
 	Note: need to keep all paramters in instance variable #parametersToDeclare to know, after statements
