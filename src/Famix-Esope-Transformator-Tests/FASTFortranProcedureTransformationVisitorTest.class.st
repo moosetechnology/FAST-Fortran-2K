@@ -327,16 +327,18 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersIntentMissedDecla
 
 	| famixParamF77 res fast |
 	famixParamF77 := famixEsopeModel newParameter
-		declaredType: (famixEsopeModel newTypeIntrinsic name: #integer) ;
-		propertyNamed: #intent put: 'intent(inOut)' ;
+		declaredType: (famixEsopeModel newTypeIntrinsic name: #integer);
+		cacheAt: #intent put: 'intent(inOut)';
 		yourself.
 	fast := FASTFortranScalarVariable new
-		name: 'param' ;
+		name: 'param';
 		famixParameter: famixParamF77.
 
 	res := fast generateF2kDeclarationInModel: FASTFortran2kModel new.
 
-	self assert: res class equals: FASTFortran2kVariableDeclarationStatement.
+	self
+		assert: res class
+		equals: FASTFortran2kVariableDeclarationStatement.
 	self assert: res declarators size equals: 1.
 	self assertCollection: res modifiers equals: { 'intent(inOut)' }
 ]
@@ -347,26 +349,22 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersPointerDeclaredNo
 	| res famixParamF77 fast2k |
 	self functionEmpty.
 	famixParamF77 := famixEsopeModel newParameter
-		name: 'param' ; 
-		declaredType: (famixEsopeModel newSegment name: #seg) ;
-		propertyNamed: #intent put: (FASTFortran2kParameterIntent new isIn: true) ;
+		name: 'param';
+		declaredType: (famixEsopeModel newSegment name: #seg);
+		cacheAt: #intent put: (FASTFortran2kParameterIntent new isIn: true);
 		yourself.
-	fastProcedures anyOne
-		addParameter: (FASTFortranScalarVariable new 
-			name: 'param' ; 
-			famixParameter: famixParamF77).
-	fastProcedures anyOne statementBlock
-		addStatement: (FASTEsopePointerDeclarationStatement new
-			addPointerDeclarator: (
-				FASTEsopePointerDeclarator new
-					pointedTypeName: 'seg' ;
-					variableDeclarator: (FASTFortranVariableDeclarator new
-						name: 'param' ;
-						famixDeclaration: famixParamF77)
-			) ;
-			yourself
-		).
-		
+	fastProcedures anyOne addParameter: (FASTFortranScalarVariable new
+		name: 'param';
+		famixParameter: famixParamF77).
+	fastProcedures anyOne statementBlock addStatement:
+		(FASTEsopePointerDeclarationStatement new
+			addPointerDeclarator: (FASTEsopePointerDeclarator new
+				pointedTypeName: 'seg';
+				variableDeclarator: (FASTFortranVariableDeclarator new
+					name: 'param';
+					famixDeclaration: famixParamF77));
+			 yourself).
+
 	res := fastProcedures anyOne accept: visitor.
 
 	self assert: visitor parametersToDeclare isEmpty.
@@ -378,12 +376,11 @@ FASTFortranProcedureTransformationVisitorTest >> testParametersPointerDeclaredNo
 	self assert: fast2k declarators anyOne name equals: 'param'.
 
 	self assert: (fast2k modifiers anySatisfy: [ :mod |
-		(mod class = FASTFortran2kParameterIntent) and: [
-		mod isIn and: [ mod isOut not ] ]
-	]).
+		mod class = FASTFortran2kParameterIntent 
+			and: [ mod isIn and: [ mod isOut not ] ] ]).
 
-	self assert: (fast2k modifiers anySatisfy: [ :mod | mod class = FASTFortran2kPointerModifier ])
-
+	self assert: (fast2k modifiers anySatisfy: [ :mod |
+			 mod class = FASTFortran2kPointerModifier ])
 ]
 
 { #category : 'tests' }

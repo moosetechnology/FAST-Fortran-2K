@@ -1577,7 +1577,9 @@ FASTFortran2kProgramFileExporterVisitor >> visitFASTFortranUserDefinedType: aFAS
 
 { #category : 'visiting' }
 FASTFortran2kProgramFileExporterVisitor >> visitFASTTEntity: aFASTTEntity [
-	^ aFASTTEntity children do: [ :child | child accept: self ]
+
+	^aFASTTEntity containedEntities
+		do: [ :child | child accept: self ]
 ]
 
 { #category : 'visiting - expressions' }
