@@ -8,6 +8,6 @@ FASTFortranScalarVariable >> generateF2kDeclarationInModel: anF2kModel [
 			  (self famixParameter declaredType generateF2kInModel: anF2kModel);
 		  declarators:
 			  { (anF2kModel newVariableDeclarator name: self name) };
-		  modifiers: { (self famixParameter propertyNamed: #intent) };
+		  modifiers: { (self famixParameter cacheAt: #intent) };
 		  yourself
 ]

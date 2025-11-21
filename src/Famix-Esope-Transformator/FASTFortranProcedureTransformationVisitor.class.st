@@ -15,15 +15,16 @@ FASTFortranProcedureTransformationVisitor >> checkForParameterDeclaration: aFAST
 	"if aFASTFortran2kVariableDeclarationStatement match the name of a parametersToDeclare
 	then remove it from the list to declare and set its intent"
 
-	aFASTFortran2kVariableDeclarationStatement ifNil: [ ^nil ].
+	aFASTFortran2kVariableDeclarationStatement ifNil: [ ^ nil ].
 
-	(aFASTFortran2kVariableDeclarationStatement detectMatchingEntityIn: parametersToDeclare)
-		ifNotNil: [ :param |
+	(aFASTFortran2kVariableDeclarationStatement detectMatchingEntityIn:
+		parametersToDeclare) ifNotNil: [ :param |
 			parametersToDeclare remove: param.
-			aFASTFortran2kVariableDeclarationStatement addModifier: (param famixParameter propertyNamed: #intent)
+			aFASTFortran2kVariableDeclarationStatement addModifier:
+				(param famixParameter cacheAt: #intent) 
 		].
 
-	^aFASTFortran2kVariableDeclarationStatement 
+	^aFASTFortran2kVariableDeclarationStatement
 ]
 
 { #category : 'helpers' }
@@ -95,7 +96,7 @@ FASTFortranProcedureTransformationVisitor >> parameterIntent: paramF77 [
 
 	Fortran2kIntentAbstractRule checkAllRulesFor: paramF77.
 
-	^paramF77 propertyNamed: #intent
+	^ paramF77 cacheAt: #intent
 ]
 
 { #category : 'accessing - private tests' }
@@ -166,12 +167,12 @@ FASTFortranProcedureTransformationVisitor >> visitFASTFortranTWithParameters: aF
 	parametersToDeclare := aFASTFortran77Procedure parameters.
 
 	parametersToDeclare do: [ :paramFast77 |
-		paramFast77 famixParameter
-			propertyNamed: #intent
-			ifAbsentPut: [self parameterIntent: paramFast77 famixParameter].
-	].
+			paramFast77 famixParameter
+				cacheAt: #intent
+				ifAbsentPut: [ self parameterIntent: paramFast77 famixParameter ] ].
 
-	self stack top parameters: (self visitFASTFortranList: parametersToDeclare).
+	self stack top parameters:
+		(self visitFASTFortranList: parametersToDeclare)
 ]
 
 { #category : 'visiting - statements' }
